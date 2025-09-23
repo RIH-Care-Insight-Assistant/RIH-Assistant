@@ -51,7 +51,7 @@ When a message indicates **imminent risk** (self-harm or harm to others), the as
 
 ## 4) Safety Keywords (initial list; update weekly)
 
-- **Urgent (SI/HI):** `kill myself`, `suicide`, `hurt myself`, `hurt others`, `end it`, `take my life`, `no reason to live`, `kms`, `unalive`  
+- **Urgent-Suicidal Ideation / Homicidal Ideation (SI/HI):** `kill myself`, `suicide`, `hurt myself`, `hurt others`, `end it`, `take my life`, `no reason to live`, `kms`, `unalive`  
 - **Title IX:** `assault`, `harass`, `stalk`, `rape`, `coercion`, `nonconsensual`  
 - **Harassment/Hate:** `slur`, `hate`, `threat`, `bully`, `intimidate`, `targeted harassment`  
 - **Retention/Withdraw:** `withdraw`, `transfer`, `drop out`, `leave school`, `quit college`  
