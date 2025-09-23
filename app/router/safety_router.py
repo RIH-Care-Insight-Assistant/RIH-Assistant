@@ -1,7 +1,7 @@
 import re
 from dataclasses import dataclass
 
-# --- Keyword sets (update) ---
+# --- Keyword sets (FINAL per your policy) ---
 SLANG_URGENCY = [r"\bkms\b", r"\bunalive\b"]
 PHRASES_URGENCY = [
     r"\bkill myself\b", r"\bsuicide\b", r"\bend it\b",
@@ -9,31 +9,28 @@ PHRASES_URGENCY = [
     r"\bno reason to live\b"
 ]
 
-# Title IX (sex-based misconduct)
+# Title IX (route all 'harass*' here now)
 TITLE_IX = [
     r"\bsex(ual)?\s*(assault|harass(ed|ment|ing)?|misconduct|coercion)\b",
+    r"\bharass(ed|ment|ing)?\b",                 # <— added generic harass to Title IX
     r"\b(non\s*-?\s*consensual|nonconsensual)\b",
     r"\brape\b",
     r"\bstalk(ing)?\b"
 ]
 
-# Conduct / non-sexual harassment, threats, slurs, bullying
+# Conduct / non-sexual (remove 'harass*' here to avoid collision)
 CONDUCT = [
-    r"\b(harass(ed|ment|ing)?)\b",  # generic harassment (will be caught here if not matched as Title IX)
     r"\bslur\b", r"\bhate\b", r"\bracist\b", r"\bhomophobic\b", r"\bableist\b",
     r"\bthreat(s|en|ening)?\b", r"\bbully(ing)?\b", r"\bintimidat(e|ion|ing)?\b",
     r"\bdoxx(ing)?\b", r"\btargeted harassment\b"
 ]
 
-# Retention / withdrawal intent
 RETENTION = [r"\b(withdraw|transfer|drop\s?out|leave school|quit college)\b"]
 
-# Counseling (non-urgent) — NOTE: removed 'appointment' to avoid false hits
+# Keep 'appointment' OUT so KB handles booking questions
 COUNSELING = [
     r"\b(counsel(ing)?|therapy|therapist|mental health|talk to (someone|a counselor))\b"
 ]
-
-
 COMPILED = {
     "urgent_safety": re.compile("|".join(SLANG_URGENCY + PHRASES_URGENCY), re.I),
     "title_ix": re.compile("|".join(TITLE_IX), re.I),
