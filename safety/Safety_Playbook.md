@@ -68,7 +68,7 @@ For the MVP, **chat is allowed everywhere**. A future toggle will allow:
 
 ## 6) Privacy & Logging
 
-- Do not capture **PHI/PII**. Remove names/emails/phones from any application logs.  
+- Do not capture **PHI/PII**(Protected Health Information/Personally Identifiable Information). Remove names/emails/phones from any application logs.  
 - Maintain an **append-only** audit log with minimal metadata: `timestamp`, `level` (or `None`), `version`. No raw message text.  
 - Provide clear disclosure: “I’m a campus assistant and not monitored 24/7.”
 
