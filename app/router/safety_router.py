@@ -1,6 +1,22 @@
 import re
 from dataclasses import dataclass
 
+# Normalize common misspellings to improve routing recall
+def _normalize(text: str) -> str:
+    t = (text or "").lower()
+    replacements = {
+        # Title IX / harassment variants
+        "harrased": "harassed",
+        "harrasment": "harassment",
+        "harrassment": "harassment",
+        # Safety variants (optional examples)
+        "sucide": "suicide",
+        "commited suicide": "committed suicide",
+    }
+    for wrong, right in replacements.items():
+        t = t.replace(wrong, right)
+    return t
+
 # --- Keyword sets (FINAL per your policy) ---
 SLANG_URGENCY = [r"\bkms\b", r"\bunalive\b"]
 PHRASES_URGENCY = [
@@ -53,7 +69,7 @@ class RouteResult:
     auto_reply_key: str
 
 def route(message: str) -> RouteResult | None:
-    text = message or ""
+    text = _normalize(message)
     for level in ["urgent_safety", "title_ix", "harassment_hate", "retention_withdraw", "counseling"]:
         if COMPILED[level].search(text):
             return RouteResult(level, KEY_MAP[level])
