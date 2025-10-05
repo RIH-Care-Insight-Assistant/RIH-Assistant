@@ -1,5 +1,5 @@
-
-# File: app/tools/policy_tools.py (UNCHANGED)
+# app/tools/policy_tools.py
+from __future__ import annotations
 
 from .base import Tool, ToolResult
 from ..answer.compose import render_template
