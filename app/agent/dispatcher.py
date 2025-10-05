@@ -1,4 +1,3 @@
-# call the Planner + ClarifyTool
 # app/agent/dispatcher.py
 from __future__ import annotations
 from typing import Dict, Any
@@ -12,13 +11,17 @@ from ..tools.clarify_tool import ClarifyTool
 from .planner import Planner
 
 CATEGORY_TO_TOOL = {
+    # Category keys
     "urgent_safety": CrisisTool(),
     "title_ix": TitleIXTool(),
     "harassment_hate": ConductTool(),   # policy: non-sexual conduct → Conduct/CARE
     "retention": RetentionTool(),
     "counseling": CounselingTool(),
+    # Direct tool keys
     "retrieve": RetrieveTool(),
     "clarify": ClarifyTool(),
+    # Alias for planner semantics (so returning "crisis" works)
+    "crisis": CrisisTool(),
 }
 
 class Dispatcher:
@@ -41,7 +44,7 @@ class Dispatcher:
         plan = self.planner.plan(rr.level, user_text)
         trace.append({"event": "plan", "steps": plan})
 
-        # Phase 2 keeps it single-step for simplicity; execute first planned step
+        # Phase 2 executes the first planned step
         if plan:
             step = plan[0]
             out = self._run_tool(step["tool"], step.get("input", {}))
