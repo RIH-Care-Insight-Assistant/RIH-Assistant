@@ -1,36 +1,84 @@
-DISCLAIMER = "I'm a campus assistant and not monitored 24/7. For emergencies call 911 or 988.\n"
+# DISCLAIMER = "I'm a campus assistant and not monitored 24/7. For emergencies call 911 or 988.\n"
+# File: app/answer/compose.py 
+from typing import List, Dict
 
-CRISIS_TEXT = (
-    "If you’re in immediate danger or thinking about harming yourself or others, call 911 or 988 (Suicide & Crisis Lifeline). "
-    "Campus Police: (410) 455-5555 or 911 (24/7). RIH Urgent Line: 410-455-2542. Title IX: 410-455-1717. "
-    "I'm a campus assistant and not monitored 24/7."
-)
-
+# --- Templates (as provided) ---
 TEMPLATES = {
-    "crisis": CRISIS_TEXT,
-    "title_ix": "I’m a campus assistant. For confidential support and reporting options, contact the Title IX Office at 410-455-1717 or: https://ecr.umbc.edu/gender-discrimination-sexual-misconduct/. If this is an emergency, call 911/988.",
-    "conduct": "I’m a campus assistant. You can report behavior or get support via Student Conduct/CARE (https://conduct.umbc.edu/). If you feel unsafe, call 911 or Campus Police (410) 455-5555.",
-    "retention": "If you’re considering withdrawing or transferring, you can review options with Advising/Student Success (contact: (410)-455-2729).",
-    "counseling": "You can schedule counseling or get information via RIH Counseling (https://health.umbc.edu/counseling-services/counseling/).",
+    "crisis": (
+        "If you might be in danger or considering self-harm: Call 911 or 988 now. "
+        "On campus, contact UMBC Police (410-455-5555). RIH Urgent Care: 410-455-2542. "
+        "I can’t proceed with a normal answer, but you’re not alone."
+    ),
+    "title_ix": (
+        "Title IX support: Report or seek confidential guidance. Title IX Office: 410-455-1717. "
+        "You can learn about options and supportive measures without making a formal report."
+    ),
+    "conduct": (
+        "Student Conduct/CARE resources can help with harassment, bias, or threats. "
+        "We can connect you with support, safety planning, and reporting options."
+    ),
+    "retention": (
+        "Thinking about withdrawing or taking a break? Academic Advising and Student Success can help "
+        "you explore options, deadlines, and impacts before you decide."
+    ),
+    "counseling": (
+        "Counseling at RIH: appointments, brief therapy, referrals, and workshops are available. "
+        "If this is urgent, see crisis options above."
+    ),
 }
 
+# --- One-time disclaimer copy (used by CLI on session start) ---
+DISCLAIMER_TEXT = (
+    "I'm a campus assistant and not monitored 24/7. For emergencies, call 911 or 988. \n"
+)
+
+
+def render_template(key: str) -> str:
+    return TEMPLATES.get(key, "I’ll point you to the right campus resource.")
+
+
+def compose_answer(query: str, chunks: List[Dict]) -> str:
+    if not chunks:
+        return (
+            "I couldn’t find a specific page in the knowledge base yet. "
+            "Try rephrasing or ask about hours, appointments, billing, or counseling."
+        )
+    lines = ["Here’s what I found:"]
+    for c in chunks[:3]:
+        title = c.get("title", "RIH")
+        url = c.get("url", "")
+        text = c.get("text", "")[:220].rstrip()
+        lines.append(f"• {title}: {text} ({url})")
+    return "
+".join(lines)
+
+
+# --- Compatibility shims for legacy imports (keep CLI unchanged) ---
+
 def disclaimer() -> str:
-    return DISCLAIMER
+    """Return the standard one-time disclaimer string.
+    The CLI prints this exactly once per session; normal answers shouldn't include it.
+    """
+    return DISCLAIMER_TEXT
+
+
+def from_chunks(chunks: List[Dict], *, query: str | None = None) -> str:
+    """Legacy name used by older CLI code.
+    Wraps compose_answer for a smooth migration.
+    """
+    return compose_answer(query=query or "", chunks=chunks)
+
 
 def crisis_message() -> str:
-    return TEMPLATES["crisis"]
+    """Legacy helper for crisis path."""
+    return render_template("crisis")
+
 
 def template_for(key: str) -> str:
-    return TEMPLATES.get(key, "")
+    """Legacy helper that resolves a template key (e.g., 'title_ix')."""
+    return render_template(key)
 
-def from_chunks(chunks: list[dict]) -> str:
-    if not chunks:
-        return DISCLAIMER + "I couldn't find that in the RIH info I have. Try rephrasing or visit the RIH site."
-    lines = [DISCLAIMER, "Here's what I found:"]
-    for c in chunks:
-        title = c.get("title") or "Source"
-        snippet = (c.get("summary") or c.get("text") or "").strip()
-        snippet = (snippet[:220] + "…") if len(snippet) > 220 else snippet
-        url = c.get("url") or ""
-        lines.append(f"- {title}: {snippet} ({url})")
-    return "\n".join(lines)
+
+
+
+
