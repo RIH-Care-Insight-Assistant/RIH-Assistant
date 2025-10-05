@@ -1,12 +1,14 @@
+# app/retriever/retriever.py
 from __future__ import annotations
-# app/retriever/retriever.py — robust JSONL loader + simple scorer (title/category boosts)
+# robust JSONL loader + scorer with stopwords to reduce false positives
+
 import json
 import os
 import re
 from pathlib import Path
 from typing import List, Dict
 
-# KB directory (defaults to repo/kb). You can override in tests via env: RIH_KB_DIR
+# KB directory (defaults to repo/kb). Override in tests via env: RIH_KB_DIR
 KB_DIR = Path(os.getenv("RIH_KB_DIR") or Path(__file__).resolve().parents[2] / "kb")
 
 _cached_kb: List[Dict] | None = None
@@ -42,22 +44,25 @@ def _load_kb() -> List[Dict]:
 
 _WORD_RE = re.compile(r"[a-z0-9]+")
 
+# Minimal stopwords to avoid “campus”/generic matches causing false positives
+_STOPWORDS = {
+    "the","a","an","and","or","of","to","for","in","on","at","by","with","from",
+    "is","are","was","were","be","being","been","it","this","that","these","those",
+    "you","your","we","our","us","they","their","i",
+    "call","page","hours","location","campus","service","services"
+}
+
 
 def _tokens(s: str) -> List[str]:
-    return _WORD_RE.findall((s or "").lower())
+    return [t for t in _WORD_RE.findall((s or "").lower()) if t not in _STOPWORDS]
 
 
 def _score(query: str, c: Dict) -> float:
-    """Simple lexical scoring with lightweight boosts.
-    - Base: count of query tokens in body text
-    - +2: any token in title
-    - +1: any token in category
-    - +0.5: exact phrase presence in text (for 2–4 word queries)
-    """
+    """Simple lexical scoring with lightweight boosts and stopwords removed."""
     q = (query or "").lower().strip()
     if not q:
         return 0.0
-    toks = [t for t in _tokens(q) if len(t) > 1]
+    toks = [t for t in _tokens(q) if len(t) > 2]  # ignore very short tokens
     if not toks:
         return 0.0
 
@@ -74,7 +79,7 @@ def _score(query: str, c: Dict) -> float:
         boost += 1.0
 
     # small phrase bonus (helps queries like "after hours", "health records")
-    words = q.split()
+    words = [w for w in q.split() if w not in _STOPWORDS]
     if 2 <= len(words) <= 4:
         phrase = " ".join(words)
         if phrase in text:
