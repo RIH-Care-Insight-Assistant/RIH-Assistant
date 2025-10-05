@@ -1,6 +1,6 @@
+# call the Planner + ClarifyTool
 # app/agent/dispatcher.py
 from __future__ import annotations
-
 from typing import Dict, Any
 from ..router.safety_router import SafetyRouter
 from ..tools.base import ToolResult
@@ -8,32 +8,47 @@ from ..tools.retrieve_tool import RetrieveTool
 from ..tools.policy_tools import (
     TitleIXTool, ConductTool, RetentionTool, CounselingTool, CrisisTool
 )
+from ..tools.clarify_tool import ClarifyTool
+from .planner import Planner
 
 CATEGORY_TO_TOOL = {
     "urgent_safety": CrisisTool(),
     "title_ix": TitleIXTool(),
     "harassment_hate": ConductTool(),   # policy: non-sexual conduct → Conduct/CARE
-    "retention_withdraw": RetentionTool(),
+    "retention": RetentionTool(),
     "counseling": CounselingTool(),
+    "retrieve": RetrieveTool(),
+    "clarify": ClarifyTool(),
 }
 
 class Dispatcher:
     def __init__(self):
         self.router = SafetyRouter()
-        self.retrieve = RetrieveTool()
+        self.planner = Planner()
+
+    def _run_tool(self, name: str, payload: Dict[str, Any]) -> ToolResult:
+        tool = CATEGORY_TO_TOOL.get(name)
+        if not tool:
+            # Fallback to retrieve if tool not found
+            return CATEGORY_TO_TOOL["retrieve"].run({"query": payload.get("query", "")})
+        return tool.run(payload)
 
     def respond(self, user_text: str) -> Dict[str, Any]:
         trace = []
         rr = self.router.route(user_text)
         trace.append({"event": "route", "level": rr.level, "response_key": rr.response_key})
 
-        if rr.level:
-            tool = CATEGORY_TO_TOOL.get(rr.level)
-            if tool:
-                out: ToolResult = tool.run({"query": user_text})
-                trace.append({"event": "tool", "name": tool.name})
-                return {"text": out.text, "trace": trace}
+        plan = self.planner.plan(rr.level, user_text)
+        trace.append({"event": "plan", "steps": plan})
 
-        out: ToolResult = self.retrieve.run({"query": user_text})
-        trace.append({"event": "tool", "name": self.retrieve.name, "hits": out.meta.get("hits", 0)})
+        # Phase 2 keeps it single-step for simplicity; execute first planned step
+        if plan:
+            step = plan[0]
+            out = self._run_tool(step["tool"], step.get("input", {}))
+            trace.append({"event": "tool", "name": step["tool"], "meta": getattr(out, "meta", {})})
+            return {"text": out.text, "trace": trace}
+
+        # Safety fallback (shouldn’t happen): retrieve
+        out = CATEGORY_TO_TOOL["retrieve"].run({"query": user_text})
+        trace.append({"event": "tool", "name": "retrieve", "meta": getattr(out, "meta", {})})
         return {"text": out.text, "trace": trace}
