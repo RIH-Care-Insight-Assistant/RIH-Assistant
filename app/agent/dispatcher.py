@@ -1,5 +1,5 @@
-
-# File: app/agent/dispatcher.py (UNCHANGED)
+# app/agent/dispatcher.py
+from __future__ import annotations
 
 from typing import Dict, Any
 from ..router.safety_router import SafetyRouter
@@ -12,7 +12,7 @@ from ..tools.policy_tools import (
 CATEGORY_TO_TOOL = {
     "urgent_safety": CrisisTool(),
     "title_ix": TitleIXTool(),
-    "harassment_hate": ConductTool(),   # policy: non‑sexual conduct → Conduct/CARE
+    "harassment_hate": ConductTool(),   # policy: non-sexual conduct → Conduct/CARE
     "retention_withdraw": RetentionTool(),
     "counseling": CounselingTool(),
 }
@@ -37,4 +37,3 @@ class Dispatcher:
         out: ToolResult = self.retrieve.run({"query": user_text})
         trace.append({"event": "tool", "name": self.retrieve.name, "hits": out.meta.get("hits", 0)})
         return {"text": out.text, "trace": trace}
-
