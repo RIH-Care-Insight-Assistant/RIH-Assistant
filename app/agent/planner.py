@@ -14,21 +14,28 @@ class Planner:
     def plan(self, route_level: str | None, user_text: str) -> List[PlanStep]:
         # 1) Always honor safety routing first
         if route_level == "urgent_safety":
+            # Keep plan semantics as 'crisis' tool; dispatcher has alias mapping
             return [{"tool": "crisis", "input": {}}]
+
+        # 2) Category tools, with special clarify for counseling + appointment
         if route_level in {"title_ix", "harassment_hate", "retention_withdraw", "counseling"}:
-            # Map retention_withdraw -> retention tool name
+            # Special case: user mentions both counseling and appointment → clarify first
+            if route_level == "counseling" and _contains_any(user_text, ["appointment", "appointments"]):
+                return [{"tool": "clarify", "input": {
+                    "kind": "counseling_vs_medical_appt",
+                    "question": "Do you want to schedule a **counseling** appointment or a **medical** appointment?",
+                    "options": ["counseling", "medical"]
+                }}]
             tool = "retention" if route_level == "retention_withdraw" else route_level
-            # Clarify (deterministic) for a couple cases if desired later; for now, direct
             return [{"tool": tool, "input": {}}]
 
-        # 2) Deterministic clarifying questions for known ambiguities
-        # 2a) Counseling vs general appointments ambiguity
-        if _contains_any(user_text, ["appointment"]) and _contains_any(user_text, ["counsel", "therapy", "therapist"]):
+        # 3) Default: retrieve from KB
+        # Also deterministic clarify when user text suggests counseling + appointment w/o routing
+        if _contains_any(user_text, ["appointment", "appointments"]) and _contains_any(user_text, ["counsel", "therapy", "therapist"]):
             return [{"tool": "clarify", "input": {
                 "kind": "counseling_vs_medical_appt",
                 "question": "Do you want to schedule a **counseling** appointment or a **medical** appointment?",
                 "options": ["counseling", "medical"]
             }}]
 
-        # 3) Default: retrieve from KB
         return [{"tool": "retrieve", "input": {"query": user_text}}]
