@@ -1,8 +1,9 @@
 # DISCLAIMER = "I'm a campus assistant and not monitored 24/7. For emergencies call 911 or 988.\n"
-# File: app/answer/compose.py 
+# app/answer/compose.py
+from __future__ import annotations
 from typing import List, Dict
 
-# --- Templates (as provided) ---
+# --- Templates (your content kept) ---
 TEMPLATES = {
     "crisis": (
         "If you might be in danger or considering self-harm: Call 911 or 988 now. "
@@ -27,15 +28,15 @@ TEMPLATES = {
     ),
 }
 
-# --- One-time disclaimer copy (used by CLI on session start) ---
+# --- One-time disclaimer for session start (CLI prints once) ---
 DISCLAIMER_TEXT = (
-    "I'm a campus assistant and not monitored 24/7. For emergencies, call 911 or 988. \n"
+    "I'm an informational assistant for Retriever Integrated Health (RIH). "
+    "I don’t provide medical advice. In emergencies, call 911 or 988. "
+    "On campus, contact UMBC Police (410-455-5555)."
 )
-
 
 def render_template(key: str) -> str:
     return TEMPLATES.get(key, "I’ll point you to the right campus resource.")
-
 
 def compose_answer(query: str, chunks: List[Dict]) -> str:
     if not chunks:
@@ -49,36 +50,17 @@ def compose_answer(query: str, chunks: List[Dict]) -> str:
         url = c.get("url", "")
         text = c.get("text", "")[:220].rstrip()
         lines.append(f"• {title}: {text} ({url})")
-    return "
-".join(lines)
+    return "\n".join(lines)
 
-
-# --- Compatibility shims for legacy imports (keep CLI unchanged) ---
-
+# --- Legacy shims (keep old CLI imports working) ---
 def disclaimer() -> str:
-    """Return the standard one-time disclaimer string.
-    The CLI prints this exactly once per session; normal answers shouldn't include it.
-    """
     return DISCLAIMER_TEXT
 
-
 def from_chunks(chunks: List[Dict], *, query: str | None = None) -> str:
-    """Legacy name used by older CLI code.
-    Wraps compose_answer for a smooth migration.
-    """
     return compose_answer(query=query or "", chunks=chunks)
 
-
 def crisis_message() -> str:
-    """Legacy helper for crisis path."""
     return render_template("crisis")
 
-
 def template_for(key: str) -> str:
-    """Legacy helper that resolves a template key (e.g., 'title_ix')."""
     return render_template(key)
-
-
-
-
-
