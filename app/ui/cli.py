@@ -1,19 +1,19 @@
+# app/ui/cli.py
 from __future__ import annotations
 """
 RIH Assistant CLI (future-proof)
 - Prefers Agent/Dispatcher (agentic) if available.
 - Falls back to legacy route→template/RAG flow automatically.
 - Prints a neutral disclaimer once.
-- Keeps audit logging minimal and PII-free.
 
 Run:  python -m app.ui.cli
 """
 
 import os
 import sys
-from typing import Optional, Dict, Any
+from typing import Dict, Any
 
-# --- Agentic path (preferred) - Optional -----------------------------
+# --- Optional Agentic path (preferred if present) -----------------------------
 _HAS_AGENT = False
 _DISPATCHER = None
 try:
@@ -27,7 +27,6 @@ except Exception:
 from app.router.safety_router import route as legacy_route
 from app.retriever.retriever import retrieve
 from app.answer.compose import (
-    # legacy shims must exist in compose.py (we added them)
     from_chunks, crisis_message, template_for, disclaimer,
 )
 from app.ui.audit import log
@@ -47,28 +46,21 @@ def _respond_legacy(msg: str) -> str:
 
 
 def _respond_agentic(msg: str, *, debug_trace: bool = False) -> str:
-    """
-    Agentic pipeline: Dispatcher decides tools after the safety gate.
-    Falls back to legacy if something unexpected happens.
-    """
+    """Agentic pipeline with safe fallback to legacy."""
     if not _HAS_AGENT or _DISPATCHER is None:
         return _respond_legacy(msg)
-
     try:
         out: Dict[str, Any] = _DISPATCHER.respond(msg)
         text = out.get("text", "").strip()
         trace = out.get("trace", [])
-        # Optional trace printing for debugging (export RIH_DEBUG_TRACE=1)
         if debug_trace and trace:
             print("[trace]", trace, file=sys.stderr)
         if text:
             return text
-        # Defensive: if agent returned empty text, fallback
         return _respond_legacy(msg)
     except Exception as e:
-        # Never crash the CLI: log and fallback to legacy deterministic flow
         try:
-            log("agent_error", {"err": str(e).__class__ if hasattr(e, "__class__") else "Exception"})
+            log("agent_error", {"err": getattr(e, "__class__", type(e)).__name__})
         except Exception:
             pass
         return _respond_legacy(msg)
@@ -76,12 +68,8 @@ def _respond_agentic(msg: str, *, debug_trace: bool = False) -> str:
 
 def respond(msg: str) -> str:
     """
-    Stable entrypoint the rest of your code can import.
-    - Mode AUTO (default): try agentic first, then legacy fallback.
-    - Mode AGENT: force agentic only.
-    - Mode LEGACY: force legacy only.
-
-    Set via env var: RIH_MODE in {"AUTO", "AGENT", "LEGACY"}
+    Stable entrypoint.
+    Env RIH_MODE: AUTO (default) | AGENT | LEGACY
     """
     mode = (os.getenv("RIH_MODE") or "AUTO").upper()
     debug_trace = os.getenv("RIH_DEBUG_TRACE") == "1"
@@ -89,9 +77,7 @@ def respond(msg: str) -> str:
     if mode == "LEGACY":
         return _respond_legacy(msg)
     if mode == "AGENT":
-        # If agent unavailable, we still fallback to legacy so CLI never breaks.
         return _respond_agentic(msg, debug_trace=debug_trace)
-    # AUTO (default)
     return _respond_agentic(msg, debug_trace=debug_trace)
 
 
