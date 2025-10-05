@@ -2,6 +2,11 @@
 # Purpose: Load routing rules from safety/routing_matrix.csv (if present),
 # Otherwise fall back to safe built‑in defaults matching your
 # previous hardcoded patterns (including routing all 'harass*' → Title IX).
+
+# app/router/rules.py
+from __future__ import annotations
+# data-driven rules loader with safe defaults
+
 import csv
 import re
 from dataclasses import dataclass
@@ -10,10 +15,8 @@ from typing import Dict, List, Pattern, Tuple
 
 CSV_PATH = Path(__file__).resolve().parents[2] / "safety" / "routing_matrix.csv"
 
-# Word/phrase boundary pattern: allow flexible whitespace in phrases, avoid mid‑token matches
 BOUNDARY_WORD = r"(?<![A-Za-z0-9_]){p}(?![A-Za-z0-9_])"
 
-# Normalization for common misspellings / euphemisms
 NORMALIZE_MAP = {
     # Title IX / harassment variants
     "harrased": "harassed",
@@ -30,10 +33,11 @@ NORMALIZE_MAP = {
     "leave uni": "leave university",
 }
 
+
 @dataclass
 class Rule:
     category: str                 # urgent_safety | title_ix | harassment_hate | retention_withdraw | counseling
-    response_key: str             # maps to compose.py template key (e.g., "crisis", "title_ix")
+    response_key: str             # maps to compose template key ("crisis", "title_ix", etc.)
     patterns: List[Pattern]
     priority: int                 # lower = higher priority
 
@@ -51,7 +55,7 @@ class Rules:
             t = t.strip()
             if not t:
                 continue
-            esc = re.escape(t).replace("\\ ", "\\s+")  # flexible whitespace
+            esc = re.escape(t).replace(r"\ ", r"\s+")  # flexible whitespace
             pats.append(re.compile(BOUNDARY_WORD.format(p=esc), flags=re.IGNORECASE))
         return pats
 
@@ -83,7 +87,6 @@ class Rules:
             return True
 
     def _load_defaults(self) -> None:
-        # These match your previous safety_router.py behavior:
         SLANG_URGENCY = [r"\bkms\b", r"\bunalive\b"]
         PHRASES_URGENCY = [
             r"\bkill myself\b", r"\bsuicide\b", r"\bend it\b",
@@ -91,7 +94,7 @@ class Rules:
         ]
         TITLE_IX = [
             r"\bsex(ual)?\s*(assault|harass(ed|ment|ing)?|misconduct|coercion)\b",
-            r"\bharass(ed|ment|ing)?\b",   # per policy: generic harass → Title IX
+            r"\bharass(ed|ment|ing)?\b",  # generic harass → Title IX per policy
             r"\b(non\s*-?\s*consensual|nonconsensual)\b",
             r"\brape\b", r"\bstalk(ing)?\b",
         ]
@@ -118,12 +121,10 @@ class Rules:
             self._load_defaults()
 
     def match(self, text: str) -> Tuple[str | None, str | None]:
-        """Return (category, response_key) if matched else (None, None). Priority ascending."""
+        """Return (category, response_key) if matched else (None, None)."""
         t = self.normalize(text)
         for rule in sorted(self.by_category.values(), key=lambda r: r.priority):
             for pat in rule.patterns:
                 if pat.search(t):
                     return rule.category, rule.response_key
         return None, None
-
-
