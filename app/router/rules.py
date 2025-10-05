@@ -5,7 +5,7 @@
 
 # app/router/rules.py
 from __future__ import annotations
-# data-driven rules loader with safe defaults
+# data-driven rules loader with safe defaults + MERGE behavior
 
 import csv
 import re
@@ -66,27 +66,8 @@ class Rules:
             t = t.replace(wrong, right)
         return t
 
-    def _load_from_csv(self) -> bool:
-        if not self.csv_path.exists():
-            return False
-        with self.csv_path.open(newline='', encoding='utf-8') as f:
-            reader = csv.DictReader(f)
-            rows = list(reader)
-            if not rows:
-                return False
-            for row in rows:
-                category = (row.get("category") or "").strip()
-                if not category:
-                    continue
-                response_key = (row.get("response_key") or category).strip()
-                priority = int((row.get("priority") or 100))
-                raw_triggers = (row.get("example_triggers") or "").strip()
-                terms = [s.strip() for s in re.split(r"[|,]", raw_triggers) if s.strip()]
-                pats = self._compile_terms(terms)
-                self.by_category[category] = Rule(category, response_key, pats, priority)
-            return True
-
-    def _load_defaults(self) -> None:
+    def _defaults_dict(self) -> Dict[str, Rule]:
+        # Defaults mirror your policy (generic harass → Title IX)
         SLANG_URGENCY = [r"\bkms\b", r"\bunalive\b"]
         PHRASES_URGENCY = [
             r"\bkill myself\b", r"\bsuicide\b", r"\bend it\b",
@@ -94,7 +75,7 @@ class Rules:
         ]
         TITLE_IX = [
             r"\bsex(ual)?\s*(assault|harass(ed|ment|ing)?|misconduct|coercion)\b",
-            r"\bharass(ed|ment|ing)?\b",  # generic harass → Title IX per policy
+            r"\bharass(ed|ment|ing)?\b",
             r"\b(non\s*-?\s*consensual|nonconsensual)\b",
             r"\brape\b", r"\bstalk(ing)?\b",
         ]
@@ -106,19 +87,43 @@ class Rules:
         RETENTION = [r"\b(withdraw|transfer|drop\s?out|leave school|quit college)\b"]
         COUNSELING = [r"\b(counsel(ing)?|therapy|therapist|mental health|talk to (someone|a counselor))\b"]
 
-        defaults = {
-            "urgent_safety": ("crisis", SLANG_URGENCY + PHRASES_URGENCY, 1),
-            "title_ix": ("title_ix", TITLE_IX, 2),
-            "harassment_hate": ("conduct", CONDUCT, 3),
-            "retention_withdraw": ("retention", RETENTION, 4),
-            "counseling": ("counseling", COUNSELING, 5),
+        return {
+            "urgent_safety": Rule("urgent_safety", "crisis", [re.compile("|".join(SLANG_URGENCY + PHRASES_URGENCY), re.I)], 1),
+            "title_ix": Rule("title_ix", "title_ix", [re.compile("|".join(TITLE_IX), re.I)], 2),
+            "harassment_hate": Rule("harassment_hate", "conduct", [re.compile("|".join(CONDUCT), re.I)], 3),
+            "retention_withdraw": Rule("retention_withdraw", "retention", [re.compile("|".join(RETENTION), re.I)], 4),
+            "counseling": Rule("counseling", "counseling", [re.compile("|".join(COUNSELING), re.I)], 5),
         }
-        for cat, (resp, terms, prio) in defaults.items():
-            self.by_category[cat] = Rule(cat, resp, [re.compile("|".join(terms), re.I)], prio)
+
+    def _load_from_csv(self) -> Dict[str, Rule]:
+        rules: Dict[str, Rule] = {}
+        if not self.csv_path.exists():
+            return rules
+        with self.csv_path.open(newline='', encoding='utf-8') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                category = (row.get("category") or "").strip()
+                if not category:
+                    continue
+                response_key = (row.get("response_key") or category).strip()
+                try:
+                    priority = int((row.get("priority") or 100))
+                except ValueError:
+                    priority = 100
+                raw_triggers = (row.get("example_triggers") or "").strip()
+                terms = [s.strip() for s in re.split(r"[|,]", raw_triggers) if s.strip()]
+                pats = self._compile_terms(terms) if terms else []
+                if pats:
+                    rules[category] = Rule(category, response_key, pats, priority)
+        return rules
 
     def _load(self) -> None:
-        if not self._load_from_csv():
-            self._load_defaults()
+        # NEW: merge CSV rules (if any) with defaults for any missing categories
+        defaults = self._defaults_dict()
+        csv_rules = self._load_from_csv()  # may be partial
+        merged = defaults.copy()
+        merged.update(csv_rules)  # CSV overrides specific categories; others keep defaults
+        self.by_category = merged
 
     def match(self, text: str) -> Tuple[str | None, str | None]:
         """Return (category, response_key) if matched else (None, None)."""
