@@ -1,9 +1,8 @@
-# DISCLAIMER = "I'm a campus assistant and not monitored 24/7. For emergencies call 911 or 988.\n"
 # app/answer/compose.py
 from __future__ import annotations
 from typing import List, Dict
 
-# --- Templates (your content kept) ---
+# --- Templates (unchanged content) ---
 TEMPLATES = {
     "crisis": (
         "If you might be in danger or considering self-harm: Call 911 or 988 now. "
@@ -44,12 +43,25 @@ def compose_answer(query: str, chunks: List[Dict]) -> str:
             "I couldn’t find a specific page in the knowledge base yet. "
             "Try rephrasing or ask about hours, appointments, billing, or counseling."
         )
+
+    # numbered bullets + Sources section (titles + URLs)
     lines = ["Here’s what I found:"]
-    for c in chunks[:3]:
+    sources: List[str] = []
+    for i, c in enumerate(chunks[:3], start=1):
         title = c.get("title", "RIH")
         url = c.get("url", "")
-        text = c.get("text", "")[:220].rstrip()
-        lines.append(f"• {title}: {text} ({url})")
+        text = (c.get("text", "") or "").strip()
+        snippet = text[:220].rstrip()
+        lines.append(f"[{i}] {title}: {snippet}")
+        if url:
+            sources.append(f"[{i}] {title} ({url})")
+        else:
+            sources.append(f"[{i}] {title}")
+
+    if sources:
+        lines.append("\nSources:")
+        lines.extend(sources)
+
     return "\n".join(lines)
 
 # --- Legacy shims (keep old CLI imports working) ---
