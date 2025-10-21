@@ -76,12 +76,13 @@ class Dispatcher:
         if r and r.auto_reply_key == "crisis":
             return {"text": crisis_message(), "trace": self.trace}
 
-        # === IMPORTANT CHANGE: don't short-circuit on counseling + appointment-ish phrasing ===
-        lower = (user_text or "").lower()
+                # === IMPORTANT CHANGE: do not short-circuit counseling; always run planner for it ===
+        # Pull both level and category from the router result (r may be a dict-like)
+        route_level = getattr(r, "level", None) if r else None
+        route_category = getattr(r, "category", None) if r else None
+        auto_key = getattr(r, "auto_reply_key", None) if r else None
 
-        # Pull both level and category from the router result
-        route_level = getattr(r, "level", None)
-        route_category = getattr(r, "category", None)
+        lower = (user_text or "").lower()
 
         # EDA-based set of appointment-like words (mirrors planner.py)
         _APPTISH = {
@@ -89,12 +90,17 @@ class Dispatcher:
             "session", "sessions", "visit", "intake", "reschedule", "cancel",
             "availability", "walk-in", "same-day"
         }
-        counseling_and_apptish = (route_category == "counseling") and any(w in lower for w in _APPTISH)
+        apptish = any(w in lower for w in _APPTISH)
 
-        if r and not counseling_and_apptish:
-            # Title IX / Conduct / Retention / pure Counseling (no appt-ish phrasing) short-circuit as templates
-            return {"text": template_for(r.auto_reply_key), "trace": self.trace}
-        # ======================================================================
+        # Only short-circuit *non-counseling* lanes to policy templates.
+        # Counseling should go through the planner (so Clarify → Retrieve can run).
+        if r and route_category in {"title_ix", "harassment_hate", "retention_withdraw"}:
+            return {"text": template_for(auto_key), "trace": self.trace}
+
+        # If you *really* want to keep some counseling autocases as templates, you could
+        # allow short-circuit only when it's clearly not appointment-like:
+        # if r and route_category == "counseling" and not apptish:
+        #     return {"text": template_for(auto_key), "trace": self.trace}
 
         # ======================================================================
 
