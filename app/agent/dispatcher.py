@@ -28,12 +28,10 @@ def _exec_tool(tool: str, user_text: str, step_input: Dict[str, Any]) -> Tuple[s
     # Fallback: try retrieve to be helpful
     return _run_retrieve(user_text)
 
-# simple heuristic used if retrieve returns 0 hits for appointment-like queries
 def _should_auto_clarify(user_text: str) -> bool:
     t = (user_text or "").lower()
     if "appointment" not in t:
         return False
-    # no explicit modality terms -> likely ambiguous
     if not any(w in t for w in ("medical", "doctor", "nurse", "immunization", "vaccine", "shot",
                                 "counseling", "counselling", "therapy", "therapist")):
         return True
@@ -43,12 +41,9 @@ class Dispatcher:
     """
     Respond flow:
       1) Safety router (non-bypassable)
-      2) Choose planner:
-         - RIH_PLANNER=LLM  -> try LLMPlanner (single-step); else rule-based
-         - If LLM fails      -> fallback to rule-based Planner
-      3) Execute planned steps (Phase 4b: up to TWO steps)
-         - If a single-step 'retrieve' yields 0 hits and looks ambiguous,
-           auto-insert Clarify -> Retrieve as a recovery plan.
+      2) Planner: LLM (env RIH_PLANNER=LLM) or rule-based; fallback to rule on errors
+      3) Execute up to TWO planned steps (Phase 4b)
+         - Special-case: if single-step retrieve yields 0 hits and looks ambiguous, auto Clarify->Retrieve.
     """
 
     def __init__(self, *, llm_fn=None, force_mode: str | None = None):
@@ -76,32 +71,39 @@ class Dispatcher:
 
         # 1) Safety gate
         r = safety_route(user_text)
-        self.trace.append({"event": "route", "level": getattr(r, "level", None)})
+        route_level = getattr(r, "level", None)
+        self.trace.append({"event": "route", "level": route_level})
         if r and r.auto_reply_key == "crisis":
             return {"text": crisis_message(), "trace": self.trace}
-        if r:
+
+        # === IMPORTANT CHANGE: don't short-circuit on counseling+appointment ===
+        lower = (user_text or "").lower()
+        counseling_and_appt = (route_level == "counseling") and ("appointment" in lower)
+        if r and not counseling_and_appt:
+            # Title IX / Conduct / Retention / pure Counseling (no 'appointment') short-circuit as templates
             return {"text": template_for(r.auto_reply_key), "trace": self.trace}
+        # ======================================================================
 
         # 2) planner selection
         use_llm = (self.mode == "LLM")
         if use_llm:
             try:
                 planner = self._get_llm_planner()
-                steps = planner.plan(route_level=None, user_text=user_text)
+                steps = planner.plan(route_level=route_level, user_text=user_text)
                 self.trace.append({"event": "plan", "planner": "llm", "steps": steps})
             except Exception as e:
                 rp = self._get_rule_planner()
-                steps = rp.plan(route_level=None, user_text=user_text)
+                steps = rp.plan(route_level=route_level, user_text=user_text)
                 self.trace.append({"event": "plan", "planner": "rule_fallback", "error": str(e), "steps": steps})
         else:
             rp = self._get_rule_planner()
-            steps = rp.plan(route_level=None, user_text=user_text)
+            steps = rp.plan(route_level=route_level, user_text=user_text)
             self.trace.append({"event": "plan", "planner": "rule", "steps": steps})
 
         # 3) Execute up to TWO steps
         out_parts: List[str] = []
         executed = 0
-        for step in steps[:2]:  # hard cap at 2 steps
+        for step in steps[:2]:
             tool = step.get("tool", "retrieve")
             inp = step.get("input", {}) if isinstance(step.get("input", {}), dict) else {}
             text, hits = _exec_tool(tool, user_text, inp)
@@ -109,16 +111,15 @@ class Dispatcher:
             self.trace.append({"event": "tool", "name": tool, "hits": hits if hits >= 0 else None})
             executed += 1
 
-            # If the first step was a single 'retrieve' with 0 hits and it's ambiguous, auto-clarify then re-retrieve
+            # auto-recovery: first step was retrieve with 0 hits and looks ambiguous
             if executed == 1 and tool == "retrieve" and hits == 0 and _should_auto_clarify(user_text):
                 clar = _run_clarify(user_text)
                 out_parts.append(clar)
                 self.trace.append({"event": "tool", "name": "clarify", "auto": True})
-                # second retrieve attempt (same query; deterministic)
                 text2, hits2 = _exec_tool("retrieve", user_text, {"query": user_text})
                 out_parts.append(text2)
                 self.trace.append({"event": "tool", "name": "retrieve", "retry": True, "hits": hits2})
-                break  # we've done our two-step recovery
+                break
 
         final_text = "\n\n".join([p for p in out_parts if p])
         return {"text": final_text, "trace": self.trace}
