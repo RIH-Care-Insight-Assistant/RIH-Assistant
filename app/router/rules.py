@@ -20,6 +20,7 @@ BOUNDARY_WORD = r"(?<![A-Za-z0-9_]){p}(?![A-Za-z0-9_])"
 NORMALIZE_MAP = {
     # Title IX / harassment variants
     "harrased": "harassed",
+    "harrassed": "harassed",
     "harrasment": "harassment",
     "harrassment": "harassment",
     # Safety variants
