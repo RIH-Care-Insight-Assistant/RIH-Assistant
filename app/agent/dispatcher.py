@@ -76,12 +76,26 @@ class Dispatcher:
         if r and r.auto_reply_key == "crisis":
             return {"text": crisis_message(), "trace": self.trace}
 
-        # === IMPORTANT CHANGE: don't short-circuit on counseling+appointment ===
+        # === IMPORTANT CHANGE: don't short-circuit on counseling + appointment-ish phrasing ===
         lower = (user_text or "").lower()
-        counseling_and_appt = (route_level == "counseling") and ("appointment" in lower)
-        if r and not counseling_and_appt:
-            # Title IX / Conduct / Retention / pure Counseling (no 'appointment') short-circuit as templates
+
+        # Pull both level and category from the router result
+        route_level = getattr(r, "level", None)
+        route_category = getattr(r, "category", None)
+
+        # EDA-based set of appointment-like words (mirrors planner.py)
+        _APPTISH = {
+            "appointment", "appointments", "schedule", "scheduling", "book", "booking",
+            "session", "sessions", "visit", "intake", "reschedule", "cancel",
+            "availability", "walk-in", "same-day"
+        }
+        counseling_and_apptish = (route_category == "counseling") and any(w in lower for w in _APPTISH)
+
+        if r and not counseling_and_apptish:
+            # Title IX / Conduct / Retention / pure Counseling (no appt-ish phrasing) short-circuit as templates
             return {"text": template_for(r.auto_reply_key), "trace": self.trace}
+        # ======================================================================
+
         # ======================================================================
 
         # 2) planner selection
