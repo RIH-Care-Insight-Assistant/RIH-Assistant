@@ -1,57 +1,65 @@
 from __future__ import annotations
 import os
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Tuple
 
 from ..router.safety_router import route as safety_route
 from ..answer.compose import crisis_message, template_for, from_chunks
 from ..retriever.retriever import retrieve
 
-# Tools implemented inline for simplicity; they mirror your tool wrappers.
-def _run_retrieve(user_text: str) -> str:
+# --- tool runners ---
+def _run_retrieve(user_text: str) -> Tuple[str, int]:
     hits = retrieve(user_text, top_k=3)
-    return from_chunks(hits, query=user_text)
+    text = from_chunks(hits, query=user_text)
+    return text, len(hits)
 
-def _run_clarify(user_text: str) -> str:
-    # Deterministic clarifier used in P2 tests
+def _run_clarify(_: str) -> str:
     return ("Just to clarify—do you mean a counseling appointment or a medical appointment? "
             "If counseling, say 'counseling appointment'. If medical, say 'medical appointment'.")
 
-def _exec_tool(tool: str, user_text: str, step_input: Dict[str, Any]) -> str:
+def _exec_tool(tool: str, user_text: str, step_input: Dict[str, Any]) -> Tuple[str, int]:
     t = (tool or "").lower()
     if t == "retrieve":
         q = step_input.get("query", user_text)
         return _run_retrieve(q)
     if t in {"counseling", "title_ix", "conduct", "retention"}:
-        return template_for(t)
+        return template_for(t), -1
     if t == "clarify":
-        return _run_clarify(user_text)
+        return _run_clarify(user_text), -1
     # Fallback: try retrieve to be helpful
     return _run_retrieve(user_text)
+
+# simple heuristic used if retrieve returns 0 hits for appointment-like queries
+def _should_auto_clarify(user_text: str) -> bool:
+    t = (user_text or "").lower()
+    if "appointment" not in t:
+        return False
+    # no explicit modality terms -> likely ambiguous
+    if not any(w in t for w in ("medical", "doctor", "nurse", "immunization", "vaccine", "shot",
+                                "counseling", "counselling", "therapy", "therapist")):
+        return True
+    return False
 
 class Dispatcher:
     """
     Respond flow:
       1) Safety router (non-bypassable)
       2) Choose planner:
-         - RIH_PLANNER=LLM  -> try LLMPlanner (single-step)
-         - else              -> rule-based Planner from app.agent.planner
+         - RIH_PLANNER=LLM  -> try LLMPlanner (single-step); else rule-based
          - If LLM fails      -> fallback to rule-based Planner
-      3) Execute the planned single step (Phase 4a)
+      3) Execute planned steps (Phase 4b: up to TWO steps)
+         - If a single-step 'retrieve' yields 0 hits and looks ambiguous,
+           auto-insert Clarify -> Retrieve as a recovery plan.
     """
 
     def __init__(self, *, llm_fn=None, force_mode: str | None = None):
         self.trace: List[Dict[str, Any]] = []
         self.mode = (force_mode or os.getenv("RIH_PLANNER", "")).upper().strip()
         self._llm_fn = llm_fn
-
-        # Lazy planner setup; we import here to avoid circulars if tests patch env.
         self._rule_planner = None
         self._llm_planner = None
 
-    # --- internal helpers ---
     def _get_rule_planner(self):
         if self._rule_planner is None:
-            # Your existing rule-based planner
             from .planner import Planner as RulePlanner
             self._rule_planner = RulePlanner()
         return self._rule_planner
@@ -63,9 +71,9 @@ class Dispatcher:
             self._llm_planner = LLMPlanner(allowed_tools=allowed, llm_fn=self._llm_fn)
         return self._llm_planner
 
-    # --- public API ---
     def respond(self, user_text: str) -> Dict[str, Any]:
         self.trace = []
+
         # 1) Safety gate
         r = safety_route(user_text)
         self.trace.append({"event": "route", "level": getattr(r, "level", None)})
@@ -74,15 +82,14 @@ class Dispatcher:
         if r:
             return {"text": template_for(r.auto_reply_key), "trace": self.trace}
 
-        # 2) Pick planner
-        planner = None
-        if self.mode == "LLM":
+        # 2) planner selection
+        use_llm = (self.mode == "LLM")
+        if use_llm:
             try:
                 planner = self._get_llm_planner()
                 steps = planner.plan(route_level=None, user_text=user_text)
                 self.trace.append({"event": "plan", "planner": "llm", "steps": steps})
             except Exception as e:
-                # Fallback to rule planner
                 rp = self._get_rule_planner()
                 steps = rp.plan(route_level=None, user_text=user_text)
                 self.trace.append({"event": "plan", "planner": "rule_fallback", "error": str(e), "steps": steps})
@@ -91,10 +98,27 @@ class Dispatcher:
             steps = rp.plan(route_level=None, user_text=user_text)
             self.trace.append({"event": "plan", "planner": "rule", "steps": steps})
 
-        # 3) Execute single planned step (Phase 4a)
-        step = steps[0] if steps else {"tool": "retrieve", "input": {"query": user_text}}
-        tool = step.get("tool", "retrieve")
-        inp = step.get("input", {}) if isinstance(step.get("input", {}), dict) else {}
-        text = _exec_tool(tool, user_text, inp)
-        self.trace.append({"event": "tool", "name": tool})
-        return {"text": text, "trace": self.trace}
+        # 3) Execute up to TWO steps
+        out_parts: List[str] = []
+        executed = 0
+        for step in steps[:2]:  # hard cap at 2 steps
+            tool = step.get("tool", "retrieve")
+            inp = step.get("input", {}) if isinstance(step.get("input", {}), dict) else {}
+            text, hits = _exec_tool(tool, user_text, inp)
+            out_parts.append(text)
+            self.trace.append({"event": "tool", "name": tool, "hits": hits if hits >= 0 else None})
+            executed += 1
+
+            # If the first step was a single 'retrieve' with 0 hits and it's ambiguous, auto-clarify then re-retrieve
+            if executed == 1 and tool == "retrieve" and hits == 0 and _should_auto_clarify(user_text):
+                clar = _run_clarify(user_text)
+                out_parts.append(clar)
+                self.trace.append({"event": "tool", "name": "clarify", "auto": True})
+                # second retrieve attempt (same query; deterministic)
+                text2, hits2 = _exec_tool("retrieve", user_text, {"query": user_text})
+                out_parts.append(text2)
+                self.trace.append({"event": "tool", "name": "retrieve", "retry": True, "hits": hits2})
+                break  # we've done our two-step recovery
+
+        final_text = "\n\n".join([p for p in out_parts if p])
+        return {"text": final_text, "trace": self.trace}
