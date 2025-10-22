@@ -2,12 +2,14 @@
 from __future__ import annotations
 import sys, pathlib
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path: sys.path.insert(0, str(ROOT))
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 from app.router.safety_router import route
 
-# (query, expected_category)
+# (query, expected_auto_reply_key)
 CASES = [
-    # Counseling — canonical triggers we actually added to CSV
+    # Counseling — must hit counseling auto_reply_key
     ("I want to join a support group", "counseling"),
     ("Is there a counseling workshop this month?", "counseling"),
     ("I need to reschedule my counseling session", "counseling"),
@@ -15,13 +17,13 @@ CASES = [
 
     # Title IX / Conduct / Retention
     ("report non-consensual contact", "title_ix"),
-    ("this is a bias incident in class", "harassment_hate"),
-    ("I was harrassed in my dorm", "harassment_hate"),  # normalization: harrassed -> harassed
-    ("I need a leave of absence", "retention_withdraw"),
-    ("withdraw from classes", "retention_withdraw"),
+    ("this is a bias incident in class", "conduct"),   # harassment_hate lane → conduct template
+    ("I was harrassed in my dorm", "conduct"),         # normalization: harrassed -> harassed
+    ("I need a leave of absence", "retention"),
+    ("withdraw from classes", "retention"),
 
     # Urgent safety
-    ("I want to kms", "urgent_safety"),  # slang should normalize to crisis lane
+    ("I want to kms", "crisis"),  # slang -> crisis template
 
     # Controls that should NOT route (expect None)
     ("what are library hours?", None),
@@ -30,11 +32,12 @@ CASES = [
 
 def main():
     ok = True
-    print("=== Routing Sanity Check (category) ===")
+    print("=== Routing Sanity Check (auto_reply_key) ===")
     for text, expected in CASES:
         r = route(text)
-        got = getattr(r, "category", None) if r else None
-        print(f"{text!r:45} -> {got!r}  (expected: {expected!r})")
+        got = getattr(r, "auto_reply_key", None) if r else None
+        lvl = getattr(r, "level", None) if r else None
+        print(f"{text!r:45} -> key={got!r}, level={lvl!r}  (expected key: {expected!r})")
         if got != expected:
             ok = False
     if not ok:
