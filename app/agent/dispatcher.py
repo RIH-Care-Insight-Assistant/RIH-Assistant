@@ -68,43 +68,34 @@ class Dispatcher:
 
     def respond(self, user_text: str) -> Dict[str, Any]:
         self.trace = []
-
-        # 1) Safety gate
+    
+        # 1) Safety gate (non-bypassable)
         r = safety_route(user_text)
-        route_level = getattr(r, "level", None)
+        route_level = getattr(r, "level", None) if r else None          # e.g., "counseling", "title_ix", "retention_withdraw", "urgent_safety"
+        auto_key    = getattr(r, "auto_reply_key", None) if r else None  # e.g., "counseling", "title_ix", "retention", "crisis"
         self.trace.append({"event": "route", "level": route_level})
-        if r and r.auto_reply_key == "crisis":
+    
+        if r and auto_key == "crisis":
             return {"text": crisis_message(), "trace": self.trace}
-
-                # === IMPORTANT CHANGE: do not short-circuit counseling; always run planner for it ===
-        # Pull both level and category from the router result (r may be a dict-like)
-        route_level = getattr(r, "level", None) if r else None
-        route_category = getattr(r, "category", None) if r else None
-        auto_key = getattr(r, "auto_reply_key", None) if r else None
-
+    
+        # 1.5) Short-circuit rules:
+        # We only short-circuit to templates for non-counseling lanes OR for counseling
+        # when the query does NOT look like scheduling/group/workshop intent.
         lower = (user_text or "").lower()
-
-        # EDA-based set of appointment-like words (mirrors planner.py)
-        _APPTISH = {
-            "appointment", "appointments", "schedule", "scheduling", "book", "booking",
-            "session", "sessions", "visit", "intake", "reschedule", "cancel",
-            "availability", "walk-in", "same-day"
-        }
-        apptish = any(w in lower for w in _APPTISH)
-
-        # Only short-circuit *non-counseling* lanes to policy templates.
-        # Counseling should go through the planner (so Clarify → Retrieve can run).
-        if r and route_category in {"title_ix", "harassment_hate", "retention_withdraw"}:
+    
+        # Appointment/group/workshop markers → we want planner+retriever (not template)
+        _APPT_OR_GROUP_MARKERS = (
+            "appointment", "appointments", "schedule", "scheduling",
+            "reschedule", "cancel", "session", "sessions",
+            "workshop", "support group", "group counseling", "groups"
+        )
+        counseling_needs_plan = (route_level == "counseling") and any(m in lower for m in _APPT_OR_GROUP_MARKERS)
+    
+        if r and not counseling_needs_plan:
+            # Title IX / Conduct / Retention, and generic Counseling (no markers) → templates
             return {"text": template_for(auto_key), "trace": self.trace}
-
-        # If you *really* want to keep some counseling autocases as templates, you could
-        # allow short-circuit only when it's clearly not appointment-like:
-        # if r and route_category == "counseling" and not apptish:
-        #     return {"text": template_for(auto_key), "trace": self.trace}
-
-        # ======================================================================
-
-        # 2) planner selection
+    
+        # 2) Planner selection
         use_llm = (self.mode == "LLM")
         if use_llm:
             try:
@@ -119,7 +110,7 @@ class Dispatcher:
             rp = self._get_rule_planner()
             steps = rp.plan(route_level=route_level, user_text=user_text)
             self.trace.append({"event": "plan", "planner": "rule", "steps": steps})
-
+    
         # 3) Execute up to TWO steps
         out_parts: List[str] = []
         executed = 0
@@ -130,8 +121,8 @@ class Dispatcher:
             out_parts.append(text)
             self.trace.append({"event": "tool", "name": tool, "hits": hits if hits >= 0 else None})
             executed += 1
-
-            # auto-recovery: first step was retrieve with 0 hits and looks ambiguous
+    
+            # Auto-recovery: first step was retrieve with 0 hits and looks ambiguous → Clarify → Retrieve
             if executed == 1 and tool == "retrieve" and hits == 0 and _should_auto_clarify(user_text):
                 clar = _run_clarify(user_text)
                 out_parts.append(clar)
@@ -140,6 +131,6 @@ class Dispatcher:
                 out_parts.append(text2)
                 self.trace.append({"event": "tool", "name": "retrieve", "retry": True, "hits": hits2})
                 break
-
+    
         final_text = "\n\n".join([p for p in out_parts if p])
         return {"text": final_text, "trace": self.trace}
