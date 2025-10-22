@@ -18,7 +18,7 @@ CASES = [
     # Title IX / Conduct / Retention
     ("report non-consensual contact", "title_ix"),
     ("this is a bias incident in class", "conduct"),   # harassment_hate lane → conduct template
-    ("I was harrassed in my dorm", "conduct"),         # normalization: harrassed -> harassed
+    ("I was harrassed in my dorm", ""title_ix""),         # normalization: harrassed -> harassed
     ("I need a leave of absence", "retention"),
     ("withdraw from classes", "retention"),
 
