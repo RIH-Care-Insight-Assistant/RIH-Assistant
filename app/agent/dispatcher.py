@@ -78,12 +78,11 @@ class Dispatcher:
         if r and auto_key == "crisis":
             return {"text": crisis_message(), "trace": self.trace}
     
-        # 1.5) Short-circuit rules:
-        # We only short-circuit to templates for non-counseling lanes OR for counseling
-        # when the query does NOT look like scheduling/group/workshop intent.
+        # 1.5) Decide whether to short-circuit to a template or run planner+retriever
         lower = (user_text or "").lower()
     
-        # Appointment/group/workshop markers → we want planner+retriever (not template)
+        # If the user is clearly asking about appointments/scheduling OR groups/workshops,
+        # we want planner+retriever (so they get Sources), not a static template.
         _APPT_OR_GROUP_MARKERS = (
             "appointment", "appointments", "schedule", "scheduling",
             "reschedule", "cancel", "session", "sessions",
@@ -91,8 +90,12 @@ class Dispatcher:
         )
         counseling_needs_plan = (route_level == "counseling") and any(m in lower for m in _APPT_OR_GROUP_MARKERS)
     
-        if r and not counseling_needs_plan:
-            # Title IX / Conduct / Retention, and generic Counseling (no markers) → templates
+        # Short-circuit rules:
+        # - Non-counseling lanes → templates
+        # - Counseling lane → template ONLY when it *doesn't* look like scheduling/group/workshop intent
+        if r and (
+            (route_level != "counseling") or (route_level == "counseling" and not counseling_needs_plan)
+        ):
             return {"text": template_for(auto_key), "trace": self.trace}
     
         # 2) Planner selection
