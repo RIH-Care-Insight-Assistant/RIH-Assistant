@@ -12,7 +12,6 @@ We monkeypatch ResponseEnhancer inside dispatcher to:
 import importlib
 import sys
 
-
 MODULE = "app.agent.dispatcher"
 
 
@@ -23,27 +22,32 @@ def reload_dispatcher():
 
 
 def test_dispatcher_uses_enhancer_when_it_changes_text(monkeypatch):
-    # Reload to ensure a clean module state
+    # Load a clean dispatcher module
     dispatcher_mod = reload_dispatcher()
 
     calls = {"count": 0}
 
     class FakeEnhancer:
         def __init__(self):
-            pass
+            # Pretend we are "enabled"
+            self.enabled = True
 
         def enhance(self, text, context):
-            # Record that we were called and that user_text is passed through
+            # Record that we were called and that user_text is passed
             calls["count"] += 1
             assert "user_text" in context
             # Simulate a safe enhancement
             return text + " [EH]"
 
-    # Patch the enhancer used by Dispatcher
-    monkeypatch.setattr(dispatcher_mod, "ResponseEnhancer", FakeEnhancer, raising=True)
+    # Patch ResponseEnhancer used by Dispatcher.__init__
+    monkeypatch.setattr(
+        dispatcher_mod,
+        "ResponseEnhancer",
+        FakeEnhancer,
+        raising=True,
+    )
 
-    # Reload once more so Dispatcher.__init__ picks up patched ResponseEnhancer
-    dispatcher_mod = reload_dispatcher()
+    # Now Dispatcher will instantiate FakeEnhancer
     Dispatcher = dispatcher_mod.Dispatcher
 
     d = Dispatcher(force_mode="RULE")
@@ -52,7 +56,7 @@ def test_dispatcher_uses_enhancer_when_it_changes_text(monkeypatch):
     assert "text" in out
     assert out["text"].endswith(" [EH]")
     assert calls["count"] >= 1
-    # Ensure 'enhance' event is recorded when text actually changed
+    # Ensure 'enhance' event recorded when text actually changed
     assert any(e.get("event") == "enhance" for e in out["trace"])
 
 
@@ -61,20 +65,23 @@ def test_dispatcher_fails_closed_if_enhancer_errors(monkeypatch):
 
     class BoomEnhancer:
         def __init__(self):
-            pass
+            self.enabled = True
 
         def enhance(self, text, context):
+            # Simulate unexpected failure inside enhancer
             raise RuntimeError("boom")
 
-    monkeypatch.setattr(dispatcher_mod, "ResponseEnhancer", BoomEnhancer, raising=True)
+    monkeypatch.setattr(
+        dispatcher_mod,
+        "ResponseEnhancer",
+        BoomEnhancer,
+        raising=True,
+    )
 
-    # Reload so Dispatcher uses BoomEnhancer
-    dispatcher_mod = reload_dispatcher()
     Dispatcher = dispatcher_mod.Dispatcher
-
     d = Dispatcher(force_mode="RULE")
 
-    # This MUST NOT raise, even though enhancer explodes internally.
+    # Must NOT raise; dispatcher should ignore enhancer failure
     out = d.respond("How do I book a counseling appointment?")
 
     assert "text" in out
