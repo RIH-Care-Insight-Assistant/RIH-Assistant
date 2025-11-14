@@ -9,7 +9,6 @@ from .response_enhancer import ResponseEnhancer  # Phase 6: optional safe enhanc
 from ..tools.clarify_detector import ClarifyDetector  # Phase 6 (opt-in)
 
 
-
 # --- tool runners ---
 def _run_retrieve(user_text: str) -> Tuple[str, int]:
     hits = retrieve(user_text, top_k=3)
@@ -38,6 +37,10 @@ def _exec_tool(tool: str, user_text: str, step_input: Dict[str, Any]) -> Tuple[s
 
 
 def _should_auto_clarify(user_text: str) -> bool:
+    """
+    Legacy heuristic (Phase 5) for appointment ambiguity.
+    Still used as a fallback when Clarify v2 is not enabled.
+    """
     t = (user_text or "").lower()
     if "appointment" not in t:
         return False
@@ -67,7 +70,7 @@ class Dispatcher:
       2) Planner: LLM (env RIH_PLANNER=LLM) or rule-based; fallback to rule on errors
       3) Execute up to TWO planned steps
          - Special-case: if single-step retrieve yields 0 hits and looks ambiguous,
-           auto Clarify -> Retrieve.
+           auto Clarify -> Retrieve (Clarify v2 if enabled, else legacy).
       4) Phase 6: Optionally run ResponseEnhancer (safe, fail-closed).
     """
 
@@ -80,6 +83,12 @@ class Dispatcher:
 
         # Phase 6: Response enhancer (safe by default; no-op if disabled)
         self._enhancer = ResponseEnhancer()
+
+        # Phase 6: Clarify v2 (opt-in via env CLARIFY_V2=true)
+        self._clarify_v2_enabled = (
+            os.getenv("CLARIFY_V2", "false").lower().strip() == "true"
+        )
+        self._clarify_detector = ClarifyDetector() if self._clarify_v2_enabled else None
 
     def _get_rule_planner(self):
         if self._rule_planner is None:
@@ -178,12 +187,19 @@ class Dispatcher:
             )
             executed += 1
 
+            # Helper: choose clarify logic (v2 if enabled, else legacy)
+            def _decide_clarify(msg: str) -> bool:
+                if self._clarify_v2_enabled and self._clarify_detector is not None:
+                    flags = self._clarify_detector.should_clarify(msg)
+                    return bool(flags.get("consider"))
+                return _should_auto_clarify(msg)
+
             # Auto-recovery: first step was retrieve with 0 hits and looks ambiguous → Clarify → Retrieve
             if (
                 executed == 1
                 and tool == "retrieve"
                 and hits == 0
-                and _should_auto_clarify(user_text)
+                and _decide_clarify(user_text)
             ):
                 clar = _run_clarify(user_text)
                 out_parts.append(clar)
