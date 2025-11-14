@@ -6,6 +6,8 @@ from ..router.safety_router import route as safety_route
 from ..answer.compose import crisis_message, template_for, from_chunks
 from ..retriever.retriever import retrieve
 from .response_enhancer import ResponseEnhancer  # Phase 6: optional safe enhancer
+from ..tools.clarify_detector import ClarifyDetector  # Phase 6 (opt-in)
+
 
 
 # --- tool runners ---
