@@ -133,6 +133,8 @@ class Dispatcher:
             "support group",
             "group counseling",
             "groups",
+            "availability",
+            "available", 
         )
         counseling_needs_plan = (route_level == "counseling") and any(
             m in lower for m in _APPT_OR_GROUP_MARKERS
