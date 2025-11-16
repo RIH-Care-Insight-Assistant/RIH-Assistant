@@ -85,15 +85,25 @@ class SafeStrandsAgent:
         self._base_url = os.getenv("STRANDS_BASE_URL", "").strip()
         self._api_key = os.getenv("STRANDS_API_KEY", "").strip()
 
-        # Enabled only if env flag + HTTP config present
-        self.enabled = bool(env_flag and self._base_url and self._api_key)
+                # Enabled if:
+        # - STRANDS_ENABLED=true AND
+        #   (HTTP config is present OR strands SDK is available).
+        self.enabled = False
+        if env_flag:
+            if self._base_url and self._api_key:
+                # HTTP-only or HTTP+SDK
+                self.enabled = True
+            elif STRANDS_AVAILABLE:
+                # SDK-only mode (used in tests / some environments)
+                self.enabled = True
 
         if env_flag and not self.enabled:
             logger.warning(
-                "STRANDS_ENABLED=true but STRANDS_BASE_URL or STRANDS_API_KEY "
-                "is missing; SafeStrandsAgent '%s' disabled.",
+                "STRANDS_ENABLED=true but neither HTTP config (STRANDS_BASE_URL + STRANDS_API_KEY) "
+                "nor strands SDK is available; SafeStrandsAgent '%s' disabled.",
                 name,
             )
+
 
         # Optional: try to initialize SDK agent if available (not required)
         if self.enabled and STRANDS_AVAILABLE and Agent is not None:
