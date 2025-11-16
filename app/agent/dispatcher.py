@@ -7,6 +7,7 @@ from ..answer.compose import crisis_message, template_for, from_chunks
 from ..retriever.retriever import retrieve
 from .response_enhancer import ResponseEnhancer  # Phase 6: optional safe enhancer
 from ..tools.clarify_detector import ClarifyDetector  # Phase 6 (opt-in)
+from .misspelling_corrector import MisspellingCorrector  # Phase 6: opt-in spelling fix
 
 
 # --- tool runners ---
@@ -67,11 +68,12 @@ class Dispatcher:
     """
     Respond flow:
       1) Safety router (non-bypassable)
-      2) Planner: LLM (env RIH_PLANNER=LLM) or rule-based; fallback to rule on errors
-      3) Execute up to TWO planned steps
+      2) Optional spelling correction (Phase 6, opt-in)
+      3) Planner: LLM (env RIH_PLANNER=LLM) or rule-based; fallback to rule on errors
+      4) Execute up to TWO planned steps
          - Special-case: if single-step retrieve yields 0 hits and looks ambiguous,
            auto Clarify -> Retrieve (Clarify v2 if enabled, else legacy).
-      4) Phase 6: Optionally run ResponseEnhancer (safe, fail-closed).
+      5) Phase 6: Optionally run ResponseEnhancer (safe, fail-closed).
     """
 
     def __init__(self, *, llm_fn=None, force_mode: str | None = None):
@@ -89,6 +91,14 @@ class Dispatcher:
             os.getenv("CLARIFY_V2", "false").lower().strip() == "true"
         )
         self._clarify_detector = ClarifyDetector() if self._clarify_v2_enabled else None
+
+        # Phase 6: Misspelling corrector (opt-in via env MISSPELLING_CORRECTOR=true)
+        self._spell_enabled = (
+            os.getenv("MISSPELLING_CORRECTOR", "false").lower().strip() == "true"
+        )
+        self._spell_corrector = (
+            MisspellingCorrector() if self._spell_enabled else None
+        )
 
     def _get_rule_planner(self):
         if self._rule_planner is None:
@@ -108,7 +118,7 @@ class Dispatcher:
     def respond(self, user_text: str) -> Dict[str, Any]:
         self.trace = []
 
-        # 1) Safety gate (non-bypassable)
+        # 1) Safety gate (non-bypassable) — always uses the original user_text
         r = safety_route(user_text)
         route_level = getattr(r, "level", None) if r else None
         auto_key = getattr(r, "auto_reply_key", None) if r else None
@@ -134,7 +144,7 @@ class Dispatcher:
             "group counseling",
             "groups",
             "availability",
-            "available", 
+            "available",
         )
         counseling_needs_plan = (route_level == "counseling") and any(
             m in lower for m in _APPT_OR_GROUP_MARKERS
@@ -149,18 +159,40 @@ class Dispatcher:
         ):
             return {"text": template_for(auto_key), "trace": self.trace}
 
+        # Phase 6: optional spelling correction (after safety, before planner)
+        # We do NOT change the text used for safety routing; only for planner + retrieve.
+        query_text = user_text
+        if self._spell_enabled and self._spell_corrector is not None:
+            try:
+                corrected_text, meta = self._spell_corrector.correct(user_text)
+                if (
+                    isinstance(corrected_text, str)
+                    and corrected_text.strip()
+                    and corrected_text != user_text
+                ):
+                    query_text = corrected_text
+                    self.trace.append(
+                        {
+                            "event": "spell_correct",
+                            "changes": meta.get("changes", []),
+                        }
+                    )
+            except Exception:
+                # Fail closed: never let spelling correction break Dispatcher
+                query_text = user_text
+
         # 2) Planner selection
         use_llm = self.mode == "LLM"
         if use_llm:
             try:
                 planner = self._get_llm_planner()
-                steps = planner.plan(route_level=route_level, user_text=user_text)
+                steps = planner.plan(route_level=route_level, user_text=query_text)
                 self.trace.append(
                     {"event": "plan", "planner": "llm", "steps": steps}
                 )
             except Exception as e:
                 rp = self._get_rule_planner()
-                steps = rp.plan(route_level=route_level, user_text=user_text)
+                steps = rp.plan(route_level=route_level, user_text=query_text)
                 self.trace.append(
                     {
                         "event": "plan",
@@ -171,7 +203,7 @@ class Dispatcher:
                 )
         else:
             rp = self._get_rule_planner()
-            steps = rp.plan(route_level=route_level, user_text=user_text)
+            steps = rp.plan(route_level=route_level, user_text=query_text)
             self.trace.append(
                 {"event": "plan", "planner": "rule", "steps": steps}
             )
@@ -182,7 +214,7 @@ class Dispatcher:
         for step in steps[:2]:
             tool = step.get("tool", "retrieve")
             inp = step.get("input", {}) if isinstance(step.get("input", {}), dict) else {}
-            text, hits = _exec_tool(tool, user_text, inp)
+            text, hits = _exec_tool(tool, query_text, inp)
             out_parts.append(text)
             self.trace.append(
                 {"event": "tool", "name": tool, "hits": hits if hits >= 0 else None}
@@ -209,7 +241,7 @@ class Dispatcher:
                     {"event": "tool", "name": "clarify", "auto": True}
                 )
                 text2, hits2 = _exec_tool(
-                    "retrieve", user_text, {"query": user_text}
+                    "retrieve", query_text, {"query": query_text}
                 )
                 out_parts.append(text2)
                 self.trace.append(
