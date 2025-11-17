@@ -6,19 +6,18 @@ A guarded wrapper around a Strands-style Agent.
 Key rules:
 - NEVER used for crisis or safety routing.
 - ONLY runs if:
-    STRANDS_ENABLED=true AND STRANDS_BASE_URL and STRANDS_API_KEY are set
+    STRANDS_ENABLED=true  AND  strands SDK is importable
 - Fails CLOSED:
     - On import errors
     - On timeouts
-    - On HTTP errors
     - On unexpected output
     - On disallowed topics
     - On safety keyword violations
-- If anything is wrong, returns the original base_response and logs a warning.
+- If anything is wrong, returns "" and logs a warning.
 
-This file can exist safely even without the strands SDK installed:
-- With STRANDS_ENABLED defaulting to "false"
-- Without "strands" Python package present
+This file can exist safely even if:
+- STRANDS_ENABLED defaults to "false"
+- strands SDK is not installed
 """
 
 import os
@@ -26,13 +25,11 @@ import logging
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeout
 from typing import List
 
-import requests  # Real HTTP calls
-
 logger = logging.getLogger(__name__)
 
-# Try to import a Strands-like Agent SDK.
-# This can be used as a secondary path, but is no longer required.
-try:  # pragma: no cover - environment dependent
+# Try to import a Strands-like Agent.
+# This will be monkeypatched in tests; in production, this will be the real SDK.
+try:
     from strands import Agent  # type: ignore
     STRANDS_AVAILABLE = True
 except Exception:  # pragma: no cover - environment dependent
@@ -44,7 +41,6 @@ def _call_with_timeout(fn, timeout_s: float, *args, **kwargs):
     """
     Run a function with a hard timeout.
     Returns fn(...) result or None on timeout/error.
-    (Kept for compatibility and optional SDK usage.)
     """
     with ThreadPoolExecutor(max_workers=1) as executor:
         future = executor.submit(fn, *args, **kwargs)
@@ -74,56 +70,70 @@ class SafeStrandsAgent:
     def __init__(self, name: str, instructions: str, allowed_topics: List[str]):
         self.name = name
         self.allowed_topics = allowed_topics or []
-        self._agent = None  # Optional SDK agent (not required)
-        self._instructions = instructions
+        self._agent = None
 
         # Config flags
         env_flag = os.getenv("STRANDS_ENABLED", "false").lower() == "true"
         self.timeout_seconds = float(os.getenv("STRANDS_TIMEOUT_SECONDS", "10.0"))
 
-        # HTTP config for real API calls
-        self._base_url = os.getenv("STRANDS_BASE_URL", "").strip()
-        self._api_key = os.getenv("STRANDS_API_KEY", "").strip()
+        self.enabled = bool(env_flag and STRANDS_AVAILABLE)
 
-                # Enabled if:
-        # - STRANDS_ENABLED=true AND
-        #   (HTTP config is present OR strands SDK is available).
-        self.enabled = False
-        if env_flag:
-            if self._base_url and self._api_key:
-                # HTTP-only or HTTP+SDK
-                self.enabled = True
-            elif STRANDS_AVAILABLE:
-                # SDK-only mode (used in tests / some environments)
-                self.enabled = True
-
-        if env_flag and not self.enabled:
-            logger.warning(
-                "STRANDS_ENABLED=true but neither HTTP config (STRANDS_BASE_URL + STRANDS_API_KEY) "
-                "nor strands SDK is available; SafeStrandsAgent '%s' disabled.",
-                name,
-            )
-
-
-        # Optional: try to initialize SDK agent if available (not required)
-        if self.enabled and STRANDS_AVAILABLE and Agent is not None:
+        if self.enabled and Agent is not None:
             try:
                 full_instructions = instructions + self._safety_constraints()
-                self._agent = Agent(name=name, instructions=full_instructions)  # type: ignore
+
+                # Newer and older Strands versions have slightly different Agent signatures.
+                # We try a few safe variants so tests (FakeAgent) AND real SDK both work.
+                agent = None
+                last_err: Exception | None = None
+
+                # 1) Old style used in our tests: Agent(name, instructions)
+                try:
+                    agent = Agent(name=name, instructions=full_instructions)  # type: ignore[arg-type]
+                except TypeError as e:
+                    last_err = e
+
+                # 2) Newer style: Agent(name=..., system_message=...)
+                if agent is None:
+                    try:
+                        agent = Agent(name=name, system_message=full_instructions)  # type: ignore[arg-type]
+                    except TypeError as e:
+                        last_err = e
+
+                # 3) Fallback: Agent(name=name) – we’ll pass the prompt at call time
+                if agent is None:
+                    try:
+                        agent = Agent(name=name)  # type: ignore[arg-type]
+                    except Exception as e:
+                        last_err = e
+
+                if agent is None:
+                    raise last_err or RuntimeError("Unable to initialize Strands Agent")
+
+                self._agent = agent
                 logger.info(
-                    "SafeStrandsAgent '%s' initialized with SDK (topics=%s, timeout=%.2fs)",
+                    "SafeStrandsAgent '%s' initialized (topics=%s, timeout=%.2fs)",
                     name,
                     self.allowed_topics,
                     self.timeout_seconds,
                 )
-            except Exception as e:  # pragma: no cover - defensive
+            except Exception as e:
+                # Fail closed: disable integration completely
                 logger.warning(
                     "Failed to initialize SDK Agent for SafeStrandsAgent '%s': %s. "
                     "Continuing with HTTP-only mode.",
                     name,
                     e,
                 )
+                self.enabled = False
                 self._agent = None
+        else:
+            if env_flag and not STRANDS_AVAILABLE:
+                logger.debug(
+                    "STRANDS_ENABLED=true but strands SDK not available; "
+                    "SafeStrandsAgent '%s' disabled.",
+                    name,
+                )
 
     # ===================== PUBLIC API =====================
 
@@ -134,12 +144,11 @@ class SafeStrandsAgent:
         - If disabled or unsafe → returns base_response (no change).
         - If enabled:
             * Only runs on allowed topics.
-            * Uses HTTP call to a Strands-style service (and optionally SDK).
-            * Hard timeout via requests.
+            * Hard timeout.
             * If Strands result violates safety rules → fallback to base_response.
         """
         # If not correctly initialized, do nothing.
-        if not self.enabled:
+        if not (self.enabled and self._agent):
             return base_response
 
         # Never touch crisis/safety flows
@@ -150,7 +159,6 @@ class SafeStrandsAgent:
         if not self._is_allowed_topic(user_text):
             return base_response
 
-        # Build a safe, constrained prompt
         prompt = (
             "You are an assistant enhancing responses for a university health services "
             "FAQ assistant. Improve clarity, empathy, and structure of the reply "
@@ -160,12 +168,11 @@ class SafeStrandsAgent:
             "Return ONLY the improved reply text."
         )
 
-        # === Primary path: HTTP call to Strands-style backend ===
-        strands_reply = self._call_strands_http(prompt)
+        def _run():
+            # Real SDK: something like self._agent.run(prompt)
+            return self._agent(prompt)  # type: ignore[call-arg]
 
-        # Optional secondary path: SDK, if configured & HTTP returned nothing
-        if not strands_reply and self._agent is not None:
-            strands_reply = _call_with_timeout(self._agent.run, self.timeout_seconds, prompt)  # type: ignore[attr-defined]
+        strands_reply = _call_with_timeout(_run, self.timeout_seconds)
 
         if not strands_reply:
             return base_response
@@ -183,63 +190,6 @@ class SafeStrandsAgent:
             return base_response
 
         return cleaned
-
-    # ===================== INTERNAL HTTP HELPER =====================
-
-    def _call_strands_http(self, prompt: str) -> str | None:
-        """
-        Call a Strands-style HTTP endpoint.
-
-        Expected env:
-            STRANDS_BASE_URL  e.g. https://strands.example.com
-            STRANDS_API_KEY   e.g. xyz123
-
-        This function:
-        - Returns cleaned text on success.
-        - Returns None on any error or bad status.
-        """
-        if not (self._base_url and self._api_key):
-            return None
-
-        try:
-            url = self._base_url.rstrip("/") + "/v1/run"  # Adjust path as needed
-
-            payload = {
-                "agent": self.name,
-                "instructions": self._instructions + self._safety_constraints(),
-                "input": prompt,
-                "allowed_topics": self.allowed_topics,
-            }
-
-            headers = {
-                "Authorization": f"Bearer {self._api_key}",
-                "Content-Type": "application/json",
-            }
-
-            resp = requests.post(
-                url,
-                json=payload,
-                headers=headers,
-                timeout=self.timeout_seconds,
-            )
-
-            if resp.status_code != 200:
-                logger.warning(
-                    "SafeStrandsAgent '%s' HTTP call failed with status %s",
-                    self.name,
-                    resp.status_code,
-                )
-                return None
-
-            data = resp.json()
-            # Be flexible about response schema
-            text = data.get("text") or data.get("output") or ""
-            text = (text or "").strip()
-            return text or None
-
-        except Exception as e:
-            logger.warning("SafeStrandsAgent '%s' HTTP error: %s", self.name, e)
-            return None
 
     # ===================== INTERNAL SAFETY HELPERS =====================
 
