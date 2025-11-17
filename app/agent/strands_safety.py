@@ -214,10 +214,18 @@ class SafeStrandsAgent:
         text = (user_text or "").lower()
         return any(t.lower() in text for t in self.allowed_topics)
 
-    def _looks_like_crisis(self, text: str) -> bool:
+    def _looks_like_crisis(self, text) -> bool:
+        """
+        Very simple crisis keyword check.
+
+        Accepts either a plain string or an AgentResult-like object.
+        We always coerce to str() before checking, so new SDK types are safe.
+        """
         if not text:
             return False
-        t = text.lower()
+
+        t = str(text).lower()
+
         crisis_terms = [
             "suicide",
             "kill myself",
