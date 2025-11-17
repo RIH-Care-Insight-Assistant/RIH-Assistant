@@ -12,5 +12,5 @@ pytest-cov==4.1.0
 python-dotenv==1.0.1
 
 # Agents
-strands-agents>=1.16.0
-strands-agents-tools>=0.6.0
+strands-agents
+strands-agents-tools
