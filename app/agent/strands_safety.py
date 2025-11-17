@@ -135,7 +135,7 @@ class SafeStrandsAgent:
                     name,
                 )
 
-    # ===================== PUBLIC API =====================
+        # ===================== PUBLIC API =====================
 
     def generate(self, user_text: str, base_response: str) -> str:
         """
@@ -169,7 +169,11 @@ class SafeStrandsAgent:
         )
 
         def _run():
-            # Real SDK: something like self._agent.run(prompt)
+            # Support both:
+            #  - FakeAgent / older-style: agent.run(prompt)
+            #  - Newer Strands Agent: agent(prompt)
+            if hasattr(self._agent, "run"):
+                return self._agent.run(prompt)  # type: ignore[call-arg]
             return self._agent(prompt)  # type: ignore[call-arg]
 
         strands_reply = _call_with_timeout(_run, self.timeout_seconds)
