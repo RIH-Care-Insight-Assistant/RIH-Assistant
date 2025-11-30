@@ -1,43 +1,51 @@
 from __future__ import annotations
 import os
+import re
 from typing import Dict, Any, List, Tuple
 
 from ..router.safety_router import route as safety_route
 from ..answer.compose import crisis_message, template_for, from_chunks
 from ..retriever.retriever import retrieve
-from .response_enhancer import ResponseEnhancer   # Phase 6
-from ..tools.clarify_detector import ClarifyDetector  # Phase 6
+
+from .response_enhancer import ResponseEnhancer      # Phase 6
+from ..tools.clarify_detector import ClarifyDetector # Phase 6
 from .misspelling_corrector import MisspellingCorrector  # Phase 6
 
 
-# -----------------------------
-#   PHASE 7: refusal detection
-# -----------------------------
-REFUSAL_PATTERNS = {
-    "no", "nah", "nope", "don’t want", "dont want", "not needed",
-    "not necessary", "i dont need", "i don’t need", "i dont want",
-    "i don’t want", "skip", "leave it", "ignore", "not this",
-    "something else", "other options", "another option"
-}
+# =====================================================================
+#                     PHASE 7 — REFUSAL DETECTION
+# =====================================================================
 
-# Alternate safe campus options (non-medical)
+# Regex patterns capturing MANY ways students refuse RIH services
+REFUSAL_REGEX = re.compile(
+    r"\b("
+    r"no|nah|nope|not\s+needed|not\s+necessary|skip|ignore|leave\s+it|"
+    r"don['’]?t\s+want|dont\s+want|do\s+not\s+want|"
+    r"i\s+don['’]?t\s+need|i\s+dont\s+need|i\s+do\s+not\s+need|"
+    r"other\s+options?|something\s+else|another\s+option|"
+    r"i\s+don['’]?t\s+want\s+to\s+go|i\s+dont\s+want\s+to\s+go|"
+    r"not\s+interested|i\s+am\s+not\s+interested"
+    r")\b",
+    re.IGNORECASE,
+)
+
 ALTERNATIVE_OPTIONS = (
     "**If you’re not looking for RIH services right now, here are safe campus alternatives you might explore:**\n"
-    "- **UMBC RAC** – gym, group fitness, yoga & wellness classes\n"
-    "- **Campus Ministries & Spiritual Centers** – quiet reflection spaces\n"
-    "- **Library** – quiet study space, research help, group study rooms\n"
-    "- **Events on myUMBC** – workshops, student org meetups, activities\n"
+    "- **Retriever Activity Center (RAC)** – gym, group fitness, yoga, intramurals\n"
+    "- **Campus Ministries & Spiritual Centers** – reflection, community, grounding\n"
+    "- **AOK Library** – quiet study, group study rooms, research support\n"
+    "- **myUMBC Events** – workshops, student org activities, social events\n"
 )
 
 
-# -----------------------------
-#    TOOL EXECUTION (existing)
-# -----------------------------
+# =====================================================================
+#                     TOOL EXECUTION (same as Phase 6)
+# =====================================================================
+
 def _run_retrieve(user_text: str) -> Tuple[str, int]:
     hits = retrieve(user_text, top_k=3)
     text = from_chunks(hits, query=user_text)
     return text, len(hits)
-
 
 def _run_clarify(_: str) -> str:
     return (
@@ -45,9 +53,9 @@ def _run_clarify(_: str) -> str:
         "If counseling, say 'counseling appointment'. If medical, say 'medical appointment'."
     )
 
-
 def _exec_tool(tool: str, user_text: str, step_input: Dict[str, Any]) -> Tuple[str, int]:
     t = (tool or "").lower()
+
     if t == "retrieve":
         q = step_input.get("query", user_text)
         return _run_retrieve(q)
@@ -60,15 +68,13 @@ def _exec_tool(tool: str, user_text: str, step_input: Dict[str, Any]) -> Tuple[s
 
     return _run_retrieve(user_text)
 
-
 def _should_auto_clarify(user_text: str) -> bool:
     t = (user_text or "").lower()
     if "appointment" not in t:
         return False
 
     if not any(
-        w in t
-        for w in (
+        w in t for w in (
             "medical", "doctor", "nurse", "immunization", "vaccine", "shot",
             "counseling", "counselling", "therapy", "therapist"
         )
@@ -77,9 +83,10 @@ def _should_auto_clarify(user_text: str) -> bool:
     return False
 
 
-# ===============================================================
-#                        DISPATCHER
-# ===============================================================
+# =====================================================================
+#                           DISPATCHER
+# =====================================================================
+
 class Dispatcher:
     def __init__(self, *, llm_fn=None, force_mode: str | None = None):
         self.trace: List[Dict[str, Any]] = []
@@ -89,26 +96,18 @@ class Dispatcher:
         self._rule_planner = None
         self._llm_planner = None
 
-        # Phase 6: Response Enhancer
+        # ✔ Phase 6 enhancer
         self._enhancer = ResponseEnhancer()
 
-        # Phase 6: Clarify v2
-        self._clarify_v2_enabled = (
-            os.getenv("CLARIFY_V2", "false").lower().strip() == "true"
-        )
+        # ✔ Phase 6 clarify v2
+        self._clarify_v2_enabled = (os.getenv("CLARIFY_V2", "false").lower() == "true")
         self._clarify_detector = ClarifyDetector() if self._clarify_v2_enabled else None
 
-        # Phase 6: Misspelling corrector
-        self._spell_enabled = (
-            os.getenv("MISSPELLING_CORRECTOR", "false").lower().strip() == "true"
-        )
-        self._spell_corrector = (
-            MisspellingCorrector() if self._spell_enabled else None
-        )
+        # ✔ Phase 6 misspelling corrector
+        self._spell_enabled = (os.getenv("MISSPELLING_CORRECTOR", "false").lower() == "true")
+        self._spell_corrector = MisspellingCorrector() if self._spell_enabled else None
 
-    # -----------------------------------------------------
-    #                      PLANNERS
-    # -----------------------------------------------------
+    # -------- Load planners --------
     def _get_rule_planner(self):
         if self._rule_planner is None:
             from .planner import Planner as RulePlanner
@@ -122,17 +121,17 @@ class Dispatcher:
             self._llm_planner = LLMPlanner(allowed_tools=allowed, llm_fn=self._llm_fn)
         return self._llm_planner
 
-    # ===============================================================
-    #                       MAIN RESPOND()
-    # ===============================================================
+    # =====================================================================
+    #                               RESPOND()
+    # =====================================================================
     def respond(self, user_text: str) -> Dict[str, Any]:
         self.trace = []
         lower = (user_text or "").lower()
 
         # ----------------------------------------------------------
-        #        PHASE 7 — REFUSAL DETECTION (before everything)
+        #    PHASE 7 FIRST: refusal detection
         # ----------------------------------------------------------
-        if any(p in lower for p in REFUSAL_PATTERNS):
+        if REFUSAL_REGEX.search(lower):
             self.trace.append({"event": "refuse"})
             return {
                 "text": ALTERNATIVE_OPTIONS,
@@ -140,54 +139,51 @@ class Dispatcher:
             }
 
         # ----------------------------------------------------------
-        # 1) SAFETY ROUTER (non-bypassable)
+        # 1) Safety Router
         # ----------------------------------------------------------
         r = safety_route(user_text)
         route_level = getattr(r, "level", None) if r else None
         auto_key = getattr(r, "auto_reply_key", None) if r else None
+
         self.trace.append({"event": "route", "level": route_level})
 
         if r and auto_key == "crisis":
             return {"text": crisis_message(), "trace": self.trace}
 
         # Decide template vs planner
-        _APPT_OR_GROUP_MARKERS = (
+        _APPT_MARKERS = (
             "appointment", "appointments", "schedule", "scheduling",
-            "reschedule", "cancel", "session", "sessions", "workshop",
-            "support group", "group counseling", "groups",
-            "availability", "available",
+            "session", "sessions", "workshop", "group", "groups",
+            "availability", "available"
         )
 
         counseling_needs_plan = (
-            route_level == "counseling"
-            and any(m in lower for m in _APPT_OR_GROUP_MARKERS)
+            route_level == "counseling" and any(m in lower for m in _APPT_MARKERS)
         )
 
-        # NON-counseling → template
-        # Counseling but not scheduling/group → template
         if r and (
-            (route_level != "counseling")
-            or (route_level == "counseling" and not counseling_needs_plan)
+            route_level != "counseling" or (route_level == "counseling" and not counseling_needs_plan)
         ):
             return {"text": template_for(auto_key), "trace": self.trace}
 
         # ----------------------------------------------------------
-        # Phase 6 spelling correction (safe)
+        # Phase 6 spelling correction
         # ----------------------------------------------------------
         query_text = user_text
         if self._spell_enabled and self._spell_corrector:
             try:
-                corrected_text, meta = self._spell_corrector.correct(user_text)
-                if corrected_text and corrected_text.strip() and corrected_text != user_text:
-                    query_text = corrected_text
+                corrected, meta = self._spell_corrector.correct(user_text)
+                if corrected and corrected.strip() and corrected != user_text:
+                    query_text = corrected
                     self.trace.append({"event": "spell_correct", "changes": meta.get("changes", [])})
             except Exception:
                 query_text = user_text
 
         # ----------------------------------------------------------
-        # 2) PLANNER (rule or LLM)
+        # 2) Planner
         # ----------------------------------------------------------
         use_llm = self.mode == "LLM"
+
         if use_llm:
             try:
                 planner = self._get_llm_planner()
@@ -203,7 +199,7 @@ class Dispatcher:
             self.trace.append({"event": "plan", "planner": "rule", "steps": steps})
 
         # ----------------------------------------------------------
-        # 3) Execute up to TWO steps
+        # 3) Execute up to 2 steps
         # ----------------------------------------------------------
         out_parts: List[str] = []
         executed = 0
@@ -211,13 +207,14 @@ class Dispatcher:
         for step in steps[:2]:
             tool = step.get("tool", "retrieve")
             inp = step.get("input", {}) if isinstance(step.get("input", {}), dict) else {}
+
             text, hits = _exec_tool(tool, query_text, inp)
 
             out_parts.append(text)
             self.trace.append({"event": "tool", "name": tool, "hits": hits if hits >= 0 else None})
             executed += 1
 
-            # Clarify recovery logic
+            # Clarify auto-recovery
             def _decide_clarify(msg: str) -> bool:
                 if self._clarify_v2_enabled and self._clarify_detector:
                     flags = self._clarify_detector.should_clarify(msg)
@@ -242,7 +239,7 @@ class Dispatcher:
         final_text = "\n\n".join([p for p in out_parts if p])
 
         # ----------------------------------------------------------
-        # 4) Phase 6: Strands Enhancement (fail-closed)
+        # 4) Phase 6 Safe Strands Enhancement
         # ----------------------------------------------------------
         if self._enhancer:
             try:
