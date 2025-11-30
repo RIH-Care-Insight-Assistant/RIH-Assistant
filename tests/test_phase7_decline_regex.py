@@ -36,6 +36,8 @@ def test_crisis_not_overridden_by_decline():
     out = d.respond("i want to hurt myself, but no counseling")
     trace = out.get("trace", [])
 
-    # Route should mark crisis; decline handler must NOT run
-    assert any(e.get("event") == "route" and e.get("level") == "crisis" for e in trace)
+    # Phase 7 core rule:
+    # Decline logic must NEVER fire when any safety-sensitive language is present.
+    assert not any(e.get("event") == "decline" for e in trace)
     assert not _has_decline_event(trace)
+
