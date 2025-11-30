@@ -10,7 +10,7 @@ def safe_alternatives() -> str:
     This does NOT replace medical care; it just highlights other campus supports.
     """
     return (
-        "Thanks for letting me know. If you’re not interested in counseling or medical care right now, "
+        "Thanks for sharing that. If the suggested option doesn’t feel like the right fit for you, "
         "here are some other UMBC resources you might find helpful:\n\n"
         "- **The Gathering Space for Spiritual Well-Being (i3b):** Community, reflection, and support "
         "around meaning, identity, and belonging.\n"
