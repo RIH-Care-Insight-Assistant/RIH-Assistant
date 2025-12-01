@@ -1,4 +1,3 @@
-# app/agent/dispatcher.py
 from __future__ import annotations
 import os
 from typing import Dict, Any, List, Tuple
@@ -9,7 +8,10 @@ from ..retriever.retriever import retrieve
 from .response_enhancer import ResponseEnhancer  # Phase 6: optional safe enhancer
 from ..tools.clarify_detector import ClarifyDetector  # Phase 6 (opt-in)
 from .misspelling_corrector import MisspellingCorrector  # Phase 6: opt-in spelling fix
-from .intent_booster import IntentBooster  # Phase 7.5: Strands intent understanding
+
+# NEW Phase 7 imports
+from ..tools.decline_detector import DeclineDetector
+from ..answer.alternatives import safe_alternatives
 
 
 # --- tool runners ---
@@ -70,13 +72,13 @@ class Dispatcher:
     """
     Respond flow:
       1) Safety router (non-bypassable)
-      1.5) Phase 7.5: optional Strands intent booster (safe, after safety)
       2) Optional spelling correction (Phase 6, opt-in)
-      3) Planner: LLM (env RIH_PLANNER=LLM) or rule-based; fallback to rule on errors
-      4) Execute up to TWO planned steps
+      3) Phase 7: If user *declines* RIH services, suggest safe campus alternatives
+      4) Planner: LLM (env RIH_PLANNER=LLM) or rule-based; fallback to rule on errors
+      5) Execute up to TWO planned steps
          - Special-case: if single-step retrieve yields 0 hits and looks ambiguous,
            auto Clarify -> Retrieve (Clarify v2 if enabled, else legacy).
-      5) Phase 6: Optionally run ResponseEnhancer (safe, fail-closed).
+      6) Phase 6: Optionally run ResponseEnhancer (safe, fail-closed).
     """
 
     def __init__(self, *, llm_fn=None, force_mode: str | None = None):
@@ -103,8 +105,8 @@ class Dispatcher:
             MisspellingCorrector() if self._spell_enabled else None
         )
 
-        # Phase 7.5: Strands-powered intent booster (after safety, before planner)
-        self._intent_booster = IntentBooster()
+        # Phase 7: Decline detector (regex-based, always safe)
+        self._decline_detector = DeclineDetector()
 
     def _get_rule_planner(self):
         if self._rule_planner is None:
@@ -130,30 +132,17 @@ class Dispatcher:
         auto_key = getattr(r, "auto_reply_key", None) if r else None
         self.trace.append({"event": "route", "level": route_level})
 
-        # Immediate crisis auto-response — NEVER touched by Strands
         if r and auto_key == "crisis":
             return {"text": crisis_message(), "trace": self.trace}
 
-        # 1.5) Phase 7.5: Strands intent booster (non-crisis only)
-        booster = getattr(self, "_intent_booster", None)
-        if booster is not None:
-            try:
-                boosted_level, boosted = booster.maybe_boost(route_level, user_text)
-                if boosted and boosted_level != route_level:
-                    self.trace.append(
-                        {
-                            "event": "intent_boost",
-                            "from": route_level,
-                            "to": boosted_level,
-                            "source": "strands",
-                        }
-                    )
-                    route_level = boosted_level
-            except Exception:
-                # Fail closed: never let intent boosting break Dispatcher
-                pass
+        # 1.25) Phase 7: user clearly declines RIH services → suggest safe campus alternatives
+        # Only if NOT in crisis lane.
+        if route_level != "crisis" and self._decline_detector.is_decline(user_text):
+            alt_text = safe_alternatives()
+            self.trace.append({"event": "decline", "handled_by": "alternatives"})
+            return {"text": alt_text, "trace": self.trace}
 
-        # 1.6) Decide whether to short-circuit to a template or run planner+retriever
+        # 1.5) Decide whether to short-circuit to a template or run planner+retriever
         lower = (user_text or "").lower()
 
         _APPT_OR_GROUP_MARKERS = (
