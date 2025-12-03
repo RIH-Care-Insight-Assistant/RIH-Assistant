@@ -5,18 +5,18 @@ from typing import Dict, Any, List, Tuple
 from ..router.safety_router import route as safety_route
 from ..answer.compose import crisis_message, template_for, from_chunks
 from ..retriever.retriever import retrieve
-from .response_enhancer import ResponseEnhancer  # Phase 6: optional safe enhancer
-from ..tools.clarify_detector import ClarifyDetector  # Phase 6 (opt-in)
-from .misspelling_corrector import MisspellingCorrector  # Phase 6: opt-in spelling fix
+from .response_enhancer import ResponseEnhancer           # Phase 6 enhancer
+from ..tools.clarify_detector import ClarifyDetector       # Phase 6 clarify v2
+from .misspelling_corrector import MisspellingCorrector    # Phase 6 spelling
 
-# Phase 7: Decline / Alternatives
+# Phase 7 – Decline / Alternatives
 from ..tools.decline_detector import DeclineDetector
 from ..answer.alternatives import safe_alternatives
 
 
-# ------------------------------------------------------------------------------------
+# -------------------------------------------------------------------
 # TOOL RUNNERS
-# ------------------------------------------------------------------------------------
+# -------------------------------------------------------------------
 
 def _run_retrieve(user_text: str) -> Tuple[str, int]:
     hits = retrieve(user_text, top_k=3)
@@ -43,9 +43,9 @@ def _exec_tool(tool: str, user_text: str, step_input: Dict[str, Any]) -> Tuple[s
     return _run_retrieve(user_text)
 
 
-# ------------------------------------------------------------------------------------
-# CLARIFY HEURISTIC (LEGACY)
-# ------------------------------------------------------------------------------------
+# -------------------------------------------------------------------
+# LEGACY CLARIFY HEURISTIC
+# -------------------------------------------------------------------
 
 def _should_auto_clarify(user_text: str) -> bool:
     t = (user_text or "").lower()
@@ -54,30 +54,19 @@ def _should_auto_clarify(user_text: str) -> bool:
     if not any(
         w in t
         for w in (
-            "medical",
-            "doctor",
-            "nurse",
-            "immunization",
-            "vaccine",
-            "shot",
-            "counseling",
-            "counselling",
-            "therapy",
-            "therapist",
+            "medical", "doctor", "nurse", "immunization", "vaccine", "shot",
+            "counseling", "counselling", "therapy", "therapist",
         )
     ):
         return True
     return False
 
 
-# ------------------------------------------------------------------------------------
+# -------------------------------------------------------------------
 # DEDUPE PATCH
-# ------------------------------------------------------------------------------------
+# -------------------------------------------------------------------
 
 def _dedupe_paragraphs(text: str) -> str:
-    """
-    Prevent duplicate paragraphs caused by Strands enhancement + Retrieve output.
-    """
     if not text:
         return text
 
@@ -94,23 +83,22 @@ def _dedupe_paragraphs(text: str) -> str:
     return "\n".join(out).strip()
 
 
-# ====================================================================================
+# ===================================================================
 # DISPATCHER
-# ====================================================================================
+# ===================================================================
 
 class Dispatcher:
     """
-    Respond flow (final):
-
-      1) Safety router (non-bypassable)
-      2) Phase 7: Decline intent before templates
-      3) Templates for non-counseling lanes
-      4) Phase 6: Misspelling correction (optional)
-      5) Planner (Rule/LLM)
-      6) Execute 1–2 steps
+    Final architecture:
+      1) Safety router
+      2) Decline → alternatives
+      3) Template short-circuit
+      4) Spelling correction
+      5) Planner (rule/LLM)
+      6) Execute steps
       7) Clarify auto-recovery
-      8) Strands enhancement (safe, fail-closed)
-      9) Dedupe patch to remove repeated paragraphs
+      8) Strands enhancement (only if STRANDS_ENABLED=false)
+      9) Dedupe cleanup
     """
 
     def __init__(self, *, llm_fn=None, force_mode: str | None = None):
@@ -118,10 +106,7 @@ class Dispatcher:
         self.mode = (force_mode or os.getenv("RIH_PLANNER", "")).upper().strip()
         self._llm_fn = llm_fn
 
-        self._rule_planner = None
-        self._llm_planner = None
-
-        # Phase 6
+        # Phase 6 enhancer (suppressed when STRANDS enabled)
         self._enhancer = ResponseEnhancer()
 
         self._clarify_v2_enabled = os.getenv("CLARIFY_V2", "false").lower() == "true"
@@ -133,9 +118,12 @@ class Dispatcher:
         # Phase 7
         self._decline_detector = DeclineDetector()
 
-    # --------------------------------------------------------------------------------
-    # PLANNER HELPERS
-    # --------------------------------------------------------------------------------
+        self._rule_planner = None
+        self._llm_planner = None
+
+    # ----------------------------------------------------------------
+    # PLANNERS
+    # ----------------------------------------------------------------
 
     def _get_rule_planner(self):
         if self._rule_planner is None:
@@ -150,16 +138,16 @@ class Dispatcher:
             self._llm_planner = LLMPlanner(allowed_tools=allowed, llm_fn=self._llm_fn)
         return self._llm_planner
 
-    # ====================================================================================
+    # ===================================================================
     # RESPOND
-    # ====================================================================================
+    # ===================================================================
 
     def respond(self, user_text: str) -> Dict[str, Any]:
         self.trace = []
 
-        # ----------------------------------------------------------------------
-        # 1) SAFETY ROUTER — non-bypassable
-        # ----------------------------------------------------------------------
+        # --------------------------------------------------------------
+        # 1) SAFETY ROUTER
+        # --------------------------------------------------------------
         r = safety_route(user_text)
         route_level = getattr(r, "level", None) if r else None
         auto_key = getattr(r, "auto_reply_key", None) if r else None
@@ -169,42 +157,41 @@ class Dispatcher:
         if r and auto_key == "crisis":
             return {"text": crisis_message(), "trace": self.trace}
 
-        # ----------------------------------------------------------------------
-        # 2) PHASE 7 — Decline → Alternatives (only if NOT crisis)
-        # ----------------------------------------------------------------------
+        # --------------------------------------------------------------
+        # 2) PHASE 7 – Decline intent
+        # --------------------------------------------------------------
         if route_level != "crisis" and self._decline_detector.is_decline(user_text):
-            alt_text = safe_alternatives()
+            text = safe_alternatives()
             self.trace.append({"event": "decline", "handled_by": "alternatives"})
-            return {"text": alt_text, "trace": self.trace}
+            return {"text": text, "trace": self.trace}
 
-        # ----------------------------------------------------------------------
-        # 3) TEMPLATE SHORT-CIRCUIT (non-counseling lanes)
-        # ----------------------------------------------------------------------
+        # --------------------------------------------------------------
+        # 3) TEMPLATE SHORT CIRCUIT
+        # --------------------------------------------------------------
         lower = (user_text or "").lower()
-        markers = (
-            "appointment", "schedule", "session", "workshop", "group", "availability"
-        )
+        markers = ("appointment", "schedule", "session", "workshop", "group", "availability")
+
         counseling_needs_plan = (route_level == "counseling") and any(m in lower for m in markers)
 
         if r and ((route_level != "counseling") or (route_level == "counseling" and not counseling_needs_plan)):
             return {"text": template_for(auto_key), "trace": self.trace}
 
-        # ----------------------------------------------------------------------
-        # 4) OPTIONAL SPELLING CORRECTION
-        # ----------------------------------------------------------------------
+        # --------------------------------------------------------------
+        # 4) SPELLING CORRECTION
+        # --------------------------------------------------------------
         query_text = user_text
-        if self._spell_enabled and self._spell_corrector is not None:
+        if self._spell_enabled and self._spell_corrector:
             try:
-                corrected_text, meta = self._spell_corrector.correct(user_text)
-                if corrected_text and corrected_text.strip() and corrected_text != user_text:
-                    query_text = corrected_text
+                corrected, meta = self._spell_corrector.correct(user_text)
+                if corrected and corrected.strip() and corrected != user_text:
+                    query_text = corrected
                     self.trace.append({"event": "spell_correct", "changes": meta.get("changes", [])})
             except Exception:
                 query_text = user_text
 
-        # ----------------------------------------------------------------------
+        # --------------------------------------------------------------
         # 5) PLANNER
-        # ----------------------------------------------------------------------
+        # --------------------------------------------------------------
         use_llm = self.mode == "LLM"
 
         if use_llm:
@@ -223,18 +210,19 @@ class Dispatcher:
             steps = rp.plan(route_level=route_level, user_text=query_text)
             self.trace.append({"event": "plan", "planner": "rule", "steps": steps})
 
-        # ----------------------------------------------------------------------
+        # --------------------------------------------------------------
         # 6–7) EXECUTE STEPS + CLARIFY AUTO-RECOVERY
-        # ----------------------------------------------------------------------
-        out_parts: List[str] = []
+        # --------------------------------------------------------------
         executed = 0
+        parts: List[str] = []
 
         for step in steps[:2]:
             tool = step.get("tool", "retrieve")
             inp = step.get("input", {}) if isinstance(step.get("input", {}), dict) else {}
 
             text, hits = _exec_tool(tool, query_text, inp)
-            out_parts.append(text)
+
+            parts.append(text)
             self.trace.append({"event": "tool", "name": tool, "hits": hits if hits >= 0 else None})
             executed += 1
 
@@ -251,26 +239,32 @@ class Dispatcher:
                 and _decide_clarify(user_text)
             ):
                 clar = _run_clarify(user_text)
-                out_parts.append(clar)
+                parts.append(clar)
                 self.trace.append({"event": "tool", "name": "clarify", "auto": True})
 
                 text2, hits2 = _exec_tool("retrieve", query_text, {"query": query_text})
-                out_parts.append(text2)
+                parts.append(text2)
                 self.trace.append({"event": "tool", "name": "retrieve", "retry": True, "hits": hits2})
+
                 break
 
-        final_text = "\n\n".join([p for p in out_parts if p])
+        final_text = "\n\n".join([p for p in parts if p])
 
-        # ----------------------------------------------------------------------
-        # 8) STRANDS ENHANCEMENT (SAFE, FAIL-CLOSED)
-        # ----------------------------------------------------------------------
-        enhanced = self._enhancer.enhance(final_text, {"user_text": user_text, "route_level": route_level})
-        if enhanced and enhanced.strip():
-            final_text = enhanced
+        # --------------------------------------------------------------
+        # 8) ENHANCEMENT LAYER
+        # ONLY RUN IF STRANDS_ENABLED = false
+        # --------------------------------------------------------------
+        STRANDS_ENABLED = os.getenv("STRANDS_ENABLED", "false").lower() == "true"
 
-        # ----------------------------------------------------------------------
-        # 9) DEDUPE PATCH — FINAL CLEANUP
-        # ----------------------------------------------------------------------
+        if not STRANDS_ENABLED:
+            enhanced = self._enhancer.enhance(final_text, {"user_text": user_text, "route_level": route_level})
+            if enhanced and enhanced.strip():
+                final_text = enhanced
+                self.trace.append({"event": "enhance"})
+
+        # --------------------------------------------------------------
+        # 9) DEDUPE PATCH
+        # --------------------------------------------------------------
         final_text = _dedupe_paragraphs(final_text)
 
         return {"text": final_text, "trace": self.trace}
