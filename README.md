@@ -245,8 +245,39 @@ The repository delivers:
 - Demonstrable CLI interface
 
 ---
+## Tests ( some unique tests )
 
+**1. Basic RIH Questions:**
+
+<img width="892" height="299" alt="image" src="https://github.com/user-attachments/assets/359c5b09-b397-4478-95d5-2b6947d654ef" />
+
+<img width="677" height="341" alt="image" src="https://github.com/user-attachments/assets/2c201833-d223-4764-a5a6-4723f0a50026" />
+
+**2. Ambiguity Questions**
+
+<img width="1158" height="219" alt="image" src="https://github.com/user-attachments/assets/24ef1019-cc7a-49c0-8599-5dc7fcf14c3d" />
+
+
+**3. Decline Detection (Phase 7)**
+
+<img width="1054" height="205" alt="image" src="https://github.com/user-attachments/assets/963b1465-3933-4f15-a039-66a3be451eae" />
+
+<img width="1258" height="214" alt="image" src="https://github.com/user-attachments/assets/e676818a-5933-4b0a-8ade-857b78c47e15" />
+
+<img width="1245" height="221" alt="image" src="https://github.com/user-attachments/assets/60423274-3cb7-472a-a999-d3b5993d2a04" />
+
+**4. Crisis Routing (non-bypassable)**
+
+<img width="1341" height="149" alt="image" src="https://github.com/user-attachments/assets/8a060fcc-8147-4b01-913f-61fb8bc74481" />
+
+<img width="1383" height="79" alt="image" src="https://github.com/user-attachments/assets/8e460d3d-e54e-4b07-b938-d59f7e9f7fcc" />
+
+<img width="1209" height="58" alt="image" src="https://github.com/user-attachments/assets/cf8b04d9-506a-4de9-b0c2-1defd4e5d8fa" />
+
+
+
+---
 ## Maintainers
-- Abhinav Varma
+- Abhinav Varma Vathadi
 - Devika Rani Sanaboyina
 - UMBC, MPS Data Science
