@@ -2,7 +2,168 @@
 
 Last updated: 2026-10-11 (America/New_York). Operator: Devika Rani Sanaboyina.
 
-## Current published state and PR #5 corrections
+## Authorized publication — latest status
+
+- Devika reviewed the 19 intended files and explicitly authorized the two
+  proposed commits, a normal push of this existing feature branch, and a draft
+  PR against main requesting Abhinav's review. No merge is authorized.
+- Runtime/regression commit created: `f491955` — `Fix C1 decline handling,
+  retrieval permissions, and verified alternatives`. Its six staged files
+  matched the final reviewed manifest byte for byte. Author and committer are
+  Devika's verified human identity; no AI attribution.
+- This second commit records approvals and validation evidence. At its creation,
+  push, draft-PR creation, review request and remote CI are the next operations.
+  Read GitHub and the session publication report for their later results; do not
+  infer publication or passing CI from the pre-publication snapshot below.
+- The two pre-existing `docs/reviews/` artifacts remain excluded. No B1–B4 code
+  was rewritten or tests repeated for publication. PR #8 review is read-only;
+  Devika has not authorized an approval or accepted the proposed deferrals.
+- C1 acceptance and C2 remain gated on reviewed merges, both contributors'
+  final-main validation and an explicit acceptance record.
+
+## Pre-publication repair review snapshot — historical
+
+## Phase 1 repairs at time of review
+
+- Branch: `feature/devika-c1-phase1-repairs`; latest fetched `origin/main` and
+  branch base: `7646431cb678c09e1e7d6119c4ca2d53466f0c29`. PRs #4/#5 are merged.
+  Existing uncommitted work and `docs/reviews/` artifacts are preserved.
+- **Joint contract recording gate complete.** Devika's explicit approval was
+  verified under **Devikz**, GitHub account ID 165278681, in
+  [Issue #7 comment](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/7#issuecomment-6114029088).
+  Abhinav's matching approval is recorded in Issue #7 and earlier Issue #6.
+  Scope: existing C1-v0.2 interfaces/matrix, architecture §4 items 1–4 using
+  safety dataset v1.2.0, and narrow malformed/non-object loader repairs.
+  Proposed new API/trace fields remain reserved for C2. No new approval issue.
+- **B1–B4 implemented locally, awaiting human review:** explicit decline matching
+  with normalized apostrophes and ambiguous/mixed-intent regressions; ordinary
+  retrieval exclusions before corpus statistics/ranking/top-k; malformed JSON,
+  non-object/invalid-field records safely skipped; linked, inspected official
+  alternatives with an unverified-inventory fallback. Public APIs are preserved.
+- Added **127 Phase 1 regression cases**, including CLI/tool/dispatcher citations
+  and RULE/LLM-path safety precedence. Router, dispatcher, CLI, dependencies,
+  existing tests and CI are unchanged; no new provider calls or service costs.
+- Local full suite: **541 passed** on macOS arm64, Python 3.12.12. Global/scoped
+  Ruff, scoped formatting, smoke, 12 route checks and compatibility/static
+  signature checks passed. Local Ruff is 0.9.10, not the CI-pinned version.
+- Safety v1.2.0: **75/75 protected**, **0/16 benign false positives**, **97/97
+  exact-lane agreement**; synthetic regression evidence, not held-out evidence.
+  Readiness audit improved from historical **5/15** to **15/15** checks passed.
+- Partner integration is tested in a disposable local Git clone against
+  `feature/abhinav-c1-closeout-docs` at
+  `acb16165aab9754b904f42daac32e34843800236`. See the
+  [review packet](../audits/devika-c1-phase1-review-2026-10-11.md) and
+  [raw integration results](../audits/devika-c1-phase1-integration.json).
+  All **552 tests passed with no skips**, plus lint, smoke and safety evaluation.
+  This is pre-merge integration evidence; actual final main still requires both
+  humans' validation. No Windows/WSL execution or new remote CI run is claimed.
+- Abhinav's pending PR #8 owns shared foundation/release/state documents,
+  architecture schema correction and closeout guards. This branch records
+  Devika's approval in the shared interfaces; reconcile that small shared-document
+  overlap during review. Do not copy partner-owned files or accept proposed
+  deferrals on Devika's behalf. Required-check settings and proposed independent
+  held-out safety validation remain joint closeout work, not completed B1–B4.
+- **No commits, staging, pushes, PR or merges made for these repairs.** Git
+  identity remains Devika's verified human name and GitHub noreply email.
+  Keep historical audit evidence and excluded review artifacts intact.
+
+## Exact next tasks
+
+1. Devika reviews the concrete diff, validation and proposed two commits in the
+   review packet, then explicitly authorizes commit/push. Do not include
+   pre-existing `docs/reviews/` artifacts. Do not add AI attribution.
+2. After authorization, recheck latest main and identity, commit intended files,
+   push this feature branch and open a separate draft PR requesting Abhinav's
+   review. Coordinate shared approval records with his PR #8; preserve ownership.
+3. Run remote CI on the actual repair PR, resolve review findings, and require
+   mutual human approvals. Never merge automatically.
+4. After reviewed repairs and closeout documents merge, both contributors test
+   final main on macOS and Windows/WSL, review outstanding gates/deferrals, and
+   formally record C1 acceptance. C1 remains incomplete until then.
+5. Only after formal C1 completion, coordinate C2 API and agent/tool contracts
+   against the original complementary assignments before dependent development.
+
+## Earlier resume/preparation evidence — historical
+
+## Previous resume state — historical
+
+- **C1 is incomplete; C2 has not started.** PRs #4 and #5 are confirmed merged
+  with mutual human PR approvals. Integrated main is
+  `7646431cb678c09e1e7d6119c4ca2d53466f0c29`.
+- Local main and `feature/devika-c1-foundation-safety` were fast-forwarded to
+  that commit. Remote Devika branch remains at `4a35cc2`; no push or history
+  rewrite. Existing untracked `docs/reviews/` artifacts are preserved.
+- Read required instructions/contracts/matrix and both progress files. Root
+  AGENTS.md/CLAUDE.md, MASTER_PLAN.md, PROJECT_STATE.md and RELEASE_GATES.md
+  are still absent. Preserve Abhinav's assigned shared-document ownership.
+- Devika explicitly replied **`Approve C1-v0.2 as written`** to the question
+  naming INTERFACE_CONTRACTS.md and the matching CONTRIBUTION_MATRIX.md.
+  Updated their approval records without changing the behavioral proposal.
+  Abhinav's matching explicit approval remains pending.
+- Added a read-only synthetic C1 readiness audit, recorded JSON evidence, two
+  tests protecting corpus/cache isolation and minimized exception evidence,
+  and a detailed [resume assessment](../audits/devika-c1-resume-2026-10-11.md).
+- **10/15 readiness probes fail:** five decline defects, three retrieval
+  restriction failures, non-object JSON crash and missing alternatives links.
+  Runtime fixes have not begun; joint contract approval remains required.
+- GitHub issue and PR comment writes returned **403**. Browser fallback was
+  rejected by automatic approval review as an access-control workaround without
+  specific authorization. The [coordination request](../audits/devika-c1-coordination-request.md)
+  is prepared locally, **not sent**. No issue/comment/review was published.
+- Current changes are uncommitted for human review. No new dependencies,
+  service costs, provider calls, real student data, partner-owned edits,
+  commits, pushes, PRs or merges.
+
+## Earlier executed validation — historical
+
+- Merged main baseline: **412 passed**, 0.82 s (Python 3.12.12, models disabled).
+- With read-only audit tests: **414 passed**, 0.78 s; two new audit tests passed.
+- Existing smoke, 12 routing checks, global/scoped Ruff lint and scoped format:
+  passed using local Ruff 0.9.10 (not the CI-pinned version).
+- Safety dataset v1.2.0: **75/75 protected**, **0/16 benign false positives**,
+  **97/97 exact-lane agreement**. Regression results, not general safety claims.
+- KB audit: exit 0; nine stale warnings, one chat-disabled, two crisis-content
+  observations. No freshness policy changed.
+- Readiness audit: **exit 1**, 10 failed / 15; intentionally reports unmet
+  proposed requirements. Passing tests do not override these findings.
+- Integrated [main CI run 38175224504](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/actions/runs/38175224504):
+  all eight jobs passed, including macOS/Windows and Ubuntu Python 3.11–3.14.
+  These remote results predate local resume additions.
+- Current branch-protection read: 403; rulesets: empty. Human settings
+  re-verification required. Final integrated Windows/WSL human acceptance is
+  not recorded; earlier overlay tests are historical evidence only.
+
+## Earlier continuation tasks — superseded
+
+1. Review the local audit/documentation changes. Post the prepared coordination
+   request to Abhinav through an authorized route. Obtain his explicit approval
+   of existing C1-v0.2 and confirm narrow non-object loader-repair ownership.
+2. After joint approval, repair Devika's decline internals, pre-ranking ordinary
+   retrieval restrictions, and linked verified alternatives/unverified fallback.
+   Add deterministic negative/adversarial, citation and integration tests;
+   preserve APIs, deterministic crisis independence and partner precedence.
+3. After human review, commit only intended Devika files with her verified Git
+   identity, publish a separate follow-up PR, request Abhinav review, rerun CI.
+   No merge without review; synchronize and independently test the actual final
+   integrated main on both contributors' platforms.
+4. Coordinate Abhinav's outstanding shared documents and record formal C1
+   completion or reviewed deferrals. Do not declare C1 complete from PR merges.
+5. Only then begin `feature/devika-c2-fullstack-agents`. Read Abhinav's full
+   original C2 allocation, jointly approve OpenAPI/session/feedback/auth/storage,
+   citation and agent/tool/permission/failure contracts and integration order,
+   then implement Devika's original complementary Phase 2–3 assignments.
+
+Historical baseline reproduction commands (current runtime now includes repairs):
+
+```sh
+STRANDS_ENABLED=false RIH_PLANNER=RULE .venv/bin/python -m pytest -q tests
+STRANDS_ENABLED=false RIH_PLANNER=RULE .venv/bin/python -m scripts.audit_c1_readiness
+STRANDS_ENABLED=false RIH_PLANNER=RULE .venv/bin/python scripts/safety_eval.py --fail-on-miss
+```
+
+## Historical snapshots — superseded by current resume state
+
+## Historical published state and PR #5 corrections
 
 - Checkpoint C1, Phase 0; Phase 1 behavior changes await joint agreement.
 - Published branch: [`feature/devika-c1-foundation-safety`](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/tree/feature/devika-c1-foundation-safety).

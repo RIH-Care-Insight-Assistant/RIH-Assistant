@@ -16,6 +16,66 @@ All dates below are 2026-10-11. Proposals are not human approvals.
 | C1-D10 | Incorporate Phase 0 review clarifications as C1-v0.2 | **Pending Joint Approval**: Abhinav owns dispatcher precedence; Devika owns pre-ranking ordinary retrieval restrictions, decline semantics, verified alternatives and cross-tests; deterministic crisis response stays independent of ordinary retrieval; no unilateral interface/dependency changes |
 | C1-D11 | Publish reviewed Phase 0 changes as a draft PR only after Devika authorizes the commit | **Pending Devika review and explicit commit authorization**; user requested reviewable diffs first; no commits, push, PR or merge performed |
 
+## Resume verification — 2026-10-11
+
+- **C1-D12:** PRs #4 and #5 are confirmed merged with mutual human PR approvals;
+  local main and Devika's C1 branch were fast-forwarded to `7646431`. Historical
+  pending-publication entries above are superseded for those PRs only.
+- **C1-D13:** Devika explicitly approved **C1-v0.2 as written** in response to a
+  question naming INTERFACE_CONTRACTS.md and the matching CONTRIBUTION_MATRIX.md.
+  Abhinav's matching explicit approval remains pending; no behavior changes yet.
+- **C1-D14:** C1 remains incomplete: the read-only synthetic readiness probes
+  fail 10/15 checks despite 412 passing existing tests and green integrated CI.
+  Non-object JSON robustness needs narrow repair ownership confirmation.
+- **C1-D15:** Coordination issue/comment writes returned 403; automatic approval
+  review rejected a browser fallback. The request is preserved in
+  `docs/audits/devika-c1-coordination-request.md`, **not sent**.
+- **C1-D16:** C2 remains gated on reviewed C1 completion and both contributors'
+  integrated tests/acceptance. Read Abhinav's original C2 allocation and agree
+  API/tool/auth/storage contracts before dependent implementation. No new
+  dependencies, service costs, shared architecture, or partner-owned changes.
+- **C1-D17:** Verified Abhinav's explicit C1-v0.2 approval in GitHub Issues #6
+  and #7, including narrow invalid/non-object KB loader repairs. Devika explicitly
+  approved the same documents and architecture §4 items 1–4 with dataset schema
+  v1.2.0 in her new instruction. New API/trace fields remain reserved for C2.
+  Her instruction requires recording and verifying her approval on Issue #7
+  before implementation; the attempted comment returned 403, and a subsequent
+  comment read was empty. No fallback write route was attempted. The exact manual
+  comment is in `docs/audits/devika-c1-issue7-approval-comment.md`.
+- **C1-D18:** Created `feature/devika-c1-phase1-repairs` from latest fetched
+  `origin/main` at `7646431`, carrying forward all uncommitted audit/doc work.
+  No runtime changes, commit, push, new issue or PR. Await manual posting and
+  verification before the dependent Phase 1 repairs.
+
+## Phase 1 implementation — current, supersedes earlier pending states
+
+- **C1-D19:** Verified Devika's explicit approval under Devikz (account ID
+  165278681) in [Issue #7 comment](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/7#issuecomment-6114029088).
+  Both C1-v0.2 approvals are recorded. Architecture §4 items 1–4 use dataset
+  schema v1.2.0; proposed new API/trace fields remain reserved for C2.
+- **C1-D20:** Implemented authorized B1–B4 on the existing repair branch:
+  deterministic decline semantics, pre-ranking retrieval exclusions, narrow
+  malformed-record handling, and inspected official alternatives/fallback.
+  No public API, KB schema, partner routing, CLI, CI or dependency changes.
+- **C1-D21:** Added 127 Phase 1 regression cases. Full local suite: 541 passed;
+  readiness: 15/15; safety: 75/75 protected, 0/16 benign false positives,
+  97/97 exact-lane agreement. Details, source evidence, integration results and
+  limitations are in the [review packet](audits/devika-c1-phase1-review-2026-10-11.md).
+- **C1-D22:** Partner closeout work is preserved on its separate branch/PR #8.
+  Temporary integration against `acb16165aab9754b904f42daac32e34843800236`
+  does not constitute final-main acceptance or review approval. Coordinate the
+  shared interface approval record, final platform validation and release gates.
+- **C1-D23:** All current repair changes remain uncommitted for Devika's review
+  and explicit commit/push authorization. Preserve and exclude pre-existing
+  `docs/reviews/` artifacts from the proposed commits. No automatic merge;
+  C1 acceptance and C2 contracts remain separately gated.
+- **C1-D24 (supersedes D23 publication status):** Devika reviewed and explicitly
+  authorized the 19-file package, both proposed commits, normal feature-branch
+  push and a draft PR requesting Abhinav's review. First commit: `f491955`.
+  The second commit records this evidence; publication and CI follow it.
+  PR #8 review is read-only: no approval or proposed deferral accepted on her
+  behalf. No merge is authorized, and C2 remains gated on final C1 acceptance.
+
 The full master instructions and Devika launcher are in `docs/instructions/`.
 Abhinav owns root AGENTS.md/CLAUDE.md and initial MASTER_PLAN/PROJECT_STATE/CI;
 this branch does not create competing versions of those files. RELEASE_GATES.md
