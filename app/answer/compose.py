@@ -5,8 +5,9 @@ from typing import List, Dict
 # --- Templates (unchanged content) ---
 TEMPLATES = {
     "crisis": (
-        "If you might be in danger or considering self-harm: Call 911 or 988 now. "
-        "On campus, contact UMBC Police (410-455-5555). RIH Urgent Care: 410-455-2542. "
+        "If you might be in danger or considering self-harm: Call 911, or call or text 988, now. "
+        "On campus, contact UMBC Police (410-455-5555). "
+        "UMBC After-Hours Support Line via RIH (24/7): 410-455-2542. "
         "I can’t proceed with a normal answer, but you’re not alone."
     ),
     "title_ix": (
@@ -23,7 +24,7 @@ TEMPLATES = {
     ),
     "counseling": (
         "Counseling at RIH: appointments, brief therapy, referrals, and workshops are available. "
-        "If this is urgent, see crisis options above."
+        "If this is urgent or you might be in danger, call or text 988, or call 911."
     ),
 }
 

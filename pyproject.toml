@@ -1,0 +1,15 @@
+# Tool configuration only (the app is not packaged). Runtime deps: requirements.txt.
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py311"
+extend-exclude = ["kb"]
+
+[tool.ruff.lint]
+# C1 baseline gate: only errors that mean the code cannot run as written
+# (syntax errors, undefined names, invalid comparisons/statements). Broader rule
+# sets and `ruff format` are deferred until both contributors agree, to avoid
+# churn across files owned by the other contributor.
+select = ["E9", "F63", "F7", "F82"]

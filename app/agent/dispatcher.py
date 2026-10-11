@@ -2,7 +2,7 @@ from __future__ import annotations
 import os
 from typing import Dict, Any, List, Tuple
 
-from ..router.safety_router import route as safety_route
+from ..router.safety_router import DECLINE_PROTECTED_LANES, SAFETY_CRITICAL_LANES, route as safety_route
 from ..answer.compose import crisis_message, template_for, from_chunks
 from ..retriever.retriever import retrieve
 from .response_enhancer import ResponseEnhancer  # Phase 6: optional safe enhancer
@@ -33,6 +33,9 @@ def _exec_tool(tool: str, user_text: str, step_input: Dict[str, Any]) -> Tuple[s
     if t == "retrieve":
         q = step_input.get("query", user_text)
         return _run_retrieve(q)
+    if t == "crisis":
+        # Defense in depth: a planner step naming "crisis" must never fall through to retrieve.
+        return crisis_message(), -1
     if t in {"counseling", "title_ix", "conduct", "retention"}:
         return template_for(t), -1
     if t == "clarify":
@@ -136,8 +139,10 @@ class Dispatcher:
             return {"text": crisis_message(), "trace": self.trace}
 
         # 1.25) Phase 7: user clearly declines RIH services → suggest safe campus alternatives
-        # Only if NOT in crisis lane.
-        if route_level != "crisis" and self._decline_detector.is_decline(user_text):
+        # Only if NOT in a decline-protected lane: "I don't want counseling, I was assaulted"
+        # must still get the Title IX template, and "...I want to withdraw" the retention
+        # template, not generic alternatives.
+        if route_level not in DECLINE_PROTECTED_LANES and self._decline_detector.is_decline(user_text):
             alt_text = safe_alternatives()
             self.trace.append({"event": "decline", "handled_by": "alternatives"})
             return {"text": alt_text, "trace": self.trace}
@@ -195,6 +200,17 @@ class Dispatcher:
             except Exception:
                 # Fail closed: never let spelling correction break Dispatcher
                 query_text = user_text
+
+        # 1.75) Escalate-only re-check: the corrected text may reveal a misspelled safety
+        # term ("kil myslef"). A model-produced correction may RAISE the lane to a
+        # safety-critical template but can never lower one (those already returned above).
+        if query_text != user_text:
+            r2 = safety_route(query_text)
+            if r2 and r2.level in SAFETY_CRITICAL_LANES:
+                self.trace.append({"event": "route", "level": r2.level, "source": "corrected_text"})
+                if r2.auto_reply_key == "crisis":
+                    return {"text": crisis_message(), "trace": self.trace}
+                return {"text": template_for(r2.auto_reply_key), "trace": self.trace}
 
         # 2) Planner selection
         use_llm = self.mode == "LLM"

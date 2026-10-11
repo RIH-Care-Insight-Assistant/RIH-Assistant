@@ -25,6 +25,8 @@ import logging
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeout
 from typing import List
 
+from ..router.safety_router import SAFETY_CRITICAL_LANES, route as _safety_route
+
 logger = logging.getLogger(__name__)
 
 # Try to import a Strands-like Agent.
@@ -41,17 +43,28 @@ def _call_with_timeout(fn, timeout_s: float, *args, **kwargs):
     """
     Run a function with a hard timeout.
     Returns fn(...) result or None on timeout/error.
+
+    The executor is shut down without waiting, so the caller regains control at the
+    timeout even if the model call hangs (a `with ThreadPoolExecutor()` block would
+    join the worker and block for the model's full duration). The abandoned worker
+    finishes in the background and its result is discarded.
+
+    Known limitation: Python cannot kill a running thread, so each timed-out call keeps
+    one thread alive until the provider returns, and there is no cap yet on how many can
+    pile up during an outage. Bounded concurrency / circuit breaking is Phase 8 work.
     """
-    with ThreadPoolExecutor(max_workers=1) as executor:
+    executor = ThreadPoolExecutor(max_workers=1)
+    try:
         future = executor.submit(fn, *args, **kwargs)
-        try:
-            return future.result(timeout=timeout_s)
-        except FuturesTimeout:
-            logger.warning("Strands call timed out after %.2fs", timeout_s)
-            return None
-        except Exception as e:
-            logger.warning("Strands call failed: %s", e)
-            return None
+        return future.result(timeout=timeout_s)
+    except FuturesTimeout:
+        logger.warning("Strands call timed out after %.2fs", timeout_s)
+        return None
+    except Exception as e:
+        logger.warning("Strands call failed: %s", type(e).__name__)
+        return None
+    finally:
+        executor.shutdown(wait=False, cancel_futures=True)
 
 
 class SafeStrandsAgent:
@@ -152,7 +165,7 @@ class SafeStrandsAgent:
             return base_response
 
         # Never touch crisis/safety flows
-        if self._looks_like_crisis(user_text) or self._looks_like_crisis(base_response):
+        if self._is_safety_sensitive(user_text) or self._is_safety_sensitive(base_response):
             return base_response
 
         # Check topic whitelist
@@ -181,7 +194,7 @@ class SafeStrandsAgent:
         if not strands_reply:
             return base_response
 
-        if self._looks_like_crisis(strands_reply):
+        if self._is_safety_sensitive(strands_reply):
             logger.warning(
                 "SafeStrandsAgent '%s' produced safety-violating text; discarded.",
                 self.name,
@@ -194,6 +207,33 @@ class SafeStrandsAgent:
             return base_response
 
         return cleaned
+
+    def safe_run(self, prompt: str) -> str:
+        """
+        Run a raw prompt through the guarded agent (used by MisspellingCorrector).
+
+        Returns "" (callers then keep their original text) when:
+          - the integration is disabled / SDK unavailable,
+          - the prompt itself is safety-sensitive (never sent to the model),
+          - the call errors or exceeds the timeout,
+          - the model output is safety-sensitive.
+        "Safety-sensitive" is the same deterministic check the router uses (see
+        _is_safety_sensitive), not a narrower keyword list.
+        """
+        if not (self.enabled and self._agent):
+            return ""
+        if self._is_safety_sensitive(prompt):
+            return ""
+
+        def _run():
+            if hasattr(self._agent, "run"):
+                return self._agent.run(prompt)  # type: ignore[call-arg]
+            return self._agent(prompt)  # type: ignore[call-arg]
+
+        reply = _call_with_timeout(_run, self.timeout_seconds)
+        if not reply or self._is_safety_sensitive(reply):
+            return ""
+        return str(reply).strip()
 
     # ===================== INTERNAL SAFETY HELPERS =====================
 
@@ -213,6 +253,21 @@ class SafeStrandsAgent:
             return False
         text = (user_text or "").lower()
         return any(t.lower() in text for t in self.allowed_topics)
+
+    def _is_safety_sensitive(self, text) -> bool:
+        """
+        True if text must never be sent to, or accepted from, the model: it routes to a
+        safety-critical lane under the deterministic router (crisis, Title IX, conduct,
+        incl. the router's obfuscation-resistant views) OR matches the legacy keyword
+        list below (which also covers emergency numbers such as 988/911).
+        """
+        if not text:
+            return False
+        s = str(text)
+        if self._looks_like_crisis(s):
+            return True
+        r = _safety_route(s)
+        return bool(r and r.level in SAFETY_CRITICAL_LANES)
 
     def _looks_like_crisis(self, text) -> bool:
         """

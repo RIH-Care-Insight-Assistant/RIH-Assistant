@@ -11,6 +11,17 @@ from dataclasses import dataclass
 from typing import Optional
 from .rules import Rules
 
+# Lanes whose deterministic template must never be pre-empted or rewritten by any
+# downstream component (decline handling, planners, LLM/Strands enhancers).
+# Priority between them comes from Rules (urgent_safety=1, title_ix=2, harassment_hate=3);
+# "urgent_safety" maps to the "crisis" response key.
+SAFETY_CRITICAL_LANES = frozenset({"urgent_safety", "title_ix", "harassment_hate"})
+
+# Lanes whose guidance a decline ("no thanks, any other options?") must never replace with
+# generic campus alternatives: every safety-critical lane plus retention (C1-v0.2 contract
+# item 2). Retention is not safety-critical, so it is not in SAFETY_CRITICAL_LANES.
+DECLINE_PROTECTED_LANES = SAFETY_CRITICAL_LANES | {"retention_withdraw"}
+
 @dataclass
 class RouteResult:
     level: Optional[str]
