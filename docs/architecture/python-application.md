@@ -1,8 +1,8 @@
 # Python Application Architecture (as of C1)
 
-Author: Abhinav Varma Vathadi · Status: describes `feature/abhinav-c1-foundation-safety`.
+Author: Abhinav Varma Vathadi · Status: describes `main` after PR #4 (merged 2026-10-11).
 
-> **C1 interface contracts — Pending Joint Approval.** Everything in §4 is a proposal for `docs/INTERFACE_CONTRACTS.md` (Devika is drafting that file). Nothing here is agreed until Abhinav and Devika both approve it.
+> **C1 interface contracts — Approved (C1-v0.2).** Both contributors approved the four §4 contracts on 2026-10-11 in [issue #7](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/7): Abhinav (original statement kept in closed duplicate [#6](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/6)) and [Devika](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/7#issuecomment-6114029088). The proposed response additions in §4 are not approved and belong to the C2 contracts.
 
 ## 1. Module map
 
@@ -56,14 +56,14 @@ See `docs/safety/crisis-routing.md` §1. In short:
 - Models can escalate but never de-escalate.
 - Model outages produce identical deterministic output.
 
-## 4. Proposed contracts for Phase 2 (FastAPI) — Pending Joint Approval
+## 4. C1 contracts the Phase 2 backend builds on — Approved (C1-v0.2)
 
 | C1 contract | Where | Status |
 |---|---|---|
-| `Dispatcher.respond()` input/output shape (below) | `app/agent/dispatcher.py` | Pending Joint Approval |
-| `SAFETY_CRITICAL_LANES` semantics: these lanes are terminal and exact | `app/router/safety_router.py` | Pending Joint Approval |
-| `DECLINE_PROTECTED_LANES` = safety lanes + `retention_withdraw`: a decline never replaces their guidance (implements C1-v0.2 item 2) | `app/router/safety_router.py` | Pending Joint Approval |
-| Safety dataset schema v1.1.0 (`id`, `kind`, `expected_lane`, `text`; kind `non_critical` added) | `tests/data/safety_routing_cases.json` | Pending Joint Approval |
+| `Dispatcher.respond()` input/output shape (below) | `app/agent/dispatcher.py` | Approved by both (#7) |
+| `SAFETY_CRITICAL_LANES` semantics: these lanes are terminal and exact | `app/router/safety_router.py` | Approved by both (#7) |
+| `DECLINE_PROTECTED_LANES` = safety lanes + `retention_withdraw`: a decline never replaces their guidance (implements C1-v0.2 item 2) | `app/router/safety_router.py` | Approved by both (#7) |
+| Safety dataset schema v1.2.0 (`id`, `kind`, `expected_lane`, `text`; kinds `positive`, `adversarial`, `multi_intent`, `negation`, `negative`, `non_critical`). The schema has not changed since v1.1.0; v1.2.0 added cases | `tests/data/safety_routing_cases.json` | Approved by both (#7) |
 
 The backend should call **one** entry point and must not re-implement routing:
 
@@ -73,7 +73,7 @@ Dispatcher(force_mode: str | None = None, llm_fn=None).respond(user_text: str) -
 # trace[0] == {"event": "route", "level": <lane or None>}   (always first)
 ```
 
-Proposed additions, **not implemented in C1**, for joint agreement:
+Proposed additions, **not approved and not implemented**. They move to the C2 API contracts for joint agreement:
 - An explicit `safety_lane` field and an `is_terminal_safety` flag in the response. The UI could then render crisis content specially without parsing text.
 - A typed `RouteResult` with an optional `matched_view` field ("normal" | "skeleton") for privacy-safe audit. It would record which rule family and view matched, never the user text.
 - Stable trace event names: `route`, `decline`, `spell_correct`, `plan`, `tool`, `enhance`. The API should expose these to the admin UI only, never to the student.

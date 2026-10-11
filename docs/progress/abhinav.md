@@ -4,16 +4,29 @@ Maintained only by Abhinav (or his coding agent) on his own feature branches. Re
 
 ## Current
 
-- **Checkpoint:** C1 (Phases 0–1): foundation and safety.
-- **Branch:** `feature/abhinav-c1-foundation-safety`, created from `origin/main` @ `b05da15`.
-- **C1 scope (provisional split, needs both approvals):** Python application architecture, deterministic safety router, crisis-routing regression tests, baseline verification, initial GitHub Actions CI.
-- **Devika (C1):** retrieval, KB audit, decline detection, clarification, related tests, initial interface-contract drafts.
-- **State (2026-10-11):** draft PR RIH-Care-Insight-Assistant/RIH-Assistant#4 is open.
-  - Review round 1: Devika's 4 points were fixed in `7a70801` (pushed with approval; CI passed all 8 checks). The reply is posted and her review re-requested.
-  - Review round 2: her independent review found the curly-apostrophe crisis bypass (audit D12). The fix and a source-hygiene cleanup (D13) are committed **locally only**, awaiting Abhinav's approval to push.
-- **Devika's branch:** `feature/devika-c1-foundation-safety`, draft PR #5. I have only read it; nothing on it was modified.
-  - Her changes are all new files: KB audit, `tests/c1/`, `INTERFACE_CONTRACTS.md` C1-v0.2, `CONTRIBUTION_MATRIX.md`, `DECISION_LOG.md`, `THREAT_MODEL.md`, `docs/progress/devika.md`, `ruff-c1.toml`.
-  - No file overlaps with this branch.
+- **Checkpoint:** C1 (Phases 0–1), close-out. **C1 is not accepted yet**; see `docs/PROJECT_STATE.md` → C1 acceptance.
+- **Branch:** `feature/abhinav-c1-closeout-docs`, created from `origin/main` @ `7646431`.
+- **Merged (verified on GitHub 2026-10-11):**
+  - My PR #4 (`feature/abhinav-c1-foundation-safety`, head `6bea6a3`), approved by Devika.
+  - Devika's PR #5 (`feature/devika-c1-foundation-safety`, head `4a35cc2`), approved by me.
+  - CI on `main` @ `7646431` (run 38175224504): all 8 jobs passed.
+- **This branch → PR #8** (docs, `.gitignore` and tests; no application code or contract text changes):
+  - Root `AGENTS.md` and `CLAUDE.md` (`CLAUDE.md` imports `AGENTS.md`, so there is one standard).
+  - `docs/MASTER_PLAN.md`, `docs/PROJECT_STATE.md`, `docs/RELEASE_GATES.md` (I own it; Devika contributes and reviews), `docs/instructions/ABHINAV_LAUNCHER.md`.
+  - Architecture §4: dataset reference corrected to v1.2.0; marked approved by both; the proposed response additions marked not approved (C2).
+  - `docs/INTERFACE_CONTRACTS.md`: unchanged from `main`. My earlier one-row edit was reverted because Devika's PR #9 owns the final joint approval record (both rows).
+  - O6: `.gitignore` ignores `**/app/logs/`; `tests/test_audit_log_ignored.py` checks it with `git check-ignore`.
+  - `tests/test_safety_model_paths.py::test_model_features_are_off_by_default`: model features stay off unless explicitly enabled.
+  - `tests/test_repo_assumptions.py`: the agent/state docs only link to files that exist; `CLAUDE.md` imports `AGENTS.md`.
+- **Approvals (2026-10-11):**
+  - C1-v0.2 and architecture §4 items 1–4 (dataset schema v1.2.0): approved by **both** in issue #7. My original statement is kept in #6, closed as a duplicate.
+  - The §4 proposed response additions are **not approved** by either of us; they move to C2.
+  - C2 stack (FastAPI, React + TypeScript, Vite, SQLite): I approved; Devika pending. Node version and lockfile still to agree. Admin endpoints stay protected or disabled until real authentication exists.
+- **My decisions, awaiting Devika:**
+  - Deferrals approved with conditions: O4, O5, O7 (README before any public C2 demo), O8, O9, O10, formal KB freshness, comprehensive held-out testing (Phase 5).
+  - New C1 blocker B9: Devika runs a small held-out safety check before C1 acceptance.
+  - Model features stay off until operational safeguards exist.
+- **Devika's repairs:** PR #9 (`feature/devika-c1-phase1-repairs`, draft, `3edc240`). I do not implement any part of B1–B4; I review and rerun her PR.
 
 ## Completed in C1
 
@@ -55,50 +68,45 @@ Maintained only by Abhinav (or his coding agent) on his own feature branches. Re
 | same, new tests on `7a70801` code | 4 test files | 52 failed (expected), 248 passed |
 | same, `origin/main` snapshot + dataset v1.2.0 | `safety_eval.py` | 13/75 safety-critical (17.3%), FP 0/16 |
 | Windows 11 native, Python 3.13.2, apostrophe fix | `pytest -q`; `safety_eval.py --fail-on-miss` | 356 passed; exit 0 |
+| WSL2, Python 3.14.4, integrated `main` @ `7646431` | `ruff check .`; `ruff-c1.toml` lint + format; `pytest -q`; `check_routes.py`; `safety_eval.py --fail-on-miss`; smoke; KB audit | clean; clean; 412 passed; passed; 75/75, FP 0/16, exit 0; OK; exit 0 |
+| Windows 11 native, Python 3.13.2, integrated `main` @ `7646431` | `pytest -q --basetemp=<writable dir>` | 411 passed, 1 skipped (symlink test) |
+| GitHub Actions run 38175224504, push to `main` @ `7646431` | full workflow | all 8 jobs passed |
+| GitHub Actions run 38176667555, PR #8 first push (`920c2a7`) | full workflow | all 8 checks passed |
 
 macOS has not been run locally; CI covers it, and Devika runs her Mac adversarial tests.
 
 ## Needs Devika / joint decision
 
-1. **Review and approve** the C1 PR (nothing merges without it).
-2. **Dispatcher overlap:** my 3 hunks in `app/agent/dispatcher.py` sit next to the decline block (step 1.25). If Devika also edits that block, keep both changes. The guard must stay `route_level not in DECLINE_PROTECTED_LANES`.
-3. **Decline detector false positive (her area):** "I don't need an appointment, just the RIH hours" → alternatives (audit O3).
-4. **Router policy (joint):** O1 and O2 are fixed after her review and need her approval. O10 is open: should generic "hate" ("I hate waiting for appointments") stay in the conduct lane?
-5. **Dependencies (joint):** drop unused `numpy`/`pandas`; pin or lock the rest (O4). `requirements.txt` is unchanged in C1.
-6. **Duplicate test file** `tests/tests/test_phase6_production_validation.py`: remove (O5)?
-7. **Held-out safety cases:** Devika (or anyone who has not seen the patterns) writes crisis/Title IX phrasings, to measure recall honestly.
-8. **Interface contracts (Pending Joint Approval):** the `Dispatcher.respond()` shape, `SAFETY_CRITICAL_LANES` and `DECLINE_PROTECTED_LANES` semantics, and safety dataset schema v1.1.0 (architecture doc §4).
-   - These align with her C1-v0.2 draft: item 2 says Abhinav ensures Title IX, conduct and retention guidance cannot be replaced by alternatives.
-   - None are agreed yet.
-9. **Shared docs:**
-   - Her branch creates `CONTRIBUTION_MATRIX.md`, `DECISION_LOG.md`, `INTERFACE_CONTRACTS.md` and `THREAT_MODEL.md`.
-   - Her DECISION_LOG assigns root `AGENTS.md`/`CLAUDE.md`, `MASTER_PLAN.md` and `PROJECT_STATE.md` to me. `RELEASE_GATES.md` is still to be coordinated.
-   - I have not created any of them yet. They are pending approval and belong in a separate, agreed change.
-10. **Independent safety review:** before we approve integration, Devika independently reviews the safety changes and runs her own adversarial tests against this branch.
+The authoritative C1 checklist (blockers B1–B9, deferrals, approvals) is `docs/PROJECT_STATE.md`.
+Done: C1-v0.2 and architecture §4 items 1–4 are approved by both in #7. Still open:
+
+1. **Her C1 repairs (B1–B4)** are in PR #9 (`3edc240`). I review them and rerun them on WSL2 and Windows.
+   - If her work touches the dispatcher's decline block (step 1.25), the guard must stay `route_level not in DECLINE_PROTECTED_LANES`.
+   - O1 ("I hate myself" → counseling) and O2 (record transfer ≠ retention) were her review findings, fixed in `7a70801`; she approved PR #4 with them.
+2. **PR #8 review.** Her two documentation corrections (Windows venv activation; stale checklist items) are fixed on the PR #8 branch.
+3. **Deferrals:** accept or reject O4, O5, O7, O8, O9, O10, formal KB freshness and comprehensive held-out testing. O6 is fixed in PR #8, not deferred. `RELEASE_GATES.md` ownership is decided (me; she contributes and reviews).
+4. **B9:** her small held-out safety check before C1 acceptance.
+5. **C2:** stack approval, Node version and lockfile, merge order (I propose mine merges first), and the C2-v0.1 contracts.
 
 ## Needs a GitHub admin (human)
 
-See audit §5:
-- Enable `enforce_admins`.
-- Make `Lint (ruff)`, `Safety gate` and the `Tests (...)` jobs required checks once CI has run.
-- Dismiss stale approvals.
-- Enable secret scanning, push protection and Dependabot alerts.
-- Add `CODEOWNERS`, or turn off "require code owner review".
+Abhinav applies these himself. The exact required check names and the full recommended settings are in `docs/PROJECT_STATE.md` → GitHub settings for `main`.
 
 ## Resume
 
 ```bash
 # WSL2 (venv kept outside the repo)
 cd <your RIH-Assistant checkout>
-git fetch origin && git switch feature/abhinav-c1-foundation-safety
+git fetch origin && git switch main && git pull --ff-only
 python3 -m venv ~/.venvs/rih && . ~/.venvs/rih/bin/activate
 pip install -r requirements.txt -r requirements-dev.txt
+export STRANDS_ENABLED=false RIH_PLANNER=RULE
 ruff check . && python -m pytest -q && python scripts/safety_eval.py --fail-on-miss
 ```
 
 **Next safe step:**
-1. With Abhinav's approval, push the review-fix commit to PR #4.
-2. Reply to Devika's review and re-request it.
-3. Wait for CI, her adversarial tests and her approval. Do not merge.
-4. Review her PR #5.
-5. Then align on the shared docs (item 9 above) before C2.
+1. Devika reviews PR #8 (including `RELEASE_GATES.md` and the deferral table) and records her row in the contract Agreement record. PR #8 merges only after her approval and passing CI.
+2. I apply the GitHub settings listed in `docs/PROJECT_STATE.md` (B7).
+3. Devika opens her C1 repair PR from `feature/devika-c1-phase1-repairs`. I review it and rerun it on WSL2 and Windows. No merge without approval.
+4. Devika runs the small held-out safety check (B9). I fix any routing misses it finds.
+5. We both run the integrated `main` and record the C1 completion report. C2 implementation starts only after that.
