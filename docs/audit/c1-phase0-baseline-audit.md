@@ -38,19 +38,24 @@ Resolved versions of the unpinned dependencies on that date: `strands-agents` 1.
 | D6 | Medium | The Strands "hard timeout" did not return control. Leaving the `with ThreadPoolExecutor()` block joined the worker. | Test: 1.00s blocked with a 0.05s timeout | `shutdown(wait=False)` |
 | D7 | Low | Crisis template labelled 410-455-2542 "RIH Urgent Care". The official page calls it the After-Hours Support Line via RIH. | health.umbc.edu, 2026-10-11 | Label corrected, number unchanged |
 | D8 | Low | A planner step `{"tool": "crisis"}` fell through to retrieval in `_exec_tool`. Unreachable today. | Code reading | Maps to the crisis template |
+| D9 | High | *(PR #4 review, Devika)* Decline handling still replaced **retention** guidance. Separately, "dropping out" never reached the retention lane at all. | "I don't want counseling, I want to withdraw from school" → alternatives | `DECLINE_PROTECTED_LANES`; retention inflections |
+| D10 | High | *(PR #4 review, Devika)* `SafeStrandsAgent` screened text with a keyword list far narrower than the router. "i want to die", "I'm suicidal", "I was raped", slurs, and "k1ll mys3lf" could all reach the model. | Wrapper flagged 1 of 6 router-flagged phrases | `_is_safety_sensitive()`: keyword list **or** safety-critical router lane, applied to prompt, inputs and output |
+| D11 | Medium | Counseling template said "see crisis options above" when nothing was above it. | Template text | Names 988 and 911 directly |
 
-## 4. Open findings (not changed here; need owner or joint decision)
+## 4. Open findings (need owner or joint decision)
 
 | ID | Area / suggested owner | Finding |
 |---|---|---|
-| O1 | Router policy (joint) | "I hate myself" → conduct/harassment template. Proposed: route to counseling. |
-| O2 | Router, retention lane (joint) | "how do I transfer my medical records?" → retention template (generic `transfer` trigger). |
+| O1 | Router policy (joint) | **Fixed in this branch after the PR #4 review; pending Devika's approval.** "I hate myself" was routed to the conduct/harassment template. It now routes to counseling. |
+| O2 | Router, retention lane (joint) | **Fixed in this branch after the PR #4 review; pending Devika's approval.** "how do I transfer my medical records?" was routed to retention. `transfer` now excludes records, insurance and prescriptions. |
 | O3 | Decline detector (Devika) | `i (don't\|dont\|do not) (need\|want)` matches any such sentence. "I don't need an appointment, just the RIH hours" → alternatives. |
 | O4 | Dependencies (joint) | Runtime deps are partly unpinned (`numpy`, `pandas`, `strands-agents*`), and `numpy`/`pandas` are unused. Proposal: drop the unused ones and pin or lock the rest. Not changed in C1 because dependency changes need both approvals. |
 | O5 | Tests (joint) | The duplicate `tests/tests/` file should be removed. Left in place: tests are never removed silently. |
 | O6 | Privacy (Phase 4/7) | `MisspellingCorrector` sends raw user text to the model provider when enabled. `app/ui/audit.py` writes `app/logs/audit.jsonl` relative to the current directory, and the path is not gitignored. |
 | O7 | Docs (joint) | README: placeholder clone URL (`YOUR_USERNAME`), stale test-count claim, AWS key export instructions. Edits deferred because the README is shared. |
 | O8 | Lint | Broader Ruff rules (E, F, W, B, S) report 363 findings: 190 are `assert` in tests, 133 long lines, 7 unused imports, 3 unused variables. CI gates only on syntax and undefined-name errors until both agree on a style baseline. |
+| O9 | Resilience (Phase 8, Abhinav) | *(PR #4 review)* Timed-out Strands calls keep their worker thread running until the provider returns, with no cap on how many accumulate. Responses are unaffected; resource use is not. Plan: bounded concurrency plus a circuit breaker. |
+| O10 | Router policy (joint) | Generic `hate` routes non-self-directed dislikes to conduct ("I hate waiting for appointments"). Narrowing it risks missing real bias reports. |
 
 ## 5. GitHub settings (inspected 2026-10-11; changes require a human admin)
 

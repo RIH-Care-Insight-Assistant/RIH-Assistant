@@ -9,6 +9,9 @@
 #    self-harm, harm to others) and a second "skeleton" view of the text that undoes
 #    common obfuscation (zero-width chars, homoglyphs, leetspeak, s p a c e d letters).
 #    Negation does NOT suppress crisis routing (fail-safe); see docs/safety/crisis-routing.md.
+#  - C1 review (PR #4): self-directed "hate myself/my life/my body" -> counseling, not conduct;
+#    "transfer" is retention only when not about records/insurance/prescriptions. The CSV no
+#    longer lists bare "hate"/"transfer", because CSV triggers cannot carry these exclusions.
 
 from __future__ import annotations
 
@@ -231,21 +234,33 @@ class Rules:
             r"\bsextortion\b", r"\brevenge\s+porn\b",
         ]
 
+        # Self-directed distress ("I hate myself / my life / my body") is not a conduct
+        # report; it is excluded here and routed to counseling below (C1 review, PR #4).
+        SELF_DIRECTED = r"(?:my\s*self|my\s+(?:life|body))\b"
+
         CONDUCT = [
-            r"\bslur\b", r"\bhate\b", r"\bracist\b", r"\bhomophobic\b", r"\bableist\b",
+            r"\bslur\b", r"\bhate\b(?!\s+" + SELF_DIRECTED + r")", r"\bracist\b", r"\bhomophobic\b", r"\bableist\b",
             r"\bslurs\b", r"\bthreatened\b", r"\bbull(ied|ies)\b", r"\bintimidated\b",
             r"\bthreat(s|en|ening)?\b", r"\bbully(ing)?\b", r"\bintimidat(e|ion|ing)?\b",
             r"\bdoxx(ing)?\b", r"\bbias\s+incident\b", r"\btargeted\s+harassment\b", r"\bdiscrimination\b",
         ]
 
         RETENTION = [
-            r"\b(withdraw(al)?|transfer|drop\s?out|leave\s+school|quit\s+college|leave\s+of\s+absence|stop\s+out)\b"
+            r"\b(withdraw(al)?|drop\s?out|leave\s+school|quit\s+college|leave\s+of\s+absence|stop\s+out)\b",
+            # C1 review (PR #4): inflections, and "transfer" only when it is not about moving
+            # records/insurance/prescriptions ("transfer my medical records" is not retention).
+            r"\b(withdraw(ing|n)|drop(ping|ped)\s+out|leav(e|ing)\s+(school|college|umbc)|"
+            r"quit(ting)?\s+(school|college)|stop(ping|ped)\s+out)\b",
+            r"\btransfer(ring|red|s)?\b(?!\s+(of\s+)?(my\s+|the\s+|our\s+)?(medical\s+|health\s+|immunization\s+|"
+            r"vaccin\w*\s+)?(records?|files?|insurance|prescriptions?|refills?|care|money|funds|payments?))",
         ]
 
         COUNSELING = [
             r"\b(counsel(ing)?|therapy|therapist|mental\s+health|talk\s+to\s+(someone|a\s+counsel(or|l)?)?)\b",
             r"\b(appointment|schedule|session|intake|reschedule|cancel)\b",
             r"\b(workshop|support\s+group|group\s+counseling)\b",
+            # Self-directed distress below the crisis threshold (excluded from conduct above).
+            r"\bhate\s+" + SELF_DIRECTED,
         ]
 
         return {

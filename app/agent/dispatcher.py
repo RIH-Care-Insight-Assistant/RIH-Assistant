@@ -2,7 +2,7 @@ from __future__ import annotations
 import os
 from typing import Dict, Any, List, Tuple
 
-from ..router.safety_router import SAFETY_CRITICAL_LANES, route as safety_route
+from ..router.safety_router import DECLINE_PROTECTED_LANES, SAFETY_CRITICAL_LANES, route as safety_route
 from ..answer.compose import crisis_message, template_for, from_chunks
 from ..retriever.retriever import retrieve
 from .response_enhancer import ResponseEnhancer  # Phase 6: optional safe enhancer
@@ -139,9 +139,10 @@ class Dispatcher:
             return {"text": crisis_message(), "trace": self.trace}
 
         # 1.25) Phase 7: user clearly declines RIH services → suggest safe campus alternatives
-        # Only if NOT in a safety-critical lane: "I don't want counseling, I was assaulted"
-        # must still get the Title IX template, not generic alternatives.
-        if route_level not in SAFETY_CRITICAL_LANES and self._decline_detector.is_decline(user_text):
+        # Only if NOT in a decline-protected lane: "I don't want counseling, I was assaulted"
+        # must still get the Title IX template, and "...I want to withdraw" the retention
+        # template, not generic alternatives.
+        if route_level not in DECLINE_PROTECTED_LANES and self._decline_detector.is_decline(user_text):
             alt_text = safe_alternatives()
             self.trace.append({"event": "decline", "handled_by": "alternatives"})
             return {"text": alt_text, "trace": self.trace}

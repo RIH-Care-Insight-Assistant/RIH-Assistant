@@ -7,6 +7,8 @@ Regression for two defects found in the C1 audit:
      its tests only passed because they stubbed the whole wrapper.
   2. _call_with_timeout() waited for the worker thread on exit, so a hung model
      blocked the caller for the model's full duration despite the "hard timeout".
+  3. (PR #4 review) the wrapper screened text with a keyword list far narrower than
+     the router, so e.g. "i want to die" or "I was raped" could reach the model.
 
 Only local fake agents are used; nothing reaches a real model.
 """
@@ -80,6 +82,54 @@ def test_safe_run_never_sends_crisis_prompts_to_model(monkeypatch):
 def test_safe_run_fails_closed(monkeypatch, fake):
     s = _agent(monkeypatch, fake)
     assert s.safe_run("fix: apointment") == ""
+
+
+# PR #4 review (Devika): the wrapper must use the same safety check as the router, not a
+# narrower keyword list. None of these match the legacy keyword list on its own.
+ROUTER_ONLY_SAFETY_PHRASES = [
+    "i want to die",
+    "I'm suicidal",
+    "k1ll mys3lf",
+    "I was raped",
+    "someone used a racist slur against me",
+]
+
+
+@pytest.mark.parametrize("phrase", ROUTER_ONLY_SAFETY_PHRASES)
+def test_direct_safe_run_never_sends_safety_critical_prompts(monkeypatch, phrase):
+    _Echo.calls = []
+    s = _agent(monkeypatch, _Echo)
+    assert s.safe_run(f"fix spelling: {phrase}") == ""
+    assert _Echo.calls == []
+
+
+@pytest.mark.parametrize("phrase", ROUTER_ONLY_SAFETY_PHRASES)
+def test_direct_generate_never_sends_safety_critical_text(monkeypatch, phrase):
+    _Echo.calls = []
+    s = _agent(monkeypatch, _Echo)
+    base = "Base reply about counseling."
+    assert s.generate(f"counseling question: {phrase}", base) == base
+    assert s.generate("counseling hours?", f"Base reply. {phrase}") == f"Base reply. {phrase}"
+    assert _Echo.calls == []
+
+
+@pytest.mark.parametrize("phrase", ROUTER_ONLY_SAFETY_PHRASES)
+def test_safety_critical_model_output_is_discarded(monkeypatch, phrase):
+    class Says(_Echo):
+        def run(self, prompt):
+            return f"Sure. {phrase}"
+
+    s = _agent(monkeypatch, Says)
+    assert s.safe_run("fix: apointment") == ""
+    assert s.generate("counseling hours?", "Base reply about counseling.") == "Base reply about counseling."
+
+
+def test_ordinary_text_still_reaches_the_model(monkeypatch):
+    # Control: the stricter check must not block normal, non-safety requests.
+    _Echo.calls = []
+    s = _agent(monkeypatch, _Echo)
+    assert s.generate("counseling hours?", "Base reply about counseling.") == "apointment -> appointment"
+    assert len(_Echo.calls) == 1
 
 
 def test_timeout_is_enforced_for_the_caller(monkeypatch):

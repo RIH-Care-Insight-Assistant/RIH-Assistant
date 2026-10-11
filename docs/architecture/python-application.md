@@ -30,7 +30,8 @@ user_text
   │      urgent_safety ─────────────────────────────► crisis template   (terminal)
   │      title_ix / harassment_hate ────────────────► lane template     (terminal)
   │
-  ├─ 2. decline detector (only if lane ∉ SAFETY_CRITICAL_LANES) ─► campus alternatives (terminal)
+  ├─ 2. decline detector (only if lane ∉ DECLINE_PROTECTED_LANES = safety lanes + retention)
+  │      ─► campus alternatives (terminal)
   │
   ├─ 3. retention lane, or counseling without scheduling intent ─► lane template (terminal)
   │
@@ -61,7 +62,8 @@ See `docs/safety/crisis-routing.md` §1. In short:
 |---|---|---|
 | `Dispatcher.respond()` input/output shape (below) | `app/agent/dispatcher.py` | Pending Joint Approval |
 | `SAFETY_CRITICAL_LANES` semantics: these lanes are terminal and exact | `app/router/safety_router.py` | Pending Joint Approval |
-| Safety dataset schema v1.0.0 (`id`, `kind`, `expected_lane`, `text`) | `tests/data/safety_routing_cases.json` | Pending Joint Approval |
+| `DECLINE_PROTECTED_LANES` = safety lanes + `retention_withdraw`: a decline never replaces their guidance (implements C1-v0.2 item 2) | `app/router/safety_router.py` | Pending Joint Approval |
+| Safety dataset schema v1.1.0 (`id`, `kind`, `expected_lane`, `text`; kind `non_critical` added) | `tests/data/safety_routing_cases.json` | Pending Joint Approval |
 
 The backend should call **one** entry point and must not re-implement routing:
 

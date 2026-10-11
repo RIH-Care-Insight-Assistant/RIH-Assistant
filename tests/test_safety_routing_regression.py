@@ -74,6 +74,19 @@ def test_dispatcher_returns_exact_safety_template(dispatcher, case):
     assert not {"decline", "plan", "tool", "enhance", "spell_correct"} & set(events)
 
 
+NON_CRITICAL_CASES = [c for c in CASES if c["kind"] == "non_critical"]
+NON_CRITICAL_KEY = {"retention_withdraw": "retention", "counseling": "counseling"}
+
+
+@pytest.mark.parametrize("case", NON_CRITICAL_CASES, ids=_ids(NON_CRITICAL_CASES))
+def test_dispatcher_returns_exact_non_critical_template(dispatcher, case):
+    # PR #4 review: retention guidance must not be replaced by generic alternatives,
+    # and self-directed distress must not get the conduct/harassment template.
+    out = dispatcher.respond(case["text"])
+    assert out["text"] == template_for(NON_CRITICAL_KEY[case["expected_lane"]])
+    assert not any(e.get("event") == "decline" for e in out["trace"])
+
+
 NEGATIVE_CASES = [c for c in CASES if c["kind"] == "negative"]
 
 
@@ -101,3 +114,11 @@ def test_crisis_template_keeps_verified_contacts():
     text = crisis_message()
     for token in ("911", "988", "410-455-5555", "410-455-2542"):
         assert token in text
+
+
+def test_counseling_template_names_crisis_contacts_itself():
+    # Self-directed distress now routes here, so the template must not point to
+    # "crisis options above" that are not in the reply.
+    text = template_for("counseling")
+    assert "988" in text and "911" in text
+    assert "above" not in text.lower()

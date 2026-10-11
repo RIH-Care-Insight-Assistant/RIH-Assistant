@@ -17,6 +17,11 @@ from .rules import Rules
 # "urgent_safety" maps to the "crisis" response key.
 SAFETY_CRITICAL_LANES = frozenset({"urgent_safety", "title_ix", "harassment_hate"})
 
+# Lanes whose guidance a decline ("no thanks, any other options?") must never replace with
+# generic campus alternatives: every safety-critical lane plus retention (C1-v0.2 contract
+# item 2). Retention is not safety-critical, so it is not in SAFETY_CRITICAL_LANES.
+DECLINE_PROTECTED_LANES = SAFETY_CRITICAL_LANES | {"retention_withdraw"}
+
 @dataclass
 class RouteResult:
     level: Optional[str]

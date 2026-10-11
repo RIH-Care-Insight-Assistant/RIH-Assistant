@@ -24,7 +24,7 @@ TEMPLATES = {
     ),
     "counseling": (
         "Counseling at RIH: appointments, brief therapy, referrals, and workshops are available. "
-        "If this is urgent, see crisis options above."
+        "If this is urgent or you might be in danger, call or text 988, or call 911."
     ),
 }
 

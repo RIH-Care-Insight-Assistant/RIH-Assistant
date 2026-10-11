@@ -66,6 +66,26 @@ def test_downstream_components_never_run_for_safety_lanes():
     assert any(e.get("event") == "decline" for e in out["trace"])
 
 
+def test_decline_never_replaces_retention_guidance():
+    # PR #4 review / C1-v0.2 contract item 2: retention is decline-protected too.
+    mod = _dispatcher_mod()
+    d = mod.Dispatcher(force_mode="RULE")
+
+    class AlwaysDecline:
+        def is_decline(self, text):
+            return True
+
+    d._decline_detector = AlwaysDecline()
+    for msg in (
+        "I don't want counseling, I want to withdraw from school",
+        "No thanks, I'm thinking about dropping out",
+        "any other options besides a leave of absence?",
+    ):
+        out = d.respond(msg)
+        assert out["text"] == template_for("retention"), msg
+        assert not any(e.get("event") == "decline" for e in out["trace"]), msg
+
+
 def test_llm_planner_is_never_consulted_for_safety_lanes():
     mod = _dispatcher_mod()
     calls = []
