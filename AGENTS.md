@@ -24,7 +24,8 @@ or respond to emergencies.
    [`docs/instructions/ABHINAV_LAUNCHER.md`](docs/instructions/ABHINAV_LAUNCHER.md),
    [`docs/instructions/DEVIKA_LAUNCHER.md`](docs/instructions/DEVIKA_LAUNCHER.md).
 
-Also relevant: [`docs/DECISION_LOG.md`](docs/DECISION_LOG.md),
+Also relevant: [`docs/RELEASE_GATES.md`](docs/RELEASE_GATES.md),
+[`docs/DECISION_LOG.md`](docs/DECISION_LOG.md),
 [`docs/THREAT_MODEL.md`](docs/THREAT_MODEL.md),
 [`docs/safety/crisis-routing.md`](docs/safety/crisis-routing.md),
 [`docs/architecture/python-application.md`](docs/architecture/python-application.md).

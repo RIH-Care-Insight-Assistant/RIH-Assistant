@@ -10,17 +10,23 @@ Maintained only by Abhinav (or his coding agent) on his own feature branches. Re
   - My PR #4 (`feature/abhinav-c1-foundation-safety`, head `6bea6a3`), approved by Devika.
   - Devika's PR #5 (`feature/devika-c1-foundation-safety`, head `4a35cc2`), approved by me.
   - CI on `main` @ `7646431` (run 38175224504): all 8 jobs passed.
-- **This branch (docs only, no code or contract changes):**
+- **This branch → PR #8** (docs, `.gitignore` and tests; no application code or contract text changes):
   - Root `AGENTS.md` and `CLAUDE.md` (`CLAUDE.md` imports `AGENTS.md`, so there is one standard).
-  - `docs/MASTER_PLAN.md`, `docs/PROJECT_STATE.md`, `docs/instructions/ABHINAV_LAUNCHER.md`.
-  - Architecture §4: dataset reference corrected to v1.2.0; my approval recorded; the proposed response additions marked not approved (moved to C2).
-  - `docs/INTERFACE_CONTRACTS.md`: only my row in the agreement record.
-  - `tests/test_repo_assumptions.py`: checks that the agent instruction files point to documents that exist.
-- **My approvals (2026-10-11, explicit, recorded in the approval issue):**
-  - C1-v0.2 `INTERFACE_CONTRACTS.md` and the matching `CONTRIBUTION_MATRIX.md`.
-  - Architecture §4 contracts: `Dispatcher.respond()` return shape; `SAFETY_CRITICAL_LANES` and `DECLINE_PROTECTED_LANES` semantics; safety dataset schema v1.2.0.
-  - C2 stack: FastAPI, React + TypeScript, Vite, SQLite. Node version and lockfile still to agree. Admin endpoints stay protected or disabled until real authentication exists.
-- **Not approved:** the §4 proposed response additions (`safety_lane`, `is_terminal_safety`, `matched_view`, trace event names). They belong in the C2 contracts.
+  - `docs/MASTER_PLAN.md`, `docs/PROJECT_STATE.md`, `docs/RELEASE_GATES.md` (I own it; Devika contributes and reviews), `docs/instructions/ABHINAV_LAUNCHER.md`.
+  - Architecture §4: dataset reference corrected to v1.2.0; marked approved by both; the proposed response additions marked not approved (C2).
+  - `docs/INTERFACE_CONTRACTS.md`: only my row in the agreement record. Devika fills in her own.
+  - O6: `.gitignore` ignores `**/app/logs/`; `tests/test_audit_log_ignored.py` checks it with `git check-ignore`.
+  - `tests/test_safety_model_paths.py::test_model_features_are_off_by_default`: model features stay off unless explicitly enabled.
+  - `tests/test_repo_assumptions.py`: the agent/state docs only link to files that exist; `CLAUDE.md` imports `AGENTS.md`.
+- **Approvals (2026-10-11):**
+  - C1-v0.2 and architecture §4 items 1–4 (dataset schema v1.2.0): approved by **both** in issue #7. My original statement is kept in #6, closed as a duplicate.
+  - The §4 proposed response additions are **not approved** by either of us; they move to C2.
+  - C2 stack (FastAPI, React + TypeScript, Vite, SQLite): I approved; Devika pending. Node version and lockfile still to agree. Admin endpoints stay protected or disabled until real authentication exists.
+- **My decisions, awaiting Devika:**
+  - Deferrals approved with conditions: O4, O5, O7 (README before any public C2 demo), O8, O9, O10, formal KB freshness, comprehensive held-out testing (Phase 5).
+  - New C1 blocker B9: Devika runs a small held-out safety check before C1 acceptance.
+  - Model features stay off until operational safeguards exist.
+- **Devika's repairs:** `feature/devika-c1-phase1-repairs` is reported created locally; not on GitHub yet. I do not implement any part of B1–B4; I review and rerun her PR.
 
 ## Completed in C1
 
@@ -65,6 +71,7 @@ Maintained only by Abhinav (or his coding agent) on his own feature branches. Re
 | WSL2, Python 3.14.4, integrated `main` @ `7646431` | `ruff check .`; `ruff-c1.toml` lint + format; `pytest -q`; `check_routes.py`; `safety_eval.py --fail-on-miss`; smoke; KB audit | clean; clean; 412 passed; passed; 75/75, FP 0/16, exit 0; OK; exit 0 |
 | Windows 11 native, Python 3.13.2, integrated `main` @ `7646431` | `pytest -q --basetemp=<writable dir>` | 411 passed, 1 skipped (symlink test) |
 | GitHub Actions run 38175224504, push to `main` @ `7646431` | full workflow | all 8 jobs passed |
+| GitHub Actions run 38176667555, PR #8 first push (`920c2a7`) | full workflow | all 8 checks passed |
 
 macOS has not been run locally; CI covers it, and Devika runs her Mac adversarial tests.
 
@@ -97,7 +104,8 @@ ruff check . && python -m pytest -q && python scripts/safety_eval.py --fail-on-m
 ```
 
 **Next safe step:**
-1. Devika reviews the close-out PR and approves (or revises) C1-v0.2 in the approval issue.
+1. Devika reviews PR #8 (including `RELEASE_GATES.md` and the deferral table) and records her row in the contract Agreement record. PR #8 merges only after her approval and passing CI.
 2. I apply the GitHub settings listed in `docs/PROJECT_STATE.md` (B7).
-3. Devika opens her C1 repair PR. I review it and rerun it on WSL2 and Windows. No merge without approval.
-4. We both run the integrated `main` and record the C1 completion report. C2 implementation starts only after that.
+3. Devika opens her C1 repair PR from `feature/devika-c1-phase1-repairs`. I review it and rerun it on WSL2 and Windows. No merge without approval.
+4. Devika runs the small held-out safety check (B9). I fix any routing misses it finds.
+5. We both run the integrated `main` and record the C1 completion report. C2 implementation starts only after that.

@@ -75,7 +75,9 @@ def test_ci_workflow_runs_tests_and_safety_gate():
         assert re.search(r"@[0-9a-f]{40}$", ref), f"action not pinned to a commit SHA: {ref}"
 
 
-_STATE_DOCS = ("AGENTS.md", "CLAUDE.md", "docs/MASTER_PLAN.md", "docs/PROJECT_STATE.md")
+_STATE_DOCS = (
+    "AGENTS.md", "CLAUDE.md", "docs/MASTER_PLAN.md", "docs/PROJECT_STATE.md", "docs/RELEASE_GATES.md",
+)
 _LOCAL_LINK_RE = re.compile(r"\]\((?!https?://|#)([^)#\s]+)")
 
 

@@ -69,6 +69,7 @@ Each contributor reviews the other's work in every phase.
 A checkpoint is complete only when both PRs are reviewed and merged, CI on `main` is
 green, both humans have run the integrated `main` themselves, and the completion
 report is recorded in `PROJECT_STATE.md`. Merging PRs alone does not complete it.
+The merge and acceptance gates are defined in [`RELEASE_GATES.md`](RELEASE_GATES.md).
 
 ## Integration procedure (each checkpoint)
 

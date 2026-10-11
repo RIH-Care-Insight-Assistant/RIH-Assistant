@@ -5,12 +5,13 @@ through a PR reviewed by Devika. Contributor detail lives in
 [`progress/abhinav.md`](progress/abhinav.md) and [`progress/devika.md`](progress/devika.md).
 This file is a snapshot: confirm PRs, reviews and CI on GitHub before acting on it.
 
-Last updated: 2026-10-11, on branch `feature/abhinav-c1-closeout-docs`.
+Last updated: 2026-10-11 (after Devika's C1-v0.2 approval), on branch `feature/abhinav-c1-closeout-docs`.
 
 ## Current checkpoint
 
-**C1 (Phases 0–1), close-out. Not accepted.** Both C1 PRs are merged, but Phase 1
-repairs, a contract approval and integrated verification are still open (see
+**C1 (Phases 0–1), close-out. Not accepted.** Both C1 PRs are merged and C1-v0.2 is
+now approved by both humans ([#7](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/7)). Devika's Phase 1 repairs, a small held-out
+safety check and integrated verification are still open (see
 [C1 acceptance](#c1-acceptance)). C2 has not started; no C2 branches exist.
 
 ## Last validated `main`
@@ -43,55 +44,71 @@ merges do not complete C1.
 
 | ID | Blocker | Owner | Evidence on `7646431` | Status |
 |---|---|---|---|---|
-| B1 | **Retrieval restriction** (C1-v0.2 item 4): exclude `allow_chat: false` and `page_type: crisis` records from ordinary chat retrieval before ranking. Also skip KB lines that are valid JSON but not objects, without changing the KB schema or `retrieve()` API (scope approved by Abhinav in #6) | Devika | `retrieve("988 crisis")` returns "Crisis Support" (`allow_chat: false`, `page_type: crisis`); `retrieve("counseling services")` includes "Counseling After-Hours Support" (`page_type: crisis`); a `[1,2]` line in a KB file makes `retrieve()` raise `AttributeError` | Open |
+| B1 | **Retrieval restriction** (C1-v0.2 item 4): exclude `allow_chat: false` and `page_type: crisis` records from ordinary chat retrieval before ranking. Also skip KB lines that are valid JSON but not objects, without changing the KB schema or `retrieve()` API (approved by both in #7) | Devika | `retrieve("988 crisis")` returns "Crisis Support" (`allow_chat: false`, `page_type: crisis`); `retrieve("counseling services")` includes "Counseling After-Hours Support" (`page_type: crisis`); a `[1,2]` line in a KB file makes `retrieve()` raise `AttributeError` | Open |
 | B2 | **Decline semantics** (item 1) | Devika | Wrongly treated as declines (the student gets alternatives instead of an answer): "I don't need an appointment, just the RIH hours"; "No insurance, can I book a medical appointment?"; "I'm fine with counseling"; "I don't want to miss my counseling appointment". Missed decline: "I don’t want therapy" (curly apostrophe) | Open |
 | B3 | **Verified alternatives and safe fallback** (item 3) | Devika | `safe_alternatives()` lists resources with no linked, inspected source and no fallback for when nothing verified is available | Open |
 | B4 | Cross-tests for B1–B3 against crisis precedence and `DECLINE_PROTECTED_LANES` | Devika writes; Abhinav reviews and reruns on WSL2 and Windows | — | Open |
-| B5 | Devika's explicit approval of C1-v0.2 (needed before B1–B3 change behavior) | Devika | Requested in [issue #7](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/7) | Open |
-| B6 | Root agent instructions and shared state docs (`AGENTS.md`, `CLAUDE.md`, `MASTER_PLAN.md`, this file, Abhinav's launcher) | Abhinav | Branch `feature/abhinav-c1-closeout-docs` | In review |
+| B5 | Both humans approve C1-v0.2 | Both | Abhinav: [#7](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/7) (original statement kept in closed duplicate [#6](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/6)). Devika: [#7 comment](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/7#issuecomment-6114029088), 2026-10-11 21:34 UTC | **Done** |
+| B6 | Root agent instructions and shared state docs (`AGENTS.md`, `CLAUDE.md`, `MASTER_PLAN.md`, `RELEASE_GATES.md`, this file, Abhinav's launcher); audit-log `.gitignore` entry (O6) | Abhinav | [PR #8](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/8) | In review |
 | B7 | Required CI checks and branch protection on `main` (Phase 0: CI must actually gate merges) | Abhinav (repo admin) | [Settings below](#github-settings-for-main) | Open |
 | B8 | Both humans run the integrated `main` after B1–B4 merge; both progress files current; completion report recorded here | Both | — | Open |
+| B9 | **Small held-out safety check:** Devika independently writes and runs a small set of crisis/Title IX/conduct scenarios that are not in the regression dataset, against the integrated `main`. Results (numerator/denominator, misses) are recorded; misses are fixed or explicitly accepted by both. Comprehensive adversarial testing stays in Phase 5 | Devika runs; Abhinav fixes any routing misses | — | Open |
 
-### Proposed deferrals (not safety blockers; need both humans' explicit agreement)
+### Deferrals and other decisions
 
-| ID | Item | Proposed target | Why it can wait |
-|---|---|---|---|
-| O10 | Generic "hate" routes benign dislikes ("I hate waiting for appointments") to the conduct template | Keep for C1; revisit with Phase 5 bypass/false-positive evaluation (C3) | Errs toward showing bias-reporting guidance; documented in `safety/crisis-routing.md` §5 |
-| HELD | Held-out crisis/Title IX phrasings written by someone who has not seen the patterns | Phase 5 (C3) | Current recall is labeled optimistic everywhere it is reported |
-| O4 | Drop unused `numpy`/`pandas`; pin `strands-agents*`; choose a lock approach | First C2 task, before FastAPI is added | No runtime effect today |
-| O5 | `tests/tests/test_phase6_production_validation.py` is byte-identical to `tests/test_phase6_production_validation.py` | C2 cleanup | Runs the same tests twice; harmless |
-| O6 | `app/ui/audit.py` writes `app/logs/audit.jsonl`, which is not gitignored; spelling correction sends raw text to the model when enabled (off by default) | `.gitignore` entry at C2 start; data-flow controls in Phases 4 and 7 | Feature off by default; no log is committed today |
-| O7 | README: placeholder clone URL, stale test counts, AWS credential export example | When C2 adds the API (README is shared) | Documentation accuracy only |
-| O8 | Broader Ruff rule set | C2 or C3, after both agree a style baseline | Style only; CI already blocks syntax/undefined-name errors |
-| O9 | Timed-out Strands calls keep their worker thread | Phase 8 (Abhinav) | Responses unaffected; resource use only |
-| KB | 9 KB records older than the 180-day audit threshold; no freshness policy | Phase 3 governed RAG (C1-v0.2 item 4) | Audit threshold is exploratory, not policy |
-| RG | `RELEASE_GATES.md` does not exist; owner not agreed | Agree owner (asked in #7); create at C2 start | Current gates are the CI jobs listed below |
+Abhinav approved these deferrals on 2026-10-11, on the condition that each
+limitation stays documented. **Devika has not accepted them yet**: her #7 approval
+explicitly excludes them. A deferral counts only once both agree.
+
+| ID | Item | Target | Limitation documented in | Abhinav | Devika |
+|---|---|---|---|---|---|
+| O4 | Drop unused `numpy`/`pandas`; pin `strands-agents*`; choose a lock approach | First C2 task, before FastAPI is added | Baseline audit O4 | Approved | Pending |
+| O5 | `tests/tests/test_phase6_production_validation.py` is byte-identical to `tests/test_phase6_production_validation.py` | C2 cleanup | Baseline audit O5 | Approved | Pending |
+| O7 | README: placeholder clone URL, stale test counts, AWS credential export example | **Before any public C2 demo** | Baseline audit O7 | Approved | Pending |
+| O8 | Broader Ruff rule set | C2 or C3, after both agree a style baseline | Baseline audit O8 | Approved | Pending |
+| O9 | Timed-out Strands calls keep their worker thread | Phase 8 (Abhinav) | Baseline audit O9; `safety/crisis-routing.md` §7 | Approved | Pending |
+| O10 | Generic "hate" routes benign dislikes ("I hate waiting for appointments") to the conduct template | Phase 5 bypass/false-positive evaluation | `safety/crisis-routing.md` §5; baseline audit O10 | Approved | Pending |
+| KB | Formal KB freshness governance (9 records exceed the exploratory 180-day audit threshold) | Phase 3 governed RAG (C1-v0.2 item 4) | `docs/audits/devika-c1.md`; C1-v0.2 item 4 | Approved | Pending |
+| HELD-full | Comprehensive held-out and adversarial safety testing | Phase 5 (a small held-out check is blocker B9) | `safety/crisis-routing.md` §5 | Approved | Pending |
+
+Decided by Abhinav, recorded for Devika's review:
+
+| ID | Decision | State |
+|---|---|---|
+| O6 | Ignore the audit log path during C1. `app/ui/audit.py` writes `app/logs/audit.jsonl` relative to the working directory; `.gitignore` now ignores `**/app/logs/`, and a test checks it with `git check-ignore`. The log holds only timestamp, event, lane and version, never user text. No real student data or raw sensitive logs are ever committed | Done in PR #8 |
+| Models | Model features stay **off by default** until adequate operational safeguards exist (Phase 8 timeouts and concurrency caps; Phases 4 and 7 data-flow controls). A test now fails if `STRANDS_ENABLED`, `MISSPELLING_CORRECTOR` or the LLM planner turn on by default | Test in PR #8 |
+| RG | `RELEASE_GATES.md` is owned by Abhinav; Devika contributes and reviews. The C1 version documents existing gates only | Created in PR #8 |
 
 ## Approvals
 
 | Item | Abhinav | Devika |
 |---|---|---|
-| C1-v0.2 `INTERFACE_CONTRACTS.md` and matching `CONTRIBUTION_MATRIX.md` | Approved 2026-10-11 ([#6](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/6); scope restated in [#7](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/7)) | Pending (requested in #7) |
-| Architecture §4: `Dispatcher.respond()` return shape; `SAFETY_CRITICAL_LANES` and `DECLINE_PROTECTED_LANES` semantics; safety dataset schema v1.2.0 | Approved 2026-10-11 | Pending |
-| Architecture §4 proposed response additions (`safety_lane`, `is_terminal_safety`, `RouteResult.matched_view`, trace event names) | **Not approved**; move to C2 contracts | — |
+| C1-v0.2 `INTERFACE_CONTRACTS.md` and matching `CONTRIBUTION_MATRIX.md` | Approved 2026-10-11 ([#7](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/7); original statement in closed duplicate [#6](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/6)) | Approved 2026-10-11 ([#7 comment](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/7#issuecomment-6114029088)) |
+| Architecture §4 items 1–4: `Dispatcher.respond()` return shape; `SAFETY_CRITICAL_LANES` and `DECLINE_PROTECTED_LANES` semantics; safety dataset schema v1.2.0 | Approved 2026-10-11 | Approved 2026-10-11 |
+| KB loader fix (skip non-object JSON lines; no schema or API change) | Approved (#6, #7) | Approved (#7 comment) |
+| Architecture §4 proposed response additions (`safety_lane`, `is_terminal_safety`, `RouteResult.matched_view`, trace event names) | **Not approved**; C2 contracts | **Not approved**; reserved for C2 |
+| Deferrals (table above) | Approved with conditions | Not accepted yet |
+| `RELEASE_GATES.md` ownership (Abhinav owns; Devika contributes and reviews) | Decided | Pending review in PR #8 |
 | C2 stack: FastAPI, React + TypeScript, Vite, SQLite | Approved 2026-10-11 | Pending |
 | Node.js version and lockfile | Open | Open |
 | C2 merge order (Abhinav first, alternating from C1) | Proposed | Pending |
-| Deferrals above | Proposed | Pending |
 
-**Jointly confirmed contracts: none yet.** Until Devika approves, rely only on the
-existing public interfaces that tests already protect (CLI, `respond()`, `route()`,
-`retrieve()`, `is_decline()`, `safe_alternatives()`).
+**Jointly confirmed contracts:** C1-v0.2 (`INTERFACE_CONTRACTS.md`,
+`CONTRIBUTION_MATRIX.md`) and architecture §4 items 1–4. The Agreement record in
+`INTERFACE_CONTRACTS.md` shows Abhinav's row; Devika fills in her own row.
 
 ## Open PRs and issues
 
-- [Issue #6](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/6): Abhinav's C1-v0.2 approval statement (also approves the KB loader fix in B1).
-- [Issue #7](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/7): the same approval restated with exact scope (dataset v1.2.0; §4 response additions excluded), plus the request for Devika's approval. #6 and #7 overlap; one should be closed as a duplicate once Abhinav decides which to keep.
-- C1 close-out docs PR from `feature/abhinav-c1-closeout-docs`: awaiting Devika's review.
+- [Issue #7](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/7): canonical C1 contract approval and coordination record. Both approvals posted.
+- [Issue #6](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/6): closed as a duplicate of #7; Abhinav's original approval statement is preserved there.
+- [PR #8](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/8) (`feature/abhinav-c1-closeout-docs`): awaiting Devika's review. CI on the first push (run 38176667555) passed all 8 checks; it must pass again on the latest push before merging.
+- Devika's repair branch `feature/devika-c1-phase1-repairs`: reported as created locally from `main`; not on GitHub yet, no PR yet.
 
 ## Known defects and risks
 
 - B1–B3 above are live on `main`.
+- Model features (Strands enhancer, spelling corrector, LLM planner) are off by
+  default. Enabling them before Phase 8 safeguards exist is not supported.
 - Safety recall (75/75) is measured on a regression set written alongside the rules.
   It is not a held-out estimate.
 - PR #4 merged 35 seconds after PR #5 without first updating from the new `main`.
@@ -140,14 +157,16 @@ merges. A required check that never reports blocks every PR.
 
 ## Exact safe next step
 
-1. **Devika:** review the close-out PR; approve C1-v0.2 in issue #7, or
-   request changes (which create a new version that both re-approve).
+1. **Devika:** review PR #8, including `RELEASE_GATES.md` and the deferral table;
+   accept or reject each deferral; add her row to the `INTERFACE_CONTRACTS.md`
+   Agreement record.
 2. **Abhinav:** apply the GitHub settings above (B7).
-3. **Devika:** after her approval is recorded, implement B1–B4 on a new branch from
-   `main` and open a PR for Abhinav's review.
-4. **Abhinav:** review and rerun Devika's PR on WSL2 and Windows. Neither merges
-   without the other's approval.
-5. **Both:** run the integrated `main`, update progress files, and record the C1
+3. **Devika:** push `feature/devika-c1-phase1-repairs` with B1–B4 and open a PR for
+   Abhinav's review. Abhinav does not implement any part of B1–B4.
+4. **Abhinav:** review that PR and rerun it on WSL2 and Windows. Neither merges
+   without the other's approval and passing CI.
+5. **Devika:** run the small held-out safety check (B9) on the integrated `main`.
+6. **Both:** run the integrated `main`, update progress files, and record the C1
    completion report here. Only then start C2 implementation. Drafting the C2-v0.1
    contracts (docs only) may start earlier.
 
