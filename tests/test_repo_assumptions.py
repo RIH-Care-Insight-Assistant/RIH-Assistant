@@ -75,6 +75,25 @@ def test_ci_workflow_runs_tests_and_safety_gate():
         assert re.search(r"@[0-9a-f]{40}$", ref), f"action not pinned to a commit SHA: {ref}"
 
 
+_STATE_DOCS = ("AGENTS.md", "CLAUDE.md", "docs/MASTER_PLAN.md", "docs/PROJECT_STATE.md")
+_LOCAL_LINK_RE = re.compile(r"\]\((?!https?://|#)([^)#\s]+)")
+
+
+@pytest.mark.parametrize("doc", _STATE_DOCS)
+def test_agent_state_docs_link_to_existing_files(doc):
+    # A new Codex or Claude session starts from these files; a dead link loses context.
+    path = ROOT / doc
+    links = _LOCAL_LINK_RE.findall(path.read_text(encoding="utf-8"))
+    assert links, f"{doc} has no relative links; did the link format change?"
+    missing = [link for link in links if not (path.parent / link).exists()]
+    assert missing == [], f"{doc} links to missing files: {missing}"
+
+
+def test_claude_md_imports_agents_md():
+    # One set of standards for every agent: CLAUDE.md must not fork AGENTS.md.
+    assert re.search(r"^@AGENTS\.md\s*$", (ROOT / "CLAUDE.md").read_text(encoding="utf-8"), re.M)
+
+
 def test_routing_matrix_schema():
     with (ROOT / "safety" / "routing_matrix.csv").open(newline="", encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
