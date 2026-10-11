@@ -105,6 +105,44 @@ def test_missing_empty_and_unreadable_kb(tmp_path):
     assert report(tmp_path)["counts"] == {"UNREADABLE_FILE": 1}
 
 
+@pytest.mark.parametrize(
+    "content", ["", " \n\t\n", "# comment\n\n", "{broken\n", "[]\nnull\n", "{}\n"]
+)
+def test_existing_file_with_no_valid_records_is_an_error(tmp_path, content):
+    (tmp_path / "empty.jsonl").write_text(content, encoding="utf-8")
+    result = report(tmp_path)
+    assert result["files"] == 1
+    assert "NO_KB_FILES" not in result["counts"]
+    assert [item for item in result["findings"] if item["code"] == "NO_VALID_RECORDS"] == [
+        {"code": "NO_VALID_RECORDS", "severity": "error", "file": "empty.jsonl", "line": 0}
+    ]
+
+
+def test_valid_file_does_not_mask_an_empty_file(tmp_path):
+    write_record(tmp_path)
+    (tmp_path / "empty.jsonl").write_text("", encoding="utf-8")
+    result = report(tmp_path)
+    assert result["files"] == 2
+    assert result["records"] == 1
+    assert result["counts"] == {"NO_VALID_RECORDS": 1}
+    assert result["findings"][0]["file"] == "empty.jsonl"
+
+
+def test_warning_only_record_is_valid_for_file_check(tmp_path):
+    write_record(tmp_path, updated_on="2025-01-01", allow_chat=False, page_type="crisis")
+    assert report(tmp_path)["counts"] == {
+        "CHAT_DISABLED": 1,
+        "CRISIS_CONTENT": 1,
+        "STALE_RECORD": 1,
+    }
+
+
+def test_cli_fails_for_existing_empty_file(tmp_path, capsys):
+    (tmp_path / "empty.jsonl").write_text("", encoding="utf-8")
+    assert main(["--kb-dir", str(tmp_path), "--as-of", "2026-10-11", "--max-age-days", "180"]) == 1
+    assert json.loads(capsys.readouterr().out)["counts"] == {"NO_VALID_RECORDS": 1}
+
+
 def test_symlink_is_not_read(tmp_path):
     target = tmp_path / "target.txt"
     target.write_text("private content", encoding="utf-8")

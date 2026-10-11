@@ -2,7 +2,44 @@
 
 Last updated: 2026-10-11 (America/New_York). Operator: Devika Rani Sanaboyina.
 
-## Current state
+## Current published state and PR #5 corrections
+
+- Checkpoint C1, Phase 0; Phase 1 behavior changes await joint agreement.
+- Published branch: [`feature/devika-c1-foundation-safety`](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/tree/feature/devika-c1-foundation-safety).
+- Published commit: [`429912e0566714ba85981b55a1bbaba60eec492b`](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/commit/429912e0566714ba85981b55a1bbaba60eec492b).
+- Existing [draft PR #5](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/5)
+  is open against `main`. Abhinav requested changes: detect an existing JSONL
+  file with zero valid records and update this published-state record.
+- Local corrections add a per-file `NO_VALID_RECORDS` error when no record passes
+  the auditor's existing error checks. Warning-only records remain accepted;
+  unreadable files retain their separate error. Nine regression cases were added.
+- Correction scope: `scripts/audit_kb.py`, `tests/c1/test_kb_audit.py`, and this file.
+  These corrections are uncommitted and unpushed, awaiting Devika's authorization.
+- C1-v0.2 remains **Pending Joint Approval**. No shared Phase 1 behavior or
+  interface/dependency changes, new PR, or merge were made.
+- Independent PR #4 findings, fix patch, and isolated review checkout are
+  preserved separately and excluded from these PR #5 corrections.
+
+## PR #5 correction validation
+
+All commands below ran locally with Python 3.12.12 and Ruff 0.9.10:
+
+- `STRANDS_ENABLED=false RIH_PLANNER=RULE .venv/bin/python -m pytest -q tests/c1/test_kb_audit.py`:
+  **38 passed**, 0.07 s.
+- `STRANDS_ENABLED=false RIH_PLANNER=RULE .venv/bin/python -m pytest -q tests`:
+  **112 passed**, 0.16 s.
+- `STRANDS_ENABLED=false RIH_PLANNER=RULE .venv/bin/python -m tests.run_smoke`:
+  **Smoke OK**.
+- `.venv/bin/ruff check --config ruff-c1.toml .`: **passed**.
+- `.venv/bin/ruff format --check --config ruff-c1.toml .`:
+  **4 files already formatted**.
+- `.venv/bin/python scripts/audit_kb.py --as-of 2026-10-11 --max-age-days 180`:
+  **exit 0**, nine records; unchanged warnings: nine stale, one chat-disabled,
+  two crisis-content observations. No structural errors.
+- GitHub CI has not run for these uncommitted corrections. Abhinav's renewed
+  review remains pending until publication after Devika authorizes it.
+
+## Phase 0 reviewed snapshot (historical)
 
 - Checkpoint C1, Phase 0 in progress; Phase 1 behavior changes await joint agreement.
 - Branch: `feature/devika-c1-foundation-safety`.
@@ -19,12 +56,12 @@ Last updated: 2026-10-11 (America/New_York). Operator: Devika Rani Sanaboyina.
   and corresponding cross-tests. Preserve public retrieve() and the independent
   deterministic crisis response. No behavioral edits have begun.
 
-## Completed local work
+## Phase 0 snapshot — completed local work
 
 1. Cloned the existing organization repo into the empty workspace, fetched refs,
    and preserved history. Verified connector account and repository permissions.
    Set repository-local Git human name and authenticated-ID/login noreply address;
-   no global identity changes or commits.
+   no global identity changes. Publication used the verified human Git identity.
 2. Established a Python 3.12.12 virtual environment with minimal offline test
    dependencies. Original 56 tests passed before modifying tracked project files.
 3. Audited retrieval, JSONL content, decline/alternatives, documentation, model
@@ -37,7 +74,7 @@ Last updated: 2026-10-11 (America/New_York). Operator: Devika Rani Sanaboyina.
    environment/evidence records, and this progress file. Preserved original master
    instructions and Devika launcher for continuation by another agent.
 
-## Changed files
+## Published Phase 0 files
 
 - `scripts/audit_kb.py`
 - `tests/c1/test_kb_audit.py`
@@ -59,10 +96,10 @@ AGENTS.md, CLAUDE.md, MASTER_PLAN.md, PROJECT_STATE.md, workflow files, README,
 requirements.txt, conftest.py, dispatcher, and router remain for coordinated
 Abhinav work. No competing shared project state or CI was created.
 
-## Executed validation
+## Phase 0 snapshot — original validation
 
 - Unmodified baseline: **56 passed** (`pytest -q tests`, 0.18 s).
-- Current canonical suite: **103 passed** (`pytest -q tests`, 0.18 s).
+- Original Phase 0 suite: **103 passed** (`pytest -q tests`, 0.18 s).
 - Phase 0 review rerun after C1-v0.2 documentation edits: **103 passed**, 0.14 s;
   smoke, scoped Ruff lint and formatting passed again. KB audit rerun matched the
   recorded JSON exactly (9 stale, 1 chat-disabled, 2 crisis-content findings).
@@ -89,8 +126,8 @@ Abhinav work. No competing shared project state or CI was created.
   user; never treat elapsed time or the provisional allocation as agreement.
 - Both humans must explicitly agree to the same **C1-v0.2** contracts/matrix;
   overall acceptance of the direction is not final approval.
-- Devika's review and explicit commit authorization are required before commits;
-  after authorization, commit on her branch and open a draft PR without merging.
+- Devika's explicit authorization is required before committing or pushing these
+  corrections. Update the existing draft PR #5; do not create another PR.
 - Abhinav's required PR approval and integrated C1 acceptance remain pending.
 
 See [audit](../audits/devika-c1.md) and [threat model](../THREAT_MODEL.md) for
@@ -98,18 +135,17 @@ evidence, limitations, source links, and reproduction commands.
 
 ## Exact safe next step
 
-Read original instructions and this file, inspect local changes, fetch current
-GitHub state, and inspect any newly available partner PR. Obtain and record joint
-approval of `INTERFACE_CONTRACTS.md` and `CONTRIBUTION_MATRIX.md` before shared
-behavior changes, referring to the same **C1-v0.2** version. Then implement
-Devika-owned pre-ranking ordinary retrieval restrictions, decline and verified
-alternatives with positive/negative/adversarial cross-tests. Preserve public
-retrieve() and crisis response independence; coordinate dispatcher edits with
-Abhinav. No unilateral shared interface/dependency changes. First provide local
-diffs for Devika's review; keep all changes uncommitted until she explicitly
-authorizes the commit. After authorization, create the commit, push her feature
-branch, open a draft PR and request Abhinav's review without merging.
-Do not start dependent C2 work or merge before the required partner gate.
+Review the three-file PR #5 correction diff and the validation above. Keep these
+changes uncommitted until Devika explicitly authorizes committing and pushing.
+After authorization, verify Git identity and commit contents, commit only the
+three intended files to `feature/devika-c1-foundation-safety`, push that same
+branch, and re-request Abhinav's review on existing draft PR #5. Preserve the
+separate PR #4 review artifacts and checkout; do not include their fixes here.
+Do not create another PR, merge, or change main.
+
+Both humans must explicitly approve the same **C1-v0.2** contracts and contribution
+matrix before shared Phase 1 behavior/interface/dependency changes. Do not start
+dependent C2 work or integrate before the required review and approval gates.
 
 ```sh
 git status --short --branch

@@ -44,6 +44,7 @@ def audit_kb(kb_dir: Path, *, as_of: date, max_age_days: int) -> dict:
         if path.is_symlink():
             add("SYMLINK_SKIPPED", "error", path.name, 0)
             continue
+        valid_records = 0
         try:
             with path.open(encoding="utf-8") as stream:
                 for line_number, line in enumerate(stream, 1):
@@ -59,6 +60,7 @@ def audit_kb(kb_dir: Path, *, as_of: date, max_age_days: int) -> dict:
                         add("INVALID_RECORD", "error", path.name, line_number)
                         continue
                     records += 1
+                    record_findings_start = len(findings)
                     for field in TEXT_FIELDS:
                         value = record.get(field)
                         if not isinstance(value, str) or not value.strip():
@@ -108,6 +110,13 @@ def audit_kb(kb_dir: Path, *, as_of: date, max_age_days: int) -> dict:
                         add("CHAT_DISABLED", "warning", path.name, line_number)
                     if record.get("page_type") == "crisis":
                         add("CRISIS_CONTENT", "warning", path.name, line_number)
+                    # Warnings do not invalidate a structurally accepted record.
+                    if not any(
+                        item["severity"] == "error" for item in findings[record_findings_start:]
+                    ):
+                        valid_records += 1
+            if valid_records == 0:
+                add("NO_VALID_RECORDS", "error", path.name, 0)
         except (OSError, UnicodeError) as exc:
             add("UNREADABLE_FILE", "error", path.name, 0, error_type=type(exc).__name__)
 
