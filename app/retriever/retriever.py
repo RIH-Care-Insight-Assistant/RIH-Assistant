@@ -30,7 +30,11 @@ def _tokens(s: str) -> List[str]:
     return [t for t in _WORD_RE.findall((s or "").lower()) if t not in _STOPWORDS]
 
 def _load_kb() -> List[Dict]:
-    """Load all JSONL chunks from KB_DIR/*.jsonl with basic robustness."""
+    """Load valid ordinary-chat chunks before computing IDF or ranking.
+
+    Missing legacy optional fields remain supported. Explicit chat restrictions
+    and crisis-only records never enter the ordinary retrieval corpus.
+    """
     global _cached_kb
     if _cached_kb is not None:
         return _cached_kb
@@ -46,10 +50,25 @@ def _load_kb() -> List[Dict]:
                     if not line or line.startswith("#"):
                         continue
                     try:
-                        items.append(json.loads(line))
+                        item = json.loads(line)
                     except json.JSONDecodeError:
                         continue
-        except OSError:
+                    if not isinstance(item, dict):
+                        continue
+                    # Validate existing optional field types without requiring new fields.
+                    if any(
+                        item.get(key) is not None and not isinstance(item[key], str)
+                        for key in ("title", "text", "category", "url", "page_type")
+                    ):
+                        continue
+                    if not isinstance(item.get("allow_chat", True), bool):
+                        continue
+                    if item.get("allow_chat") is False:
+                        continue
+                    if (item.get("page_type") or "").strip().lower() == "crisis":
+                        continue
+                    items.append(item)
+        except (OSError, UnicodeError):
             continue
     _cached_kb = items
     return items

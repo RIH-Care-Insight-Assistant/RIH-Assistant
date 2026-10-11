@@ -1,12 +1,20 @@
-# Contribution matrix — Pending Joint Approval
+# Contribution matrix — Approved C1-v0.2
 
-Status: **Pending Joint Approval**, 2026-10-11. C1 covers new roadmap Phases 0–1.
+Status: **Jointly approved**, 2026-10-11. C1 covers new roadmap Phases 0–1.
 Version: **C1-v0.2**, paired with INTERFACE_CONTRACTS.md. The Phase 0 review
-clarifies proposed ownership; neither human's explicit approval is recorded.
+clarifies proposed ownership. Devika explicitly approved this same version as
+written on 2026-10-11. Abhinav's exact-version approval is verified in Issues
+[#6](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/6) and
+[#7](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/7), including
+Devika's narrow invalid/non-object loader repair. Devika's explicit
+[approval comment under Devikz](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/7#issuecomment-6114029088)
+is posted and verified. No new approval issue is needed. C1 acceptance and
+human review/commit/publication gates remain separate.
 Both contributors must approve the same version before conflicting Phase 1 edits.
 The detailed Devika launcher and master instructions are preserved under
-[`instructions/`](instructions/). Only Abhinav's C1 allocation has been supplied;
-his full later-checkpoint launcher must be read before those checkpoints start.
+[`instructions/`](instructions/). Abhinav's updated launcher is available on his
+separate closeout branch. Read it and reconcile both original complementary
+assignments before dependent C2 development.
 
 | C1 area | Abhinav | Devika | Integration condition |
 | --- | --- | --- | --- |
@@ -32,10 +40,14 @@ Branches: `feature/abhinav-c1-foundation-safety` and
 `feature/devika-c1-foundation-safety`. Integration order is pending; do not assume
 which contributor merges first. Update the second branch from validated main,
 resolve conflicts preserving both contributions, retest, and obtain renewed review.
-All Phase 0 additions stay uncommitted until Devika reviews and explicitly
-authorizes the commit. Then commit on her feature branch, push that branch and
-open a **draft PR** requesting Abhinav's review. Do not merge. Commit authorization
-does not substitute for joint C1-v0.2 approval or the PR/integration gates.
+Phase 0 publication gates were satisfied for PR #5; PRs #4 and #5 are now merged
+with mutual human PR approvals. This does not close the pending Phase 1 tasks.
+Exact-version joint contract approval is now separately recorded in Issue #7.
+New changes require human
+review before committing and separate follow-up PRs with partner review. Do not
+merge from this session. Preserve Abhinav's shared documentation ownership;
+root/state documents are on his unmerged `feature/abhinav-c1-closeout-docs` branch.
+The remaining Devika repairs use `feature/devika-c1-phase1-repairs`.
 
 ## Later checkpoints (scope reminders, not new interface approvals)
 

@@ -1,0 +1,32 @@
+{
+  "base_main": "7646431cb678c09e1e7d6119c4ca2d53466f0c29",
+  "partner_branch": "origin/feature/abhinav-c1-closeout-docs",
+  "partner_sha": "acb16165aab9754b904f42daac32e34843800236",
+  "method": "temporary local Git clone at partner SHA plus Devika working changes; original branches unchanged; clone deleted after validation",
+  "results": [
+    {
+      "check": "full_tests",
+      "exit_code": 0,
+      "stdout": "........................................................................ [ 13%]\n........................................................................ [ 26%]\n........................................................................ [ 39%]\n........................................................................ [ 52%]\n........................................................................ [ 65%]\n........................................................................ [ 78%]\n........................................................................ [ 91%]\n................................................                         [100%]\n552 passed in 1.07s",
+      "stderr": ""
+    },
+    {
+      "check": "ruff",
+      "exit_code": 0,
+      "stdout": "All checks passed!",
+      "stderr": ""
+    },
+    {
+      "check": "smoke",
+      "exit_code": 0,
+      "stdout": "Smoke OK",
+      "stderr": ""
+    },
+    {
+      "check": "safety",
+      "exit_code": 0,
+      "stdout": "### Safety routing evaluation \u2014 safety_routing_cases v1.2.0\n\n| Lane | Router recall | End-to-end recall |\n|---|---|---|\n| harassment_hate | 5/5 (100.0%) | 5/5 (100.0%) |\n| title_ix | 14/14 (100.0%) | 14/14 (100.0%) |\n| urgent_safety | 56/56 (100.0%) | 56/56 (100.0%) |\n\n- Safety-critical end-to-end recall: 75/75 (100.0%)\n- False positives on benign cases: 0/16 (0.0%)\n- Router exact-lane agreement (all cases): 97/97 (100.0%)\n- Misses: none\n- False-positive ids: none\n\nWorkload: synthetic regression set written alongside the rules (optimistic; not a held-out estimate).",
+      "stderr": ""
+    }
+  ]
+}

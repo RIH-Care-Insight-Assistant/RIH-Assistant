@@ -1,0 +1,112 @@
+{
+  "checks": [
+    {
+      "actual": false,
+      "expected": false,
+      "id": "decline-appointment-preservation",
+      "passed": true
+    },
+    {
+      "actual": false,
+      "expected": false,
+      "id": "decline-insurance-request",
+      "passed": true
+    },
+    {
+      "actual": false,
+      "expected": false,
+      "id": "decline-acceptance",
+      "passed": true
+    },
+    {
+      "actual": true,
+      "expected": true,
+      "id": "decline-curly-refusal",
+      "passed": true
+    },
+    {
+      "actual": false,
+      "expected": false,
+      "id": "decline-information-request",
+      "passed": true
+    },
+    {
+      "actual": true,
+      "expected": true,
+      "id": "decline-explicit-refusal",
+      "passed": true
+    },
+    {
+      "actual": true,
+      "expected": true,
+      "id": "decline-alternative-request",
+      "passed": true
+    },
+    {
+      "actual": false,
+      "expected": false,
+      "id": "decline-bare-no",
+      "passed": true
+    },
+    {
+      "actual": false,
+      "expected": false,
+      "id": "decline-bare-nah",
+      "passed": true
+    },
+    {
+      "actual": false,
+      "expected": false,
+      "id": "decline-bare-nope",
+      "passed": true
+    },
+    {
+      "actual": [
+        "Public"
+      ],
+      "expected": [
+        "Public"
+      ],
+      "id": "retrieval-filter-before-top-k",
+      "passed": true
+    },
+    {
+      "actual": [
+        "Public"
+      ],
+      "expected": [
+        "Public"
+      ],
+      "id": "retrieval-restricted-records-excluded",
+      "passed": true
+    },
+    {
+      "actual": [],
+      "expected": [],
+      "id": "retrieval-all-restricted-empty",
+      "passed": true
+    },
+    {
+      "actual": [
+        "Public"
+      ],
+      "expected": [
+        "Public"
+      ],
+      "id": "retrieval-non-object-robustness",
+      "passed": true
+    },
+    {
+      "actual": true,
+      "expected": true,
+      "id": "alternatives-linked-official-evidence",
+      "passed": true
+    }
+  ],
+  "contract": "C1-v0.2 (joint approval recorded in Issue #7)",
+  "failed": 0,
+  "formal_checkpoint_acceptance": "not established by this audit",
+  "passed": 15,
+  "scope": "synthetic offline probes; no production behavior or source files changed",
+  "total": 15
+}
