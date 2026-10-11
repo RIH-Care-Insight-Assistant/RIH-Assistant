@@ -41,17 +41,24 @@ def _call_with_timeout(fn, timeout_s: float, *args, **kwargs):
     """
     Run a function with a hard timeout.
     Returns fn(...) result or None on timeout/error.
+
+    The executor is shut down without waiting, so the caller regains control at the
+    timeout even if the model call hangs (a `with ThreadPoolExecutor()` block would
+    join the worker and block for the model's full duration). The abandoned worker
+    finishes in the background and its result is discarded.
     """
-    with ThreadPoolExecutor(max_workers=1) as executor:
+    executor = ThreadPoolExecutor(max_workers=1)
+    try:
         future = executor.submit(fn, *args, **kwargs)
-        try:
-            return future.result(timeout=timeout_s)
-        except FuturesTimeout:
-            logger.warning("Strands call timed out after %.2fs", timeout_s)
-            return None
-        except Exception as e:
-            logger.warning("Strands call failed: %s", e)
-            return None
+        return future.result(timeout=timeout_s)
+    except FuturesTimeout:
+        logger.warning("Strands call timed out after %.2fs", timeout_s)
+        return None
+    except Exception as e:
+        logger.warning("Strands call failed: %s", type(e).__name__)
+        return None
+    finally:
+        executor.shutdown(wait=False, cancel_futures=True)
 
 
 class SafeStrandsAgent:
@@ -194,6 +201,31 @@ class SafeStrandsAgent:
             return base_response
 
         return cleaned
+
+    def safe_run(self, prompt: str) -> str:
+        """
+        Run a raw prompt through the guarded agent (used by MisspellingCorrector).
+
+        Returns "" (callers then keep their original text) when:
+          - the integration is disabled / SDK unavailable,
+          - the prompt itself contains crisis content (never sent to the model),
+          - the call errors or exceeds the timeout,
+          - the model output contains crisis content.
+        """
+        if not (self.enabled and self._agent):
+            return ""
+        if self._looks_like_crisis(prompt):
+            return ""
+
+        def _run():
+            if hasattr(self._agent, "run"):
+                return self._agent.run(prompt)  # type: ignore[call-arg]
+            return self._agent(prompt)  # type: ignore[call-arg]
+
+        reply = _call_with_timeout(_run, self.timeout_seconds)
+        if not reply or self._looks_like_crisis(reply):
+            return ""
+        return str(reply).strip()
 
     # ===================== INTERNAL SAFETY HELPERS =====================
 
