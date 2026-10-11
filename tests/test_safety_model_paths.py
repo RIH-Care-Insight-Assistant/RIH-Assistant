@@ -41,6 +41,18 @@ class _Boom:
         raise AssertionError("must not be called on a safety-critical message")
 
 
+def test_model_features_are_off_by_default(monkeypatch):
+    # C1 close-out decision: model features stay off unless explicitly enabled,
+    # until operational safeguards exist (timeouts/concurrency caps, Phase 8;
+    # data-flow controls, Phases 4 and 7). Changing a default needs both humans.
+    for name in ("STRANDS_ENABLED", "MISSPELLING_CORRECTOR", "RIH_PLANNER"):
+        monkeypatch.delenv(name, raising=False)
+    d = _dispatcher_mod().Dispatcher()
+    assert d.mode != "LLM"
+    assert d._spell_enabled is False and d._spell_corrector is None
+    assert d._enhancer.agent.enabled is False
+
+
 # --------------------------------------------------------------------------- #
 # Precedence: nothing downstream of the router runs for safety-critical lanes
 # --------------------------------------------------------------------------- #
