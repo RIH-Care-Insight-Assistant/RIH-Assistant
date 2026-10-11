@@ -11,6 +11,12 @@ from dataclasses import dataclass
 from typing import Optional
 from .rules import Rules
 
+# Lanes whose deterministic template must never be pre-empted or rewritten by any
+# downstream component (decline handling, planners, LLM/Strands enhancers).
+# Priority between them comes from Rules (urgent_safety=1, title_ix=2, harassment_hate=3);
+# "urgent_safety" maps to the "crisis" response key.
+SAFETY_CRITICAL_LANES = frozenset({"urgent_safety", "title_ix", "harassment_hate"})
+
 @dataclass
 class RouteResult:
     level: Optional[str]
