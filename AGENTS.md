@@ -63,18 +63,28 @@ Also relevant: [`docs/RELEASE_GATES.md`](docs/RELEASE_GATES.md),
 
 ## Validate locally (offline)
 
-POSIX shell (WSL2, macOS, Linux, Git Bash). CI runs the same steps.
+Create a virtual environment once (`.venv` is gitignored; a venv outside the repo
+also works) and activate it. The activation path differs by platform:
+
+| Platform and shell | Create | Activate |
+|---|---|---|
+| WSL2, Linux or macOS (bash/zsh) | `python3 -m venv .venv` | `. .venv/bin/activate` |
+| Windows native, Git Bash | `python -m venv .venv` | `. .venv/Scripts/activate` |
+| Windows native, PowerShell | `python -m venv .venv` | `.venv\Scripts\Activate.ps1`, or call `.venv\Scripts\python.exe` directly |
+
+Then, with the venv active, in bash or zsh (CI runs the same steps):
 
 ```bash
-python -m venv .venv            # or a venv outside the repo
-. .venv/bin/activate
-pip install -r requirements.txt -r requirements-dev.txt
+python -m pip install -r requirements.txt -r requirements-dev.txt
 export STRANDS_ENABLED=false RIH_PLANNER=RULE
 ruff check .
 python -m pytest -q
 python scripts/check_routes.py
 python scripts/safety_eval.py --fail-on-miss
 ```
+
+In PowerShell, set the variables with `$env:STRANDS_ENABLED = "false"; $env:RIH_PLANNER = "RULE"`
+instead of `export`; the other commands are the same.
 
 ## Session end
 

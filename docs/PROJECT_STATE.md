@@ -44,17 +44,17 @@ merges do not complete C1.
 
 | ID | Blocker | Owner | Evidence on `7646431` | Status |
 |---|---|---|---|---|
-| B1 | **Retrieval restriction** (C1-v0.2 item 4): exclude `allow_chat: false` and `page_type: crisis` records from ordinary chat retrieval before ranking. Also skip KB lines that are valid JSON but not objects, without changing the KB schema or `retrieve()` API (approved by both in #7) | Devika | `retrieve("988 crisis")` returns "Crisis Support" (`allow_chat: false`, `page_type: crisis`); `retrieve("counseling services")` includes "Counseling After-Hours Support" (`page_type: crisis`); a `[1,2]` line in a KB file makes `retrieve()` raise `AttributeError` | Open |
-| B2 | **Decline semantics** (item 1) | Devika | Wrongly treated as declines (the student gets alternatives instead of an answer): "I don't need an appointment, just the RIH hours"; "No insurance, can I book a medical appointment?"; "I'm fine with counseling"; "I don't want to miss my counseling appointment". Missed decline: "I don’t want therapy" (curly apostrophe) | Open |
-| B3 | **Verified alternatives and safe fallback** (item 3) | Devika | `safe_alternatives()` lists resources with no linked, inspected source and no fallback for when nothing verified is available | Open |
-| B4 | Cross-tests for B1–B3 against crisis precedence and `DECLINE_PROTECTED_LANES` | Devika writes; Abhinav reviews and reruns on WSL2 and Windows | — | Open |
+| B1 | **Retrieval restriction** (C1-v0.2 item 4): exclude `allow_chat: false` and `page_type: crisis` records from ordinary chat retrieval before ranking. Also skip KB lines that are valid JSON but not objects, without changing the KB schema or `retrieve()` API (approved by both in #7) | Devika | `retrieve("988 crisis")` returns "Crisis Support" (`allow_chat: false`, `page_type: crisis`); `retrieve("counseling services")` includes "Counseling After-Hours Support" (`page_type: crisis`); a `[1,2]` line in a KB file makes `retrieve()` raise `AttributeError` | Open: fix pushed (`3edc240`), awaiting PR and review |
+| B2 | **Decline semantics** (item 1) | Devika | Wrongly treated as declines (the student gets alternatives instead of an answer): "I don't need an appointment, just the RIH hours"; "No insurance, can I book a medical appointment?"; "I'm fine with counseling"; "I don't want to miss my counseling appointment". Missed decline: "I don’t want therapy" (curly apostrophe) | Open: fix pushed (`3edc240`), awaiting PR and review |
+| B3 | **Verified alternatives and safe fallback** (item 3) | Devika | `safe_alternatives()` lists resources with no linked, inspected source and no fallback for when nothing verified is available | Open: fix pushed (`3edc240`), awaiting PR and review |
+| B4 | Cross-tests for B1–B3 against crisis precedence and `DECLINE_PROTECTED_LANES` | Devika writes; Abhinav reviews and reruns on WSL2 and Windows | — | Open: tests pushed (`3edc240`), awaiting PR and review |
 | B5 | Both humans approve C1-v0.2 | Both | Abhinav: [#7](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/7) (original statement kept in closed duplicate [#6](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/6)). Devika: [#7 comment](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/7#issuecomment-6114029088), 2026-10-11 21:34 UTC | **Done** |
 | B6 | Root agent instructions and shared state docs (`AGENTS.md`, `CLAUDE.md`, `MASTER_PLAN.md`, `RELEASE_GATES.md`, this file, Abhinav's launcher); audit-log `.gitignore` entry (O6) | Abhinav | [PR #8](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/8) | In review |
 | B7 | Required CI checks and branch protection on `main` (Phase 0: CI must actually gate merges) | Abhinav (repo admin) | [Settings below](#github-settings-for-main) | Open |
 | B8 | Both humans run the integrated `main` after B1–B4 merge; both progress files current; completion report recorded here | Both | — | Open |
 | B9 | **Small held-out safety check:** Devika independently writes and runs a small set of crisis/Title IX/conduct scenarios that are not in the regression dataset, against the integrated `main`. Results (numerator/denominator, misses) are recorded; misses are fixed or explicitly accepted by both. Comprehensive adversarial testing stays in Phase 5 | Devika runs; Abhinav fixes any routing misses | — | Open |
 
-### Deferrals and other decisions
+### Proposed deferrals
 
 Abhinav approved these deferrals on 2026-10-11, on the condition that each
 limitation stays documented. **Devika has not accepted them yet**: her #7 approval
@@ -70,6 +70,8 @@ explicitly excludes them. A deferral counts only once both agree.
 | O10 | Generic "hate" routes benign dislikes ("I hate waiting for appointments") to the conduct template | Phase 5 bypass/false-positive evaluation | `safety/crisis-routing.md` §5; baseline audit O10 | Approved | Pending |
 | KB | Formal KB freshness governance (9 records exceed the exploratory 180-day audit threshold) | Phase 3 governed RAG (C1-v0.2 item 4) | `docs/audits/devika-c1.md`; C1-v0.2 item 4 | Approved | Pending |
 | HELD-full | Comprehensive held-out and adversarial safety testing | Phase 5 (a small held-out check is blocker B9) | `safety/crisis-routing.md` §5 | Approved | Pending |
+
+### Close-out decisions (carried out, not deferred)
 
 Decided by Abhinav, recorded for Devika's review:
 
@@ -94,15 +96,15 @@ Decided by Abhinav, recorded for Devika's review:
 | C2 merge order (Abhinav first, alternating from C1) | Proposed | Pending |
 
 **Jointly confirmed contracts:** C1-v0.2 (`INTERFACE_CONTRACTS.md`,
-`CONTRIBUTION_MATRIX.md`) and architecture §4 items 1–4. The Agreement record in
-`INTERFACE_CONTRACTS.md` shows Abhinav's row; Devika fills in her own row.
+`CONTRIBUTION_MATRIX.md`) and architecture §4 items 1–4. Both rows of the Agreement
+record in `INTERFACE_CONTRACTS.md` are filled in on Devika's repair branch.
 
 ## Open PRs and issues
 
 - [Issue #7](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/7): canonical C1 contract approval and coordination record. Both approvals posted.
 - [Issue #6](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/6): closed as a duplicate of #7; Abhinav's original approval statement is preserved there.
-- [PR #8](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/8) (`feature/abhinav-c1-closeout-docs`): awaiting Devika's review. CI on the first push (run 38176667555) passed all 8 checks; it must pass again on the latest push before merging.
-- Devika's repair branch `feature/devika-c1-phase1-repairs`: reported as created locally from `main`; not on GitHub yet, no PR yet.
+- [PR #8](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/8) (`feature/abhinav-c1-closeout-docs`): awaiting Devika's submitted review. CI passed all 8 checks on `920c2a7` (run 38176667555) and `acb1616` (run 38177435277); it must pass again on any later push before merging.
+- Devika's repair branch `feature/devika-c1-phase1-repairs`: pushed at `3edc240` (B1–B4 and her approval records); no PR yet, not yet reviewed. B1–B4 stay open until it merges.
 
 ## Known defects and risks
 
@@ -157,12 +159,11 @@ merges. A required check that never reports blocks every PR.
 
 ## Exact safe next step
 
-1. **Devika:** review PR #8, including `RELEASE_GATES.md` and the deferral table;
-   accept or reject each deferral; add her row to the `INTERFACE_CONTRACTS.md`
-   Agreement record.
+1. **Devika:** finish reviewing PR #8, including `RELEASE_GATES.md` and the deferral
+   table; accept or reject each deferral.
 2. **Abhinav:** apply the GitHub settings above (B7).
-3. **Devika:** push `feature/devika-c1-phase1-repairs` with B1–B4 and open a PR for
-   Abhinav's review. Abhinav does not implement any part of B1–B4.
+3. **Devika:** open a PR from `feature/devika-c1-phase1-repairs` (pushed at `3edc240`)
+   for Abhinav's review. Abhinav does not implement any part of B1–B4.
 4. **Abhinav:** review that PR and rerun it on WSL2 and Windows. Neither merges
    without the other's approval and passing CI.
 5. **Devika:** run the small held-out safety check (B9) on the integrated `main`.
@@ -174,8 +175,10 @@ merges. A required check that never reports blocks every PR.
 
 ```bash
 git fetch origin && git switch main && git pull --ff-only
-python -m venv .venv && . .venv/bin/activate
-pip install -r requirements.txt -r requirements-dev.txt
+python3 -m venv .venv && . .venv/bin/activate        # WSL2, Linux, macOS
+# Windows native (Git Bash) instead: python -m venv .venv && . .venv/Scripts/activate
+# PowerShell: see AGENTS.md -> Validate locally
+python -m pip install -r requirements.txt -r requirements-dev.txt
 export STRANDS_ENABLED=false RIH_PLANNER=RULE
 ruff check . && ruff check --config ruff-c1.toml .
 python -m pytest -q

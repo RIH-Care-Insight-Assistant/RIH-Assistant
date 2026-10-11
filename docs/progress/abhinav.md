@@ -26,7 +26,7 @@ Maintained only by Abhinav (or his coding agent) on his own feature branches. Re
   - Deferrals approved with conditions: O4, O5, O7 (README before any public C2 demo), O8, O9, O10, formal KB freshness, comprehensive held-out testing (Phase 5).
   - New C1 blocker B9: Devika runs a small held-out safety check before C1 acceptance.
   - Model features stay off until operational safeguards exist.
-- **Devika's repairs:** `feature/devika-c1-phase1-repairs` is reported created locally; not on GitHub yet. I do not implement any part of B1–B4; I review and rerun her PR.
+- **Devika's repairs:** pushed to `feature/devika-c1-phase1-repairs` at `3edc240`; no PR yet. I do not implement any part of B1–B4; I review and rerun her PR.
 
 ## Completed in C1
 
@@ -77,14 +77,15 @@ macOS has not been run locally; CI covers it, and Devika runs her Mac adversaria
 
 ## Needs Devika / joint decision
 
-The full list, split into C1 blockers and proposed deferrals, is in `docs/PROJECT_STATE.md`. In short:
+The authoritative C1 checklist (blockers B1–B9, deferrals, approvals) is `docs/PROJECT_STATE.md`.
+Done: C1-v0.2 and architecture §4 items 1–4 are approved by both in #7. Still open:
 
-1. **Approve C1-v0.2** in the approval issue. Her Phase 1 behavior changes wait for it.
-2. **Her C1 repairs (blockers B1–B4):** retrieval restriction, decline semantics, verified alternatives, cross-tests. I review them and rerun them on WSL2 and Windows.
+1. **Her C1 repairs (B1–B4)** are pushed to `feature/devika-c1-phase1-repairs` (`3edc240`). No PR yet. I review them and rerun them on WSL2 and Windows.
    - If her work touches the dispatcher's decline block (step 1.25), the guard must stay `route_level not in DECLINE_PROTECTED_LANES`.
    - O1 ("I hate myself" → counseling) and O2 (record transfer ≠ retention) were her review findings, fixed in `7a70801`; she approved PR #4 with them.
-3. **Review the close-out docs PR.**
-4. **Agree or reject the proposed deferrals:** O4, O5, O6, O7, O8, O9, O10, held-out cases, KB freshness, `RELEASE_GATES.md` owner.
+2. **PR #8 review.** Her two documentation corrections (Windows venv activation; stale checklist items) are fixed on the PR #8 branch.
+3. **Deferrals:** accept or reject O4, O5, O7, O8, O9, O10, formal KB freshness and comprehensive held-out testing. O6 is fixed in PR #8, not deferred. `RELEASE_GATES.md` ownership is decided (me; she contributes and reviews).
+4. **B9:** her small held-out safety check before C1 acceptance.
 5. **C2:** stack approval, Node version and lockfile, merge order (I propose mine merges first), and the C2-v0.1 contracts.
 
 ## Needs a GitHub admin (human)
