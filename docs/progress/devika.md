@@ -2,6 +2,44 @@
 
 Last updated: 2026-10-11 (America/New_York). Operator: Devika Rani Sanaboyina.
 
+## PR #9 integration after PR #8 — latest status
+
+- PR #8 is merged by Abhinav, after Devikz's approving review, as
+  `20e62a9c97f5cd1c06e2276d53d78bdf2f24d48f`. Its integrated
+  [main CI run 38184454553](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/actions/runs/38184454553)
+  passed all eight jobs; verified independently.
+- Fetched latest origin/main and prepared a normal merge into the existing
+  `feature/devika-c1-phase1-repairs` branch. **No conflicts.** Devika reviewed the
+  integration and explicitly authorized finalizing the merge commit, normal push,
+  and marking PR #9 Ready after all eight updated-head CI checks pass. Previous
+  branch head is `3edc2408c212b4efdedbe50285623935e42adb60`; merge parent is
+  `20e62a9c97f5cd1c06e2276d53d78bdf2f24d48f`. No reset, rebase or force push.
+- Verified all 13 PR #8 files match merged main and all 19 reviewed Devika files
+  survived byte for byte before adding these factual progress/evidence updates.
+  Runtime, interfaces, tests, dependencies and CI were not redeveloped.
+  Existing untracked review artifacts remain preserved and excluded.
+- Actual combined-tree macOS arm64/Python 3.12.12 validation: **552 passed, no
+  skips**; global/scoped Ruff and formatting passed; smoke OK; 12 routing checks
+  passed; readiness **15/15**; safety v1.2.0 **75/75 protected, 0/16 benign false
+  positives, 97/97 exact routing**. Synthetic offline regression evidence, not
+  held-out/general safety evidence. Local Ruff remains 0.9.10.
+- KB audit: exit 0 with the same nine stale, one chat-disabled and two
+  crisis-content observations. No freshness policy or KB schema change.
+  Exact commands/results are in the
+  [post-PR8 integration evidence](../audits/devika-c1-post-pr8-integration-2026-10-11.json).
+- Existing [PR #9](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/9)
+  is draft, with AbhinavVarma02 requested. Its earlier head `3edc240` CI passed
+  all eight jobs (run 38183128049); those checks do not validate this unpushed
+  integration. New-head remote CI must pass after authorized publication.
+- **Next:** Finalize the authorized merge commit under Devika's verified human
+  identity and push this same branch normally. Verify all eight CI jobs on the
+  exact updated PR #9 head, mark Ready, and request Abhinav's final review. If a
+  GitHub write returns 403, report the restriction without bypassing it. Do not
+  create another PR, mark Ready prematurely or merge automatically.
+- The old hourly follow-up remains **paused** while this authorized publication
+  is handled in the current session. Both humans' final-main validation, B9 and
+  formal C1 acceptance remain open. No proposed deferral accepted; no C2 work.
+
 ## Authorized publication — latest status
 
 - Devika reviewed the 19 intended files and explicitly authorized the two
