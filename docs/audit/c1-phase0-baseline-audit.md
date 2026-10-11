@@ -41,6 +41,8 @@ Resolved versions of the unpinned dependencies on that date: `strands-agents` 1.
 | D9 | High | *(PR #4 review, Devika)* Decline handling still replaced **retention** guidance. Separately, "dropping out" never reached the retention lane at all. | "I don't want counseling, I want to withdraw from school" → alternatives | `DECLINE_PROTECTED_LANES`; retention inflections |
 | D10 | High | *(PR #4 review, Devika)* `SafeStrandsAgent` screened text with a keyword list far narrower than the router. "i want to die", "I'm suicidal", "I was raped", slurs, and "k1ll mys3lf" could all reach the model. | Wrapper flagged 1 of 6 router-flagged phrases | `_is_safety_sensitive()`: keyword list **or** safety-critical router lane, applied to prompt, inputs and output |
 | D11 | Medium | Counseling template said "see crisis options above" when nothing was above it. | Template text | Names 988 and 911 directly |
+| D12 | **Critical** | *(Devika's independent review of `7a70801`)* Contraction crisis triggers only accepted a straight `'`. A curly U+2019 apostrophe (default on iOS/macOS) or another look-alike bypassed crisis routing. "No thanks, I don’t want to be alive" got campus alternatives. | 30/40 apostrophe × phrase variants missed the crisis template | `Rules.normalize()` maps apostrophe look-alikes to `'` |
+| D13 | Medium | My own C1 edits had stored invisible/bidi-control characters (e.g. U+200B, U+200F) and look-alike Cyrillic/Greek letters **literally** in `rules.py` and the dataset. The code behaved correctly but could not be reviewed by eye. | Unicode-category scan | Rewritten as `\u` escapes (identical values); guard test rejects Cf characters |
 
 ## 4. Open findings (need owner or joint decision)
 

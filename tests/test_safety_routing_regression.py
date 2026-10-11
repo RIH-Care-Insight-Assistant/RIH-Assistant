@@ -104,6 +104,44 @@ def test_negation_does_not_suppress_crisis_routing():
         assert route(c["text"]).level == "urgent_safety", c["id"]
 
 
+# PR #4 independent review (Devika): contractions typed with "smart" or other apostrophe
+# look-alikes ("don’t") bypassed crisis triggers written with "'". Listed independently of
+# app.router.rules so the test does not just trust the module's own list.
+APOSTROPHE_LOOKALIKES = {
+    "U+2019 right single quote (iOS/macOS default)": chr(0x2019),
+    "U+2018 left single quote": chr(0x2018),
+    "U+02BC modifier letter apostrophe": chr(0x02BC),
+    "U+0060 backtick": chr(0x60),
+    "U+00B4 acute accent": chr(0xB4),
+    "U+2032 prime": chr(0x2032),
+    "U+FF07 full-width apostrophe": chr(0xFF07),
+}
+CONTRACTION_CRISIS_PHRASES = [
+    "I don{a}t want to live anymore",
+    "I can{a}t go on like this",
+    "life isn{a}t worth living",
+    "I don{a}t want to wake up tomorrow",
+    "No thanks, I don{a}t want to be alive",
+]
+
+
+@pytest.mark.parametrize("phrase", CONTRACTION_CRISIS_PHRASES)
+@pytest.mark.parametrize("apostrophe", list(APOSTROPHE_LOOKALIKES.values()), ids=list(APOSTROPHE_LOOKALIKES))
+def test_apostrophe_lookalikes_do_not_bypass_crisis_routing(dispatcher, apostrophe, phrase):
+    msg = phrase.format(a=apostrophe)
+    assert route(msg).level == "urgent_safety"
+    out = dispatcher.respond(msg)
+    assert out["text"] == crisis_message()
+    assert out["trace"] == [{"event": "route", "level": "urgent_safety"}]
+
+
+@pytest.mark.parametrize("apostrophe", list(APOSTROPHE_LOOKALIKES.values()), ids=list(APOSTROPHE_LOOKALIKES))
+def test_normalize_maps_apostrophe_lookalikes_to_ascii(apostrophe):
+    from app.router.rules import Rules
+
+    assert Rules.normalize(f"don{apostrophe}t") == "don't"
+
+
 def test_crisis_outranks_title_ix_in_one_message():
     r = route("I was sexually assaulted and I want to die")
     assert r.level == "urgent_safety" and r.response_key == "crisis"

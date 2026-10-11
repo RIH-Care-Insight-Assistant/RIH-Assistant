@@ -45,7 +45,10 @@ Both sets are defined once, in `app/router/safety_router.py`:
 
 `Rules.match()` checks each rule, in priority order, against up to three views of the message:
 
-1. `normalize()`: lower-case, unicode dashes, and the existing typo map. This view is unchanged from before C1.
+1. `normalize()`: lower-case, unicode dashes, **apostrophe look-alikes → `'`**, and the existing typo map.
+   - The apostrophe step was added after Devika's independent review.
+   - It covers U+2018/U+2019 curly quotes (the iOS/macOS default), U+02BC, U+02BB, U+02B9, U+201A, U+201B, U+2032, U+00B4, U+0060 and U+FF07.
+   - It matters because contractions in triggers ("don't", "can't", "isn't") are written with `'`.
 2. `skeleton()`: NFKC normalization, invisible characters removed, homoglyphs and leetspeak mapped back to letters, and spaced-out letters joined. Examples: `k1ll mys3lf`, `s.u.i.c.i.d.e`, `ｋｉｌｌ`, Cyrillic `і`.
 3. `skeleton(invisible_as_space=True)`: the same, but an invisible character counts as a space (`kill<ZWSP>myself`).
 
@@ -71,23 +74,33 @@ Because self-directed distress now reaches the counseling template, that templat
 
 ## 4. Evidence (measured 2026-10-11)
 
-Dataset: `tests/data/safety_routing_cases.json`, v1.1.0. It holds 89 synthetic cases:
-- 67 safety-critical (incl. adversarial, multi-intent and negation),
+Dataset: `tests/data/safety_routing_cases.json`, v1.2.0. It holds 97 synthetic cases:
+- 75 safety-critical (incl. adversarial, multi-intent and negation),
 - 16 benign negatives,
 - 6 non-critical lane cases.
 
+Non-ASCII text in the dataset is stored as `\u` escapes, so invisible characters stay reviewable.
 Command: `python scripts/safety_eval.py`. Environment: WSL2 Ubuntu 26.04, Python 3.14.4, Strands disabled.
 
 | Metric | `origin/main` @ `b05da15` | this branch |
 |---|---|---|
-| Crisis end-to-end recall | 8/49 (16.3%) | 49/49 |
-| Title IX end-to-end recall | 3/13 (23.1%) | 13/13 |
+| Crisis end-to-end recall | 8/56 (14.3%) | 56/56 |
+| Title IX end-to-end recall | 3/14 (21.4%) | 14/14 |
 | Conduct end-to-end recall | 2/5 (40.0%) | 5/5 |
-| **All safety-critical end-to-end** | **13/67 (19.4%)** | **67/67** |
+| **All safety-critical end-to-end** | **13/75 (17.3%)** | **75/75** |
 | False positives on benign cases (safety template) | 0/16 | 0/16 |
-| Router exact-lane agreement, all 89 cases | 33/89 | 89/89 |
+| Router exact-lane agreement, all 97 cases | 33/97 | 97/97 |
 
-v1.0.0 numbers, for the record: `main` 12/65, this branch 65/65, FP 0/15 on both.
+Earlier dataset versions, for the record:
+
+| Dataset | `main` | this branch | FP (both) |
+|---|---|---|---|
+| v1.1.0 | 13/67 | 67/67 | 0/16 |
+| v1.0.0 | 12/65 | 65/65 | 0/15 |
+
+Apostrophe matrix: 7 look-alike apostrophes × 5 contraction crisis phrases.
+- On review head `7a70801`: 30 of the 40 probe variants missed the crisis template.
+- Now: the 35-case regression matrix in `test_safety_routing_regression.py` passes.
 
 **Caveat:** I wrote the dataset alongside the patterns, so the "after" column is a regression result, not an estimate of real-world recall. An independent held-out set is required:
 - Devika's independent adversarial tests (in progress).
@@ -128,3 +141,10 @@ The crisis template previously labelled 410-455-2542 as "RIH Urgent Care". The o
 | 4. Timed-out threads continue | Documented here, in the `_call_with_timeout` docstring and audit O9; fix deferred to Phase 8 | — |
 
 All 26 new review assertions fail on the pre-review commit `e63a5c5` and pass after the fix.
+
+### Follow-up: Devika's independent review of `7a70801`
+
+| Finding | Change | Evidence |
+|---|---|---|
+| 5. Curly apostrophes bypass crisis triggers ("I don’t want to live anymore") | `Rules.normalize()` maps apostrophe look-alikes to `'`. No interface change. | SR-090..SR-097; apostrophe matrix and `normalize()` unit tests. 52 new assertions fail on `7a70801` and pass now |
+| Source hygiene (found while fixing) | Invisible/bidi-control and homoglyph characters in `rules.py` and the dataset rewritten as `\u` escapes, with identical runtime values. New guard test rejects Unicode format (Cf) characters in repo text files. | `test_no_invisible_or_bidi_control_characters` |

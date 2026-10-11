@@ -29,6 +29,20 @@ def test_text_files_use_lf_line_endings():
     assert crlf == [], f"CRLF line endings (see .gitattributes): {crlf}"
 
 
+def test_no_invisible_or_bidi_control_characters():
+    # "Trojan Source" guard: invisible format characters (zero-width, bidi controls, BOM)
+    # cannot be reviewed by eye. Test data that needs them must use \\uXXXX escapes.
+    import unicodedata
+
+    hits = []
+    for p in _repo_text_files():
+        for n, line in enumerate(p.read_text(encoding="utf-8").splitlines(), 1):
+            bad = sorted({f"U+{ord(c):04X}" for c in line if unicodedata.category(c) == "Cf"})
+            if bad:
+                hits.append(f"{p.relative_to(ROOT)}:{n} {','.join(bad)}")
+    assert hits == []
+
+
 def test_gitattributes_enforces_lf():
     text = (ROOT / ".gitattributes").read_text(encoding="utf-8")
     assert re.search(r"^\*\s+text=auto\s+eol=lf\b", text, re.M)

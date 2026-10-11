@@ -75,14 +75,19 @@ NORMALIZE_MAP = {
 # ---------------------------------------
 # Obfuscation-resistant "skeleton" view (used IN ADDITION to normalize(), never instead)
 # ---------------------------------------
+# Apostrophe look-alikes: curly quotes (default on iOS/macOS), modifier letters, prime,
+# acute accent, backtick, full-width. Used by normalize(), so it applies to every view.
+APOSTROPHE_VARIANTS = "\u2018\u2019\u201a\u201b\u02b9\u02bb\u02bc\u2032\u00b4`\uff07"
+_APOSTROPHES_RE = re.compile("[" + re.escape(APOSTROPHE_VARIANTS) + "]")
+
 # Invisible characters that can split a trigger word without changing how it looks.
-_INVISIBLE_RE = re.compile("[­᠎​-‏⁠-⁤﻿]")
+_INVISIBLE_RE = re.compile("[\u00ad\u180e\u200b-\u200f\u2060-\u2064\ufeff]")
 
 # Common Cyrillic/Greek look-alikes of Latin letters.
 _HOMOGLYPHS = str.maketrans({
-    "а": "a", "е": "e", "о": "o", "р": "p", "с": "c", "у": "y", "х": "x",
-    "і": "i", "ј": "j", "ѕ": "s", "ԁ": "d", "ӏ": "l", "ɩ": "i",
-    "α": "a", "ε": "e", "ι": "i", "κ": "k", "ο": "o", "ρ": "p", "τ": "t", "υ": "u", "ν": "v",
+    "\u0430": "a", "\u0435": "e", "\u043e": "o", "\u0440": "p", "\u0441": "c", "\u0443": "y", "\u0445": "x",
+    "\u0456": "i", "\u0458": "j", "\u0455": "s", "\u0501": "d", "\u04cf": "l", "\u0269": "i",
+    "\u03b1": "a", "\u03b5": "e", "\u03b9": "i", "\u03ba": "k", "\u03bf": "o", "\u03c1": "p", "\u03c4": "t", "\u03c5": "u", "\u03bd": "v",
 })
 
 # Leetspeak digits/symbols. Only applied to the skeleton view, so ordinary numbers
@@ -141,6 +146,9 @@ class Rules:
         t = (text or "").lower()
         # Normalize unicode dashes to hyphen to keep tokens consistent
         t = re.sub(r"[\u2010-\u2015\u2212]", "-", t)
+        # Normalize apostrophe look-alikes to "'" so contractions in triggers ("don't",
+        # "can't", "isn't") also match "smart" punctuation typed on phones and Macs.
+        t = _APOSTROPHES_RE.sub("'", t)
         # Apply known variant → canonical mappings
         for wrong, right in NORMALIZE_MAP.items():
             t = re.sub(rf"(?<!\w){re.escape(wrong)}(?!\w)", right, t)

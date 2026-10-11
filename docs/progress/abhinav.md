@@ -8,9 +8,9 @@ Maintained only by Abhinav (or his coding agent) on his own feature branches. Re
 - **Branch:** `feature/abhinav-c1-foundation-safety`, created from `origin/main` @ `b05da15`.
 - **C1 scope (provisional split, needs both approvals):** Python application architecture, deterministic safety router, crisis-routing regression tests, baseline verification, initial GitHub Actions CI.
 - **Devika (C1):** retrieval, KB audit, decline detection, clarification, related tests, initial interface-contract drafts.
-- **State (2026-10-11):** draft PR RIH-Care-Insight-Assistant/RIH-Assistant#4 is open with 5 commits up to `e63a5c5`. All 8 CI checks passed on that head.
-  - Devika requested changes (4 points).
-  - The fixes for those points are committed locally on this branch. They go to the PR once Abhinav approves the push.
+- **State (2026-10-11):** draft PR RIH-Care-Insight-Assistant/RIH-Assistant#4 is open.
+  - Review round 1: Devika's 4 points were fixed in `7a70801` (pushed with approval; CI passed all 8 checks). The reply is posted and her review re-requested.
+  - Review round 2: her independent review found the curly-apostrophe crisis bypass (audit D12). The fix and a source-hygiene cleanup (D13) are committed **locally only**, awaiting Abhinav's approval to push.
 - **Devika's branch:** `feature/devika-c1-foundation-safety`, draft PR #5. I have only read it; nothing on it was modified.
   - Her changes are all new files: KB audit, `tests/c1/`, `INTERFACE_CONTRACTS.md` C1-v0.2, `CONTRIBUTION_MATRIX.md`, `DECISION_LOG.md`, `THREAT_MODEL.md`, `docs/progress/devika.md`, `ruff-c1.toml`.
   - No file overlaps with this branch.
@@ -50,6 +50,11 @@ Maintained only by Abhinav (or his coding agent) on his own feature branches. Re
 | same, new review tests on pre-review code `e63a5c5` | 3 safety test files | 26 failed (expected: proves the tests catch the issues), 190 passed |
 | same, simulated integration: this branch + Devika's branch files | `pytest -q`; her `tests/c1`; her `ruff-c1.toml` check | 344 passed; 47 passed; clean |
 | Windows 11 native, Python 3.13.2, after the review fixes | `pytest -q`; `check_routes.py`; `safety_eval.py --fail-on-miss` | 297 passed; passed; exit 0 |
+| GitHub Actions, run 38173691303, PR #4 @ `7a70801` | full workflow | completed: success |
+| WSL2, Python 3.14.4, apostrophe fix (D12/D13) | `pytest -q` / `ruff check .` / `check_routes.py` / `safety_eval.py --fail-on-miss` | 356 passed / clean / passed / 75/75, FP 0/16, exit 0 |
+| same, new tests on `7a70801` code | 4 test files | 52 failed (expected), 248 passed |
+| same, `origin/main` snapshot + dataset v1.2.0 | `safety_eval.py` | 13/75 safety-critical (17.3%), FP 0/16 |
+| Windows 11 native, Python 3.13.2, apostrophe fix | `pytest -q`; `safety_eval.py --fail-on-miss` | 356 passed; exit 0 |
 
 macOS has not been run locally; CI covers it, and Devika runs her Mac adversarial tests.
 
