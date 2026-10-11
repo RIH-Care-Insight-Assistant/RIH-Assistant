@@ -1,6 +1,8 @@
 # Python Application Architecture (as of C1)
 
-Author: Abhinav Varma Vathadi · Status: describes `feature/abhinav-c1-foundation-safety`. The contract in §4 is a **proposal** for `docs/INTERFACE_CONTRACTS.md` (Devika is drafting that file) and needs both contributors' approval.
+Author: Abhinav Varma Vathadi · Status: describes `feature/abhinav-c1-foundation-safety`.
+
+> **C1 interface contracts — Pending Joint Approval.** Everything in §4 is a proposal for `docs/INTERFACE_CONTRACTS.md` (Devika is drafting that file). Nothing here is agreed until Abhinav and Devika both approve it.
 
 ## 1. Module map
 
@@ -53,7 +55,13 @@ See `docs/safety/crisis-routing.md` §1. In short:
 - Models can escalate but never de-escalate.
 - Model outages produce identical deterministic output.
 
-## 4. Proposed contract for Phase 2 (FastAPI) — for INTERFACE_CONTRACTS.md
+## 4. Proposed contracts for Phase 2 (FastAPI) — Pending Joint Approval
+
+| C1 contract | Where | Status |
+|---|---|---|
+| `Dispatcher.respond()` input/output shape (below) | `app/agent/dispatcher.py` | Pending Joint Approval |
+| `SAFETY_CRITICAL_LANES` semantics: these lanes are terminal and exact | `app/router/safety_router.py` | Pending Joint Approval |
+| Safety dataset schema v1.0.0 (`id`, `kind`, `expected_lane`, `text`) | `tests/data/safety_routing_cases.json` | Pending Joint Approval |
 
 The backend should call **one** entry point and must not re-implement routing:
 

@@ -51,8 +51,9 @@ macOS has not been run locally. CI covers macOS with Python 3.13, and Devika wil
 5. **Dependencies (joint):** drop unused `numpy`/`pandas`; pin or lock the rest (O4). `requirements.txt` is unchanged in C1.
 6. **Duplicate test file** `tests/tests/test_phase6_production_validation.py`: remove (O5)?
 7. **Held-out safety cases:** Devika (or anyone who has not seen the patterns) writes crisis/Title IX phrasings, to measure recall honestly.
-8. **Interface contracts:** include or adjust the dispatcher contract proposal (architecture doc §4) in her `docs/INTERFACE_CONTRACTS.md`.
+8. **Interface contracts (Pending Joint Approval):** the `Dispatcher.respond()` shape, `SAFETY_CRITICAL_LANES` semantics, and safety dataset schema v1.0.0 (architecture doc §4). Include or adjust them in her `docs/INTERFACE_CONTRACTS.md`. None are agreed yet.
 9. **Shared docs not created by me, to avoid add/add conflicts:** `AGENTS.md`, `CLAUDE.md`, `docs/MASTER_PLAN.md`, `docs/PROJECT_STATE.md`, `docs/DECISION_LOG.md`, `docs/RELEASE_GATES.md`, `docs/CONTRIBUTION_MATRIX.md`. We need to agree who creates each. My launcher assigns `AGENTS.md`/`CLAUDE.md` to me after approval.
+10. **Independent safety review:** before we approve integration, Devika independently reviews the safety changes and runs her own adversarial tests against this branch.
 
 ## Needs a GitHub admin (human)
 

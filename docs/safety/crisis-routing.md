@@ -1,6 +1,6 @@
 # Deterministic Safety Routing — Policy, Evidence, Limitations
 
-Owner (C1): Abhinav Varma Vathadi · Status: proposed in `feature/abhinav-c1-foundation-safety`, pending Devika's review.
+Owner (C1): Abhinav Varma Vathadi · Status: proposed in `feature/abhinav-c1-foundation-safety`, pending Devika's independent review and adversarial testing. The routing policy, `SAFETY_CRITICAL_LANES` semantics, and dataset schema are **Pending Joint Approval**.
 
 This assistant is a student-resource prototype. It is **not** a clinical or emergency service, and crisis detection is **not** infallible.
 
