@@ -14,7 +14,7 @@ Maintained only by Abhinav (or his coding agent) on his own feature branches. Re
   - Root `AGENTS.md` and `CLAUDE.md` (`CLAUDE.md` imports `AGENTS.md`, so there is one standard).
   - `docs/MASTER_PLAN.md`, `docs/PROJECT_STATE.md`, `docs/RELEASE_GATES.md` (I own it; Devika contributes and reviews), `docs/instructions/ABHINAV_LAUNCHER.md`.
   - Architecture §4: dataset reference corrected to v1.2.0; marked approved by both; the proposed response additions marked not approved (C2).
-  - `docs/INTERFACE_CONTRACTS.md`: only my row in the agreement record. Devika fills in her own.
+  - `docs/INTERFACE_CONTRACTS.md`: unchanged from `main`. My earlier one-row edit was reverted because Devika's PR #9 owns the final joint approval record (both rows).
   - O6: `.gitignore` ignores `**/app/logs/`; `tests/test_audit_log_ignored.py` checks it with `git check-ignore`.
   - `tests/test_safety_model_paths.py::test_model_features_are_off_by_default`: model features stay off unless explicitly enabled.
   - `tests/test_repo_assumptions.py`: the agent/state docs only link to files that exist; `CLAUDE.md` imports `AGENTS.md`.
@@ -26,7 +26,7 @@ Maintained only by Abhinav (or his coding agent) on his own feature branches. Re
   - Deferrals approved with conditions: O4, O5, O7 (README before any public C2 demo), O8, O9, O10, formal KB freshness, comprehensive held-out testing (Phase 5).
   - New C1 blocker B9: Devika runs a small held-out safety check before C1 acceptance.
   - Model features stay off until operational safeguards exist.
-- **Devika's repairs:** pushed to `feature/devika-c1-phase1-repairs` at `3edc240`; no PR yet. I do not implement any part of B1–B4; I review and rerun her PR.
+- **Devika's repairs:** PR #9 (`feature/devika-c1-phase1-repairs`, draft, `3edc240`). I do not implement any part of B1–B4; I review and rerun her PR.
 
 ## Completed in C1
 
@@ -80,7 +80,7 @@ macOS has not been run locally; CI covers it, and Devika runs her Mac adversaria
 The authoritative C1 checklist (blockers B1–B9, deferrals, approvals) is `docs/PROJECT_STATE.md`.
 Done: C1-v0.2 and architecture §4 items 1–4 are approved by both in #7. Still open:
 
-1. **Her C1 repairs (B1–B4)** are pushed to `feature/devika-c1-phase1-repairs` (`3edc240`). No PR yet. I review them and rerun them on WSL2 and Windows.
+1. **Her C1 repairs (B1–B4)** are in PR #9 (`3edc240`). I review them and rerun them on WSL2 and Windows.
    - If her work touches the dispatcher's decline block (step 1.25), the guard must stay `route_level not in DECLINE_PROTECTED_LANES`.
    - O1 ("I hate myself" → counseling) and O2 (record transfer ≠ retention) were her review findings, fixed in `7a70801`; she approved PR #4 with them.
 2. **PR #8 review.** Her two documentation corrections (Windows venv activation; stale checklist items) are fixed on the PR #8 branch.
