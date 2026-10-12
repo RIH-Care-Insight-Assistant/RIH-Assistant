@@ -28,7 +28,11 @@ Maintained only by Abhinav (or his coding agent) on his own feature branches. Re
 - **B9:** failed at first (10/18, her held-out record; preserved). Repaired in my PR #12 to 18/18 with 0/6 on the original labels. No B9 label changed.
 - **Routing policies approved by both** (her PR #12 review; my comment of 2026-10-12): non-sexual harassment → conduct; O10 narrowing with hate-report recall; explicit severe threats → urgent guidance.
 - **Deferrals:** all seven agreed by both with conditions. I approved them on 2026-10-11; Devika accepted them on 2026-10-12 (C1-D32, PR #14). O10 was repaired, not deferred.
-- **Still open for C1: only B7.** Branch protection is not applied; re-read 2026-10-12 after PR #14 merged. PR #10 stays a draft until a repository admin applies it and the protection API confirms it.
+- **B7: done under the revised policy.** Devika and I approved a simplified branch-protection policy on PR #10 on 2026-10-12 ([mine](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/10#issuecomment-6128683842), [hers](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/10#issuecomment-6128687578)).
+  - GitHub keeps: 1 required approval, conversation resolution, force pushes and deletions blocked.
+  - The 8 CI checks run but are not required. Stale-review dismissal, latest-push approval, up-to-date branches and admin enforcement stay off.
+  - The protection API re-read after both approvals matches. The reduced enforcement is documented in `PROJECT_STATE.md` and `RELEASE_GATES.md`.
+- **C1: all six acceptance requirements met.** PR #10 is ready for review, and Devika's formal approval of it records C1 acceptance.
 
 ## Completed in C1
 
@@ -109,12 +113,14 @@ Everything for C1 is recorded:
 - reviews of every PR.
 
 Still open:
-1. **Final approval of PR #10**, once B7 is applied and recorded. Her approval records C1 acceptance.
+1. **Formal approval of PR #10.** Her approval records C1 acceptance.
 2. **After C1 acceptance:** the revised collaboration model and C2-v0.1 contracts; reconcile with her C2-v0.1 candidate.
 
 ## Needs a GitHub admin (human)
 
-Abhinav applies these himself (B7); both humans are admins. As of 2026-10-12 after PR #14 merged, none of the recommended branch-protection changes are applied, and secret scanning and push protection are off. Dependabot alerts are on. The exact required check names and the full recommended settings are in `docs/PROJECT_STATE.md` → GitHub settings for `main`.
+Nothing for C1. The revised B7 policy is in force: the live settings already match it. Any
+later change to branch protection or secret scanning is a joint decision. Settings and policy
+are in `docs/PROJECT_STATE.md` → GitHub settings for `main`.
 
 ## Resume
 
@@ -129,6 +135,6 @@ ruff check . && python -m pytest -q && python scripts/safety_eval.py --fail-on-m
 ```
 
 **Next safe step:**
-1. I apply the B7 settings listed in `docs/PROJECT_STATE.md` as repository admin, then confirm them through the protection API.
-2. I record the B7 evidence in PR #10, mark it ready and request Devika's final approval. Her approval records C1 acceptance; then close #7.
+1. Devika formally approves PR #10. Her approval records C1 acceptance.
+2. Merge PR #10 after her approval, and close issue #7.
 3. Only then: propose the revised collaboration model and C2-v0.1 contracts for joint approval. No C2 implementation before that.

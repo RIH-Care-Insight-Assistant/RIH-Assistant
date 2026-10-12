@@ -5,12 +5,13 @@ through a PR reviewed by Devika. Contributor detail lives in
 [`progress/abhinav.md`](progress/abhinav.md) and [`progress/devika.md`](progress/devika.md).
 This file is a snapshot: confirm PRs, reviews and CI on GitHub before acting on it.
 
-Last updated: 2026-10-12, after PR #14 merged (Devika's final validation and deferral
-decisions) and Abhinav validated `main` @ `8be85c6`, on branch `feature/abhinav-c1-acceptance`.
+Last updated: 2026-10-12, after both humans approved the revised B7 branch-protection policy
+on PR #10, on branch `feature/abhinav-c1-acceptance`.
 
 ## Current checkpoint
 
-**C1 (Phases 0–1), close-out. Not accepted: one gate remains.**
+**C1 (Phases 0–1), close-out. All six acceptance requirements are met under the revised B7
+policy; acceptance is recorded by Devika's formal approval of PR #10.**
 
 - **Merged:** all eight C1 PRs (#4, #5, #8, #9, #11, #12, #13, #14), each approved by the other human.
 - **Final `main`:** `8be85c6`, with CI 8/8. It differs from `bbc07de` only in three of Devika's documentation files.
@@ -21,8 +22,13 @@ decisions) and Abhinav validated `main` @ `8be85c6`, on branch `feature/abhinav-
 - **Deferrals:** Devika explicitly accepted all seven with conditions (PR #14, decision-log
   entry C1-D32), matching Abhinav's approval. O10 was repaired, not deferred.
 
-**The remaining gate is B7.** Branch protection on `main` is still not configured, and a
-repository admin must apply it. C2 has not started; no C2 branches exist.
+- **B7, revised and done:** both humans approved a simplified branch-protection policy on
+  PR #10 (Abhinav: [comment](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/10#issuecomment-6128683842); Devika: [comment](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/10#issuecomment-6128687578)). The live
+  settings match it. **This reduces enforcement:** CI checks run but are not required to merge.
+  See [GitHub settings](#github-settings-for-main).
+
+C1 is **not yet formally accepted**; that happens when Devika approves PR #10. C2 has not
+started; no C2 branches exist.
 
 ## Last validated `main`
 
@@ -79,7 +85,7 @@ complete C1.
 | B4 | Cross-tests for B1–B3 against crisis precedence and `DECLINE_PROTECTED_LANES` | Devika writes; Abhinav reviews and reruns | Abhinav approved PRs #9 and #13 and reran `bbc07de` on WSL2 and Windows | **Done** |
 | B5 | Both humans approve C1-v0.2 | Both | [#7](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/7) and [Devika's comment](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/7#issuecomment-6114029088) | **Done** |
 | B6 | Root agent instructions and shared state docs; audit-log `.gitignore` entry (O6) | Abhinav | PR #8, approved by Devika | **Done** |
-| B7 | Required CI checks and branch protection on `main` (Phase 0: CI must actually gate merges) | Abhinav (repo admin) | Protection API re-read 2026-10-12 after PR #14 merged: **no required checks, branches need not be up to date, stale approvals not dismissed, last-push approval off, admins not enforced**. Existing protections: 1 approval, code-owner review (no `CODEOWNERS` file), conversation resolution, no force pushes or deletions. See [settings](#github-settings-for-main) | **Open**: a repository admin must apply the settings |
+| B7 | Branch protection on `main`, **revised policy** approved by both humans on 2026-10-12 ([Abhinav](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/10#issuecomment-6128683842), [Devika](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/10#issuecomment-6128687578)): one required PR approval, conversation resolution, force pushes and deletions blocked; the 8 CI checks run on every PR and push but are **not** required; stale-review dismissal, latest-push approval, up-to-date branches and admin enforcement stay off | Abhinav (repo admin) | Protection API re-read 2026-10-12 after both approvals: 1 required approval, conversation resolution on, force pushes and deletions blocked, required checks empty, `strict` false, stale dismissal off, last-push approval off, `enforce_admins` off. Matches the revised policy. Code-owner review is also on, with no `CODEOWNERS` file, so it has no effect. See [settings](#github-settings-for-main) | **Done** (revised policy; reduced enforcement documented) |
 | B8 | Both humans run the same final `main`; both progress files current; completion report recorded here | Both | Both ran `bbc07de` and recorded OS, Python, commands and results: Devika in PR #14, Abhinav [above](#last-validated-main). `8be85c6` adds only Devika's documentation, and Abhinav reran it too. Devika's progress file is current (PR #14); Abhinav's is updated in this PR | **Done** |
 | B9 | **Small held-out safety check:** Devika independently writes and runs crisis/Title IX/conduct scenarios not in the regression dataset; misses are fixed or explicitly accepted by both | Devika runs; Abhinav fixes routing misses | See [B9 record](#b9-held-out-safety-check) | **Done**: repairs merged in PR #12, approved by Devika |
 
@@ -172,6 +178,7 @@ Eight items were proposed for deferral; **all are resolved**.
 | Models | Model features stay **off by default** until operational safeguards exist; a test enforces it | Merged in PR #8 (approved by Devika) |
 | RG | `RELEASE_GATES.md` is owned by Abhinav; Devika contributes and reviews | Merged in PR #8 (approved by Devika) |
 | O10 | Repaired in C1 rather than deferred | Merged in PR #12 (approved by Devika) |
+| B7 policy | Simplified branch protection for the two-contributor workflow: keep 1 required approval, conversation resolution and force-push/deletion protection; CI checks run but are not required; stricter settings stay off. Both humans accept the reduced enforcement | Approved by both on PR #10 ([Abhinav](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/10#issuecomment-6128683842), [Devika](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/10#issuecomment-6128687578)); live settings match |
 
 ## Approvals
 
@@ -183,6 +190,7 @@ Eight items were proposed for deferral; **all are resolved**.
 | Routing policies: harassment, O10, severe threats | Approved 2026-10-12 | Approved in her PR #12 review |
 | Architecture §4 proposed response additions (`safety_lane`, `is_terminal_safety`, `RouteResult.matched_view`, trace event names) | **Not approved**; C2 contracts | **Not approved**; reserved for C2 |
 | Deferrals (table above) | Approved with conditions (2026-10-11) | Accepted with conditions (2026-10-12, C1-D32, PR #14) |
+| Revised B7 branch-protection policy (reduced enforcement) | Approved 2026-10-12 16:50 UTC ([comment](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/10#issuecomment-6128683842)) | Approved 2026-10-12 16:50 UTC ([comment](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/10#issuecomment-6128687578)) |
 | `RELEASE_GATES.md` ownership | Decided | Approved PR #8, which records it |
 | C2 stack: FastAPI, React + TypeScript, Vite, SQLite | Approved 2026-10-11 | Pending |
 | Node.js version and lockfile | Open | Open |
@@ -194,14 +202,17 @@ architecture §4 items 1–4, and the three C1 routing policies above.
 ## Open PRs and issues
 
 - [Issue #7](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/7): canonical C1 contract approval and coordination record. Close it once C1 is accepted.
-- [PR #10](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/10) (`feature/abhinav-c1-acceptance`, this change, **draft**): the C1 acceptance record. Stays a draft until B7 is applied and recorded.
+- [PR #10](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/10) (`feature/abhinav-c1-acceptance`, this change, **ready for review**): the C1 acceptance record. Devika's formal approval records C1 acceptance.
 - No other open PRs.
 
 ## Known defects and risks
 
-- **Merge gates are not enforced (B7).** GitHub requires one approval but no passing checks,
-  and admins can bypass it. PRs #11–#14 each merged within 30 seconds of approval. Their
-  final heads passed 8/8, but nothing required it.
+- **Reduced enforcement (B7 revised policy, accepted by both humans).** GitHub requires one
+  approval and resolved conversations. It does not require passing checks, up-to-date
+  branches, re-approval after new pushes, or approval of the latest push. Admins, which both
+  humans are, can bypass all of it. Merge quality therefore relies on each reviewer checking
+  that all 8 CI checks passed on the exact head before approving and merging; every C1 PR's
+  final head did. PRs #11–#14 each merged within 30 seconds of approval.
 - **Model features are off by default.** The Strands enhancer, spelling corrector and LLM
   planner should not be enabled before the Phase 8 safeguards exist.
 - **The routing families are optimistic on their own tests.** They were written after the
@@ -215,62 +226,56 @@ architecture §4 items 1–4, and the three C1 routing policies above.
 
 ## GitHub settings for `main`
 
-Re-read 2026-10-12 after PR #14 merged (branch-protection API, rulesets, repository
-security settings, Actions workflow permissions). Changes are made by a human admin in Settings → Branches → `main`
-(or an equivalent ruleset) and Settings → Code security. Rulesets: none.
+**Agreed policy (revised B7, 2026-10-12):** approved by both humans on PR #10
+([Abhinav](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/10#issuecomment-6128683842), [Devika](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/10#issuecomment-6128687578)).
 
-**Required status checks** (exact names from run 38275707707 on `8be85c6`; source: GitHub Actions, app ID 15368):
+Re-read 2026-10-12 after both approvals: branch-protection API, rulesets, repository security
+settings and Actions workflow permissions. Rulesets: none. Changes to these settings are a
+joint decision.
 
-```text
-Lint (ruff)
-Safety gate
-Tests (py3.11, ubuntu-latest)
-Tests (py3.12, ubuntu-latest)
-Tests (py3.13, ubuntu-latest)
-Tests (py3.14, ubuntu-latest)
-Tests (py3.13, macos-latest)
-Tests (py3.13, windows-latest)
-```
-
-If a later PR renames a job or changes the matrix, update this list when that PR
-merges. A required check that never reports blocks every PR.
-
-| Setting | Now (2026-10-12) | Recommended |
+| Setting | Agreed policy | Live (2026-10-12) |
 |---|---|---|
-| Require a pull request before merging | On, 1 approval | Keep |
-| Dismiss stale approvals when new commits are pushed | Off | **On** |
-| Require approval of the most recent reviewable push | Off | **On** |
-| Require review from Code Owners | On, but no `CODEOWNERS` file (no effect) | Keep as is for C1; adding a `CODEOWNERS` file is a joint change |
-| Require status checks to pass | Enabled with an empty list | **On**, with the 8 checks above |
-| Require branches to be up to date before merging | Off | **On** |
-| Require conversation resolution | On | Keep |
-| Do not allow bypassing (enforce for admins) | Off | **On**. Both humans are admins |
-| Allow force pushes / deletions | Blocked | Keep blocked |
-| Secret scanning and push protection | Off | **On** (free for public repositories) |
-| Dependabot alerts | On | Keep (automatic update PRs are optional) |
-| Actions default `GITHUB_TOKEN` permission | Read | Keep |
-| Allow Actions to create or approve PRs | Off | Keep off |
+| Require a pull request before merging | On, 1 approval | On, 1 approval |
+| Require conversation resolution | On | On |
+| Allow force pushes / deletions | Blocked | Blocked |
+| Require status checks to pass | **Off**: the 8 checks run but are not required | Enabled with an empty list (none required) |
+| Require branches to be up to date before merging | Off | Off |
+| Dismiss stale approvals when new commits are pushed | Off | Off |
+| Require approval of the most recent reviewable push | Off | Off |
+| Do not allow bypassing (enforce for admins) | Off | Off |
+| Require review from Code Owners | Not part of the policy | On, but no `CODEOWNERS` file, so no effect |
+| Secret scanning and push protection | Not part of the policy | Off |
+| Dependabot alerts | Not part of the policy | On |
+| Actions default `GITHUB_TOKEN` permission | Not part of the policy | Read |
+| Allow Actions to create or approve PRs | Not part of the policy | Off |
+
+**CI checks that run on every PR and push** (not required; names from run 38275707707,
+source GitHub Actions, app ID 15368): `Lint (ruff)`, `Safety gate`,
+`Tests (py3.11, ubuntu-latest)`, `Tests (py3.12, ubuntu-latest)`,
+`Tests (py3.13, ubuntu-latest)`, `Tests (py3.14, ubuntu-latest)`,
+`Tests (py3.13, macos-latest)`, `Tests (py3.13, windows-latest)`.
 
 ## C1 completion report
 
-**Not accepted.** Every requirement is evidenced except B7. When a repository admin applies
-B7, Abhinav records the protection-API result here and marks PR #10 ready. Devika's approval
-of that version records C1 acceptance.
+**All six acceptance requirements are met under the revised B7 policy.** C1 is formally
+accepted when Devika approves this version of PR #10. That approval is the acceptance record;
+PR #10 is then merged and issue #7 closed.
 
 | Gate (`RELEASE_GATES.md` → Checkpoint acceptance) | Evidence | Status |
 |---|---|---|
 | 1. Contracts approved by both, same version, recorded | C1-v0.2 and architecture §4 items 1–4 ([#7](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/7)); the three routing policies (PR #12, approved by both) | **Met** |
-| 2. Both contributors' PRs reviewed by the other and merged, merge gates passing | #4, #5, #8, #9, #11, #12, #13, #14, each approved by the other human. The final heads of #8, #9, #11, #12, #13 and #14 passed all 8 checks, and `main` CI passed after #4/#5 (run 38175224504) | **Met**. The checks passed but were not required (B7) |
+| 2. Both contributors' PRs reviewed by the other and merged, merge gates passing | #4, #5, #8, #9, #11, #12, #13, #14, each approved by the other human (the required approval). The final heads of #8, #9, #11, #12, #13 and #14 passed all 8 checks, and `main` CI passed after #4/#5 (run 38175224504). Under the revised B7 policy the checks are not required, and every one passed | **Met** |
 | 3. CI green on the resulting `main` | Run 38275707707 on `8be85c6`, 8/8 | **Met** |
 | 4. Both humans ran that `main` and recorded OS, Python, commands, results | Both ran `bbc07de`, the last code change: Devika on macOS (PR #14), Abhinav on WSL2 and Windows. `8be85c6` differs only in Devika's documentation; Abhinav reran it on both platforms | **Met** |
-| 5. Blockers closed; deferrals agreed by both with limitations documented | B1–B6, B8 and B9 done; all seven deferrals agreed by both with conditions and documented limitations; O10 repaired. **B7 open** | **Open (B7 only)** |
-| 6. Completion report recorded here | This section; final once B7 evidence is added | **Open (B7 only)** |
+| 5. Blockers closed; deferrals agreed by both with limitations documented | B1–B9 done. B7 is done under the revised policy approved by both, and the live settings match. All seven deferrals are agreed by both with conditions and documented limitations; O10 was repaired | **Met** |
+| 6. Completion report recorded here | This section. Final; recorded through PR #10 for Devika's formal approval | **Met** |
 
 Phase exit criteria (`MASTER_PLAN.md`):
 
-- **Phase 0:** baseline understood with executed evidence (baseline and KB audits); CI
-  operational with 8 jobs, but not enforced as required checks (B7); architecture and
-  threat model documented; both contributors develop and test locally.
+- **Phase 0:** baseline understood with executed evidence (baseline and KB audits). CI is
+  operational with 8 jobs on every PR and push. Under the jointly approved B7 policy it is
+  not a required merge check; review discipline enforces it. Architecture and threat model
+  are documented, and both contributors develop and test locally.
 - **Phase 1:** baseline and new safety regression tests pass on macOS (Devika), WSL2 and
   Windows (Abhinav) and in CI. Safety-critical routing is deterministic and runs before decline,
   planner, retrieval and models, and model features are off by default. The held-out
@@ -278,10 +283,9 @@ Phase exit criteria (`MASTER_PLAN.md`):
 
 ## Exact safe next step
 
-1. **Repository admin (Abhinav):** apply the B7 settings above (Settings → Branches → `main`, or
-   the API), then re-read the protection API.
-2. **Abhinav:** record the B7 evidence here, mark gates 5 and 6 met, mark PR #10 ready and
-   request Devika's final approval. Her approval records C1 acceptance; then close #7.
+1. **Devika:** formally approve PR #10 if the record is correct. That approval records C1
+   acceptance.
+2. **Then:** merge PR #10 (by either human, after her approval) and close issue #7.
 3. **After C1 acceptance:** propose the revised collaboration model and the C2-v0.1 contracts
    (docs only) for joint approval. No C2 implementation before both approve them.
 
