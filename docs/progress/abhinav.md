@@ -5,12 +5,15 @@ Maintained only by Abhinav (or his coding agent) on his own feature branches. Re
 ## Current
 
 - **Checkpoint:** C1 (Phases 0–1), close-out. **C1 is not accepted yet**; see `docs/PROJECT_STATE.md` → C1 acceptance.
-- **Branch:** `feature/abhinav-c1-closeout-docs`, created from `origin/main` @ `7646431`.
-- **Merged (verified on GitHub 2026-10-11):**
-  - My PR #4 (`feature/abhinav-c1-foundation-safety`, head `6bea6a3`), approved by Devika.
-  - Devika's PR #5 (`feature/devika-c1-foundation-safety`, head `4a35cc2`), approved by me.
-  - CI on `main` @ `7646431` (run 38175224504): all 8 jobs passed.
-- **This branch → PR #8** (docs, `.gitignore` and tests; no application code or contract text changes):
+- **Branch:** `feature/abhinav-c1-acceptance`, created from `origin/main` @ `835a6f0`. Docs only: `docs/PROJECT_STATE.md` and this file.
+- **All C1 PRs merged (verified on GitHub 2026-10-11):**
+  - My PR #4 (head `6bea6a3`) and Devika's PR #5 (head `4a35cc2`), each approved by the other.
+  - My PR #8 (head `0965e67`, 8/8 checks), approved by Devika, merged by me at 23:29 UTC.
+  - Devika's PR #9 (head `a63ff43`, 8/8 checks), approved by me, merged by Devika at 23:46 UTC.
+  - CI on `main` @ `835a6f0` (run 38185553143): all 8 jobs passed.
+- **My final-`main` validation (B4 rerun, my half of B8): done** on `835a6f0`, WSL2 and native Windows, from fresh clones. Results below.
+- **Still open for C1:** B7 (I apply the GitHub settings as admin), Devika's macOS run of `835a6f0` (B8), her held-out check (B9) and any routing fixes it needs (mine), and her decision on each deferral.
+- **Earlier branch `feature/abhinav-c1-closeout-docs` → PR #8** (docs, `.gitignore` and tests; no application code or contract text changes):
   - Root `AGENTS.md` and `CLAUDE.md` (`CLAUDE.md` imports `AGENTS.md`, so there is one standard).
   - `docs/MASTER_PLAN.md`, `docs/PROJECT_STATE.md`, `docs/RELEASE_GATES.md` (I own it; Devika contributes and reviews), `docs/instructions/ABHINAV_LAUNCHER.md`.
   - Architecture §4: dataset reference corrected to v1.2.0; marked approved by both; the proposed response additions marked not approved (C2).
@@ -26,7 +29,7 @@ Maintained only by Abhinav (or his coding agent) on his own feature branches. Re
   - Deferrals approved with conditions: O4, O5, O7 (README before any public C2 demo), O8, O9, O10, formal KB freshness, comprehensive held-out testing (Phase 5).
   - New C1 blocker B9: Devika runs a small held-out safety check before C1 acceptance.
   - Model features stay off until operational safeguards exist.
-- **Devika's repairs:** PR #9 (`feature/devika-c1-phase1-repairs`, draft, `3edc240`). I do not implement any part of B1–B4; I review and rerun her PR.
+- **Devika's repairs (B1–B4):** merged in PR #9. I did not implement any part of them; I reviewed PR #9 and reran the merged result.
 
 ## Completed in C1
 
@@ -72,25 +75,27 @@ Maintained only by Abhinav (or his coding agent) on his own feature branches. Re
 | Windows 11 native, Python 3.13.2, integrated `main` @ `7646431` | `pytest -q --basetemp=<writable dir>` | 411 passed, 1 skipped (symlink test) |
 | GitHub Actions run 38175224504, push to `main` @ `7646431` | full workflow | all 8 jobs passed |
 | GitHub Actions run 38176667555, PR #8 first push (`920c2a7`) | full workflow | all 8 checks passed |
+| GitHub Actions run 38185553143, push to `main` @ `835a6f0` (PR #9 merge) | full workflow | all 8 jobs passed |
+| WSL2 Ubuntu 26.04.1, Python 3.14.4, ruff 0.16.10, fresh WSL-native clone at `835a6f0` | `ruff check .`; `ruff-c1.toml` lint + format check; `pytest -q`; `check_routes.py`; `safety_eval.py --fail-on-miss`; smoke; KB audit; `scripts.audit_c1_readiness` | clean; clean (8 files formatted); 552 passed; passed; 75/75, FP 0/16, 97/97 exact-lane, exit 0; OK; exit 0 (9 stale, 1 chat-disabled, 2 crisis-content warnings); 15/15 |
+| Windows 11 native 10.0.26200, Python 3.13.2, pytest 9.0.2, fresh clone at `835a6f0` | `pytest -q --basetemp=<writable dir>`; `check_routes.py`; `safety_eval.py --fail-on-miss`; smoke; KB audit; readiness | 551 passed, 1 skipped (symlink test); passed; 75/75, FP 0/16, 97/97, exit 0; OK; exit 0; 15/15 |
 
 macOS has not been run locally; CI covers it, and Devika runs her Mac adversarial tests.
 
 ## Needs Devika / joint decision
 
 The authoritative C1 checklist (blockers B1–B9, deferrals, approvals) is `docs/PROJECT_STATE.md`.
-Done: C1-v0.2 and architecture §4 items 1–4 are approved by both in #7. Still open:
+Done: C1-v0.2 and architecture §4 items 1–4 (#7); B1–B4 (PR #9); PR #8 review. Still open:
 
-1. **Her C1 repairs (B1–B4)** are in PR #9 (`3edc240`). I review them and rerun them on WSL2 and Windows.
-   - If her work touches the dispatcher's decline block (step 1.25), the guard must stay `route_level not in DECLINE_PROTECTED_LANES`.
-   - O1 ("I hate myself" → counseling) and O2 (record transfer ≠ retention) were her review findings, fixed in `7a70801`; she approved PR #4 with them.
-2. **PR #8 review.** Her two documentation corrections (Windows venv activation; stale checklist items) are fixed on the PR #8 branch.
-3. **Deferrals:** accept or reject O4, O5, O7, O8, O9, O10, formal KB freshness and comprehensive held-out testing. O6 is fixed in PR #8, not deferred. `RELEASE_GATES.md` ownership is decided (me; she contributes and reviews).
-4. **B9:** her small held-out safety check before C1 acceptance.
-5. **C2:** stack approval, Node version and lockfile, merge order (I propose mine merges first), and the C2-v0.1 contracts.
+1. **Review of `feature/abhinav-c1-acceptance`** (post-merge state and draft completion report).
+2. **B8:** her macOS run of `835a6f0`, recorded in her progress file.
+3. **B9:** her small held-out safety check against `835a6f0`, written without showing me the phrasings first. I fix any routing misses in a separate PR.
+4. **Deferrals:** accept or reject O4, O5, O7, O8, O9, O10, formal KB freshness and comprehensive held-out testing. Her PR #8 approval did not accept them.
+5. **Decision log:** `docs/DECISION_LOG.md` is hers; the C1 close-out decisions (O6, models off by default, `RELEASE_GATES.md` ownership, deferral outcomes, acceptance) should be logged there by her, or by me only with her agreement.
+6. **After C1 acceptance:** the revised collaboration model and the C2-v0.1 contracts; C2 stack, Node version and lockfile, merge order.
 
 ## Needs a GitHub admin (human)
 
-Abhinav applies these himself. The exact required check names and the full recommended settings are in `docs/PROJECT_STATE.md` → GitHub settings for `main`.
+Abhinav applies these himself (B7); both humans are admins. As of 2026-10-11 after PR #9 merged, none of the recommended branch-protection changes are applied, and secret scanning and push protection are off. Dependabot alerts are on. The exact required check names and the full recommended settings are in `docs/PROJECT_STATE.md` → GitHub settings for `main`.
 
 ## Resume
 
@@ -105,8 +110,8 @@ ruff check . && python -m pytest -q && python scripts/safety_eval.py --fail-on-m
 ```
 
 **Next safe step:**
-1. Devika reviews PR #8 (including `RELEASE_GATES.md` and the deferral table) and records her row in the contract Agreement record. PR #8 merges only after her approval and passing CI.
-2. I apply the GitHub settings listed in `docs/PROJECT_STATE.md` (B7).
-3. Devika opens her C1 repair PR from `feature/devika-c1-phase1-repairs`. I review it and rerun it on WSL2 and Windows. No merge without approval.
-4. Devika runs the small held-out safety check (B9). I fix any routing misses it finds.
-5. We both run the integrated `main` and record the C1 completion report. C2 implementation starts only after that.
+1. Devika reviews `feature/abhinav-c1-acceptance`, records her macOS run of `835a6f0` (B8), runs the held-out check (B9) and decides each deferral.
+2. I apply the GitHub settings listed in `docs/PROJECT_STATE.md` (B7) and confirm them through the protection API.
+3. I fix any routing misses B9 finds, in a separate PR with regression cases and Devika's review.
+4. I complete the C1 completion report in `docs/PROJECT_STATE.md`; Devika's approval records acceptance.
+5. Only then: propose the revised collaboration model and C2-v0.1 contracts for joint approval. No C2 implementation before that.
