@@ -1,0 +1,127 @@
+{
+  "verified_main": "835a6f07e4ee28532169065b225be334aeffbca9",
+  "date": "2026-10-11",
+  "pull_requests": [
+    {
+      "number": 4,
+      "merged": true,
+      "merge_commit": "7646431cb678c09e1e7d6119c4ca2d53466f0c29",
+      "head": "6bea6a3ea5cc8b6012ea342ad53f4ee486a63c67",
+      "merged_at": "2026-10-11T21:09:57Z",
+      "reviews": [
+        {
+          "state": "CHANGES_REQUESTED",
+          "author": "Devikz",
+          "submitted_at": "2026-10-11T20:38:04Z"
+        },
+        {
+          "state": "APPROVED",
+          "author": "Devikz",
+          "submitted_at": "2026-10-11T21:07:58Z"
+        }
+      ],
+      "url": "https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/4"
+    },
+    {
+      "number": 5,
+      "merged": true,
+      "merge_commit": "c4780fcac334df5c1b76a87709e45e812ff2ff2c",
+      "head": "4a35cc217e262fee25c5415259cf83483c61ece4",
+      "merged_at": "2026-10-11T21:09:22Z",
+      "reviews": [
+        {
+          "state": "CHANGES_REQUESTED",
+          "author": "AbhinavVarma02",
+          "submitted_at": "2026-10-11T20:38:01Z"
+        },
+        {
+          "state": "APPROVED",
+          "author": "AbhinavVarma02",
+          "submitted_at": "2026-10-11T21:07:36Z"
+        }
+      ],
+      "url": "https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/5"
+    },
+    {
+      "number": 8,
+      "merged": true,
+      "merge_commit": "20e62a9c97f5cd1c06e2276d53d78bdf2f24d48f",
+      "head": "0965e67b4c936619c584f1cffd4927e4e440e298",
+      "merged_at": "2026-10-11T23:29:12Z",
+      "reviews": [
+        {
+          "state": "APPROVED",
+          "author": "Devikz",
+          "submitted_at": "2026-10-11T23:28:45Z"
+        }
+      ],
+      "url": "https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/8"
+    },
+    {
+      "number": 9,
+      "merged": true,
+      "merge_commit": "835a6f07e4ee28532169065b225be334aeffbca9",
+      "head": "a63ff43c783c40b823992af8585367ccf6bae237",
+      "merged_at": "2026-10-11T23:46:41Z",
+      "reviews": [
+        {
+          "state": "APPROVED",
+          "author": "AbhinavVarma02",
+          "submitted_at": "2026-10-11T23:46:25Z"
+        }
+      ],
+      "url": "https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/9"
+    }
+  ],
+  "open_pull_requests": {
+    "issues": []
+  },
+  "main_ci": {
+    "id": 38185553143,
+    "url": "https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/actions/runs/38185553143",
+    "jobs": [
+      {
+        "name": "Safety gate",
+        "conclusion": "success"
+      },
+      {
+        "name": "Tests (py3.13, macos-latest)",
+        "conclusion": "success"
+      },
+      {
+        "name": "Tests (py3.12, ubuntu-latest)",
+        "conclusion": "success"
+      },
+      {
+        "name": "Tests (py3.13, windows-latest)",
+        "conclusion": "success"
+      },
+      {
+        "name": "Tests (py3.13, ubuntu-latest)",
+        "conclusion": "success"
+      },
+      {
+        "name": "Tests (py3.11, ubuntu-latest)",
+        "conclusion": "success"
+      },
+      {
+        "name": "Tests (py3.14, ubuntu-latest)",
+        "conclusion": "success"
+      },
+      {
+        "name": "Lint (ruff)",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "branch_protection": {
+    "error": "GitHub API error 403: {\"message\":\"Resource not accessible by integration\",\"documentation_url\":\"https://docs.github.com/rest/branches/branch-protection#get-branch-protection\",\"status\":\"403\"}",
+    "error_code": "FORBIDDEN",
+    "error_data": {
+      "message": "Resource not accessible by integration",
+      "documentation_url": "https://docs.github.com/rest/branches/branch-protection#get-branch-protection",
+      "status": "403"
+    }
+  },
+  "rulesets": []
+}

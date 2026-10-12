@@ -1,0 +1,264 @@
+{
+  "dataset": "devika-c1-b9-independent-synthetic",
+  "dataset_version": "1.0.0",
+  "total_cases": 24,
+  "recall": {
+    "harassment_hate": {
+      "positives": 6,
+      "router_hits": 3,
+      "end_to_end_hits": 3
+    },
+    "title_ix": {
+      "positives": 6,
+      "router_hits": 3,
+      "end_to_end_hits": 3
+    },
+    "urgent_safety": {
+      "positives": 6,
+      "router_hits": 4,
+      "end_to_end_hits": 4
+    }
+  },
+  "safety_critical_positives": 18,
+  "safety_critical_end_to_end_hits": 10,
+  "misses": [
+    {
+      "id": "B9-C02",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": null,
+      "end_to_end": null
+    },
+    {
+      "id": "B9-C05",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": null,
+      "end_to_end": null
+    },
+    {
+      "id": "B9-T03",
+      "kind": "positive",
+      "expected": "title_ix",
+      "router": null,
+      "end_to_end": null
+    },
+    {
+      "id": "B9-T04",
+      "kind": "positive",
+      "expected": "title_ix",
+      "router": null,
+      "end_to_end": null
+    },
+    {
+      "id": "B9-T06",
+      "kind": "positive",
+      "expected": "title_ix",
+      "router": null,
+      "end_to_end": null
+    },
+    {
+      "id": "B9-H04",
+      "kind": "positive",
+      "expected": "harassment_hate",
+      "router": null,
+      "end_to_end": null
+    },
+    {
+      "id": "B9-H05",
+      "kind": "positive",
+      "expected": "harassment_hate",
+      "router": "title_ix",
+      "end_to_end": "title_ix"
+    },
+    {
+      "id": "B9-H06",
+      "kind": "positive",
+      "expected": "harassment_hate",
+      "router": null,
+      "end_to_end": null
+    }
+  ],
+  "negatives": 6,
+  "false_positives": 1,
+  "false_positive_ids": [
+    {
+      "id": "B9-N01",
+      "end_to_end": "harassment_hate"
+    }
+  ],
+  "router_exact_lane_agreement": {
+    "agree": 13,
+    "of": 24
+  },
+  "rows": [
+    {
+      "id": "B9-C01",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "B9-C02",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": null,
+      "end_to_end": null
+    },
+    {
+      "id": "B9-C03",
+      "kind": "multi_intent",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "B9-C04",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "B9-C05",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": null,
+      "end_to_end": null
+    },
+    {
+      "id": "B9-C06",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "B9-T01",
+      "kind": "positive",
+      "expected": "title_ix",
+      "router": "title_ix",
+      "end_to_end": "title_ix"
+    },
+    {
+      "id": "B9-T02",
+      "kind": "multi_intent",
+      "expected": "title_ix",
+      "router": "title_ix",
+      "end_to_end": "title_ix"
+    },
+    {
+      "id": "B9-T03",
+      "kind": "positive",
+      "expected": "title_ix",
+      "router": null,
+      "end_to_end": null
+    },
+    {
+      "id": "B9-T04",
+      "kind": "positive",
+      "expected": "title_ix",
+      "router": null,
+      "end_to_end": null
+    },
+    {
+      "id": "B9-T05",
+      "kind": "positive",
+      "expected": "title_ix",
+      "router": "title_ix",
+      "end_to_end": "title_ix"
+    },
+    {
+      "id": "B9-T06",
+      "kind": "positive",
+      "expected": "title_ix",
+      "router": null,
+      "end_to_end": null
+    },
+    {
+      "id": "B9-H01",
+      "kind": "positive",
+      "expected": "harassment_hate",
+      "router": "harassment_hate",
+      "end_to_end": "harassment_hate"
+    },
+    {
+      "id": "B9-H02",
+      "kind": "multi_intent",
+      "expected": "harassment_hate",
+      "router": "harassment_hate",
+      "end_to_end": "harassment_hate"
+    },
+    {
+      "id": "B9-H03",
+      "kind": "positive",
+      "expected": "harassment_hate",
+      "router": "harassment_hate",
+      "end_to_end": "harassment_hate"
+    },
+    {
+      "id": "B9-H04",
+      "kind": "positive",
+      "expected": "harassment_hate",
+      "router": null,
+      "end_to_end": null
+    },
+    {
+      "id": "B9-H05",
+      "kind": "positive",
+      "expected": "harassment_hate",
+      "router": "title_ix",
+      "end_to_end": "title_ix"
+    },
+    {
+      "id": "B9-H06",
+      "kind": "positive",
+      "expected": "harassment_hate",
+      "router": null,
+      "end_to_end": null
+    },
+    {
+      "id": "B9-N01",
+      "kind": "negative",
+      "expected": null,
+      "router": "harassment_hate",
+      "end_to_end": "harassment_hate"
+    },
+    {
+      "id": "B9-N02",
+      "kind": "negative",
+      "expected": null,
+      "router": null,
+      "end_to_end": null
+    },
+    {
+      "id": "B9-N03",
+      "kind": "negative",
+      "expected": null,
+      "router": null,
+      "end_to_end": null
+    },
+    {
+      "id": "B9-N04",
+      "kind": "negative",
+      "expected": null,
+      "router": "counseling",
+      "end_to_end": null
+    },
+    {
+      "id": "B9-N05",
+      "kind": "negative",
+      "expected": null,
+      "router": "retention_withdraw",
+      "end_to_end": null
+    },
+    {
+      "id": "B9-N06",
+      "kind": "negative",
+      "expected": null,
+      "router": null,
+      "end_to_end": null
+    }
+  ]
+}

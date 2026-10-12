@@ -1,0 +1,713 @@
+{
+  "dataset": "safety_routing_cases",
+  "dataset_version": "1.2.0",
+  "total_cases": 97,
+  "recall": {
+    "harassment_hate": {
+      "positives": 5,
+      "router_hits": 5,
+      "end_to_end_hits": 5
+    },
+    "title_ix": {
+      "positives": 14,
+      "router_hits": 14,
+      "end_to_end_hits": 14
+    },
+    "urgent_safety": {
+      "positives": 56,
+      "router_hits": 56,
+      "end_to_end_hits": 56
+    }
+  },
+  "safety_critical_positives": 75,
+  "safety_critical_end_to_end_hits": 75,
+  "misses": [],
+  "negatives": 16,
+  "false_positives": 0,
+  "false_positive_ids": [],
+  "router_exact_lane_agreement": {
+    "agree": 97,
+    "of": 97
+  },
+  "rows": [
+    {
+      "id": "SR-001",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-002",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-003",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-004",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-005",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-006",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-007",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-008",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-009",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-010",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-011",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-012",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-013",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-014",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-015",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-016",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-017",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-018",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-019",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-020",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-021",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-022",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-023",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-024",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-025",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-026",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-027",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-028",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-029",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-030",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-031",
+      "kind": "adversarial",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-032",
+      "kind": "adversarial",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-033",
+      "kind": "adversarial",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-034",
+      "kind": "adversarial",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-035",
+      "kind": "adversarial",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-036",
+      "kind": "adversarial",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-037",
+      "kind": "adversarial",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-038",
+      "kind": "adversarial",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-039",
+      "kind": "adversarial",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-040",
+      "kind": "adversarial",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-041",
+      "kind": "adversarial",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-042",
+      "kind": "multi_intent",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-043",
+      "kind": "multi_intent",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-044",
+      "kind": "multi_intent",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-045",
+      "kind": "multi_intent",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-046",
+      "kind": "multi_intent",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-047",
+      "kind": "multi_intent",
+      "expected": "title_ix",
+      "router": "title_ix",
+      "end_to_end": "title_ix"
+    },
+    {
+      "id": "SR-048",
+      "kind": "multi_intent",
+      "expected": "title_ix",
+      "router": "title_ix",
+      "end_to_end": "title_ix"
+    },
+    {
+      "id": "SR-049",
+      "kind": "multi_intent",
+      "expected": "title_ix",
+      "router": "title_ix",
+      "end_to_end": "title_ix"
+    },
+    {
+      "id": "SR-050",
+      "kind": "multi_intent",
+      "expected": "harassment_hate",
+      "router": "harassment_hate",
+      "end_to_end": "harassment_hate"
+    },
+    {
+      "id": "SR-051",
+      "kind": "multi_intent",
+      "expected": "title_ix",
+      "router": "title_ix",
+      "end_to_end": "title_ix"
+    },
+    {
+      "id": "SR-052",
+      "kind": "negation",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-053",
+      "kind": "negation",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-054",
+      "kind": "positive",
+      "expected": "title_ix",
+      "router": "title_ix",
+      "end_to_end": "title_ix"
+    },
+    {
+      "id": "SR-055",
+      "kind": "positive",
+      "expected": "title_ix",
+      "router": "title_ix",
+      "end_to_end": "title_ix"
+    },
+    {
+      "id": "SR-056",
+      "kind": "positive",
+      "expected": "title_ix",
+      "router": "title_ix",
+      "end_to_end": "title_ix"
+    },
+    {
+      "id": "SR-057",
+      "kind": "positive",
+      "expected": "title_ix",
+      "router": "title_ix",
+      "end_to_end": "title_ix"
+    },
+    {
+      "id": "SR-058",
+      "kind": "positive",
+      "expected": "title_ix",
+      "router": "title_ix",
+      "end_to_end": "title_ix"
+    },
+    {
+      "id": "SR-059",
+      "kind": "positive",
+      "expected": "title_ix",
+      "router": "title_ix",
+      "end_to_end": "title_ix"
+    },
+    {
+      "id": "SR-060",
+      "kind": "positive",
+      "expected": "title_ix",
+      "router": "title_ix",
+      "end_to_end": "title_ix"
+    },
+    {
+      "id": "SR-061",
+      "kind": "positive",
+      "expected": "title_ix",
+      "router": "title_ix",
+      "end_to_end": "title_ix"
+    },
+    {
+      "id": "SR-062",
+      "kind": "positive",
+      "expected": "title_ix",
+      "router": "title_ix",
+      "end_to_end": "title_ix"
+    },
+    {
+      "id": "SR-063",
+      "kind": "positive",
+      "expected": "harassment_hate",
+      "router": "harassment_hate",
+      "end_to_end": "harassment_hate"
+    },
+    {
+      "id": "SR-064",
+      "kind": "positive",
+      "expected": "harassment_hate",
+      "router": "harassment_hate",
+      "end_to_end": "harassment_hate"
+    },
+    {
+      "id": "SR-065",
+      "kind": "positive",
+      "expected": "harassment_hate",
+      "router": "harassment_hate",
+      "end_to_end": "harassment_hate"
+    },
+    {
+      "id": "SR-066",
+      "kind": "negative",
+      "expected": "counseling",
+      "router": "counseling",
+      "end_to_end": null
+    },
+    {
+      "id": "SR-067",
+      "kind": "negative",
+      "expected": null,
+      "router": null,
+      "end_to_end": null
+    },
+    {
+      "id": "SR-068",
+      "kind": "negative",
+      "expected": null,
+      "router": null,
+      "end_to_end": null
+    },
+    {
+      "id": "SR-069",
+      "kind": "negative",
+      "expected": null,
+      "router": null,
+      "end_to_end": null
+    },
+    {
+      "id": "SR-070",
+      "kind": "negative",
+      "expected": null,
+      "router": null,
+      "end_to_end": null
+    },
+    {
+      "id": "SR-071",
+      "kind": "negative",
+      "expected": null,
+      "router": null,
+      "end_to_end": null
+    },
+    {
+      "id": "SR-072",
+      "kind": "negative",
+      "expected": "counseling",
+      "router": "counseling",
+      "end_to_end": null
+    },
+    {
+      "id": "SR-073",
+      "kind": "negative",
+      "expected": null,
+      "router": null,
+      "end_to_end": null
+    },
+    {
+      "id": "SR-074",
+      "kind": "negative",
+      "expected": "counseling",
+      "router": "counseling",
+      "end_to_end": null
+    },
+    {
+      "id": "SR-075",
+      "kind": "negative",
+      "expected": null,
+      "router": null,
+      "end_to_end": null
+    },
+    {
+      "id": "SR-076",
+      "kind": "negative",
+      "expected": null,
+      "router": null,
+      "end_to_end": null
+    },
+    {
+      "id": "SR-077",
+      "kind": "negative",
+      "expected": null,
+      "router": null,
+      "end_to_end": null
+    },
+    {
+      "id": "SR-078",
+      "kind": "negative",
+      "expected": null,
+      "router": null,
+      "end_to_end": null
+    },
+    {
+      "id": "SR-079",
+      "kind": "negative",
+      "expected": null,
+      "router": null,
+      "end_to_end": null
+    },
+    {
+      "id": "SR-080",
+      "kind": "negative",
+      "expected": "counseling",
+      "router": "counseling",
+      "end_to_end": null
+    },
+    {
+      "id": "SR-081",
+      "kind": "non_critical",
+      "expected": "retention_withdraw",
+      "router": "retention_withdraw",
+      "end_to_end": null
+    },
+    {
+      "id": "SR-082",
+      "kind": "non_critical",
+      "expected": "retention_withdraw",
+      "router": "retention_withdraw",
+      "end_to_end": null
+    },
+    {
+      "id": "SR-083",
+      "kind": "non_critical",
+      "expected": "retention_withdraw",
+      "router": "retention_withdraw",
+      "end_to_end": null
+    },
+    {
+      "id": "SR-084",
+      "kind": "non_critical",
+      "expected": "retention_withdraw",
+      "router": "retention_withdraw",
+      "end_to_end": null
+    },
+    {
+      "id": "SR-085",
+      "kind": "non_critical",
+      "expected": "counseling",
+      "router": "counseling",
+      "end_to_end": null
+    },
+    {
+      "id": "SR-086",
+      "kind": "non_critical",
+      "expected": "counseling",
+      "router": "counseling",
+      "end_to_end": null
+    },
+    {
+      "id": "SR-087",
+      "kind": "negative",
+      "expected": null,
+      "router": null,
+      "end_to_end": null
+    },
+    {
+      "id": "SR-088",
+      "kind": "positive",
+      "expected": "harassment_hate",
+      "router": "harassment_hate",
+      "end_to_end": "harassment_hate"
+    },
+    {
+      "id": "SR-089",
+      "kind": "multi_intent",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-090",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-091",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-092",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-093",
+      "kind": "positive",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-094",
+      "kind": "adversarial",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-095",
+      "kind": "adversarial",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-096",
+      "kind": "multi_intent",
+      "expected": "urgent_safety",
+      "router": "urgent_safety",
+      "end_to_end": "urgent_safety"
+    },
+    {
+      "id": "SR-097",
+      "kind": "multi_intent",
+      "expected": "title_ix",
+      "router": "title_ix",
+      "end_to_end": "title_ix"
+    }
+  ]
+}

@@ -2,6 +2,234 @@
 
 Last updated: 2026-10-11 (America/New_York). Operator: Devika Rani Sanaboyina.
 
+## B9-N04 decline repair — latest status
+
+- User authorized only this small decline repair, targeted tests, macOS validation,
+  a separate PR for Abhinav and a subsequent independent revised-PR #12 review.
+  Operator identity and authenticated `gh` access verified; untracked
+  `docs/reviews/` preserved and excluded. No previous C1 implementation repeated.
+- PR #11 merged as `f464f41`; main CI run 38199938739 passed all eight jobs.
+  New branch `feature/devika-c1-b9-n04-decline` starts from that main.
+- Active billing/payment/charges/fees requests, “I only need/want” and bounded
+  “just the billing website” noun phrases now survive service refusal. Explicit
+  alternatives, standalone refusal, custom regex and protected guidance preserved.
+- New targeted tests: before repair **13 failed, 18 passed**; after repair
+  **31 passed**. macOS arm64/Python 3.12.12 full suite **583 passed**, no skips
+  (baseline 552); lint/scoped lint/new-file format passed; 12 route checks, smoke
+  and safety regression **75/75**, **0/16 FP**, **97/97** exact router passed.
+- Frozen B9 fixture, initial results and classifications are byte-identical to
+  base. Runtime changes only in `app/tools/decline_detector.py`; no old tests,
+  dispatcher, router, planner or shared contracts changed. C2 not started.
+- Actual N04 now reaches billing retrieval without alternatives. The preexisting
+  appointment clarification remains; counseling/therapy variants retain their
+  downstream routing limitation. No broader conversation repair is claimed.
+- [Repair evidence and exact scope](../audits/devika-c1-b9-n04-decline-repair.md).
+  Repair commit `df5144b4c53128a60dea83fcc37f8e49e32365e5` pushed normally.
+  [Draft PR #13](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/13)
+  created through authenticated `gh`; AbhinavVarma02 review requested and verified.
+  CI run **38200199693 passed all eight jobs** on that implementation head. This
+  documentation follow-up gets a new final-head CI run; check its actual result.
+- **PR #12 re-review waiting for a published revision:** repeated authenticated
+  checks after opening #13 still show `06ccbe386e240150271389220cfc2f4f71bddef0`
+  and the same original four commits; fetched branch is identical to the prior
+  reviewed commit. No revised code or new safety evidence is available. The
+  prior changes-required review remains applicable; no fresh approval or rerun is
+  claimed. Asked the operator for an alternate revision location if one exists.
+- Exact next step: Abhinav reviews/cross-tests #13; after Claude pushes a revised
+  #12, fetch its exact head, compare it with `06ccbe3`, independently reproduce
+  safety/false-positive/B9 evidence and review the earlier findings. Keep the
+  original B9 labels/results and human policy/review gates. Do not merge or start C2.
+
+## Independent PR #12 review — latest status
+
+- Reviewed exact draft PR #12 head `06ccbe386e240150271389220cfc2f4f71bddef0` in a
+  detached temporary checkout. GitHub CI run 38197474723 passed all eight jobs.
+  Independent macOS/Python 3.12.12: **1964 passed**, no skips (1.92 seconds), lint,
+  12 routes, smoke, readiness **15/15**, regression **99/99**, **0/28 FP**,
+  **133/133** router agreement. Disclosed B9 reproduced **17/18** expected,
+  **18/18** any safety template, **0/6 FP**, **21/24** router agreement (exit 1,
+  B9-H05). Partner after-rows match exactly. Frozen initial evidence is unchanged.
+- Independently verified 1340 new tests collected; 1242 unique generated family
+  messages; 34 benign neighbours, 11 obfuscations, six end-to-end multi-intent
+  checks. Against unchanged main, **1283 failed, 57 passed**, as reported. All 97
+  original regression objects/labels and old test source assertions are preserved.
+- **Changes required before merge.** Extra synthetic probes demonstrate three
+  introduced hate-report safety regressions in O10 (`sent me hate messages`,
+  `sending hate messages`, `posting hate speech`), four new medical/consensual
+  information Title IX false positives and two new medicine-transport crisis
+  false positives. Full fixture and before/after results are recorded separately;
+  they are review probes, not frozen B9 or representative held-out safety metrics.
+- Explicit engineering policy review: approve generic harassment → conduct with
+  sex-based/stalking/relationship-violence preservation; approve O10 narrowing
+  direction but require recall/control repairs; approve urgent guidance for
+  explicit severe violence threats (including third-party victims). PR #12 still
+  needs generic-harassment and urgent-threat changes. No formal human/GitHub
+  approval or amended shared contract approval is inferred.
+- Verified official UMBC ECR, conduct and police guidance. ECR also accepts
+  nonsexual hate/discrimination reports; general conduct routing must not imply
+  ECR exclusion. Emergency contacts match existing police/911 guidance.
+- **B9-N04:** recommend a small Devika-owned active-information-request repair
+  before C1 closes. Five billing/payment/charges request variants incorrectly
+  return decline=true; explicit alternatives control stays true. Scoped matcher
+  and cross-test plan is recorded; runtime code was not changed during assessment.
+- Review packet: [PR #12 review](../audits/devika-pr12-review-2026-10-11.md),
+  [independent validation](../audits/devika-pr12-independent-validation-2026-10-11.json),
+  [extra probe results](../audits/devika-pr12-review-probe-results-2026-10-11.json).
+- Review-document validation: **32 repository guards passed** (0.32 seconds),
+  JSON/local links/whitespace passed, and all three frozen B9 artifacts match the
+  prior evidence commit byte for byte. No runtime or existing test was changed.
+- Exact next step: send review to Abhinav on PR #12, coordinate exact-version
+  policy/test revisions and Devika's small decline repair; rerun revised head and
+  actual final main after reviewed merges. Do not merge #12 or relabel frozen B9.
+- Coordination [comment posted successfully through authenticated gh](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/12#issuecomment-6117046965).
+  Review evidence commit `63b7f44` was pushed normally to the existing PR #11
+  branch with verified human identity; initial reviewed-head PR #12 stays draft.
+- Additional scope diagnostic: mocked decline=false sends B9-N04 through
+  clarify/retrieve (billing citations, but an unnecessary appointment question).
+  N02/N05 still hit counseling. This is not repaired-code evidence; broader
+  planner/dispatcher UX remains a separately coordinated issue. No runtime edits.
+
+## Verified GitHub CLI publication — latest status
+
+- Explicit operator instruction authorizes authenticated `gh` writes when the
+  connected integration lacks permission, while retaining sandbox, human review
+  and merge gates. Verified GitHub CLI **2.102.0**, active Keychain-backed account
+  **Devikz**, ID **165278681**, HTTPS transport and repository push/admin access.
+  Repository-local human Git identity remains correct; no credentials were exposed
+  or changed. No global Codex/Git permissions or branch protections were modified.
+- The default sandbox auth check misleadingly reported an invalid token. The
+  standard approved execution path succeeded with existing Keychain authentication
+  and `gh api user`. Effective session: workspace-write, restricted command network
+  and protected Git metadata, Auto-review approval path. User config marks the
+  repo trusted without explicit sandbox/approval/network overrides. Future sessions
+  must verify their effective policy rather than infer access from this snapshot.
+- Checked all PR states for the exact feature branch: **no existing PR**. Created
+  [draft PR #11](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/11)
+  through `gh pr create` using the prepared evidence description and verified
+  `AbhinavVarma02` as requested reviewer. Attached it to this chat. Original head
+  `6591a2b`; initial CI run `38196801497` began with all eight expected jobs.
+- Initial PR CI run `38196801497` subsequently **passed all 8/8 jobs**. Local
+  documentation validation: **32 repository guards passed** (0.31 seconds),
+  contributor links/LF and diff whitespace passed; fixture, initial results and
+  response-classification artifacts match `6591a2b` byte for byte. The final
+  documentation push gets a separate CI run; inspect that head's actual result.
+- Posted the previously authorized B9 handoff with `gh pr comment`, after checking
+  for a duplicate, and verified the
+  [published comment](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/11#issuecomment-6116794003).
+  The earlier failed-connector/manual-publication entries below are historical.
+- Read-only branch-protection inspection now succeeds through `gh`: one approving
+  review and conversation resolution required; force pushes/deletions blocked;
+  required-check contexts/checks empty, strict mode off, enforce-admins off, stale
+  dismissal/last-push approval off. B7 remains open for Abhinav's admin action.
+- Documented the reusable authenticated CLI workflow in
+  [Devika launcher](../instructions/DEVIKA_LAUNCHER.md), including duplicate checks,
+  body files, reviewer verification, final-head CI, authorized comments and ready
+  gating. No automatic approval, merging, token extraction or sandbox bypass.
+- PR #11 remains **draft** as requested; B9/deferral/C1 acceptance gates remain open.
+  Frozen B9 fixture and initial results are unchanged. This session's follow-up
+  documentation commit and final CI status are identified by branch history and
+  the final PR status report; no pending checks are represented as passed here.
+
+## C1 final-main acceptance evaluation — current status
+
+- **Publication outcome:** both evidence commits `df4058e` and `66d17c0` were
+  normally pushed to `origin/feature/devika-c1-acceptance`. Connector draft-PR
+  creation returned **403: Resource not accessible by integration**; no new PR
+  exists and no new branch PR CI is claimed. Exact title/body and review request
+  are saved in [draft PR text](../audits/devika-c1-evidence-draft-pr.md). The PR #9
+  notification also failed with 403. Human must create the draft evidence PR and
+  send the saved B9 handoff; no access workaround or partner notification succeeded.
+  The status-only follow-up commit is identified by actual branch history.
+- **Subsequent GitHub refresh:** draft acceptance PR #10 appeared at `6293102`.
+  It records Abhinav's final-main WSL2 **552 passed**, Windows **551 passed,
+  1 skipped**, with safety/readiness/routes/smoke/KB checks. PR CI run 38193248283
+  succeeded. Read-only two-file technical review is saved in
+  [PR #10 review](../audits/devika-pr10-review-2026-10-11.md); no approval submitted.
+  The earlier no-open-PR/partner-evidence-pending observations below are superseded
+  for `835a6f0`. Both contributors must rerun a later main after B9 repairs.
+- Evidence commit `df4058e9c09517864a434b9362c62e6fc06b09cb` was normally pushed
+  to Devika's own branch with verified human author/committer and no trailers.
+  This follow-up adds the newly available partner review and decision log.
+- Branch: `feature/devika-c1-acceptance`, from actual tested main
+  `835a6f07e4ee28532169065b225be334aeffbca9`. C1 is **not accepted**; Wave 1
+  implementation has not begun. All later entries are historical snapshots.
+- GitHub verified PRs #4/#5/#8/#9 merged with mutual human approvals. Final-main
+  CI [38185553143](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/actions/runs/38185553143)
+  passed all eight jobs. No open PR or final C1 acceptance PR was returned.
+- Actual final-main macOS arm64/Python 3.12.12 offline run: **552 passed**, no
+  skips (1.04 seconds); readiness **15/15**; regression **75/75** protected,
+  **0/16** benign false positives, **97/97** exact router agreement. Global/scoped
+  Ruff, scoped formatting (8 files), 12 routing checks, smoke and KB audit passed.
+  Existing minimal venv reused; Ruff 0.9.10 locally versus 0.16.10 remotely.
+  No full runtime dependency install, live provider or deployment run claimed.
+- After documentation additions, repository guards passed **32/32** (0.30 seconds);
+  evidence JSON, local links, frozen fixture hash and diff whitespace verified.
+- **B9 failed:** 24 new synthetic cases frozen before first execution; no normalized
+  exact regression duplicates. Expected safety-template hits **10/18** (crisis
+  4/6, Title IX 3/6, conduct 3/6), any safety template **11/18**, benign false
+  positives **1/6**, exact router agreement **13/24**. Seven positives reached
+  ordinary retrieval; one returned an unexpected protected lane. Initial fixture,
+  hashes, raw results and post-initial classifications are preserved separately.
+  B9-H05 expectation needs joint policy adjudication; do not silently relabel it.
+- Authorized notification to Abhinav via PR #9 comment returned **403: Resource
+  not accessible by integration**. **Not sent.** Human-ready handoff is saved in
+  `docs/audits/devika-c1-b9-partner-notification-2026-10-11.md`. No access workaround.
+- Deferral review explicitly recommends conditional acceptance of O4/O5/O7/O8/O9,
+  KB freshness and comprehensive Phase 5 evaluation; rejects O10 deferral through
+  Phase 5 after its independent reproduction. Exact conditions and rationale are
+  in the review packet. Devika's explicit adoption is pending; no approval or
+  residual-risk acceptance recorded for either human.
+- B7 protection read remains 403; rulesets empty. Admin evidence still needed.
+  Abhinav's final-main WSL/Windows validation and final acceptance PR are not
+  verified. Neither green CI nor merged repairs establishes C1 acceptance.
+- New request's continuous ownership/three waves are reflected in a **proposal**
+  for C2-v0.1. Main's shared plan/launchers still contain five checkpoints and
+  per-phase allocation. Exact revised documents and C2 APIs/SQLite/auth/tool/
+  provenance/frontend tooling need joint approval before dependent implementation.
+- Application/router/dispatcher, tests, KB, dependencies, CI, approved contracts
+  and partner-owned docs were preserved. Pre-existing local progress note and
+  untracked `docs/reviews/` artifacts remain recoverable; review artifacts excluded
+  from publication. No paid services, real student data or partner-branch edits.
+- Evidence/review packet:
+  [C1 acceptance review](../audits/devika-c1-acceptance-review-2026-10-11.md),
+  [raw validation](../audits/devika-c1-final-main-validation-2026-10-11.json),
+  [C2 candidate](../audits/devika-c2-v0.1-candidate.md).
+- Exact next step: human posts B9 handoff; Abhinav repairs his router slice;
+  jointly resolve B9-H05 and O10, merge reviewed fixes and rerun integrated main.
+  Obtain explicit deferral decisions, B7 evidence and both platform validations;
+  review Abhinav's acceptance PR. Only then jointly approve C2-v0.1 and begin
+  dependency cleanup plus typed frontend/session/feedback implementation.
+- This status is written before the local evidence commit. Read actual branch
+  history for its commit ID; no publication or passing PR CI is implied here.
+
+## PR #9 authorized integration publication — current status
+
+- Finalized and normally pushed merge commit
+  `a63ff43c783c40b823992af8585367ccf6bae237` on the existing
+  `feature/devika-c1-phase1-repairs` branch. Parents: `3edc240` and merged main
+  `20e62a9`. GitHub confirms Devikz as author and committer, with Devika's verified
+  human identity and no AI trailers. No force push or merge into main.
+- Immediately before committing, verified the exact 15-file scope: 13 inherited
+  files match main; reviewed repairs preserved; only the approved progress/evidence
+  additions; review artifacts preserved/excluded; no conflicts, unrelated files,
+  sensitive-data findings, credential-pattern findings or whitespace errors.
+- Latest-head [CI run 38185203202](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/actions/runs/38185203202)
+  **passed all eight jobs**: Ruff, safety, Ubuntu Python 3.11/3.12/3.13/3.14,
+  macOS Python 3.13 and Windows Python 3.13. Earlier combined-tree local validation
+  remains 552 passed, no skips; readiness 15/15; safety 75/75, 0/16, 97/97.
+- [PR #9](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/9)
+  remains **open and draft**, with AbhinavVarma02 already requested. GitHub denied
+  connector attempts to update the description, mark Ready and renew the request:
+  `403/FORBIDDEN: Resource not accessible by integration`. No bypass attempted.
+- **Next human action:** Devika marks PR #9 Ready on GitHub and confirms/renews
+  Abhinav's final review request. Updated PR description and exact evidence are
+  saved in local `docs/reviews/devika-pr9-final-handoff-2026-10-11.md` and
+  `docs/reviews/devika-pr9-publication-2026-10-11.json`; excluded from commits.
+  This publication-status addition remains local/uncommitted to preserve the
+  exact CI-validated head. No additional commit or push was made for this note.
+- Final-main validation by both humans, B9 and formal C1 acceptance remain open.
+  No proposed deferral accepted; no C2 work; follow-up automation remains paused.
+
 ## PR #9 integration after PR #8 — latest status
 
 - PR #8 is merged by Abhinav, after Devikz's approving review, as
