@@ -1,6 +1,6 @@
 # Devika progress
 
-Last updated: 2026-10-11 (America/New_York). Operator: Devika Rani Sanaboyina.
+Last updated: 2026-10-12 (America/New_York). Operator: Devika Rani Sanaboyina.
 
 ## B9-N04 decline repair — latest status
 
@@ -39,6 +39,102 @@ Last updated: 2026-10-11 (America/New_York). Operator: Devika Rani Sanaboyina.
   #12, fetch its exact head, compare it with `06ccbe3`, independently reproduce
   safety/false-positive/B9 evidence and review the earlier findings. Keep the
   original B9 labels/results and human policy/review gates. Do not merge or start C2.
+
+## Final C1 macOS acceptance record — bbc07de
+
+Date: 2026-10-12 (America/New_York). Operator: Devika Rani Sanaboyina.
+Branch: `feature/devika-c1-final-acceptance`, from exact final main
+`bbc07de8172c360982bda0768458810157dfc4b5` (merged PR #12 final head `d79f841`).
+This current record supersedes historical pending B8/deferral recommendations
+below; it does not declare C1 accepted or authorize implementation after C1.
+
+### Existing checks actually executed on unchanged final main
+
+macOS 26.6.2 arm64; Python 3.12.12; pytest 7.4.0; local Ruff 0.9.10.
+Reused the existing minimal offline venv. `STRANDS_ENABLED=false RIH_PLANNER=RULE`;
+`MISSPELLING_CORRECTOR` and `CLARIFY_V2` overrides unset. Application, tests,
+safety fixtures, scripts, KB and dependencies matched the exact main tree when
+these commands ran. No new adversarial cases, tests or implementation added.
+
+| Executed command (venv Python/Ruff) | Actual result |
+| --- | --- |
+| `ruff check .` | Passed |
+| `ruff check --config ruff-c1.toml .` | Passed |
+| `ruff format --check --config ruff-c1.toml .` | Passed; 9 files already formatted |
+| `python -m pytest -q` | **4628 passed**, no skips; pytest printed 550.61 seconds |
+| `python scripts/check_routes.py` | All **13** routing checks passed |
+| `python scripts/safety_eval.py --fail-on-miss` | Dataset v1.7.0: **122/122** exact safety templates, **0/44** benign FP, **172/172** exact router; exit 0 |
+| `python -m scripts.audit_c1_readiness` | **15/15 passed**, zero failures; exit 0 |
+| `python -m tests.run_smoke` | Smoke OK; exit 0 |
+| `python scripts/audit_kb.py --as-of 2026-10-12 --max-age-days 180` | Exit 0; 9 records, 9 stale, 1 chat-disabled, 2 crisis-content warnings; no structural errors |
+| `python scripts/safety_eval.py --dataset docs/audits/devika-c1-b9-heldout-v1.json --fail-on-miss` | Original labels: **18/18** expected/any safety templates, **0/6** benign FP, **22/24** exact router; exit 0 |
+| `python -m pip check` | No broken installed requirements; exit 0 (non-failing local cache-permission warning) |
+
+[Command outputs and result summaries](../audits/devika-c1-final-main-validation-2026-10-12.json)
+preserve both the pytest-reported duration and the different subprocess monotonic
+measurement without claiming a cause. Local Ruff differs from CI's pinned
+0.16.10; main CI [run 38203527831](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/actions/runs/38203527831)
+passed all eight jobs on this exact SHA with the CI dependency installation.
+Full runtime installation, live providers, containers and deployment were not
+validated locally and are not C1 claims.
+
+The B9 fixture, initial results and response classifications are byte-identical
+to their published frozen evidence at `e41e665`; fixture SHA-256 remains
+`a909cecc2fdc740a5eb8947e3c040c96bf2f2e7603d11e60233d74b776a2173a`.
+This is a rerun of the disclosed original fixture, not a new held-out evaluation.
+N01/N04 still route to non-safety counseling on “appointment”; N04 no longer
+receives alternatives, but its existing appointment clarification remains.
+No new probe set or adversarial exercise was created. After writing this record,
+existing `tests/test_repo_assumptions.py` passed **32/32** (0.43 seconds); JSON
+parsing, local links, LF, frozen-evidence and whitespace checks also passed.
+
+### Explicit deferral decisions and conditions
+
+Under the operator's 2026-10-12 instruction to decide and record the remaining
+C1 deferrals, I explicitly **accept all seven conditional deferrals below**.
+This adopts the C1-D28 recommendations for Devika with the stated conditions;
+these are decisions, not another request for adoption. Abhinav reviews the exact
+record and conditions through this documentation PR. No future implementation
+or dependency change is authorized by recording its due milestone.
+
+| Item | Explicit decision | Conditions and due milestone |
+| --- | --- | --- |
+| **O4 — dependency cleanup/pin/lock** | **Accept with conditions** | First jointly reviewed C2 task, before adding FastAPI or frontend dependencies: verify/remove unused numpy/pandas, pin the optional Strands packages and agree a reproducible lock/install approach across supported platforms. Keep the current optional-provider/reproducibility limitation explicit. No dependency edits now. |
+| **O5 — duplicate production-validation test** | **Accept with conditions** | C2 cleanup may remove only the verified byte-identical duplicate, with partner review; retain substantive assertions and explain collection-count changes. Both current files have SHA-256 `827b26c4d46173e7b21d50c43e253ee5e5efad81721a3099eb5474e7dcecdcda`. Do not delete coverage to improve a result. |
+| **O7 — README accuracy/credential examples** | **Accept with conditions** | Correct the placeholder clone URL, obsolete results/counts and AWS credential examples before any public C2 demo or public readiness claim. Use safe setup guidance; never add credentials. Existing stale examples remain disclosed until that reviewed update. |
+| **O8 — broader Ruff baseline** | **Accept with conditions** | Jointly agree one shared style baseline in C2 or C3, then apply it through reviewed changes. Preserve existing mandatory lint, test and safety gates throughout; no unilateral rule suppression or competing workflow. |
+| **O9 — lingering model worker threads** | **Accept with conditions** | Abhinav's Phase 8 work must verify bounded concurrency, timeout/circuit-breaker behavior and operational/privacy controls. Model features remain off by default and unsupported for public use until the required safeguards are verified. A returned timeout does not mean the provider call/thread was cancelled. |
+| **KB freshness governance** | **Accept with conditions** | Phase 3 governed RAG must deliver reviewed source approval, provenance, freshness and fail-closed eligibility. Disclose the nine current stale warnings; verify official sources before demonstrations. The exploratory 180-day audit threshold is not an application freshness policy. Preserve current chat/crisis exclusions. |
+| **Comprehensive Phase 5 evaluation (HELD-full)** | **Accept with conditions** | Comprehensive held-out/adversarial evaluation remains in Phase 5 with synthetic data, frozen expectations and measured outcomes. It cannot waive C1 B9, existing safety regressions, known limitations or release gates. Initial B9 evidence stays immutable and disclosed reruns cannot be marketed as held-out recall. No new adversarial work in this session. |
+
+**O10 is repaired in merged PR #12 and is not deferred.** These limited deferrals
+do not claim production safety, approve C2 contracts or start C2 work.
+
+### Remaining acceptance gate and publication handoff
+
+- Devika's final-main execution for **B8 is complete** and recorded here; this
+  documentation record still requires Abhinav's review. His PR #10 records final
+  WSL2/Windows runs of the same `bbc07de`; #12 and #13 merge/approval records were
+  independently verified. Main CI passed all eight checks.
+- **B7 remains open**, verified through authenticated GitHub API on 2026-10-12:
+  required-check contexts/checks empty; strict/up-to-date false; admin enforcement
+  false; stale-review dismissal and last-push approval false. One approving
+  review and conversation resolution required, force pushes/deletions blocked;
+  code-owner review required but no CODEOWNERS; no rulesets. Secret scanning and
+  push protection are disabled. No settings changed in this task.
+- PR #10 currently publishes `5224493c2ad3436408e3bfe6b443e628acb5c4b8` and is
+  draft. Its own eight CI jobs passed, but its completion report still records
+  B7/B8/deferrals open. Final acceptance review is deliberately pending B7 and
+  an updated report incorporating this reviewed record. This is not approval of
+  that PR or C1 acceptance.
+- Publish only this progress file, the evidence JSON and the appended Devika-owned
+  decision-log entry in a small PR for Abhinav. Preserve untracked `docs/reviews/`.
+  Do not edit Abhinav-owned PROJECT_STATE, RELEASE_GATES or his progress file.
+- Exact next step: Abhinav reviews this record/conditions, applies and verifies
+  B7, incorporates the evidence into PR #10 and publishes the final completion
+  report. Then independently review that exact updated head and its CI/settings
+  once all acceptance requirements are met. No automatic approval/merge, new
+  implementation, new adversarial evaluation or C2 work.
 
 ## Independent PR #12 review — latest status
 
