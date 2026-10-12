@@ -252,14 +252,17 @@ class Rules:
         # taking a normal dose ("I took my pills this morning") does not match.
         PILLS = (r"(pills?|tablets?|capsules?|meds|medications?|medicines?|painkillers?|"
                  r"tylenol|advil|ibuprofen|acetaminophen|paracetamol|aspirin|benadryl|xanax|insulin)\b")
-        # PR #12 review (M01, M03): "take/took" also means carrying ("took a bottle of pills to
-        # the pharmacy", "take a pack of tablets in my carry-on"). Only for take/took, a
-        # destination or travel phrase right after the medication means transport. Swallow,
-        # ate, popped etc. are always ingestion, and a separate overdose clause still matches.
-        TRANSPORT = (r"(?!\s+(to|into|in|on|onto|through|at)\s+((the|a|an|my|his|her|their|campus|local|nearest|student)\s+){0,2}"
-                     r"(pharmacy|pharmacist|clinic|health\s+center|rih|doctor'?s?|nurse'?s?|office|airport|plane|flight|"
-                     r"bag|luggage|carry-?on|suitcase|backpack|purse|trip|drop-?off|disposal|drop\s+box|take-?back)\b"
-                     r"|\s+for\s+(disposal|recycling|travel|(my|the|a)\s+trip)\b|\s+back\s+to\b)")
+        # PR #12 reviews (M01, M03; re-review P1): "take/took" can mean carrying medicine, but
+        # only an actual carrying phrase right after the medication counts:
+        # - moving it somewhere ("to the pharmacy", "into a drop box");
+        # - packing it ("in my carry-on");
+        # - a disposal or travel purpose ("for disposal");
+        # - a permission question about travelling with it ("can I take a pack of tablets on
+        #   the plane?").
+        # Where something happened ("at the clinic", "in my office", "on the plane") is not
+        # carrying. "too many/much" never has an exemption, and an ingestion sign anywhere in
+        # the same clause ("at once", "feel faint", "need help") overrides every exemption.
+        # Swallow, ate, popped etc. are always ingestion.
         TAKE = r"\b(took|taken|tak(e|es|ing))"
         INGEST = r"\b(swallow(s|ed|ing)?|ate|eat(s|en|ing)?|pop(s|ped|ping)?|downed|chug(s|ged|ging)?)"
         QUANTITY = (r"\s+((a|an|the|my|his|her|their|half\s+(a|the|my))\s+)?(whole\s+|entire\s+|full\s+)?"
@@ -267,12 +270,33 @@ class Rules:
                     r"([\w-]+\s+)?" + PILLS)
         TOO_MANY = r"\s+(\w+\s+)?too\s+(many|much)\s+([\w-]+\s+)?" + PILLS
         ALL_OF = r"\s+all\s+(of\s+)?(my|his|her|their|the)\s+([\w-]+\s+)?" + PILLS
+        AS_DIRECTED = (r"(?!\s+(as\s+(prescribed|directed|instructed)|every\s+(day|morning|night)|daily|on\s+time|"
+                       r"with\s+food)\b)")
+        DESTINATION = (r"((the|a|an|my|his|her|their|campus|local|nearest|student)\s+){0,2}"
+                       r"(pharmacy|pharmacist|clinic|health\s+center|rih|doctor'?s?|nurse'?s?|drop-?off|disposal|"
+                       r"drop\s+box|take-?back|police\s+station|airport)\b")
+        CONTAINER = (r"((the|a|an|my|his|her|their)\s+)?(carry-?on|luggage|suitcase|checked\s+bag|bag|backpack|purse|"
+                     r"pill\s+(box|case|organi[sz]er)|travel\s+(case|kit)|first[\s-]*aid\s+kit)\b")
+        CARRIED = (r"\s+(to|into|back\s+to)\s+" + DESTINATION + r"|\s+(in|into|inside)\s+" + CONTAINER
+                   + r"|\s+for\s+(disposal|recycling|return|travel|(my|the|a)\s+trip)\b")
+        TRAVEL = (r"\s+(on|onto)\s+(a|the|my)\s+(plane|flight|train|bus|trip)\b|\s+through\s+(airport\s+)?security\b|"
+                  r"\s+(abroad|overseas|internationally)\b|\s+when\s+i\s+(fly|travel)\b")
+        INGESTION_SIGN = (r"\b((all\s+)?at\s+once|on\s+purpose|feel(s|ing)?\s+(sick|faint|dizzy|weird|strange|numb|drowsy|"
+                          r"woozy)|felt\s+(sick|faint|dizzy|weird|numb|drowsy)|need(s|ed)?\s+help|throw(ing)?\s+up|"
+                          r"threw\s+up|vomit\w*|passed\s+out|can'?t\s+(breathe|wake|stay\s+awake)|overdos\w*|swallow\w*|"
+                          r"to\s+die|kill\s+my\s*self|end\s+(it|my\s+life)|never\s+wake)\b")
+        TAKE_QTY = "(" + QUANTITY + "|" + ALL_OF + ")" + AS_DIRECTED
         INGESTION = [
-            INGEST + QUANTITY, TAKE + QUANTITY + TRANSPORT,
-            INGEST + TOO_MANY, TAKE + TOO_MANY + TRANSPORT,
-            INGEST + ALL_OF,
-            TAKE + ALL_OF + TRANSPORT
-            + r"(?!\s+(as\s+(prescribed|directed|instructed)|every\s+(day|morning|night)|daily|on\s+time|with\s+food)\b)",
+            INGEST + QUANTITY, INGEST + TOO_MANY, INGEST + ALL_OF,
+            TAKE + TOO_MANY,
+            # took/taking/takes: only a carrying phrase exempts.
+            r"\b(took|taken|taking|takes)" + TAKE_QTY + r"(?!" + CARRIED + r")",
+            # Plain "take", not in a permission question: only a carrying phrase exempts.
+            r"(?<!can i )(?<!may i )(?<!could i )(?<!should i )\btake" + TAKE_QTY + r"(?!" + CARRIED + r")",
+            # "can I take ...": a carrying phrase or a travel phrase exempts.
+            r"\b(can|may|could|should)\s+i\s+take" + TAKE_QTY + r"(?!" + CARRIED + r"|" + TRAVEL + r")",
+            # An ingestion sign in the same clause overrides every exemption above.
+            r"(?:^|(?<=[.;!?]))(?=[^.;!?]*" + INGESTION_SIGN + r")[^.;!?]*" + TAKE + r"(" + QUANTITY + r"|" + ALL_OF + r")",
             r"\b(drank|drink(s|ing)?|swallow(s|ed|ing)?|ingest(s|ed|ing)?)\s+(some\s+|a\s+lot\s+of\s+)?"
             r"(bleach|antifreeze|rat\s+poison|drain\s+cleaner|poison|weed\s*killer|pesticides?)\b",
         ]
@@ -289,8 +313,15 @@ class Rules:
                   r"neighbou?rs?|officer|classmates?|friends?|partner|boyfriend|girlfriend|ex|husband|wife|sister|brother|"
                   r"mom|mother|dad|father|parents|family|kids|child|children|son|daughter|teammates?|advisor|coworkers?|"
                   r"boss|suitemates?|housemates?)")
+        # PR #12 re-review (P2): "shoot me a text", "shoot us an email", "shoot him a look" are
+        # idioms, also inside reported speech ("he said he would shoot me a text"). A victim
+        # followed by a message, photo or look object is not a threat, in every branch.
+        NOT_IDIOM = (r"(?!\s+((a|an|the|some|another|quick|short|little)\s+)*(texts?|txts?|messages?|msgs?|e-?mails?|"
+                     r"dms?|pms?|notes?|lines?|reply|replies|photos?|pics?|pictures?|snaps?|looks?|glances?|smiles?|"
+                     r"winks?|calls?|links?|invites?|invitations?|updates?|heads[\s-]*up|questions?|reminders?|"
+                     r"screenshots?|files?)\b|\s+with\s+kindness\b)")
         VICTIM = (r"(me|us|you|him|her|them|everyone|everybody|someone|somebody|people|"
-                  r"(my|our|his|her|their|the|a|an|that|this)\s+" + PERSON + r")\b")
+                  r"(my|our|his|her|their|the|a|an|that|this)\s+" + PERSON + r")\b" + NOT_IDIOM)
         WEAPON = r"(guns?|pistol|rifle|firearm|handgun|knife|knives|blade|machete|weapons?)"
         SEVERE_THREAT = [
             r"\bthreat(en|ens|ened|ening)\s+(\w+\s+){0,3}?to\s+" + SEVERE + r"\s+" + VICTIM,
@@ -353,32 +384,63 @@ class Rules:
             r"\bsextortion\b", r"\brevenge\s+porn\b",
         ]
 
-        # PR #12 review (B01-B04): a few Title IX patterns also describe consented care or
-        # health education ("touched my chest during an exam I agreed to", "how to discuss
-        # sexual messages with a partner"). Such a pattern is skipped only when the SAME clause
-        # has a consent/information context AND no harm marker, so a benign phrase can never
-        # cancel an unwanted, forced or exploitative event. There is no blanket clinician,
-        # class or workshop exemption.
-        def unless_benign(core: str, benign: str) -> str:
+        # PR #12 reviews (B01-B04; re-review P1): a few Title IX patterns also describe
+        # consented care or health education. The exemption is bound to that benign event, not
+        # to the clause. `benign_event` must contain the matched phrase itself:
+        # - an information frame that directly governs it ("how to discuss sexual messages");
+        # - a consent phrase that follows the touching it describes ("touched my chest ...
+        #   which I agreed to").
+        # Asking how to REPORT something, consent given before a later refusal, and photos OF
+        # someone else are never exempt. Any harm marker in the clause also cancels the
+        # exemption, and so does a second event of the same kind ("touched my chest with my
+        # permission and then grabbed my butt"): one consent phrase covers one event. There is
+        # no blanket information, clinician, class or workshop exemption.
+        def unless_benign(core: str, benign_event: str, event: str) -> str:
             clause = r"[^.;!?]*"
-            return (r"(?:^|(?<=[.;!?]))(?!(?=" + clause + benign + r")(?!" + clause + SEXUAL_HARM + r"))"
-                    + clause + core)
+            return (r"(?:^|(?<=[.;!?]))(?!(?=" + clause + benign_event + r")(?!" + clause + SEXUAL_HARM + r")"
+                    r"(?!" + clause + event + clause + event + r"))" + clause + core)
 
-        SEXUAL_HARM = (r"\b(unwanted|without\s+((my|their|his|her|our)\s+)?(consent|permission|agreement)|"
-                       r"against\s+(my|their|his|her)\s+will|forc\w*|pressur\w*|coerc\w*|blackmail\w*|threat\w*|"
-                       r"leak\w*|(didn'?t|did\s+not|never)\s+(agree|consent|want|ask)|"
-                       r"(said|told\s+\w+)\s+(no|stop|not\s+to)|won'?t\s+stop|wouldn'?t\s+stop|kept|keeps|"
-                       r"asleep|unconscious|passed\s+out|for\s+a\s+(better\s+)?grade|in\s+exchange|or\s+else|"
+        SEXUAL_HARM = (r"\b(unwanted|unsolicited|without\s+(asking|((my|their|his|her|our)\s+)?(consent|permission|"
+                       r"agreement))|against\s+(my|their|his|her)\s+will|forc\w*|pressur\w*|coerc\w*|blackmail\w*|"
+                       r"threat\w*|leak\w*|refus\w*|declin\w*|objected|pulled\s+away|"
+                       r"(didn'?t|did\s+not|never)\s+(agree|consent|want|ask|request)\w*|"
+                       r"(said|told\s+\w+|kept\s+saying)\s+(no|stop|not\s+to)|asked\s+(him|her|them)\s+to\s+stop|"
+                       r"won'?t\s+stop|wouldn'?t\s+stop|kept|keeps|asleep|unconscious|passed\s+out|"
+                       r"for\s+a\s+(better\s+)?grade|in\s+exchange|or\s+else|report\w*|complain\w*|"
+                       r"(shared|posted|leaked|forwarded|spread|uploaded|published|circulated|distributed)|"
                        r"(sent|sends|send(ing)?|show(s|ed|ing)?|text(s|ed|ing)?|messag(es|ed|ing))\s+(me|us)|"
-                       r"(to|at|about|of)\s+(me|us))\b")
-        CONSENT_CONTEXT = (r"\b((that\s+)?i\s+(agreed|consented)\s+to|with\s+(my|their|our)\s+(permission|consent|agreement)|"
-                           r"by\s+mutual\s+(agreement|consent)|mutually\s+agreed|consensual(ly)?|"
-                           r"we\s+both\s+(agreed|consented|wanted))\b")
-        INFO_CONTEXT = (r"\b(how\s+to|how\s+do|how\s+can|information\s+(about|on)|info\s+(about|on)|"
-                        r"learn(ing)?\s+(about|how)|discuss(ing)?|talk(ing)?\s+about|explain(s|ed|ing)?|"
-                        r"tips\s+(on|for)|safely|safer|guidance\s+on|resources?\s+(on|about)|policy\s+on|"
-                        r"what\s+(is|are|counts\s+as))\b")
-        BENIGN_SEXUAL_CONTEXT = "(" + CONSENT_CONTEXT + "|" + INFO_CONTEXT + ")"
+                       r"(to|at|about|of)\s+(me|us)|of\s+(him|her|them|(my|his|her|their)\s+[\w'-]+))\b")
+        CONSENT_MARK = (r"\b((which|that)\s+i\s+(had\s+)?(agreed|consented)\s+to|i\s+(agreed|consented)\s+to\s+(it|this|that)|"
+                        r"with\s+(my|their|his|her|our)\s+(permission|consent|agreement)|by\s+mutual\s+(agreement|consent)|"
+                        r"mutually\s+agreed|consensual(ly)?|we\s+both\s+(agreed|consented|wanted))\b")
+        INFO_FRAME = (r"\b(how\s+(to|do\s+(i|we|you)|can\s+(i|we|you)|should\s+(i|we))|information\s+(about|on)|"
+                      r"info\s+(about|on)|learn(ing)?\s+(about|how\s+to)|guidance\s+on|tips\s+(on|for)|"
+                      r"resources?\s+(on|about)|policy\s+on|what\s+(is|are|counts\s+as)|discuss(es|ed|ing)?|"
+                      r"talk(s|ed|ing)?\s+about|explain(s|ed|ing)?)")
+        # Words allowed between the frame and the phrase. "reporting", "stopping" etc. are not.
+        INFO_FILLER = (r"(\s+(to|about|on|the|a|an|safely|safe|safer|healthy|respectful(ly)?|consensual(ly)?|"
+                       r"mutual(ly)?|appropriate(ly)?|discuss(ing)?|talk(ing)?|shar(e|ing)|send(ing)?|exchang(e|ing)|"
+                       r"privacy|online|digital|with|your|our|content|and)){0,4}\s+")
+
+        def info_event(core: str) -> str:
+            return INFO_FRAME + INFO_FILLER + core
+
+        def consent_event(core: str) -> str:
+            return core + r"[^.;!?]*?" + CONSENT_MARK
+
+        def benign_sexual(core: str) -> str:
+            return "(" + info_event(core) + "|" + consent_event(core) + ")"
+
+        EXPLICIT_CORE = r"\bsexual(ly)?\s+(explicit|suggestive|inappropriate)\b"
+        MESSAGES_CORE = (r"\bsexual\s+(messages?|texts?|comments?|remarks?|jokes?|advances?|propositions?|favou?rs?|"
+                         r"requests?|innuendos?|gestures?|photos?|pictures?|pics|images?|videos?|touching)\b")
+        IMAGES_CORE = r"\b(intimate|explicit|nude)\s+(photos?|pictures?|pics|images?|videos?)\b"
+        BODY_TOUCH_CORE = (r"\b(grabb?(s|ed|ing)?|touch(es|ed|ing)?|fondl(e|es|ed|ing)|rubb?(s|ed|ing)?)\s+"
+                           r"(my|her|his|their)\s+([\w-]+'s?\s+)?"
+                           r"(butt|ass|breasts?|boobs?|chest|crotch|genitals?|groin|privates?|private\s+parts|inner\s+thighs?)\b")
+        # One event of each kind per exemption (see unless_benign).
+        TOUCH_VERB = r"\b(grabb?(s|ed|ing)?|touch(es|ed|ing)?|fondl(e|es|ed|ing)|rubb?(s|ed|ing)?|kiss(es|ed|ing)?)\b"
+        SEXUAL_CONTENT = "(" + EXPLICIT_CORE + "|" + MESSAGES_CORE + "|" + IMAGES_CORE + r"|\bnudes\b)"
 
         # Sex- or gender-based mistreatment ("harassing me because I am a woman").
         SEX_TERM = (r"((my|our|her|his|their)\s+(gender(\s+identity)?|sex|pregnancy)|"
@@ -399,19 +461,16 @@ class Rules:
         SEXUAL_MISCONDUCT = [
             r"\bunwanted\s+(sexual\w*|sex|touch(es|ed|ing)?|kiss(es|ed|ing)?|advances?|groping|nudes?|"
             r"explicit\s+\w+|(dick|nude|explicit)\s+pics?)\b",
-            unless_benign(r"\bsexual(ly)?\s+(explicit|suggestive|inappropriate)\b", BENIGN_SEXUAL_CONTEXT),
-            unless_benign(r"\bsexual\s+(messages?|texts?|comments?|remarks?|jokes?|advances?|propositions?|favou?rs?|"
-                          r"requests?|innuendos?|gestures?|photos?|pictures?|pics|images?|videos?|touching)\b",
-                          BENIGN_SEXUAL_CONTEXT),
+            unless_benign(EXPLICIT_CORE, benign_sexual(EXPLICIT_CORE), SEXUAL_CONTENT),
+            unless_benign(MESSAGES_CORE, benign_sexual(MESSAGES_CORE), SEXUAL_CONTENT),
             r"\b(inappropriate(ly)?|sexually)\s+touch(es|ed|ing)?\b",
             r"\btouch(es|ed|ing)?\s+(me|my\s+[\w-]+)\s+(sexually|inappropriately|without\s+(my\s+)?(consent|permission))\b",
             r"\b(kiss(es|ed|ing)?|touch(es|ed|ing)?|grabb?(s|ed|ing)?|fondl(e|es|ed|ing))\s+(me|my\s+[\w-]+)\s+"
             r"(\w+\s+){0,6}?(after|when|even\s+(though|after|when)|although|though)\s+i\s+"
             r"(said|told\s+(him|her|them))\s+(no|stop|not\s+to)\b",
-            # Only an explicit consent clause (not "clinician" or "exam" alone) can exempt this.
-            unless_benign(r"\b(grabb?(s|ed|ing)?|touch(es|ed|ing)?|fondl(e|es|ed|ing)|rubb?(s|ed|ing)?)\s+(my|her|his)\s+"
-                          r"(butt|ass|breasts?|boobs?|chest|crotch|genitals?|groin|privates?|private\s+parts|inner\s+thighs?)\b",
-                          CONSENT_CONTEXT),
+            # Only an explicit consent phrase describing this touching (not "clinician", "exam" or
+            # an earlier agreement to something else) can exempt it.
+            unless_benign(BODY_TOUCH_CORE, consent_event(BODY_TOUCH_CORE), TOUCH_VERB),
             r"\bfondl(e|es|ed|ing)\b",
             # Coerced or forced sex ("forced me into sex", "pressured me to have sex").
             r"\b(forc(e|es|ed|ing)|pressur(e|es|ed|ing)|coerc(e|es|ed|ing)|blackmail(s|ed|ing)?|"
@@ -422,7 +481,7 @@ class Rules:
             # Image-based abuse.
             r"\b(sent|send(s|ing)?|shar(e|es|ed|ing)|leak(s|ed|ing)?|post(s|ed|ing)?|spread(s|ing)?)\s+"
             r"(me\s+)?(my\s+|his\s+|her\s+|their\s+)?nudes\b",
-            unless_benign(r"\b(intimate|explicit|nude)\s+(photos?|pictures?|pics|images?|videos?)\b", BENIGN_SEXUAL_CONTEXT),
+            unless_benign(IMAGES_CORE, benign_sexual(IMAGES_CORE), SEXUAL_CONTENT),
         ]
 
         # Self-directed distress ("I hate myself / my life / my body") is not a conduct
@@ -517,8 +576,8 @@ class Rules:
         # me"). Threat wording already routes to conduct; these cover threats and attacks that
         # never say "threat". Threats to kill, shoot, stab or strangle match SEVERE_THREAT
         # (urgent) first. Idioms ("this exam is going to kill me") and "hit me up" do not match.
-        VIOLENCE_AT_ME = (r"((beat|attack|jump|punch|stab|shoot|kill|hurt|harm|strangle|choke)\s+(me|us)\b|"
-                          r"hit\s+(me|us)\b(?!\s+up\b))")
+        VIOLENCE_AT_ME = (r"((beat|attack|jump|punch|stab|shoot|kill|hurt|harm|strangle|choke)\s+(me|us)\b" + NOT_IDIOM
+                          + r"|hit\s+(me|us)\b(?!\s+up\b))")
         THREAT_OR_ATTACK = [
             r"\bbeat(s|ing)?\s+(me|us)\s+up\b", r"\bbeat\s+up\s+(me|us)\b",
             r"\b(promis|vow|swear|swore|sworn|warn)\w*\s+(that\s+)?(\w+\s+){0,2}?(to|'ll|will|would|gonna|going\s+to)\s+"
