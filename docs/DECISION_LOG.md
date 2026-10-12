@@ -118,3 +118,13 @@ ownership remains to be coordinated with his foundational documentation.
   false positives; keep the PR draft for router-owner changes. B9-N04 merits a
   small Devika-owned decline informational-request repair before C1 acceptance.
   [Detailed findings, official campus sources and coordination plan](audits/devika-pr12-review-2026-10-11.md).
+
+- **C1-D32 (2026-10-12, operator-authorized explicit dispositions):** Devika's
+  [final-main acceptance record](progress/devika.md#final-c1-macos-acceptance-record--bbc07de)
+  records successful existing macOS checks on `bbc07de` and explicitly accepts
+  O4, O5, O7, O8, O9, KB freshness and comprehensive Phase 5 evaluation with the
+  seven binding conditions/due milestones stated there. This supersedes C1-D28's
+  pending-adoption status; O10 was repaired, not deferred. B7 is still open and
+  PR #10 needs its final updated completion record before acceptance review.
+  No Abhinav-owned file, application/test/CI/dependency/contract change, new
+  adversarial exercise, C2 work, PR approval or merge is made by this record.
