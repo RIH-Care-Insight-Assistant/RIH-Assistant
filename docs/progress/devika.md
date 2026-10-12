@@ -2,6 +2,32 @@
 
 Last updated: 2026-10-11 (America/New_York). Operator: Devika Rani Sanaboyina.
 
+## Revised PR #12 independent review — 8d73390
+
+- Revised head `8d7339008f119e5caf37f0c3bd301555ffe332cb` is now published.
+  Reviewed the two new commits after `06ccbe3` in a detached temporary checkout;
+  no partner branch or runtime code edited. CI run **38200631849 passed all eight**.
+- Independent macOS arm64/Python 3.12.12: **3307 passed**, no skips (3.11 s),
+  global/scoped Ruff passed, 13 route checks and smoke passed; v1.5.0 safety
+  **110/110**, **0/36 FP**, **152/152** exact router. Prior router probes **42/42**;
+  original-label disclosed B9 **18/18** exact templates, **0/6 FP**, **22/24**
+  exact router. Those are disclosed regression results, not new held-out estimates.
+- Earlier reported hate recall, dislike, sexual-health and transport examples are
+  fixed. Harassment built-ins/CSV agree, severe-threat tests are strengthened and
+  three non-B9 label changes are documented. Frozen initial B9 evidence unchanged.
+- **Changes still required:** four new ingestion-at-location cases lose crisis
+  guidance due to the transport exception; four unwanted-sexual/reporting cases
+  lose Title IX due to clause-wide information/consent exemptions. All eight were
+  protected by the prior `06ccbe3` router; revised dispatcher reaches ordinary
+  planning/retrieval. Also reported “shoot me a text” escalates to urgent (P2).
+- [Full re-review and exact reproductions sent to Abhinav](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/12#issuecomment-6117366429).
+  New scratch probe expectation for the messaging idiom was explicitly corrected
+  from urgent to benign and disclosed in that comment; no other expectation changed.
+- Keep #12 draft; repair bounded exceptions with paired exact-template tests and
+  update stale PR/evidence summaries, then rerun the next exact head. No approval,
+  ready transition or merge performed. No repeated C1 implementation or C2 work.
+  Decline-only PR #13 remains separate; this follow-up changes progress notes only.
+
 ## B9-N04 decline repair — latest status
 
 - User authorized only this small decline repair, targeted tests, macOS validation,
