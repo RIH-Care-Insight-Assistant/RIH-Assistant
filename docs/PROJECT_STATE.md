@@ -239,6 +239,8 @@ merges. A required check that never reports blocks every PR.
 | Allow force pushes / deletions | Blocked | Keep blocked |
 | Secret scanning and push protection | Off | **On** (free for public repositories) |
 | Dependabot alerts | On | Keep (automatic update PRs are optional) |
+| Actions default `GITHUB_TOKEN` permission | Read | Keep |
+| Allow Actions to create or approve PRs | Off | Keep off |
 
 ## C1 completion report
 
