@@ -177,6 +177,16 @@ Devika should implement it on her own branch and coordinate integration with
 Abhinav's revised router PR. Keep the frozen B9 record unchanged and write a
 separate before/after response classification artifact.
 
+Scope diagnostic (not a repaired-code result): temporarily forcing only the
+detector result to false in a mock lets original B9-N04 reach `clarify` then
+`retrieve`, with eligible billing citations rather than alternatives. It still
+asks an irrelevant appointment question. The broader counseling/therapy-refusal
+variants N02/N05 instead reach the existing counseling template. Therefore the
+small matcher repair addresses incorrect decline classification, not every
+downstream information-request UX problem. Verify its actual end-to-end result;
+coordinate any further planner/dispatcher change with Abhinav rather than widening
+the decline patch or claiming full resolution from a Boolean check alone.
+
 ## Coordination and remaining gate
 
 Send this technical review and reproductions to Abhinav on PR #12. He retains

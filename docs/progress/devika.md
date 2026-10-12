@@ -43,6 +43,13 @@ Last updated: 2026-10-11 (America/New_York). Operator: Devika Rani Sanaboyina.
 - Exact next step: send review to Abhinav on PR #12, coordinate exact-version
   policy/test revisions and Devika's small decline repair; rerun revised head and
   actual final main after reviewed merges. Do not merge #12 or relabel frozen B9.
+- Coordination [comment posted successfully through authenticated gh](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/12#issuecomment-6117046965).
+  Review evidence commit `63b7f44` was pushed normally to the existing PR #11
+  branch with verified human identity; initial reviewed-head PR #12 stays draft.
+- Additional scope diagnostic: mocked decline=false sends B9-N04 through
+  clarify/retrieve (billing citations, but an unnecessary appointment question).
+  N02/N05 still hit counseling. This is not repaired-code evidence; broader
+  planner/dispatcher UX remains a separately coordinated issue. No runtime edits.
 
 ## Verified GitHub CLI publication — latest status
 
