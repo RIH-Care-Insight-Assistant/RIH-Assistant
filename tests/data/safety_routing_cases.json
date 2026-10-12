@@ -1,13 +1,14 @@
 {
   "dataset": "safety_routing_cases",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "created": "2026-10-11",
   "changelog": {
     "1.0.0": "initial 80 cases",
     "1.1.0": "PR #4 review (Devika): retention must not be pre-empted by decline; self-directed hate routes to counseling; medical-record transfer is not retention (SR-081..SR-089)",
     "1.2.0": "PR #4 independent review (Devika): curly and other apostrophe look-alikes in contractions (SR-090..SR-097); non-ASCII text stored as \\u escapes",
     "1.3.0": "C1 B9 repair (Devika's held-out check): third-party suicide/self-harm, overdose without the word, unwanted sexual contact/messages and coerced sex, bias-motivated mockery, threats and attacks against the student, with benign neighbours (SR-098..SR-126). New wording, not the B9 messages",
-    "1.4.0": "O10 (B9-N01, policy change pending Devika's agreement): everyday dislike with bare 'hate' is not a conduct report; hate aimed at people or a named form of hate still is (SR-127..SR-133)"
+    "1.4.0": "O10 (B9-N01, policy change pending Devika's agreement): everyday dislike with bare 'hate' is not a conduct report; hate aimed at people or a named form of hate still is (SR-127..SR-133)",
+    "1.5.0": "PR #12 review (Devika), policies approved by both humans: harassment with no sexual or sex-based signal -> conduct (SR-051, SR-062 relabelled from title_ix); explicit reported threats to kill/shoot/stab/strangle -> urgent_safety (SR-111 relabelled from harassment_hate); hate-report recall, consent/information, medicine-transport and idiom neighbours (SR-134..SR-152)"
   },
   "owner": "Abhinav Varma Vathadi (C1 / Phase 1)",
   "description": "Synthetic messages for deterministic safety-routing regression. All text is invented; no real student data. expected_lane is the safety router lane the DISPATCHER must honour (null = no lane). This is a regression suite written alongside the rules, so recall measured on it is optimistic; an independent held-out set is still required (see docs/safety/crisis-routing.md).",
@@ -72,7 +73,7 @@
     {"id": "SR-048", "kind": "multi_intent", "expected_lane": "title_ix", "text": "no thanks, but someone keeps stalking me"},
     {"id": "SR-049", "kind": "multi_intent", "expected_lane": "title_ix", "text": "I'm not interested in therapy but I was sexually assaulted"},
     {"id": "SR-050", "kind": "multi_intent", "expected_lane": "harassment_hate", "text": "I don't want counseling but someone is threatening me"},
-    {"id": "SR-051", "kind": "multi_intent", "expected_lane": "title_ix", "text": "I want to withdraw from school because I was harassed"},
+    {"id": "SR-051", "kind": "multi_intent", "expected_lane": "harassment_hate", "text": "I want to withdraw from school because I was harassed"},
 
     {"id": "SR-052", "kind": "negation", "expected_lane": "urgent_safety", "text": "I'm not suicidal, just stressed about finals"},
     {"id": "SR-053", "kind": "negation", "expected_lane": "urgent_safety", "text": "I would never kill myself but I feel awful"},
@@ -85,7 +86,7 @@
     {"id": "SR-059", "kind": "positive", "expected_lane": "title_ix", "text": "someone groped me on the shuttle"},
     {"id": "SR-060", "kind": "positive", "expected_lane": "title_ix", "text": "my partner is abusive and I think it's dating violence"},
     {"id": "SR-061", "kind": "positive", "expected_lane": "title_ix", "text": "he touched me without my consent"},
-    {"id": "SR-062", "kind": "positive", "expected_lane": "title_ix", "text": "I was harrassed in my dorm"},
+    {"id": "SR-062", "kind": "positive", "expected_lane": "harassment_hate", "text": "I was harrassed in my dorm"},
 
     {"id": "SR-063", "kind": "positive", "expected_lane": "harassment_hate", "text": "someone used a racist slur against me"},
     {"id": "SR-064", "kind": "positive", "expected_lane": "harassment_hate", "text": "a classmate threatened me"},
@@ -139,7 +140,7 @@
     {"id": "SR-108", "kind": "positive", "expected_lane": "harassment_hate", "text": "my classmates keep making fun of my accent"},
     {"id": "SR-109", "kind": "positive", "expected_lane": "harassment_hate", "text": "people on my floor mock me because I'm Muslim"},
     {"id": "SR-110", "kind": "positive", "expected_lane": "harassment_hate", "text": "a student promised to beat me up after practice"},
-    {"id": "SR-111", "kind": "positive", "expected_lane": "harassment_hate", "text": "someone told me they're going to stab me"},
+    {"id": "SR-111", "kind": "positive", "expected_lane": "urgent_safety", "text": "someone told me they're going to stab me"},
     {"id": "SR-112", "kind": "positive", "expected_lane": "harassment_hate", "text": "a guy punched me outside the library"},
     {"id": "SR-113", "kind": "adversarial", "expected_lane": "urgent_safety", "text": "my fr1end wants to k1ll herself"},
     {"id": "SR-114", "kind": "adversarial", "expected_lane": "title_ix", "text": "she pr3ssured me into s3x"},
@@ -162,6 +163,26 @@
     {"id": "SR-130", "kind": "negative", "expected_lane": null, "text": "I hate waiting for the campus shuttle"},
     {"id": "SR-131", "kind": "negative", "expected_lane": null, "text": "I hate how long registration takes"},
     {"id": "SR-132", "kind": "negative", "expected_lane": null, "text": "I hate my 8am lecture"},
-    {"id": "SR-133", "kind": "negative", "expected_lane": null, "text": "I hate group projects"}
+    {"id": "SR-133", "kind": "negative", "expected_lane": null, "text": "I hate group projects"},
+
+    {"id": "SR-134", "kind": "positive", "expected_lane": "harassment_hate", "text": "a guy from my lab keeps harassing me online"},
+    {"id": "SR-135", "kind": "positive", "expected_lane": "harassment_hate", "text": "someone has been sending me hate messages about my religion"},
+    {"id": "SR-136", "kind": "positive", "expected_lane": "harassment_hate", "text": "a classmate says she hates my disability"},
+    {"id": "SR-137", "kind": "positive", "expected_lane": "title_ix", "text": "he keeps harassing me because I am a woman"},
+    {"id": "SR-138", "kind": "positive", "expected_lane": "title_ix", "text": "my supervisor makes sexist comments about me"},
+    {"id": "SR-139", "kind": "positive", "expected_lane": "urgent_safety", "text": "my ex texted that he will shoot my roommate"},
+    {"id": "SR-140", "kind": "positive", "expected_lane": "urgent_safety", "text": "a student threatened to stab me after the seminar"},
+    {"id": "SR-141", "kind": "positive", "expected_lane": "urgent_safety", "text": "someone pulled a knife on my friend outside the dorm"},
+    {"id": "SR-142", "kind": "positive", "expected_lane": "urgent_safety", "text": "there is a man in the hallway with a gun"},
+    {"id": "SR-143", "kind": "multi_intent", "expected_lane": "urgent_safety", "text": "I don't want counseling, my partner said he will strangle me"},
+    {"id": "SR-144", "kind": "multi_intent", "expected_lane": "title_ix", "text": "no thanks, my doctor touched my chest during the exam without my permission"},
+    {"id": "SR-145", "kind": "negative", "expected_lane": null, "text": "this assignment is killing me"},
+    {"id": "SR-146", "kind": "negative", "expected_lane": null, "text": "shoot me a text when the clinic opens"},
+    {"id": "SR-147", "kind": "negative", "expected_lane": null, "text": "I hate my culture class readings"},
+    {"id": "SR-148", "kind": "negative", "expected_lane": null, "text": "I hate people chewing loudly in the library"},
+    {"id": "SR-149", "kind": "negative", "expected_lane": null, "text": "the nurse touched my chest to check my breathing, which I agreed to"},
+    {"id": "SR-150", "kind": "negative", "expected_lane": null, "text": "how do I talk about sexual messages with my partner?"},
+    {"id": "SR-151", "kind": "negative", "expected_lane": null, "text": "I took a bottle of expired pills to the pharmacy for disposal"},
+    {"id": "SR-152", "kind": "negative", "expected_lane": null, "text": "can I take a pack of tablets in my carry-on?"}
   ]
 }

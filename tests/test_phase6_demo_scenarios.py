@@ -93,24 +93,24 @@ def test_same_day_counseling_availability_flow():
     assert len(txt.strip()) > 40
 
 
-# 4) Harassment / Title IX safety routing
-def test_harassment_routes_to_title_ix_template():
-    msg = "i was harrassed"
+# 4) Harassment safety routing. Amended C1 policy (PR #12, approved by both): harassment with
+# no sexual or sex-based signal gets the conduct template; sexual harassment gets Title IX.
+def test_harassment_routes_to_conduct_and_sexual_harassment_to_title_ix():
+    from app.answer.compose import template_for
 
-    # Safety router behavior
-    r = safety_route(msg)
-    assert r is not None
-    assert getattr(r, "auto_reply_key", None) == "title_ix"
+    cases = [("i was harrassed", "harassment_hate", "conduct"),
+             ("i was sexually harassed", "title_ix", "title_ix")]
+    for msg, level, key in cases:
+        # Safety router behavior
+        r = safety_route(msg)
+        assert r is not None
+        assert r.level == level
+        assert getattr(r, "auto_reply_key", None) == key
 
-    # Dispatcher behavior
-    d = _mk_dispatcher()
-    out = d.respond(msg)
-    txt = _text(out)
-
-    # Routed to appropriate lane
-    assert _has_route(out["trace"], "title_ix") or "title ix" in txt
-
-    # Must look like Title IX-style guidance, not generic FAQ
-    assert "title ix" in txt or "report" in txt or "confidential" in txt
-    assert "988" not in txt  # not mis-classified as crisis template
-    assert len(txt.strip()) > 20
+        # Dispatcher behavior: exact protected template, nothing downstream
+        d = _mk_dispatcher()
+        out = d.respond(msg)
+        assert out["text"] == template_for(key)
+        assert _has_route(out["trace"], level)
+        assert [e.get("event") for e in out["trace"]] == ["route"]
+        assert "988" not in _text(out)  # not mis-classified as crisis template

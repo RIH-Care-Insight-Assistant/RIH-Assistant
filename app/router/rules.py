@@ -213,7 +213,10 @@ class Rules:
             r"drown|drowning|poison|poisoning|starve|starving)\s+my\s*self\b",
             r"\b(cut|cutting|slit|slitting)\s+my\s+(wrists?|arms?|legs?|thighs?|skin|throat)\b",
             r"\boverdos(e|ed|es|ing)\b",
-            r"\btake\s+all\s+(of\s+)?my\s+(pills|meds|medications?)\b",
+            # PR #12 review (M02): following directions ("take all my medications as prescribed")
+            # is not an overdose; the lookahead only removes that one phrase.
+            r"\btake\s+all\s+(of\s+)?my\s+(pills|meds|medications?)\b"
+            r"(?!\s+(as\s+(prescribed|directed|instructed)|every\s+(day|morning|night)|daily|on\s+time|with\s+food)\b)",
             r"\bjump(ing)?\s+off\s+(of\s+)?(a|the|my)\s+(\w+\s+)?(bridge|building|roof|garage|balcony|cliff|ledge)\b",
         ]
 
@@ -249,20 +252,89 @@ class Rules:
         # taking a normal dose ("I took my pills this morning") does not match.
         PILLS = (r"(pills?|tablets?|capsules?|meds|medications?|medicines?|painkillers?|"
                  r"tylenol|advil|ibuprofen|acetaminophen|paracetamol|aspirin|benadryl|xanax|insulin)\b")
-        INGEST = r"\b(swallow(s|ed|ing)?|took|taken|tak(e|es|ing)|ate|eat(s|en|ing)?|pop(s|ped|ping)?|downed|chug(s|ged|ging)?)"
+        # PR #12 review (M01, M03): "take/took" also means carrying ("took a bottle of pills to
+        # the pharmacy", "take a pack of tablets in my carry-on"). Only for take/took, a
+        # destination or travel phrase right after the medication means transport. Swallow,
+        # ate, popped etc. are always ingestion, and a separate overdose clause still matches.
+        TRANSPORT = (r"(?!\s+(to|into|in|on|onto|through|at)\s+((the|a|an|my|his|her|their|campus|local|nearest|student)\s+){0,2}"
+                     r"(pharmacy|pharmacist|clinic|health\s+center|rih|doctor'?s?|nurse'?s?|office|airport|plane|flight|"
+                     r"bag|luggage|carry-?on|suitcase|backpack|purse|trip|drop-?off|disposal|drop\s+box|take-?back)\b"
+                     r"|\s+for\s+(disposal|recycling|travel|(my|the|a)\s+trip)\b|\s+back\s+to\b)")
+        TAKE = r"\b(took|taken|tak(e|es|ing))"
+        INGEST = r"\b(swallow(s|ed|ing)?|ate|eat(s|en|ing)?|pop(s|ped|ping)?|downed|chug(s|ged|ging)?)"
+        QUANTITY = (r"\s+((a|an|the|my|his|her|their|half\s+(a|the|my))\s+)?(whole\s+|entire\s+|full\s+)?"
+                    r"(bottles?|packs?|packets?|box(es)?|handfuls?|bunch|lots?|strips?|blister\s+packs?)\s+of\s+"
+                    r"([\w-]+\s+)?" + PILLS)
+        TOO_MANY = r"\s+(\w+\s+)?too\s+(many|much)\s+([\w-]+\s+)?" + PILLS
+        ALL_OF = r"\s+all\s+(of\s+)?(my|his|her|their|the)\s+([\w-]+\s+)?" + PILLS
         INGESTION = [
-            INGEST + r"\s+((a|an|the|my|his|her|their|half\s+(a|the|my))\s+)?(whole\s+|entire\s+|full\s+)?"
-            r"(bottles?|packs?|packets?|box(es)?|handfuls?|bunch|lots?|strips?|blister\s+packs?)\s+of\s+"
-            r"([\w-]+\s+)?" + PILLS,
-            INGEST + r"\s+(\w+\s+)?too\s+(many|much)\s+([\w-]+\s+)?" + PILLS,
-            INGEST + r"\s+all\s+(of\s+)?(my|his|her|their|the)\s+([\w-]+\s+)?" + PILLS,
+            INGEST + QUANTITY, TAKE + QUANTITY + TRANSPORT,
+            INGEST + TOO_MANY, TAKE + TOO_MANY + TRANSPORT,
+            INGEST + ALL_OF,
+            TAKE + ALL_OF + TRANSPORT
+            + r"(?!\s+(as\s+(prescribed|directed|instructed)|every\s+(day|morning|night)|daily|on\s+time|with\s+food)\b)",
             r"\b(drank|drink(s|ing)?|swallow(s|ed|ing)?|ingest(s|ed|ing)?)\s+(some\s+|a\s+lot\s+of\s+)?"
             r"(bleach|antifreeze|rat\s+poison|drain\s+cleaner|poison|weed\s*killer|pesticides?)\b",
         ]
 
+        # PR #12 review, policy approved by both: explicit reported threats or attempts to kill,
+        # shoot, stab or strangle anyone (the student or a third party), weapon threats and
+        # active shootings get urgent guidance (911, UMBC Police) before Title IX or conduct.
+        # The router does not judge credibility. It needs a reported threat, a person as the
+        # subject, or an attempt, so idioms ("this homework is going to kill me", "shoot me an
+        # email", "stabbed me in the back", "hit him up") do not match. Beatings and punches
+        # stay conduct.
+        SEVERE = r"(kill|murder|shoot|stab|strangle|choke|slit\s+\w+\s+throat)"
+        PERSON = (r"(student|guy|man|woman|person|people|professor|teacher|instructor|ta|kid|girl|boy|roommates?|"
+                  r"neighbou?rs?|officer|classmates?|friends?|partner|boyfriend|girlfriend|ex|husband|wife|sister|brother|"
+                  r"mom|mother|dad|father|parents|family|kids|child|children|son|daughter|teammates?|advisor|coworkers?|"
+                  r"boss|suitemates?|housemates?)")
+        VICTIM = (r"(me|us|you|him|her|them|everyone|everybody|someone|somebody|people|"
+                  r"(my|our|his|her|their|the|a|an|that|this)\s+" + PERSON + r")\b")
+        WEAPON = r"(guns?|pistol|rifle|firearm|handgun|knife|knives|blade|machete|weapons?)"
+        SEVERE_THREAT = [
+            r"\bthreat(en|ens|ened|ening)\s+(\w+\s+){0,3}?to\s+" + SEVERE + r"\s+" + VICTIM,
+            r"\b(promis|vow|swear|swore|sworn|warn)\w*\s+(that\s+)?(\w+\s+){0,2}?(to|'ll|will|would|gonna|going\s+to)\s+"
+            + SEVERE + r"\s+" + VICTIM,
+            # Reported speech: "said he will kill me", "texted that they will shoot my roommate".
+            r"\b(said|says|saying|told|tells|telling|text(s|ed|ing)?|messag(es|ed|ing)|wrote|writes|posted|posts|"
+            r"yell(s|ed|ing)|shout(s|ed|ing)|scream(s|ed|ing))\s+((me|us|him|her|them|my\s+\w+)\s+)?"
+            r"(that\s+|[:\"']\s*)?(he|she|they|someone|somebody|people|everyone|i|we)\s*"
+            r"('ll|'d|'s\s+going\s+to|'re\s+going\s+to|'m\s+going\s+to|\s+will|\s+would|\s+gonna|"
+            r"\s+(is|are|was|were|am)\s+(going\s+to|gonna|planning\s+to)|\s+plans?\s+to|\s+wants?\s+to)\s+"
+            + SEVERE + r"\s+" + VICTIM,
+            # A person as the subject. Family and roommates are left out here because "my mom is
+            # going to kill me" is usually an idiom; a reported threat from anyone still matches above.
+            r"\b(he|she|someone|somebody|(a|an|the|this|that|my|our)\s+(stranger|student|guy|man|woman|person|group|"
+            r"ex|partner|boyfriend|girlfriend|husband|wife|stalker))\s*('s|\s+is|\s+was)?\s*"
+            r"(going\s+to|gonna|trying\s+to|tried\s+to|wants?\s+to|wanted\s+to|plans?\s+to|planning\s+to|will|'ll)\s+"
+            + SEVERE + r"\s+" + VICTIM,
+            r"\bthey('re|\s+are|\s+were)?\s+(trying\s+to|tried\s+to|wants?\s+to|wanted\s+to|plans?\s+to|planning\s+to)\s+"
+            + SEVERE + r"\s+" + VICTIM,
+            # Attempted or in-progress severe violence.
+            r"\b(tried|tries|trying|attempted|attempting)\s+to\s+" + SEVERE + r"\s+" + VICTIM,
+            # In progress, with a person as the subject. "killing" is left out ("this deadline is
+            # killing me") and "shooting me a look" is excluded.
+            r"\b(he|she|they|someone|somebody|(a|an|the|my|our|this|that)\s+(stranger|" + PERSON[1:]
+            + r")\s*(is|are|was|were|'s|'re)\s+(stabbing|shooting|strangling|choking)\s+" + VICTIM + r"(?!\s+(a|an)\s)",
+            r"\b(stabbed|strangled|choked)\s+" + VICTIM + r"(?!\s+in\s+the\s+back)",
+            r"\bshot\s+(at\s+)?" + VICTIM + r"(?!\s+(a|an)\s)",
+            # Weapons.
+            r"\b(pulled|pointed|aimed|waved|brandished|flashed|drew)\s+(a|an|his|her|their|the)\s+" + WEAPON + r"\b",
+            r"\b(threaten\w*|attack\w*|chas(ed|ing)|came\s+at|charged\s+at|swung\s+at|hit|stabbed|shot|cut|jumped)\s+"
+            r"(\w+\s+){0,3}?with\s+(a|an|his|her|their)\s+" + WEAPON + r"\b",
+            r"\b(someone|somebody|a\s+(man|guy|person|student|stranger|woman)|there'?s\s+(a|an)\s+\w+|there\s+is\s+"
+            r"(a|an|someone)(\s+\w+)?)\s+(\w+\s+){0,4}?with\s+(a|an)\s+" + WEAPON + r"\b",
+            r"\bactive\s+shooter\b", r"\bshots\s+(were\s+)?fired\b",
+            r"\b(someone|somebody|a\s+\w+)\s+(is|was)\s+shooting\b"
+            r"(?!\s+(a|the|some|my|our)\s+(video|film|photos?|movie|scene|hoops|baskets|pool|project))",
+        ]
+
+        # PR #12 review, policy approved by both: harassment with no sexual or sex-based signal
+        # routes to conduct (CONDUCT below), not Title IX. Sexual and sex/gender-based
+        # harassment, stalking and dating/domestic violence stay Title IX.
         TITLE_IX = [
             r"\bsex(ual)?\s*(assault|harass(ed|ment|ing)?|misconduct|coercion)\b",
-            r"\bharass(ed|ment|ing)?\b",
             r"\b(non\s*-?\s*consensual|nonconsensual)\b",
             r"\brape\b", r"\bstalk(ing)?\b",
             r"\bsupportive\s+measures\b",
@@ -281,22 +353,65 @@ class Rules:
             r"\bsextortion\b", r"\brevenge\s+porn\b",
         ]
 
+        # PR #12 review (B01-B04): a few Title IX patterns also describe consented care or
+        # health education ("touched my chest during an exam I agreed to", "how to discuss
+        # sexual messages with a partner"). Such a pattern is skipped only when the SAME clause
+        # has a consent/information context AND no harm marker, so a benign phrase can never
+        # cancel an unwanted, forced or exploitative event. There is no blanket clinician,
+        # class or workshop exemption.
+        def unless_benign(core: str, benign: str) -> str:
+            clause = r"[^.;!?]*"
+            return (r"(?:^|(?<=[.;!?]))(?!(?=" + clause + benign + r")(?!" + clause + SEXUAL_HARM + r"))"
+                    + clause + core)
+
+        SEXUAL_HARM = (r"\b(unwanted|without\s+((my|their|his|her|our)\s+)?(consent|permission|agreement)|"
+                       r"against\s+(my|their|his|her)\s+will|forc\w*|pressur\w*|coerc\w*|blackmail\w*|threat\w*|"
+                       r"leak\w*|(didn'?t|did\s+not|never)\s+(agree|consent|want|ask)|"
+                       r"(said|told\s+\w+)\s+(no|stop|not\s+to)|won'?t\s+stop|wouldn'?t\s+stop|kept|keeps|"
+                       r"asleep|unconscious|passed\s+out|for\s+a\s+(better\s+)?grade|in\s+exchange|or\s+else|"
+                       r"(sent|sends|send(ing)?|show(s|ed|ing)?|text(s|ed|ing)?|messag(es|ed|ing))\s+(me|us)|"
+                       r"(to|at|about|of)\s+(me|us))\b")
+        CONSENT_CONTEXT = (r"\b((that\s+)?i\s+(agreed|consented)\s+to|with\s+(my|their|our)\s+(permission|consent|agreement)|"
+                           r"by\s+mutual\s+(agreement|consent)|mutually\s+agreed|consensual(ly)?|"
+                           r"we\s+both\s+(agreed|consented|wanted))\b")
+        INFO_CONTEXT = (r"\b(how\s+to|how\s+do|how\s+can|information\s+(about|on)|info\s+(about|on)|"
+                        r"learn(ing)?\s+(about|how)|discuss(ing)?|talk(ing)?\s+about|explain(s|ed|ing)?|"
+                        r"tips\s+(on|for)|safely|safer|guidance\s+on|resources?\s+(on|about)|policy\s+on|"
+                        r"what\s+(is|are|counts\s+as))\b")
+        BENIGN_SEXUAL_CONTEXT = "(" + CONSENT_CONTEXT + "|" + INFO_CONTEXT + ")"
+
+        # Sex- or gender-based mistreatment ("harassing me because I am a woman").
+        SEX_TERM = (r"((my|our|her|his|their)\s+(gender(\s+identity)?|sex|pregnancy)|"
+                    r"((i'?m|i\s+am|we'?re|we\s+are|being|(s?he|they)'?s|(s?he|they)\s+(is|are))\s+)?(an?\s+)?"
+                    r"(woman|girl|man|guy|female|male|trans(gender)?|non[\s-]*binary|pregnant|intersex))\b")
+        SEX_BASED = [
+            r"\b(harass\w*|bull(y|ies|ied|ying)|threat\w*|discriminat\w*|mock\w*|insult\w*|target\w*|exclud\w*|"
+            r"pick(s|ed|ing)?\s+on|(make|makes|made|making)\s+fun\s+of)\b([\s,]+[\w']+){0,6}?[\s,]+"
+            r"(because\s+(of\s+)?|for\s+(being\s+)?|over\s+|about\s+|since\s+)" + SEX_TERM,
+            r"\b(harass\w*|mock\w*|insult\w*|ridicul\w*)\s+(my|our|her|his|their)\s+(gender(\s+identity)?|pregnancy)\b",
+            r"\b(sex|gender)[\s-]*(based\s+)?(harassment|discrimination|bias)\b",
+            r"\bsexis[tm]\b",
+        ]
+
         # C1 B9: sexual misconduct described without "assault"/"harassment"/"consent".
         # Health wording ("sexual health", "unprotected sex", "sexual orientation") stays out:
         # every pattern needs an unwanted, forced or explicit element.
         SEXUAL_MISCONDUCT = [
             r"\bunwanted\s+(sexual\w*|sex|touch(es|ed|ing)?|kiss(es|ed|ing)?|advances?|groping|nudes?|"
             r"explicit\s+\w+|(dick|nude|explicit)\s+pics?)\b",
-            r"\bsexual(ly)?\s+(explicit|suggestive|inappropriate)\b",
-            r"\bsexual\s+(messages?|texts?|comments?|remarks?|jokes?|advances?|propositions?|favou?rs?|"
-            r"requests?|innuendos?|gestures?|photos?|pictures?|pics|images?|videos?|touching)\b",
+            unless_benign(r"\bsexual(ly)?\s+(explicit|suggestive|inappropriate)\b", BENIGN_SEXUAL_CONTEXT),
+            unless_benign(r"\bsexual\s+(messages?|texts?|comments?|remarks?|jokes?|advances?|propositions?|favou?rs?|"
+                          r"requests?|innuendos?|gestures?|photos?|pictures?|pics|images?|videos?|touching)\b",
+                          BENIGN_SEXUAL_CONTEXT),
             r"\b(inappropriate(ly)?|sexually)\s+touch(es|ed|ing)?\b",
             r"\btouch(es|ed|ing)?\s+(me|my\s+[\w-]+)\s+(sexually|inappropriately|without\s+(my\s+)?(consent|permission))\b",
             r"\b(kiss(es|ed|ing)?|touch(es|ed|ing)?|grabb?(s|ed|ing)?|fondl(e|es|ed|ing))\s+(me|my\s+[\w-]+)\s+"
             r"(\w+\s+){0,6}?(after|when|even\s+(though|after|when)|although|though)\s+i\s+"
             r"(said|told\s+(him|her|them))\s+(no|stop|not\s+to)\b",
-            r"\b(grabb?(s|ed|ing)?|touch(es|ed|ing)?|fondl(e|es|ed|ing)|rubb?(s|ed|ing)?)\s+(my|her|his)\s+"
-            r"(butt|ass|breasts?|boobs?|chest|crotch|genitals?|groin|privates?|private\s+parts|inner\s+thighs?)\b",
+            # Only an explicit consent clause (not "clinician" or "exam" alone) can exempt this.
+            unless_benign(r"\b(grabb?(s|ed|ing)?|touch(es|ed|ing)?|fondl(e|es|ed|ing)|rubb?(s|ed|ing)?)\s+(my|her|his)\s+"
+                          r"(butt|ass|breasts?|boobs?|chest|crotch|genitals?|groin|privates?|private\s+parts|inner\s+thighs?)\b",
+                          CONSENT_CONTEXT),
             r"\bfondl(e|es|ed|ing)\b",
             # Coerced or forced sex ("forced me into sex", "pressured me to have sex").
             r"\b(forc(e|es|ed|ing)|pressur(e|es|ed|ing)|coerc(e|es|ed|ing)|blackmail(s|ed|ing)?|"
@@ -307,7 +422,7 @@ class Rules:
             # Image-based abuse.
             r"\b(sent|send(s|ing)?|shar(e|es|ed|ing)|leak(s|ed|ing)?|post(s|ed|ing)?|spread(s|ing)?)\s+"
             r"(me\s+)?(my\s+|his\s+|her\s+|their\s+)?nudes\b",
-            r"\b(intimate|explicit|nude)\s+(photos?|pictures?|pics|images?|videos?)\b",
+            unless_benign(r"\b(intimate|explicit|nude)\s+(photos?|pictures?|pics|images?|videos?)\b", BENIGN_SEXUAL_CONTEXT),
         ]
 
         # Self-directed distress ("I hate myself / my life / my body") is not a conduct
@@ -321,6 +436,8 @@ class Rules:
             r"\bslurs\b", r"\bthreatened\b", r"\bbull(ied|ies)\b", r"\bintimidated\b",
             r"\bthreat(s|en|ening)?\b", r"\bbully(ing)?\b", r"\bintimidat(e|ion|ing)?\b",
             r"\bdoxx(ing)?\b", r"\bbias\s+incident\b", r"\btargeted\s+harassment\b", r"\bdiscrimination\b",
+            # PR #12 review: harassment with no sexual or sex-based signal (Title IX checks first).
+            r"\bharass(es|ed|ment|ing|er|ers)?\b",
         ]
 
         # C1 B9: hostility aimed at a protected characteristic, without "bully"/"slur"/"threat"
@@ -360,28 +477,46 @@ class Rules:
         # appointments"), not a bias report. Conduct now needs hate aimed at people or a named
         # form of hate. Self-directed hate ("hate myself/my life/my body") stays counseling.
         HATE = r"\bhat(e|es|ed|ing)"
+        GROUPS = (r"(muslims|jews|christians|hindus|sikhs|atheists|immigrants|foreigners|gays|lesbians|asians|blacks|"
+                  r"latinos|latinas|hispanics|arabs|mexicans|indians|africans|refugees)")
+        HATE_FORMS = r"(speech|groups?|messages?|mail|notes?|letters?|comments?|posts?|attacks?|signs?|words|threats?)"
+        # PR #12 review (H01-H03): any inflection of a reporting verb, with or without a
+        # recipient ("sent me hate messages", "keeps sending hate messages", "is posting hate
+        # speech"). After "I hate" these words stay a verb and its object.
+        REPORT_VERB = (r"(send(s|ing)?|sent|writ(e|es|ing|ten)|wrote|post(s|ed|ing)?|leav(e|es|ing)|left|"
+                       r"spread(s|ing)?|receiv(e|es|ed|ing)|get(s|ting)?|got(ten)?|find(s|ing)?|found|"
+                       r"shout(s|ed|ing)?|yell(s|ed|ing)?|scrawl(s|ed|ing)?|paint(s|ed|ing)?|spray[\s-]*paint(s|ed|ing)?)")
+        # Course or activity nouns: "I hate my religion homework" is not a report.
+        NOT_COURSE = (r"(?!\s+(homework|class(es)?|courses?|assignments?|exams?|tests?|quiz(zes)?|papers?|essays?|"
+                      r"projects?|requirements?|lectures?|seminars?|readings?|major|minor|credits?|teachers?|professors?|"
+                      r"instructors?|textbooks?|notes|department|studies|program|club|presentations?|labs?|section|"
+                      r"final|midterm)\b)")
+        HATE_TARGET = (r"(me|us|him|her|them|people|everyone|(my|our|his|her|their)\s+([\w-]+\s+)?" + PROTECTED
+                       + NOT_COURSE + r"|" + IDENTITY + r"\s+(people|students|folks|classmates)|" + GROUPS + r")\b")
         HATE_BIAS = [
             r"\bhate[\s-]*(crimes?|incidents?|symbols?|graffiti|propaganda|flyers?|literature|campaigns?|rhetoric|"
             r"violence|vandalism)\b",
-            # "hate speech/group/messages" only after a determiner or verb, because after "I"
-            # these are a verb and its object ("I hate group projects", "I hate speech class").
-            r"\b(a|an|the|some|any|more|of|with|left|leaves|sent|sends|wrote|writes|posted|posts|received|"
-            r"receive|got|get|getting|found|spread(s|ing)?|is|are|was|were|been|there's)\s+hate[\s-]*"
-            r"(speech|groups?|messages?|mail|notes?|letters?|comments?|posts?|attacks?|signs?|words|threats?)\b",
+            r"\b(" + REPORT_VERB + r"(\s+(me|us|him|her|them|(my|our)\s+\w+))?|a|an|the|some|any|more|of|with|is|are|"
+            r"was|were|been|there's|full\s+of|filled\s+with)\s+hate[\s-]*" + HATE_FORMS + r"\b",
+            # Directed hate content: "hate speech about me", "hate comments against Muslims".
+            r"\bhate[\s-]*" + HATE_FORMS + r"\s+(to|about|against|toward(s)?|at|targeting|aimed\s+at|directed\s+at)\s+"
+            + HATE_TARGET,
             r"\bhateful\b",
-            HATE + r"\s+(on\s+)?(me|us|you|him|her|them|people|everyone|anyone|anybody|someone|somebody)\b",
-            HATE + r"\s+(on\s+)?(my|our)\s+(kind|people|race|religion|culture|community|ethnicity|identity|faith)\b",
+            HATE + r"\s+(on\s+)?(me|us|you|him|her|them)\b",
+            # "people/everyone" only with an identity link; "I hate people interrupting me" is a dislike.
+            HATE + r"\s+(people|everyone|anyone|folks)\s+(like\s+(me|us|him|her|them)|of\s+(my|our|his|her|their)\s+"
+            r"([\w-]+\s+)?" + PROTECTED + r"|from\s+(my|our|his|her|their)\s+(country|culture|community))\b",
+            HATE + r"\s+(on\s+)?(my|our|his|her|their)\s+(kind|people|community|identity|([\w-]+\s+)?" + PROTECTED + r")\b"
+            + NOT_COURSE,
             HATE + r"\s+(all\s+)?(those\s+|these\s+|the\s+)?" + IDENTITY
             + r"\s+(people|students|folks|kids|classmates|women|men|girls|guys)\b",
-            HATE + r"\s+(all\s+)?(those\s+|these\s+|the\s+)?(muslims|jews|christians|hindus|sikhs|atheists|immigrants|"
-            r"foreigners|gays|lesbians|asians|blacks|latinos|latinas|hispanics|arabs|mexicans|indians|africans|"
-            r"refugees)\b",
+            HATE + r"\s+(all\s+)?(those\s+|these\s+|the\s+)?" + GROUPS + r"\b",
         ]
 
-        # C1 B9: threats or attacks against the student ("promising to beat me up", "said
-        # they'll kill me", "punched me"). Threat wording already routes to conduct; these
-        # cover threats and attacks that never say "threat". Idioms with no reported threat
-        # ("this exam is going to kill me") do not match. "hit me up" is excluded.
+        # C1 B9: threats or attacks against the student ("promising to beat me up", "punched
+        # me"). Threat wording already routes to conduct; these cover threats and attacks that
+        # never say "threat". Threats to kill, shoot, stab or strangle match SEVERE_THREAT
+        # (urgent) first. Idioms ("this exam is going to kill me") and "hit me up" do not match.
         VIOLENCE_AT_ME = (r"((beat|attack|jump|punch|stab|shoot|kill|hurt|harm|strangle|choke)\s+(me|us)\b|"
                           r"hit\s+(me|us)\b(?!\s+up\b))")
         THREAT_OR_ATTACK = [
@@ -425,8 +560,9 @@ class Rules:
             "urgent_safety": Rule("urgent_safety", "crisis",
                                   [re.compile("|".join(SLANG_URGENCY + PHRASES_URGENCY + SUICIDAL_IDEATION
                                                        + SELF_HARM + HARM_TO_OTHERS + THIRD_PARTY_RISK
-                                                       + INGESTION), re.I)], 1),
-            "title_ix": Rule("title_ix", "title_ix", [re.compile("|".join(TITLE_IX + SEXUAL_MISCONDUCT), re.I)], 2),
+                                                       + INGESTION + SEVERE_THREAT), re.I)], 1),
+            "title_ix": Rule("title_ix", "title_ix",
+                             [re.compile("|".join(TITLE_IX + SEX_BASED + SEXUAL_MISCONDUCT), re.I)], 2),
             "harassment_hate": Rule("harassment_hate", "conduct",
                                     [re.compile("|".join(CONDUCT + BIAS_HOSTILITY + THREAT_OR_ATTACK + HATE_BIAS),
                                                 re.I)], 3),
