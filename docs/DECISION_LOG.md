@@ -110,3 +110,11 @@ ownership remains to be coordinated with his foundational documentation.
   allocation. The [C2-v0.1 candidate](audits/devika-c2-v0.1-candidate.md) is a review
   proposal, not a unilateral contract revision. Joint exact-version approval and
   formal C1 acceptance are required before Wave 1 code or dependency changes.
+- **C1-D31:** Independently reviewed PR #12 at `06ccbe3`; reproduced all reported
+  main safety/B9 measurements and generated-test differential. Engineering review
+  explicitly approves the three proposed policy directions with required revisions,
+  but does not submit human/GitHub approval or declare a jointly amended contract.
+  Extra probes found introduced O10 hate-report misses and new sexual/medicine
+  false positives; keep the PR draft for router-owner changes. B9-N04 merits a
+  small Devika-owned decline informational-request repair before C1 acceptance.
+  [Detailed findings, official campus sources and coordination plan](audits/devika-pr12-review-2026-10-11.md).

@@ -2,6 +2,48 @@
 
 Last updated: 2026-10-11 (America/New_York). Operator: Devika Rani Sanaboyina.
 
+## Independent PR #12 review — latest status
+
+- Reviewed exact draft PR #12 head `06ccbe386e240150271389220cfc2f4f71bddef0` in a
+  detached temporary checkout. GitHub CI run 38197474723 passed all eight jobs.
+  Independent macOS/Python 3.12.12: **1964 passed**, no skips (1.92 seconds), lint,
+  12 routes, smoke, readiness **15/15**, regression **99/99**, **0/28 FP**,
+  **133/133** router agreement. Disclosed B9 reproduced **17/18** expected,
+  **18/18** any safety template, **0/6 FP**, **21/24** router agreement (exit 1,
+  B9-H05). Partner after-rows match exactly. Frozen initial evidence is unchanged.
+- Independently verified 1340 new tests collected; 1242 unique generated family
+  messages; 34 benign neighbours, 11 obfuscations, six end-to-end multi-intent
+  checks. Against unchanged main, **1283 failed, 57 passed**, as reported. All 97
+  original regression objects/labels and old test source assertions are preserved.
+- **Changes required before merge.** Extra synthetic probes demonstrate three
+  introduced hate-report safety regressions in O10 (`sent me hate messages`,
+  `sending hate messages`, `posting hate speech`), four new medical/consensual
+  information Title IX false positives and two new medicine-transport crisis
+  false positives. Full fixture and before/after results are recorded separately;
+  they are review probes, not frozen B9 or representative held-out safety metrics.
+- Explicit engineering policy review: approve generic harassment → conduct with
+  sex-based/stalking/relationship-violence preservation; approve O10 narrowing
+  direction but require recall/control repairs; approve urgent guidance for
+  explicit severe violence threats (including third-party victims). PR #12 still
+  needs generic-harassment and urgent-threat changes. No formal human/GitHub
+  approval or amended shared contract approval is inferred.
+- Verified official UMBC ECR, conduct and police guidance. ECR also accepts
+  nonsexual hate/discrimination reports; general conduct routing must not imply
+  ECR exclusion. Emergency contacts match existing police/911 guidance.
+- **B9-N04:** recommend a small Devika-owned active-information-request repair
+  before C1 closes. Five billing/payment/charges request variants incorrectly
+  return decline=true; explicit alternatives control stays true. Scoped matcher
+  and cross-test plan is recorded; runtime code was not changed during assessment.
+- Review packet: [PR #12 review](../audits/devika-pr12-review-2026-10-11.md),
+  [independent validation](../audits/devika-pr12-independent-validation-2026-10-11.json),
+  [extra probe results](../audits/devika-pr12-review-probe-results-2026-10-11.json).
+- Review-document validation: **32 repository guards passed** (0.32 seconds),
+  JSON/local links/whitespace passed, and all three frozen B9 artifacts match the
+  prior evidence commit byte for byte. No runtime or existing test was changed.
+- Exact next step: send review to Abhinav on PR #12, coordinate exact-version
+  policy/test revisions and Devika's small decline repair; rerun revised head and
+  actual final main after reviewed merges. Do not merge #12 or relabel frozen B9.
+
 ## Verified GitHub CLI publication — latest status
 
 - Explicit operator instruction authorizes authenticated `gh` writes when the
