@@ -2,6 +2,88 @@
 
 Last updated: 2026-10-11 (America/New_York). Operator: Devika Rani Sanaboyina.
 
+## C1 final-main acceptance evaluation — current status
+
+- Branch: `feature/devika-c1-acceptance`, from actual tested main
+  `835a6f07e4ee28532169065b225be334aeffbca9`. C1 is **not accepted**; Wave 1
+  implementation has not begun. All later entries are historical snapshots.
+- GitHub verified PRs #4/#5/#8/#9 merged with mutual human approvals. Final-main
+  CI [38185553143](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/actions/runs/38185553143)
+  passed all eight jobs. No open PR or final C1 acceptance PR was returned.
+- Actual final-main macOS arm64/Python 3.12.12 offline run: **552 passed**, no
+  skips (1.04 seconds); readiness **15/15**; regression **75/75** protected,
+  **0/16** benign false positives, **97/97** exact router agreement. Global/scoped
+  Ruff, scoped formatting (8 files), 12 routing checks, smoke and KB audit passed.
+  Existing minimal venv reused; Ruff 0.9.10 locally versus 0.16.10 remotely.
+  No full runtime dependency install, live provider or deployment run claimed.
+- After documentation additions, repository guards passed **32/32** (0.30 seconds);
+  evidence JSON, local links, frozen fixture hash and diff whitespace verified.
+- **B9 failed:** 24 new synthetic cases frozen before first execution; no normalized
+  exact regression duplicates. Expected safety-template hits **10/18** (crisis
+  4/6, Title IX 3/6, conduct 3/6), any safety template **11/18**, benign false
+  positives **1/6**, exact router agreement **13/24**. Seven positives reached
+  ordinary retrieval; one returned an unexpected protected lane. Initial fixture,
+  hashes, raw results and post-initial classifications are preserved separately.
+  B9-H05 expectation needs joint policy adjudication; do not silently relabel it.
+- Authorized notification to Abhinav via PR #9 comment returned **403: Resource
+  not accessible by integration**. **Not sent.** Human-ready handoff is saved in
+  `docs/audits/devika-c1-b9-partner-notification-2026-10-11.md`. No access workaround.
+- Deferral review explicitly recommends conditional acceptance of O4/O5/O7/O8/O9,
+  KB freshness and comprehensive Phase 5 evaluation; rejects O10 deferral through
+  Phase 5 after its independent reproduction. Exact conditions and rationale are
+  in the review packet. Devika's explicit adoption is pending; no approval or
+  residual-risk acceptance recorded for either human.
+- B7 protection read remains 403; rulesets empty. Admin evidence still needed.
+  Abhinav's final-main WSL/Windows validation and final acceptance PR are not
+  verified. Neither green CI nor merged repairs establishes C1 acceptance.
+- New request's continuous ownership/three waves are reflected in a **proposal**
+  for C2-v0.1. Main's shared plan/launchers still contain five checkpoints and
+  per-phase allocation. Exact revised documents and C2 APIs/SQLite/auth/tool/
+  provenance/frontend tooling need joint approval before dependent implementation.
+- Application/router/dispatcher, tests, KB, dependencies, CI, approved contracts
+  and partner-owned docs were preserved. Pre-existing local progress note and
+  untracked `docs/reviews/` artifacts remain recoverable; review artifacts excluded
+  from publication. No paid services, real student data or partner-branch edits.
+- Evidence/review packet:
+  [C1 acceptance review](../audits/devika-c1-acceptance-review-2026-10-11.md),
+  [raw validation](../audits/devika-c1-final-main-validation-2026-10-11.json),
+  [C2 candidate](../audits/devika-c2-v0.1-candidate.md).
+- Exact next step: human posts B9 handoff; Abhinav repairs his router slice;
+  jointly resolve B9-H05 and O10, merge reviewed fixes and rerun integrated main.
+  Obtain explicit deferral decisions, B7 evidence and both platform validations;
+  review Abhinav's acceptance PR. Only then jointly approve C2-v0.1 and begin
+  dependency cleanup plus typed frontend/session/feedback implementation.
+- This status is written before the local evidence commit. Read actual branch
+  history for its commit ID; no publication or passing PR CI is implied here.
+
+## PR #9 authorized integration publication — current status
+
+- Finalized and normally pushed merge commit
+  `a63ff43c783c40b823992af8585367ccf6bae237` on the existing
+  `feature/devika-c1-phase1-repairs` branch. Parents: `3edc240` and merged main
+  `20e62a9`. GitHub confirms Devikz as author and committer, with Devika's verified
+  human identity and no AI trailers. No force push or merge into main.
+- Immediately before committing, verified the exact 15-file scope: 13 inherited
+  files match main; reviewed repairs preserved; only the approved progress/evidence
+  additions; review artifacts preserved/excluded; no conflicts, unrelated files,
+  sensitive-data findings, credential-pattern findings or whitespace errors.
+- Latest-head [CI run 38185203202](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/actions/runs/38185203202)
+  **passed all eight jobs**: Ruff, safety, Ubuntu Python 3.11/3.12/3.13/3.14,
+  macOS Python 3.13 and Windows Python 3.13. Earlier combined-tree local validation
+  remains 552 passed, no skips; readiness 15/15; safety 75/75, 0/16, 97/97.
+- [PR #9](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/9)
+  remains **open and draft**, with AbhinavVarma02 already requested. GitHub denied
+  connector attempts to update the description, mark Ready and renew the request:
+  `403/FORBIDDEN: Resource not accessible by integration`. No bypass attempted.
+- **Next human action:** Devika marks PR #9 Ready on GitHub and confirms/renews
+  Abhinav's final review request. Updated PR description and exact evidence are
+  saved in local `docs/reviews/devika-pr9-final-handoff-2026-10-11.md` and
+  `docs/reviews/devika-pr9-publication-2026-10-11.json`; excluded from commits.
+  This publication-status addition remains local/uncommitted to preserve the
+  exact CI-validated head. No additional commit or push was made for this note.
+- Final-main validation by both humans, B9 and formal C1 acceptance remain open.
+  No proposed deferral accepted; no C2 work; follow-up automation remains paused.
+
 ## PR #9 integration after PR #8 — latest status
 
 - PR #8 is merged by Abhinav, after Devikz's approving review, as
