@@ -305,6 +305,135 @@ Do not force-push or bypass branch protection.
 
 If required interfaces have not been agreed, request the specific agreement before proceeding.
 
+### Authenticated GitHub CLI publication workflow
+
+Devika explicitly authorizes this workflow for future tasks within her agreed
+ownership and approved contracts. Use authenticated `gh` for GitHub writes when
+the connected integration lacks permission. Do not repeat a known integration
+403 for the same operation or silently hand publication back to Devika.
+This authorization covers ordinary commits/pushes, draft PR creation, requesting
+Abhinav's review and task-authorized progress comments. It never grants permission
+to approve PRs, merge, force-push, change branch protection or broaden task scope.
+
+Verified on macOS, 2026-10-11: GitHub CLI 2.102.0; active account `Devikz`
+(ID 165278681), Keychain-backed OAuth login, HTTPS Git transport and repository
+push access. Current OAuth scopes include `repo`, `read:org`, `workflow`, `gist`.
+The account has repository admin access, but routine publication must use ordinary
+PR operations and preserve human review/merge gates. Recheck current access every
+session; this record is not a guarantee against future credential expiry or
+permission changes. Never read, print, copy or commit token values.
+
+**Preflight and permission handling**
+
+1. Preserve local work; verify repository, Devika's branch, approved scope and
+   tests. Repository-local Git name must be `Devika Rani Sanaboyina`; verify her
+   configured email against the authenticated human identity/history. Do not
+   replace it with a bot, the global Git identity or Abhinav's identity.
+2. Use the commands below to inspect authentication/access. `gh auth status`
+   masks its token; never use `gh auth token`, `--show-token`, raw credential-file
+   output, shell tracing or verbose HTTP debugging. Inspect only necessary
+   permission fields in Codex configuration, not whole files or environment dumps.
+3. Codex execution permissions are separate from GitHub authentication. In the
+   verified session, workspace writes were allowed, `.git` was protected,
+   command networking/Keychain access required the standard approved escalation
+   path, and Auto-review reviewed those requests. A sandboxed auth check reported
+   an invalid token, while the approved check and `gh api user` succeeded. If this
+   recurs, request normal execution permission and retest before concluding the
+   stored login is invalid. Do not log out, reset credentials or disable sandboxing.
+4. User configuration marked this repository trusted and did not explicitly set
+   sandbox/approval/network overrides. The effective session policy controls
+   execution. Preserve it; do not set full access, disable approvals, extract a
+   Keychain secret or route around an approval denial. If the approved auth/API
+   check still fails, report the exact blocker. Genuine reauthentication uses
+   `gh auth login --hostname github.com --web` with human interaction; do not
+   fabricate credentials or report authentication success before verifying it.
+
+```sh
+rih_repo=RIH-Care-Insight-Assistant/RIH-Assistant
+rih_branch=$(git branch --show-current)
+gh --version
+gh auth status --hostname github.com
+gh api user --jq '{login, id}'
+gh repo view "$rih_repo" --json nameWithOwner,viewerPermission,defaultBranchRef
+git status --short --branch
+git fetch origin
+git config user.name
+git config user.email
+```
+
+Use the execution tool's approved network/Git permission mechanism when required.
+Saved human authorization does not override sandbox or managed-policy restrictions.
+See [official OpenAI permission documentation](https://learn.chatgpt.com/docs/agent-approvals-security)
+for the separate sandbox/approval boundaries and protected Git paths.
+
+**Commit, deduplicate and create the draft**
+
+Validate the assigned changes; review the exact diff, identity, sensitive-data
+checks and staged manifest. Commit only intended files, then inspect all outgoing
+commit authors, committers and trailers before each normal feature-branch push:
+
+```sh
+git log origin/main..HEAD --format='%an <%ae> | %cn <%ce>%n%(trailers)'
+git push -u origin "$rih_branch"
+gh pr list --repo "$rih_repo" --head "$rih_branch" --state all \
+  --json number,url,state,isDraft,headRefName,headRefOid,author,title
+```
+
+Require a successful lookup; an API failure is not an empty result. If an open PR
+exists for this repository/base/head, reuse it. If a closed/merged PR exists, inspect
+it and the current task before creating anything; do not automatically duplicate
+it. If no PR exists, create exactly one using an accurate, reviewed UTF-8 body file
+outside tracked source. Explicit repo/base/head flags prevent implicit forks or
+pushes. Replace the placeholders below with the actual title and body-file path:
+
+```sh
+gh pr create --repo "$rih_repo" --base main --head "$rih_branch" \
+  --draft --title 'Actual task title' --body-file '<prepared-body-file>' \
+  --reviewer AbhinavVarma02 --no-maintainer-edit
+```
+
+If creation fails or times out, repeat the lookup before any retry: the PR might
+have been created even if a later step failed. Verify its URL, author, base/head,
+draft state and reviewer request. Attach a created PR to the current Codex chat.
+If the PR exists but the reviewer request is missing, add it separately with
+`gh pr edit <number> --repo "$rih_repo" --add-reviewer AbhinavVarma02`.
+Do not repeatedly re-request an already pending review.
+
+**CI, authorized comments and ready transition**
+
+```sh
+gh pr view <number> --repo "$rih_repo" \
+  --json url,author,baseRefName,headRefName,headRefOid,isDraft,reviewRequests,statusCheckRollup
+gh pr checks <number> --repo "$rih_repo"
+gh run view <run-id> --repo "$rih_repo" --json headSha,status,conclusion,jobs,url
+```
+
+Check the actual final PR head and all expected jobs. `gh pr checks` exit 8 means
+pending; no checks is not passing CI. Do not use only `--required`: the current
+repository may have an empty required-check list. If checks fail, inspect the
+specific failure with `gh run view <run-id> --log-failed`, minimize/redact output,
+report the cause and fix only the authorized slice. Use bounded waits and provide
+progress updates while CI runs. After another push, inspect the new head's CI.
+
+Only post comments authorized by the task or prior explicit human instructions.
+Prepare exact text in a body file, check existing comments for the same update,
+then use `gh pr comment <number> --repo "$rih_repo" --body-file '<comment-file>'`.
+Verify and record its returned URL. Do not claim notification merely because a
+local draft exists. Keep raw credentials, real student data and raw sensitive logs
+out of bodies and artifacts.
+
+Run `gh pr ready <number> --repo "$rih_repo"` only when relevant validation is
+complete, the PR has no unresolved readiness gate, and Devika has authorized that
+ready/publication transition. An instruction to create a draft does not authorize
+marking it ready. Verify `isDraft=false` afterward. Do not use `gh pr review
+--approve`, `gh pr merge`, auto-merge or administrative bypasses. Human approval
+and merging remain mandatory separate actions.
+
+Record PR/comment URLs, exact head, CI results and remaining blockers in Devika's
+progress file. Report real CLI/auth/policy failures explicitly; never switch to
+manual work silently. This standing workflow does not waive C1 acceptance, B9
+repairs, joint contract approvals or the $0/synthetic-data constraints.
+
 ## 5. WORKING WITH CODEX AND CLAUDE
 
 Both tools must read the same master documentation and progress state.

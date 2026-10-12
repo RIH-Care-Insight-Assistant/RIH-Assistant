@@ -33,11 +33,15 @@ _ALTERNATIVE = re.compile(
     re.I,
 )
 _ACTIVE_REQUEST = re.compile(
-    r"^(?:(?:please\s+)?(?:i(?:\s+(?:(?:do\s+)?(?:want|need)|would like)|'d like)\b|"
+    r"^(?:(?:please\s+)?(?:i(?:\s+(?:(?:(?:do|only)\s+)?(?:want|need)|would like)|'d like)\b|"
     r"(?:can|could|may)\s+(?:i|you)\b|(?:what|when|where|how)\b)"
     r".*\b(?:counseling|counselling|therapy|medical|doctor|appointments?|"
-    r"sessions?|rih|help|support|insurance)\b|"
-    r"(?:the\s+)?(?:rih\s+)?(?:hours|location|fees|insurance coverage)\b)",
+    r"sessions?|rih|help|support|insurance|billing|payments?|charges?|fees?)\b|"
+    r"(?:the\s+)?(?:rih\s+)?(?:hours|location|fees|insurance coverage)\b|"
+    # After a clause break such as "just": require an informational object,
+    # not a billing complaint that happens to accompany a genuine refusal.
+    r"(?:the\s+)?(?:billing(?:\s+office)?|payments?|charges?|fees?)\s+"
+    r"(?:website|contact(?:\s+page)?|page|information|details)\s*$)",
     re.I,
 )
 
