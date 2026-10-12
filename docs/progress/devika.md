@@ -2,6 +2,44 @@
 
 Last updated: 2026-10-11 (America/New_York). Operator: Devika Rani Sanaboyina.
 
+## B9-N04 decline repair — latest status
+
+- User authorized only this small decline repair, targeted tests, macOS validation,
+  a separate PR for Abhinav and a subsequent independent revised-PR #12 review.
+  Operator identity and authenticated `gh` access verified; untracked
+  `docs/reviews/` preserved and excluded. No previous C1 implementation repeated.
+- PR #11 merged as `f464f41`; main CI run 38199938739 passed all eight jobs.
+  New branch `feature/devika-c1-b9-n04-decline` starts from that main.
+- Active billing/payment/charges/fees requests, “I only need/want” and bounded
+  “just the billing website” noun phrases now survive service refusal. Explicit
+  alternatives, standalone refusal, custom regex and protected guidance preserved.
+- New targeted tests: before repair **13 failed, 18 passed**; after repair
+  **31 passed**. macOS arm64/Python 3.12.12 full suite **583 passed**, no skips
+  (baseline 552); lint/scoped lint/new-file format passed; 12 route checks, smoke
+  and safety regression **75/75**, **0/16 FP**, **97/97** exact router passed.
+- Frozen B9 fixture, initial results and classifications are byte-identical to
+  base. Runtime changes only in `app/tools/decline_detector.py`; no old tests,
+  dispatcher, router, planner or shared contracts changed. C2 not started.
+- Actual N04 now reaches billing retrieval without alternatives. The preexisting
+  appointment clarification remains; counseling/therapy variants retain their
+  downstream routing limitation. No broader conversation repair is claimed.
+- [Repair evidence and exact scope](../audits/devika-c1-b9-n04-decline-repair.md).
+  Repair commit `df5144b4c53128a60dea83fcc37f8e49e32365e5` pushed normally.
+  [Draft PR #13](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/13)
+  created through authenticated `gh`; AbhinavVarma02 review requested and verified.
+  CI run **38200199693 passed all eight jobs** on that implementation head. This
+  documentation follow-up gets a new final-head CI run; check its actual result.
+- **PR #12 re-review waiting for a published revision:** repeated authenticated
+  checks after opening #13 still show `06ccbe386e240150271389220cfc2f4f71bddef0`
+  and the same original four commits; fetched branch is identical to the prior
+  reviewed commit. No revised code or new safety evidence is available. The
+  prior changes-required review remains applicable; no fresh approval or rerun is
+  claimed. Asked the operator for an alternate revision location if one exists.
+- Exact next step: Abhinav reviews/cross-tests #13; after Claude pushes a revised
+  #12, fetch its exact head, compare it with `06ccbe3`, independently reproduce
+  safety/false-positive/B9 evidence and review the earlier findings. Keep the
+  original B9 labels/results and human policy/review gates. Do not merge or start C2.
+
 ## Independent PR #12 review — latest status
 
 - Reviewed exact draft PR #12 head `06ccbe386e240150271389220cfc2f4f71bddef0` in a
