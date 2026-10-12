@@ -135,6 +135,14 @@ do not claim production safety, approve C2 contracts or start C2 work.
   report. Then independently review that exact updated head and its CI/settings
   once all acceptance requirements are met. No automatic approval/merge, new
   implementation, new adversarial evaluation or C2 work.
+- Publication: record commit `a6d0590fb87ae2dfdabb5cb0f2491ce96f85e151` was
+  pushed normally with verified Devika authorship. [Draft PR #14](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/14)
+  is open, base main, AbhinavVarma02 review requested and verified. Initial CI run
+  38272941243 started all eight jobs; this publication-note push needs its own
+  final-head CI result and is not represented as passed here.
+- [Acceptance handoff posted to Abhinav on PR #10](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/10#issuecomment-6127701653),
+  linking the actual validation/adopted decisions and unmet B7 prerequisites.
+  Final PR #10 review remains pending the agreed gates; no Abhinav-owned edits.
 
 ## Independent PR #12 review — latest status
 
