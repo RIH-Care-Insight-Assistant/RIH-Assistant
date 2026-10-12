@@ -5,7 +5,7 @@ Maintained only by Abhinav (or his coding agent) on his own feature branches. Re
 ## Current
 
 - **Checkpoint:** C1 (Phases 0–1), close-out. **C1 is not accepted yet**; see `docs/PROJECT_STATE.md` → C1 acceptance.
-- **Branch:** `feature/abhinav-c1-acceptance` → draft PR #10, with `main` @ `bbc07de` merged in. Docs only: `docs/PROJECT_STATE.md`, `docs/RELEASE_GATES.md` and this file.
+- **Branch:** `feature/abhinav-c1-acceptance` → draft PR #10, with `main` @ `8be85c6` merged in. Docs only: `docs/PROJECT_STATE.md`, `docs/RELEASE_GATES.md` and this file.
 - **All C1 PRs merged (verified on GitHub 2026-10-12):**
 
   | PR | Author | Head → merge | Approved by |
@@ -17,19 +17,18 @@ Maintained only by Abhinav (or his coding agent) on his own feature branches. Re
   | #11 | Devika | `e41e665` → `f464f41` | me |
   | #13 | Devika | `89e8df0` → `9e8c16a` | me |
   | #12 | me | `d79f841` → `bbc07de` | Devika |
+  | #14 | Devika | `846496e` → `8be85c6` | me |
 
-  The final heads of #8, #9, #11, #12 and #13 passed 8/8. CI on `main` after the 2026-10-12 merges (runs 38199938739, 38200937185, 38203527831) passed 8/8 each.
-- **Final `main` `bbc07de`, my half of B8: done.** WSL2 4628 passed, Ruff clean; Windows 4627 passed, 1 skipped.
-  - Both platforms: safety eval v1.7.0 122/122 with 0/44 false positives; readiness 15/15.
-  - Frozen B9 fixture, original labels: 18/18 with 0/6 false positives.
-  - Devika's 42 review probes: 42/42.
+  The final heads of #8, #9, #11, #12, #13 and #14 passed 8/8. CI on `main` after the 2026-10-12 merges (runs 38199938739, 38200937185, 38203527831, 38275707707) passed 8/8 each.
+- **B8: done.**
+  - Both of us validated `bbc07de`, the last code change.
+    - Devika on macOS (PR #14): 4628 passed; v1.7.0 122/122, 0/44 FP; B9 18/18, 0/6 FP.
+    - Me: WSL2 4628 passed and Windows 4627 passed + 1 skip, with the same safety, readiness and B9 results.
+  - `8be85c6` adds only Devika's documentation; I reran it on WSL2 and Windows with identical results.
 - **B9:** failed at first (10/18, her held-out record; preserved). Repaired in my PR #12 to 18/18 with 0/6 on the original labels. No B9 label changed.
 - **Routing policies approved by both** (her PR #12 review; my comment of 2026-10-12): non-sexual harassment → conduct; O10 narrowing with hate-report recall; explicit severe threats → urgent guidance.
-- **Still open for C1:**
-  - B7 is not applied. Re-read 2026-10-12: no required checks, admins not enforced, secret scanning off.
-  - Devika's run of `bbc07de` (B8).
-  - Devika's explicit decisions on seven deferrals. O10 was repaired, not deferred.
-  - PR #10 stays a draft until those are recorded.
+- **Deferrals:** all seven agreed by both with conditions. I approved them on 2026-10-11; Devika accepted them on 2026-10-12 (C1-D32, PR #14). O10 was repaired, not deferred.
+- **Still open for C1: only B7.** Branch protection is not applied; re-read 2026-10-12 after PR #14 merged. PR #10 stays a draft until a repository admin applies it and the protection API confirms it.
 
 ## Completed in C1
 
@@ -95,29 +94,27 @@ Maintained only by Abhinav (or his coding agent) on his own feature branches. Re
 | GitHub Actions runs 38199938739 / 38200937185 / 38203527831, `main` @ `f464f41` / `9e8c16a` / `bbc07de` | full workflow | 8/8 each |
 | **WSL2 Ubuntu 26.04.1, Python 3.14.4, ruff 0.16.10, fresh clone of final `main` @ `bbc07de`** | Ruff global + `ruff-c1.toml` lint/format; `pytest -q`; safety test files; `check_routes.py`; `safety_eval.py --fail-on-miss` (v1.7.0); smoke; KB audit; readiness; B9 fixture | clean (9 files formatted); **4628 passed**; 4320 passed; passed; **122/122, FP 0/44, 172/172**; OK; exit 0; 15/15; **18/18, FP 0/6**, 22/24 |
 | **Windows 11 native 10.0.26200, Python 3.13.2, pytest 9.0.2, fresh clone of final `main` @ `bbc07de`** | same minus Ruff, plus Devika's 42 review probes | **4627 passed, 1 skipped** (symlink); 4320 passed; passed; 122/122, 0/44, 172/172; OK; exit 0; 15/15; 18/18, 0/6, 22/24; 42/42 |
+| GitHub Actions run 38275707707, `main` @ `8be85c6` (PR #14 merge) | full workflow | 8/8 |
+| WSL2 Ubuntu 26.04.1, Python 3.14.4, ruff 0.16.10, fresh clone of `main` @ `8be85c6` | same as for `bbc07de` | Ruff clean; 4628 passed; 4320 passed; routes passed; 122/122, FP 0/44, 172/172; OK; exit 0; 15/15; 18/18, FP 0/6, 22/24 |
+| Windows 11 native, Python 3.13.2, fresh clone of `main` @ `8be85c6` | same minus Ruff | 4627 passed, 1 skipped; routes passed; 122/122, 0/44, 172/172; OK; exit 0; 15/15; 18/18, 0/6, 22/24 |
 
 macOS has not been run locally; CI covers it, and Devika runs her Mac adversarial tests.
 
 ## Needs Devika / joint decision
 
-The authoritative C1 checklist is `docs/PROJECT_STATE.md`.
-
-Done:
-- C1-v0.2 and architecture §4 items 1–4 (#7).
-- B1–B4 (PR #9) and the decline repair (PR #13).
-- B9: failed, then repaired in PR #12, which she approved.
-- The three routing policies, approved by both.
-- Her reviews of PRs #10 and #12.
+Everything for C1 is recorded:
+- C1-v0.2 and the routing policies;
+- B1–B4, B8 and B9;
+- the seven deferrals (C1-D32);
+- reviews of every PR.
 
 Still open:
-1. **B8:** her run of final `main` `bbc07de` on macOS, recorded in her progress file.
-2. **Deferrals:** an explicit accept/reject for O4, O5, O7, O8, O9, KB and HELD-full. Her review recommends conditional acceptance of all seven (C1-D28), but adoption is not recorded. O10 was repaired, not deferred.
-3. **Review of PR #10.** Her approval of its final version records C1 acceptance.
-4. **After C1 acceptance:** the revised collaboration model and C2-v0.1 contracts; reconcile with her C2-v0.1 candidate.
+1. **Final approval of PR #10**, once B7 is applied and recorded. Her approval records C1 acceptance.
+2. **After C1 acceptance:** the revised collaboration model and C2-v0.1 contracts; reconcile with her C2-v0.1 candidate.
 
 ## Needs a GitHub admin (human)
 
-Abhinav applies these himself (B7); both humans are admins. As of 2026-10-12 after PR #12 merged, none of the recommended branch-protection changes are applied, and secret scanning and push protection are off. Dependabot alerts are on. The exact required check names and the full recommended settings are in `docs/PROJECT_STATE.md` → GitHub settings for `main`.
+Abhinav applies these himself (B7); both humans are admins. As of 2026-10-12 after PR #14 merged, none of the recommended branch-protection changes are applied, and secret scanning and push protection are off. Dependabot alerts are on. The exact required check names and the full recommended settings are in `docs/PROJECT_STATE.md` → GitHub settings for `main`.
 
 ## Resume
 
@@ -132,7 +129,6 @@ ruff check . && python -m pytest -q && python scripts/safety_eval.py --fail-on-m
 ```
 
 **Next safe step:**
-1. I apply the GitHub settings listed in `docs/PROJECT_STATE.md` (B7) and confirm them through the protection API.
-2. Devika records her `bbc07de` run (B8) and her seven deferral decisions.
-3. I update the completion report with those records, mark PR #10 ready and request Devika's approval. Her approval records C1 acceptance; then close #7.
-4. Only then: propose the revised collaboration model and C2-v0.1 contracts for joint approval. No C2 implementation before that.
+1. I apply the B7 settings listed in `docs/PROJECT_STATE.md` as repository admin, then confirm them through the protection API.
+2. I record the B7 evidence in PR #10, mark it ready and request Devika's final approval. Her approval records C1 acceptance; then close #7.
+3. Only then: propose the revised collaboration model and C2-v0.1 contracts for joint approval. No C2 implementation before that.
