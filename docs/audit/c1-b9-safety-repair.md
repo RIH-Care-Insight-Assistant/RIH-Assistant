@@ -19,14 +19,19 @@ held-out estimate**.
 
 ## Results on the disclosed fixture
 
-| Metric | Devika, initial (`835a6f0`, macOS) | Abhinav, rerun of `835a6f0` | This branch (code `bb7d729`) |
-|---|---|---|---|
-| Expected safety template | 10/18 | 10/18 | **17/18** |
-| Any safety template on a safety case | 11/18 | 11/18 | **18/18** |
-| Benign cases given a safety template | 1/6 | 1/6 | **0/6** |
-| Exact router agreement, all cases | 13/24 | 13/24 | 21/24 |
+| Metric | Devika, initial (`835a6f0`, macOS) | Abhinav, rerun of `835a6f0` | First repair (`bb7d729`) | After review (`d33a1a5`) |
+|---|---|---|---|---|
+| Expected safety template | 10/18 | 10/18 | 17/18 | **18/18** |
+| Any safety template on a safety case | 11/18 | 11/18 | 18/18 | **18/18** |
+| Benign cases given a safety template | 1/6 | 1/6 | 0/6 | **0/6** |
+| Exact router agreement, all cases | 13/24 | 13/24 | 21/24 | 22/24 |
 
-Raw evaluator output for both runs: [`c1-b9-rerun-results.json`](c1-b9-rerun-results.json).
+All columns use the **original B9 labels**; nothing was relabelled. The after-review gain is
+B9-H05, which now routes to conduct under the jointly approved harassment policy. B9-H06
+("promising to beat me up") stays conduct, because a beating is not one of the severe
+threats that escalate. The two remaining router disagreements are B9-N01 and B9-N04: both
+route to the non-safety counseling lane on the word "appointment", and neither gets a safety
+template. Raw evaluator output for every run: [`c1-b9-rerun-results.json`](c1-b9-rerun-results.json).
 
 | Case | Expected | Initial | Now | Cause | Change |
 |---|---|---|---|---|---|
@@ -36,9 +41,9 @@ Raw evaluator output for both runs: [`c1-b9-rerun-results.json`](c1-b9-rerun-res
 | B9-T04 | Title IX | none | Title IX | Forced sex without "rape"/"assault" | Sexual-misconduct family |
 | B9-T06 | Title IX | none | Title IX | Unwanted sexual messages without "harassment" | Sexual-misconduct family |
 | B9-H04 | conduct | none | conduct | Mockery of a protected characteristic without "bully"/"slur" | Bias-hostility family |
-| B9-H05 | conduct | Title IX | Title IX | Generic "harass*" is a Title IX trigger by existing policy | **None: joint decision needed** (below) |
+| B9-H05 | conduct | Title IX | **conduct** | Generic "harass*" was a Title IX trigger | Amended policy, approved by both: non-sexual harassment → conduct (`d33a1a5`) |
 | B9-H06 | conduct | none | conduct | Threat of violence without "threat" | Threat-or-attack family |
-| B9-N01 | none | conduct | counseling (non-safety) | Bare "hate" was a conduct trigger (O10) | **O10 commit: needs joint agreement**. Now gets the existing appointment clarification, because of "appointment" |
+| B9-N01 | none | conduct | counseling (non-safety) | Bare "hate" was a conduct trigger (O10) | O10 narrowing (approved by both; recall repaired in `d33a1a5`). Now gets the existing appointment clarification, because of "appointment" |
 | B9-N04 | none | counseling → alternatives | unchanged | Generic "appointment" counseling trigger plus decline handling | Not changed. Decline handling is Devika's slice |
 | B9-N05 | none | retention | none | `transfer` exclusion allowed only "my/the/our" before "record" | Determiner fix |
 
@@ -68,7 +73,7 @@ The repair therefore adds pattern families, not the B9 sentences.
 | `298649d` | Title IX | Unwanted sexual contact or messages; coerced or forced sex; image-based abuse | An unwanted, forced or explicit element: "unwanted sexual…", "touched me inappropriately", "forced/pressured me into sex", "after I said no/stop", "sexual comments/favors", "leak my nudes" |
 | `298649d` | conduct | Hostility toward a protected characteristic | A hostile act + an identity term as **direct object** ("mocking my disability") or after "because/for/about/over" ("excluded me because I'm gay"); name-calling |
 | `298649d` | conduct | Threats or attacks against the student | "beat me up"; a reported threat ("promised to…", "said they'll… me"); a person subject + "trying/planning to hurt me"; "punched/shoved/jumped me" |
-| `eb1956b` | conduct | **O10, policy change** | Hate aimed at people ("hate me/us/people", "hate Muslims", "hate my kind") or a named form of hate ("hate crime", "wrote hate messages", "a hate group"). Bare "hate" alone no longer routes to conduct |
+| `eb1956b`, revised in `d33a1a5` | conduct | **O10, approved by both** | Hate aimed at people ("hate me/us/people", "hate Muslims", "hate my kind") or a named form of hate ("hate crime", "wrote hate messages", "a hate group"). Bare "hate" alone no longer routes to conduct |
 | `bb7d729` | retention | B9-N05 | Moving records, files or insurance with any determiner is not retention |
 
 Unchanged:
@@ -95,7 +100,7 @@ Unchanged:
 
   | Message | Lane |
   |---|---|
-  | "my roommate said she'll kill me if I eat her food again" | conduct |
+  | "my roommate said she'll kill me if I eat her food again" | crisis (approved severe-threat policy; was conduct in `06ccbe3`) |
   | "they're killing themselves studying for finals" | crisis |
   | "the accident took his life" | crisis |
   | "is it dangerous to take too much ibuprofen?" | crisis |
@@ -119,43 +124,63 @@ Unchanged:
 - Every pre-existing test is unchanged and passes. Platform runs are in the PR description and
   `docs/progress/abhinav.md`.
 
-## Decisions needed from both of us
+## Policy decisions (approved by both)
 
-1. **B9-H05: "A student keeps harassing me in the dining hall."** Today any `harass*`
-   routes to Title IX, before conduct. Four pre-C1 checks encode this:
-   - `tests/run_smoke.py`
-   - `tests/test_phase6_demo_scenarios.py::test_harassment_routes_to_title_ix_template`
-   - `tests/test_phase6_production_validation.py`
-   - `scripts/check_routes.py`
+Devika's review of `06ccbe3` approved three policy directions. Abhinav approved the same
+three on 2026-10-12. They are implemented in `d33a1a5`:
 
-   The CSV also lists `harass` under Title IX. Both outcomes are protected lanes with exact
-   templates; only the template differs.
-   - **Proposed interpretation (A, recommended for C1):** the router cannot tell from
-     "keeps harassing me" whether the harassment is sexual or gender-based. So unqualified
-     harassment goes to Title IX, the higher-priority protected lane.
-     - Its template offers confidential guidance and supportive measures without a formal
-       report, and gives a phone number.
-     - Non-sexual mistreatment worded without "harass" (bullying, threats, slurs, mockery of
-       a protected characteristic) goes to conduct.
-     - Under A, B9-H05's expected lane becomes `title_ix` for future regression runs. Devika's
-       initial result stays recorded as a miss against her original label.
-   - **B:** unqualified `harass*` goes to conduct; Title IX only with sexual, gender, dating
-     or stalking wording.
-     - This changes the four checks above and the CSV.
-     - Risk: sexual harassment described without sexual words would get the conduct
-       template, which has no contact number and no confidential-option wording.
-   - **C (later):** one template for unqualified harassment that names both offices. That is a
-     new response contract, so it belongs in C2.
-2. **O10 (`eb1956b`).** Accept the narrowing as written, change it, or drop the commit and
-   record O10 as an explicit joint residual risk.
-3. **Threats to kill or seriously injure the student** ("they said they'll stab me") route to
-   **conduct**, consistent with the existing `threat` trigger and B9-H06's label. The conduct
-   template has no emergency number. Should explicit threats of killing or weapons escalate
-   to the crisis template (911, UMBC Police) instead? Not changed without agreement.
+1. **Harassment with no sexual or sex-based signal → conduct.** Generic `harass*` moved
+   from Title IX to conduct in the built-ins and `safety/routing_matrix.csv`. Sexual and
+   sex/gender-based harassment, stalking and dating/domestic violence stay Title IX:
+   - "sexually harassing me"
+   - "harassing me because I'm a woman"
+   - sexist comments, gender identity, pregnancy
+   - stalking, dating/domestic violence
 
-Devika's slice, for information: B9-N04 ("I do not want an appointment; I only need the
-billing office website") is an explicit service refusal plus an information request. Decline
-handling returns alternatives. Whether that is right under C1-v0.2 item 1 is hers to decide.
+   Sexual orientation and other protected characteristics route to conduct, as before. The
+   routing is informational; it does not say which office has jurisdiction. Devika noted
+   that ECR also accepts nonsexual hate and bias reports.
+2. **O10:** the narrowing stays, with the recall Devika found missing restored (below).
+3. **Explicit severe threats → urgent guidance.** Reported threats or attempts to kill,
+   shoot, stab or strangle anyone (the student or a third party), weapon threats and active
+   shootings route to the crisis template (911, UMBC Police) ahead of Title IX and conduct.
+   - The router does not judge credibility, so a hyperbolic reported threat to kill is urgent too.
+   - Beatings, punches and "hurt" threats stay conduct.
+   - Idioms stay out: "this homework is going to kill me", "shoot me an email", "stabbed me in the back", "hit him up".
+
+The pre-C1 checks that encoded generic harassment → Title IX were reconciled, not loosened:
+- `tests/run_smoke.py`, `scripts/check_routes.py` and
+  `tests/test_phase6_demo_scenarios.py` now expect the conduct template for non-sexual
+  harassment and keep a sexual-harassment case on Title IX.
+- The demo-scenario test asserts both exact templates and no downstream events.
+- Dataset v1.5.0 relabels SR-051 and SR-062 from `title_ix` to `harassment_hate`, and my own
+  SR-111 from `harassment_hate` to `urgent_safety`. The changelog says why.
+- `tests/test_phase6_production_validation.py` (both copies) asserts only "a lane, not
+  crisis", so it is unchanged and still passes.
+
+## PR #12 review response (Devika, `06ccbe3`)
+
+Devika's review probes: fixture `docs/audits/devika-pr12-review-probes-v1.json` on her
+branch @ `e41e665`, SHA-256 `55f68bf5…`. Expectations were fixed before her run.
+- **42/42** router probes now get the exact expected template, or no safety lane for a neighbour.
+- Raw rows: [`c1-pr12-review-probe-results.json`](c1-pr12-review-probe-results.json).
+- Her N01–N06 probes test her decline detector and are hers to rerun.
+
+| Finding | Fix in `d33a1a5` |
+|---|---|
+| Hate reports missed (H01–H03): reporting verb had to sit right before "hate" | Any inflection of a reporting verb, with or without a recipient ("sent me hate messages", "keeps sending hate messages", "is posting hate speech"). Directed hate content ("hate speech about me", "hate comments against Muslims"). "hates my disability" |
+| Dislikes still conduct (D01–D04) | Course and activity objects after a protected word are excluded ("my religion homework", "my culture class"). Generic "people/everyone" needs an identity link ("people like me") |
+| Title IX false positives (B01–B04) | Body-part touching, sexual messages and intimate/explicit photos are skipped only when **the same clause** has an explicit consent or information context **and no harm marker**: unwanted, without consent/permission, forced, pressured, coerced, threats, leaked, didn't agree, said no/stop, kept, asleep, for a grade, sent to me. There is no clinician, class or workshop exemption, and an explicit consent clause is required for body-part touching |
+| Medicine transport (M01, M03) | For *take/took* only, a destination or travel phrase right after the medication ("to the campus pharmacy", "in my carry-on", "for disposal") means transport. Swallow/ate/popped always match, and a separate overdose clause still matches |
+| M02, pre-existing on `main` | "take all my medications as prescribed / every morning" no longer matches. "take all my pills" still does |
+| SR-069 regression found while fixing | "this deadline is killing me" briefly matched the new in-progress pattern. In-progress violence now needs a person subject, and "killing" is excluded |
+
+On the reviewed head `06ccbe3`, **1,062** of the revised family tests fail (2,336 on
+`835a6f0`), and all 2,645 pass on `d33a1a5`. Routing every pre-existing repo string (647)
+with old and new rules changes only:
+- generic-harassment messages, which now route to conduct;
+- `"harm myself"`;
+- metadata strings.
 
 ## Remaining limitations
 
@@ -171,6 +196,16 @@ handling returns alternatives. Whether that is right under C1-v0.2 item 1 is her
   - repeated letters
   - non-English text
   - no conversation memory
+- Severe-threat routing needs a reported threat, an attempt or a person as subject. Unusual
+  wording ("he's gonna end me tonight") is not routed; threats against pets get conduct, not urgent. Family or
+  roommate subjects without a reporting verb ("my mom is going to kill me") are treated as
+  idioms.
+- Harassment by an ex or partner without stalking, violence or sexual wording ("my ex keeps
+  harassing me") routes to conduct, not Title IX. Relationship words alone are not a sex-based
+  signal, per Devika's review.
+- The benign-context guards look only at the same clause. A consent or information phrase in
+  one sentence never protects a harmful event in another. A run-on sentence can still put
+  both in one clause; the harm-marker override then decides.
 - The new families were written by the router owner after seeing the B9 failures, so their
   recall on this repo's tests is optimistic. Comprehensive held-out and adversarial testing
   remains Phase 5.
