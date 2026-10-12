@@ -13,6 +13,13 @@ minimum. [Main CI run 38185553143](https://github.com/RIH-Care-Insight-Assistant
 passed all eight jobs. No open PR, including a final C1 acceptance PR, was returned.
 See [GitHub evidence](devika-c1-github-verification-2026-10-11.json).
 
+Subsequent refresh: Abhinav opened draft PR #10 at head `6293102`, reporting his
+final-main WSL/Windows validation. Its CI run 38193248283 succeeded. The initial
+no-open-PR snapshot above is historical. See the
+[concrete PR #10 review](devika-pr10-review-2026-10-11.md); no human approval was
+submitted. This closes the lack of recorded partner results for `835a6f0`, while
+both contributors still need to rerun any later main containing B9 repairs.
+
 Validation ran with HEAD at that actual main commit on macOS arm64, Python
 3.12.12, `STRANDS_ENABLED=false`, `RIH_PLANNER=RULE`, optional corrector and
 clarify-v2 environment overrides removed. Application, KB, safety, tests, scripts,
@@ -123,10 +130,11 @@ it does not replace human acceptance or change gate ownership.
    returned empty. An admin must provide actual required-check/review/settings
    evidence. Empty rulesets do not prove classic branch protection is absent.
 4. Abhinav independently validates resulting final main on WSL/Windows and updates
-   his progress. Earlier pre-merge platform evidence does not satisfy this gate.
+   his progress. PR #10 records his `835a6f0` results; any later repaired main
+   requires renewed validation from both contributors.
 5. Devika adopts or revises the eight deferral dispositions explicitly. Abhinav
-   prepares the final C1 acceptance PR and shared state report; Devika reviews
-   that concrete PR without an automated approval submission.
+   updates draft acceptance PR #10 and its shared state report; Devika reviews
+   the final concrete revision without an automated approval submission.
 6. Both human acceptance and recorded shared completion are required before C2
    implementation. Current B1–B4 repairs and C1-v0.2 signatures remain intact.
 

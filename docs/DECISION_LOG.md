@@ -80,3 +80,33 @@ The full master instructions and Devika launcher are in `docs/instructions/`.
 Abhinav owns root AGENTS.md/CLAUDE.md and initial MASTER_PLAN/PROJECT_STATE/CI;
 this branch does not create competing versions of those files. RELEASE_GATES.md
 ownership remains to be coordinated with his foundational documentation.
+
+## Final-main C1 acceptance review — 2026-10-11
+
+- **C1-D25:** GitHub confirms #4/#5/#8/#9 merged with mutual human approvals;
+  main `835a6f07e4ee28532169065b225be334aeffbca9` passed all eight CI jobs.
+  Devika ran actual final main on macOS: 552 tests passed, readiness 15/15,
+  regression 75/75 protected, 0/16 false positives, 97/97 router agreement.
+  [Evidence and limitations](audits/devika-c1-acceptance-review-2026-10-11.md).
+- **C1-D26:** O6 log exclusion, default-off model guard and Abhinav's
+  `RELEASE_GATES.md` ownership were merged in human-approved PR #8. They remain
+  intact; default-off does not establish provider cancellation or production safety.
+- **C1-D27:** Independent small B9 initial evaluation failed: 10/18 expected
+  safety templates, 11/18 any safety template, 1/6 benign safety false positives,
+  13/24 exact router agreement. Seven positives reached ordinary retrieval.
+  Preserve frozen initial evidence, obtain router-owner repairs and adjudicate
+  the unexpected protected lane jointly. No residual-risk acceptance is recorded.
+  PR #9 notification attempt returned 403; manual handoff is prepared, not sent.
+- **C1-D28:** Deferral review recommends conditional acceptance of O4/O5/O7/O8/O9,
+  KB freshness and comprehensive Phase 5 evaluation, and rejects O10 deferral
+  through Phase 5. Exact conditions/rationale are in the review packet. Devika's
+  human adoption is pending; no shared contract approval table changed.
+- **C1-D29:** Draft PR #10 at `6293102` appeared during the final refresh. Abhinav
+  records final-main WSL/Windows evidence; its CI succeeded. Technical review is
+  [recorded](audits/devika-pr10-review-2026-10-11.md), with no automated approval.
+  B7, B9, explicit deferral decisions and final acceptance remain unresolved.
+- **C1-D30:** The operator requests continuous component ownership and three waves
+  while preserving Phases 0–9. Existing shared documents still describe the earlier
+  allocation. The [C2-v0.1 candidate](audits/devika-c2-v0.1-candidate.md) is a review
+  proposal, not a unilateral contract revision. Joint exact-version approval and
+  formal C1 acceptance are required before Wave 1 code or dependency changes.

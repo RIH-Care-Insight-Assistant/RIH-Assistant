@@ -4,6 +4,16 @@ Last updated: 2026-10-11 (America/New_York). Operator: Devika Rani Sanaboyina.
 
 ## C1 final-main acceptance evaluation — current status
 
+- **Subsequent GitHub refresh:** draft acceptance PR #10 appeared at `6293102`.
+  It records Abhinav's final-main WSL2 **552 passed**, Windows **551 passed,
+  1 skipped**, with safety/readiness/routes/smoke/KB checks. PR CI run 38193248283
+  succeeded. Read-only two-file technical review is saved in
+  [PR #10 review](../audits/devika-pr10-review-2026-10-11.md); no approval submitted.
+  The earlier no-open-PR/partner-evidence-pending observations below are superseded
+  for `835a6f0`. Both contributors must rerun a later main after B9 repairs.
+- Evidence commit `df4058e9c09517864a434b9362c62e6fc06b09cb` was normally pushed
+  to Devika's own branch with verified human author/committer and no trailers.
+  This follow-up adds the newly available partner review and decision log.
 - Branch: `feature/devika-c1-acceptance`, from actual tested main
   `835a6f07e4ee28532169065b225be334aeffbca9`. C1 is **not accepted**; Wave 1
   implementation has not begun. All later entries are historical snapshots.
