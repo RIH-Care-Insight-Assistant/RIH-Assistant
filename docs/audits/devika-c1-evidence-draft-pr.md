@@ -3,7 +3,10 @@ Title: C1 evidence: final-main validation and held-out safety failures
 Base: `main`
 Head: `feature/devika-c1-acceptance`
 Create as a **draft** and request `AbhinavVarma02` for review.
-Status: connector creation returned 403; **no PR created**.
+Original status: connector creation returned 403; no PR was created by that attempt.
+Published subsequently via authenticated `gh` as
+[draft PR #11](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/11),
+with Abhinav requested for review. The prepared description below is retained.
 
 Independent B9 testing on integrated main `835a6f0` found seven synthetic safety-positive messages reaching ordinary retrieval and one unexpected protected lane. This draft records Devika's actual macOS validation, frozen initial B9 fixture/results, deferral review recommendations, technical review of Abhinav's draft PR #10, and a proposed C2-v0.1 contract. It does not establish C1 acceptance or approve new shared contracts.
 

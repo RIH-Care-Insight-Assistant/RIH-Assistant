@@ -2,6 +2,47 @@
 
 Last updated: 2026-10-11 (America/New_York). Operator: Devika Rani Sanaboyina.
 
+## Verified GitHub CLI publication — latest status
+
+- Explicit operator instruction authorizes authenticated `gh` writes when the
+  connected integration lacks permission, while retaining sandbox, human review
+  and merge gates. Verified GitHub CLI **2.102.0**, active Keychain-backed account
+  **Devikz**, ID **165278681**, HTTPS transport and repository push/admin access.
+  Repository-local human Git identity remains correct; no credentials were exposed
+  or changed. No global Codex/Git permissions or branch protections were modified.
+- The default sandbox auth check misleadingly reported an invalid token. The
+  standard approved execution path succeeded with existing Keychain authentication
+  and `gh api user`. Effective session: workspace-write, restricted command network
+  and protected Git metadata, Auto-review approval path. User config marks the
+  repo trusted without explicit sandbox/approval/network overrides. Future sessions
+  must verify their effective policy rather than infer access from this snapshot.
+- Checked all PR states for the exact feature branch: **no existing PR**. Created
+  [draft PR #11](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/11)
+  through `gh pr create` using the prepared evidence description and verified
+  `AbhinavVarma02` as requested reviewer. Attached it to this chat. Original head
+  `6591a2b`; initial CI run `38196801497` began with all eight expected jobs.
+- Initial PR CI run `38196801497` subsequently **passed all 8/8 jobs**. Local
+  documentation validation: **32 repository guards passed** (0.31 seconds),
+  contributor links/LF and diff whitespace passed; fixture, initial results and
+  response-classification artifacts match `6591a2b` byte for byte. The final
+  documentation push gets a separate CI run; inspect that head's actual result.
+- Posted the previously authorized B9 handoff with `gh pr comment`, after checking
+  for a duplicate, and verified the
+  [published comment](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/11#issuecomment-6116794003).
+  The earlier failed-connector/manual-publication entries below are historical.
+- Read-only branch-protection inspection now succeeds through `gh`: one approving
+  review and conversation resolution required; force pushes/deletions blocked;
+  required-check contexts/checks empty, strict mode off, enforce-admins off, stale
+  dismissal/last-push approval off. B7 remains open for Abhinav's admin action.
+- Documented the reusable authenticated CLI workflow in
+  [Devika launcher](../instructions/DEVIKA_LAUNCHER.md), including duplicate checks,
+  body files, reviewer verification, final-head CI, authorized comments and ready
+  gating. No automatic approval, merging, token extraction or sandbox bypass.
+- PR #11 remains **draft** as requested; B9/deferral/C1 acceptance gates remain open.
+  Frozen B9 fixture and initial results are unchanged. This session's follow-up
+  documentation commit and final CI status are identified by branch history and
+  the final PR status report; no pending checks are represented as passed here.
+
 ## C1 final-main acceptance evaluation — current status
 
 - **Publication outcome:** both evidence commits `df4058e` and `66d17c0` were
