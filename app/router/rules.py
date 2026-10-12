@@ -12,6 +12,10 @@
 #  - C1 review (PR #4): self-directed "hate myself/my life/my body" -> counseling, not conduct;
 #    "transfer" is retention only when not about records/insurance/prescriptions. The CSV no
 #    longer lists bare "hate"/"transfer", because CSV triggers cannot carry these exclusions.
+#  - C1 B9 repair: Devika's held-out check missed whole phrasing families, not single phrases.
+#    Added: someone else's suicide/self-harm, "harm myself", overdose without the word,
+#    unwanted sexual contact/messages and coerced sex, bias-motivated mockery, and threats
+#    or attacks against the student. See docs/safety/crisis-routing.md §2.
 
 from __future__ import annotations
 
@@ -204,6 +208,7 @@ class Rules:
             r"\bself[\s-]*harm(s|ed|ing)?\b",
             r"\bself[\s-]*injur(y|e|ed|ing|ious)\b",
             r"\bhurt(s|ing)?\s+my\s*self\b",
+            r"\bharm(s|ed|ing)?\s+my\s*self\b",
             r"\b(cut|cutting|burn|burning|hang|hanging|shoot|shooting|stab|stabbing|"
             r"drown|drowning|poison|poisoning|starve|starving)\s+my\s*self\b",
             r"\b(cut|cutting|slit|slitting)\s+my\s+(wrists?|arms?|legs?|thighs?|skin|throat)\b",
@@ -219,6 +224,40 @@ class Rules:
             r"mom|mother|dad|father|family|classmates?))\b",
             r"\b(shoot|shooting)\s+(someone|somebody|people|everyone)\b",
             r"\bshoot\s+up\s+(the|a|my)?\s*(school|campus|class|dorm|building)\b",
+        ]
+
+        # C1 B9: risk to someone else ("my friend wants to kill herself"). The reflexive must
+        # not be the start of "self-esteem" and similar compounds.
+        REFLEXIVE_OTHER = (r"(?:them\s*selves|them\s*self|him\s*self|her\s*self|your\s*self|your\s*selves)"
+                           r"(?![\s-]*(?:esteem|image|confidence|worth|respect|care|awareness)\b)")
+        THIRD_PARTY_RISK = [
+            r"\bkill(s|ed|ing)?\s+" + REFLEXIVE_OTHER,
+            r"\b(end|ends|ended|ending|take|takes|took|taking)\s+(his|her|their)\s+(own\s+)?li(fe|ves)\b",
+            r"\b(cut|cuts|cutting|burn|burns|burning|hang|hangs|hanging|starv(e|es|ing)|poison(s|ing)?|"
+            r"drown(s|ing)?|shoot(s|ing)?|stab(s|bing)?)\s+" + REFLEXIVE_OTHER,
+            # "hurt/harm themselves" needs intent or ongoing wording, so an accident
+            # ("she hurt herself playing soccer", "might have hurt himself") is not crisis.
+            r"\b(going\s+to|gonna|wants?\s+to|wanted\s+to|wanting\s+to|will|'ll|would|'d|might|"
+            r"plans?\s+to|planning\s+to|planned\s+to|threaten(s|ed|ing)?\s+to|tr(y|ies|ied|ying)\s+to|"
+            r"talk(s|ed|ing)?\s+about|think(s|ing)?\s+(about|of))\s+"
+            r"(?:(?!have\b|has\b|had\b)\w+\s+){0,2}(hurt(ing)?|harm(ing)?)\s+" + REFLEXIVE_OTHER,
+            r"\b(hurting|harming)\s+" + REFLEXIVE_OTHER,
+        ]
+
+        # C1 B9: overdose or poisoning described without the word "overdose"
+        # ("swallowed a bottle of pills"). A quantity or "all/too many" is required, so
+        # taking a normal dose ("I took my pills this morning") does not match.
+        PILLS = (r"(pills?|tablets?|capsules?|meds|medications?|medicines?|painkillers?|"
+                 r"tylenol|advil|ibuprofen|acetaminophen|paracetamol|aspirin|benadryl|xanax|insulin)\b")
+        INGEST = r"\b(swallow(s|ed|ing)?|took|taken|tak(e|es|ing)|ate|eat(s|en|ing)?|pop(s|ped|ping)?|downed|chug(s|ged|ging)?)"
+        INGESTION = [
+            INGEST + r"\s+((a|an|the|my|his|her|their|half\s+(a|the|my))\s+)?(whole\s+|entire\s+|full\s+)?"
+            r"(bottles?|packs?|packets?|box(es)?|handfuls?|bunch|lots?|strips?|blister\s+packs?)\s+of\s+"
+            r"([\w-]+\s+)?" + PILLS,
+            INGEST + r"\s+(\w+\s+)?too\s+(many|much)\s+([\w-]+\s+)?" + PILLS,
+            INGEST + r"\s+all\s+(of\s+)?(my|his|her|their|the)\s+([\w-]+\s+)?" + PILLS,
+            r"\b(drank|drink(s|ing)?|swallow(s|ed|ing)?|ingest(s|ed|ing)?)\s+(some\s+|a\s+lot\s+of\s+)?"
+            r"(bleach|antifreeze|rat\s+poison|drain\s+cleaner|poison|weed\s*killer|pesticides?)\b",
         ]
 
         TITLE_IX = [
@@ -242,6 +281,35 @@ class Rules:
             r"\bsextortion\b", r"\brevenge\s+porn\b",
         ]
 
+        # C1 B9: sexual misconduct described without "assault"/"harassment"/"consent".
+        # Health wording ("sexual health", "unprotected sex", "sexual orientation") stays out:
+        # every pattern needs an unwanted, forced or explicit element.
+        SEXUAL_MISCONDUCT = [
+            r"\bunwanted\s+(sexual\w*|sex|touch(es|ed|ing)?|kiss(es|ed|ing)?|advances?|groping|nudes?|"
+            r"explicit\s+\w+|(dick|nude|explicit)\s+pics?)\b",
+            r"\bsexual(ly)?\s+(explicit|suggestive|inappropriate)\b",
+            r"\bsexual\s+(messages?|texts?|comments?|remarks?|jokes?|advances?|propositions?|favou?rs?|"
+            r"requests?|innuendos?|gestures?|photos?|pictures?|pics|images?|videos?|touching)\b",
+            r"\b(inappropriate(ly)?|sexually)\s+touch(es|ed|ing)?\b",
+            r"\btouch(es|ed|ing)?\s+(me|my\s+[\w-]+)\s+(sexually|inappropriately|without\s+(my\s+)?(consent|permission))\b",
+            r"\b(kiss(es|ed|ing)?|touch(es|ed|ing)?|grabb?(s|ed|ing)?|fondl(e|es|ed|ing))\s+(me|my\s+[\w-]+)\s+"
+            r"(\w+\s+){0,6}?(after|when|even\s+(though|after|when)|although|though)\s+i\s+"
+            r"(said|told\s+(him|her|them))\s+(no|stop|not\s+to)\b",
+            r"\b(grabb?(s|ed|ing)?|touch(es|ed|ing)?|fondl(e|es|ed|ing)|rubb?(s|ed|ing)?)\s+(my|her|his)\s+"
+            r"(butt|ass|breasts?|boobs?|chest|crotch|genitals?|groin|privates?|private\s+parts|inner\s+thighs?)\b",
+            r"\bfondl(e|es|ed|ing)\b",
+            # Coerced or forced sex ("forced me into sex", "pressured me to have sex").
+            r"\b(forc(e|es|ed|ing)|pressur(e|es|ed|ing)|coerc(e|es|ed|ing)|blackmail(s|ed|ing)?|"
+            r"guilt[\s-]*trip(s|ped|ping)?)\s+(me|him|her|them|someone|my\s+\w+)\s+(in)?to\s+"
+            r"(have\s+|having\s+)?(sex|sexual|oral|sleep\s+with|hook\s+up|send\s+nudes)",
+            r"\b(made|make|makes|making)\s+me\s+(have\s+sex|do\s+sexual|perform\s+(sexual|oral)|sleep\s+with|send\s+nudes)",
+            r"\bforced\s+(him|her|them)\s*sel(f|ves)\s+on(to)?\s+me\b",
+            # Image-based abuse.
+            r"\b(sent|send(s|ing)?|shar(e|es|ed|ing)|leak(s|ed|ing)?|post(s|ed|ing)?|spread(s|ing)?)\s+"
+            r"(me\s+)?(my\s+|his\s+|her\s+|their\s+)?nudes\b",
+            r"\b(intimate|explicit|nude)\s+(photos?|pictures?|pics|images?|videos?)\b",
+        ]
+
         # Self-directed distress ("I hate myself / my life / my body") is not a conduct
         # report; it is excluded here and routed to counseling below (C1 review, PR #4).
         SELF_DIRECTED = r"(?:my\s*self|my\s+(?:life|body))\b"
@@ -251,6 +319,61 @@ class Rules:
             r"\bslurs\b", r"\bthreatened\b", r"\bbull(ied|ies)\b", r"\bintimidated\b",
             r"\bthreat(s|en|ening)?\b", r"\bbully(ing)?\b", r"\bintimidat(e|ion|ing)?\b",
             r"\bdoxx(ing)?\b", r"\bbias\s+incident\b", r"\btargeted\s+harassment\b", r"\bdiscrimination\b",
+        ]
+
+        # C1 B9: hostility aimed at a protected characteristic, without "bully"/"slur"/"threat"
+        # ("mocking my disability", "excluded me because I'm Muslim"). The identity term must be
+        # the direct object or follow "because/for/about/over", so neither "make fun of the
+        # reading" nor "laughed at the movie in my religion class" is a report.
+        PROTECTED = (r"(race|racial\s+\w+|ethnicity|ethnic\s+\w+|religion|religious\s+\w+|faith|disabilit(y|ies)|"
+                     r"wheelchair|gender(\s+identity)?|sexuality|sexual\s+orientation|orientation|nationality|"
+                     r"national\s+origin|accent|skin(\s+colou?r)?|immigration\s+status|citizenship|hijab|turban|"
+                     r"headscarf|yarmulke|kippah|pronouns|culture|heritage|caste|pregnancy)")
+        IDENTITY = (r"(black|white|asian|latin[oax]|latine|hispanic|arab|jewish|muslim|christian|hindu|sikh|"
+                    r"buddhist|atheist|gay|lesbian|bi(sexual)?|queer|trans(gender)?|non[\s-]*binary|intersex|"
+                    r"disabled|deaf|blind|autistic|neurodivergent|immigrant|undocumented|international|foreign|"
+                    r"indigenous|native|female|a\s+woman|a\s+girl|pregnant)")
+        HOSTILE = (r"(mock(s|ed|ing)?|ridicul(e|es|ed|ing)|teas(e|es|ed|ing)|taunt(s|ed|ing)?|insult(s|ed|ing)?|"
+                   r"demean(s|ed|ing)?|belittl(e|es|ed|ing)|humiliat(e|es|ed|ing)|(make|makes|made|making)\s+fun\s+of|"
+                   r"pick(s|ed|ing)?\s+on|laugh(s|ed|ing)?\s+at|exclud(e|es|ed|ing)|ostraci[sz](e|es|ed|ing)|"
+                   r"target(s|ed|ing)?|attack(s|ed|ing)?|(yell|scream|shout)(s|ed|ing)?\s+at|spit(s|ting)?\s+on|spat\s+on)")
+        IDENTITY_TERM = (r"((my|our|his|her|their)\s+([\w-]+\s+)?" + PROTECTED
+                         + r"|(i'?m|i\s+am|we'?re|we\s+are|being|(s?he|they)'?s|(s?he|they)\s+(is|are))\s+(an?\s+)?"
+                         + IDENTITY + r")\b")
+        BIAS_HOSTILITY = [
+            # Direct object: "mocking my disability", "laughed at my hijab".
+            r"\b" + HOSTILE + r"\s+" + IDENTITY_TERM,
+            # Object, up to three words, then a reason: "excluded me because I'm gay".
+            r"\b" + HOSTILE + r"\s+(me|us|him|her|them|people|everyone|someone|my\s+(friends?|roommates?|partner|"
+            r"classmates?|sister|brother|kids?|child|son|daughter|girlfriend|boyfriend))\b([\s,]+[\w']+){0,3}?[\s,]+"
+            r"(because\s+(of\s+)?|for\s+|over\s+|about\s+|due\s+to\s+|since\s+)" + IDENTITY_TERM,
+            # A group: "mocking disabled students".
+            r"\b" + HOSTILE + r"\s+(all\s+)?" + IDENTITY
+            + r"\s+(people|students|folks|kids|classmates|women|men|girls|guys)\b",
+            # Name-calling is bullying in itself, like "bullied".
+            r"\bcall(s|ed|ing)?\s+(me|us|him|her|them|my\s+\w+)\s+(names|slurs)\b",
+        ]
+
+        # C1 B9: threats or attacks against the student ("promising to beat me up", "said
+        # they'll kill me", "punched me"). Threat wording already routes to conduct; these
+        # cover threats and attacks that never say "threat". Idioms with no reported threat
+        # ("this exam is going to kill me") do not match. "hit me up" is excluded.
+        VIOLENCE_AT_ME = (r"((beat|attack|jump|punch|stab|shoot|kill|hurt|harm|strangle|choke)\s+(me|us)\b|"
+                          r"hit\s+(me|us)\b(?!\s+up\b))")
+        THREAT_OR_ATTACK = [
+            r"\bbeat(s|ing)?\s+(me|us)\s+up\b", r"\bbeat\s+up\s+(me|us)\b",
+            r"\b(promis|vow|swear|swore|sworn|warn)\w*\s+(that\s+)?(\w+\s+){0,2}?(to|'ll|will|would|gonna|going\s+to)\s+"
+            + VIOLENCE_AT_ME,
+            r"\b(said|says|saying|told\s+me|tells\s+me|telling\s+me|text(s|ed|ing)?\s+me|messag(es|ed|ing)\s+me|"
+            r"wrote|posted)\s+(that\s+)?(he|she|they|someone|somebody|people|everyone)\s*"
+            r"('ll|'d|'s\s+going\s+to|'re\s+going\s+to|\s+will|\s+would|\s+gonna|\s+(is|are|was|were)\s+going\s+to)\s+"
+            + VIOLENCE_AT_ME,
+            r"\b(someone|somebody|people|a\s+stranger|a\s+(student|guy|man|woman|person|group))\s+(is\s+|are\s+|was\s+|were\s+)?"
+            r"(going\s+to|gonna|trying\s+to|tried\s+to|wants?\s+to|wanted\s+to|plans?\s+to|planning\s+to)\s+" + VIOLENCE_AT_ME,
+            r"\b(he|she|they)(\s+is|\s+are|\s+was|\s+were|'s|'re)?\s+(trying\s+to|tried\s+to|wants?\s+to|wanted\s+to|"
+            r"plans?\s+to|planning\s+to)\s+" + VIOLENCE_AT_ME,
+            r"\b(punch(es|ed)?|kick(s|ed)?|slapp(ed)?|slaps|shov(es|ed)|chok(es|ed)|strangl(es|ed)|attack(s|ed)|jumped)\s+me\b"
+            r"(?!\s+(out|off|up|in\s+line|to\s+the\s+front)\b)",
         ]
 
         RETENTION = [
@@ -274,9 +397,11 @@ class Rules:
         return {
             "urgent_safety": Rule("urgent_safety", "crisis",
                                   [re.compile("|".join(SLANG_URGENCY + PHRASES_URGENCY + SUICIDAL_IDEATION
-                                                       + SELF_HARM + HARM_TO_OTHERS), re.I)], 1),
-            "title_ix": Rule("title_ix", "title_ix", [re.compile("|".join(TITLE_IX), re.I)], 2),
-            "harassment_hate": Rule("harassment_hate", "conduct", [re.compile("|".join(CONDUCT), re.I)], 3),
+                                                       + SELF_HARM + HARM_TO_OTHERS + THIRD_PARTY_RISK
+                                                       + INGESTION), re.I)], 1),
+            "title_ix": Rule("title_ix", "title_ix", [re.compile("|".join(TITLE_IX + SEXUAL_MISCONDUCT), re.I)], 2),
+            "harassment_hate": Rule("harassment_hate", "conduct",
+                                    [re.compile("|".join(CONDUCT + BIAS_HOSTILITY + THREAT_OR_ATTACK), re.I)], 3),
             "retention_withdraw": Rule("retention_withdraw", "retention", [re.compile("|".join(RETENTION), re.I)], 4),
             "counseling": Rule("counseling", "counseling", [re.compile("|".join(COUNSELING), re.I)], 5),
         }
