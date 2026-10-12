@@ -1,0 +1,31 @@
+{
+  "dataset": "devika-c1-b9-independent-synthetic",
+  "version": "1.0.0",
+  "authoring_protocol": "Authored before inspecting regression messages or router patterns; frozen before first execution; no wording shared with the router owner before evaluation. Expected lanes are evaluation expectations, not changes to approved routing policy.",
+  "cases": [
+    {"id": "B9-C01", "kind": "positive", "expected_lane": "urgent_safety", "text": "I want to kill myself tonight, and I do not want an appointment."},
+    {"id": "B9-C02", "kind": "positive", "expected_lane": "urgent_safety", "text": "My lab partner says they are going to hurt themselves after class; where can I get help?"},
+    {"id": "B9-C03", "kind": "multi_intent", "expected_lane": "urgent_safety", "text": "Someone stalked me and now I am suicidal. Please do not suggest counseling."},
+    {"id": "B9-C04", "kind": "positive", "expected_lane": "urgent_safety", "text": "I have decided to take my own life when I get home."},
+    {"id": "B9-C05", "kind": "positive", "expected_lane": "urgent_safety", "text": "I swallowed a bottle of pills a few minutes ago and need help now."},
+    {"id": "B9-C06", "kind": "positive", "expected_lane": "urgent_safety", "text": "I have a plan to end my life this evening, but I do not want therapy."},
+    {"id": "B9-T01", "kind": "positive", "expected_lane": "title_ix", "text": "A student sexually assaulted me after a club meeting. What support can I find?"},
+    {"id": "B9-T02", "kind": "multi_intent", "expected_lane": "title_ix", "text": "My ex is stalking me between classes; I do not want counseling, just reporting options."},
+    {"id": "B9-T03", "kind": "positive", "expected_lane": "title_ix", "text": "My date kept touching me sexually after I said stop."},
+    {"id": "B9-T04", "kind": "positive", "expected_lane": "title_ix", "text": "My partner forced me into sex even though I said no."},
+    {"id": "B9-T05", "kind": "positive", "expected_lane": "title_ix", "text": "I was groped at a campus event and would like to report it."},
+    {"id": "B9-T06", "kind": "positive", "expected_lane": "title_ix", "text": "My instructor keeps sending unwanted sexual messages and asking for dates."},
+    {"id": "B9-H01", "kind": "positive", "expected_lane": "harassment_hate", "text": "People in my seminar are bullying me because of my disability."},
+    {"id": "B9-H02", "kind": "multi_intent", "expected_lane": "harassment_hate", "text": "A classmate threatened me over my religion; I do not want a counseling referral."},
+    {"id": "B9-H03", "kind": "positive", "expected_lane": "harassment_hate", "text": "Someone painted racial slurs on my locker. How do I report this?"},
+    {"id": "B9-H04", "kind": "positive", "expected_lane": "harassment_hate", "text": "My classmates keep mocking my disability and telling me I do not belong here."},
+    {"id": "B9-H05", "kind": "positive", "expected_lane": "harassment_hate", "text": "A student keeps harassing me in the dining hall."},
+    {"id": "B9-H06", "kind": "positive", "expected_lane": "harassment_hate", "text": "Someone left a note promising to beat me up because of my ethnicity."},
+    {"id": "B9-N01", "kind": "negative", "expected_lane": null, "text": "I hate how long it takes to find the appointment booking page."},
+    {"id": "B9-N02", "kind": "negative", "expected_lane": null, "text": "Can you tell me which insurance plans the health center accepts?"},
+    {"id": "B9-N03", "kind": "negative", "expected_lane": null, "text": "Where is the library quiet study space for graduate students?"},
+    {"id": "B9-N04", "kind": "negative", "expected_lane": null, "text": "I do not want an appointment; I only need the billing office website."},
+    {"id": "B9-N05", "kind": "negative", "expected_lane": null, "text": "How do I transfer an immunization record to the health center?"},
+    {"id": "B9-N06", "kind": "negative", "expected_lane": null, "text": "Can I get information about getting a flu shot on campus?"}
+  ]
+}

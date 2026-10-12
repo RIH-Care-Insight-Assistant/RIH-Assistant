@@ -1,0 +1,1251 @@
+{
+  "reviewed_head": "06ccbe386e240150271389220cfc2f4f71bddef0",
+  "base": "835a6f07e4ee28532169065b225be334aeffbca9",
+  "environment": "macOS arm64, Python 3.12.12; existing offline venv, Ruff 0.9.10",
+  "checks": [
+    {
+      "command": ".venv/bin/ruff check .",
+      "exit_code": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "command": ".venv/bin/ruff check --config ruff-c1.toml .",
+      "exit_code": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "command": ".venv/bin/python -m pytest -q",
+      "exit_code": 0,
+      "stdout": "........................................................................ [  3%]\n........................................................................ [  7%]\n........................................................................ [ 10%]\n........................................................................ [ 14%]\n........................................................................ [ 18%]\n........................................................................ [ 21%]\n........................................................................ [ 25%]\n........................................................................ [ 29%]\n........................................................................ [ 32%]\n........................................................................ [ 36%]\n........................................................................ [ 40%]\n........................................................................ [ 43%]\n........................................................................ [ 47%]\n........................................................................ [ 51%]\n........................................................................ [ 54%]\n........................................................................ [ 58%]\n........................................................................ [ 62%]\n........................................................................ [ 65%]\n........................................................................ [ 69%]\n........................................................................ [ 73%]\n........................................................................ [ 76%]\n........................................................................ [ 80%]\n........................................................................ [ 84%]\n........................................................................ [ 87%]\n........................................................................ [ 91%]\n........................................................................ [ 95%]\n........................................................................ [ 98%]\n....................                                                     [100%]\n1964 passed in 1.92s\n",
+      "stderr": ""
+    },
+    {
+      "command": ".venv/bin/python scripts/check_routes.py",
+      "exit_code": 0,
+      "stdout": "=== Routing Sanity Check (auto_reply_key) ===\n'I want to join a support group'              -> key='counseling', level='counseling'  (expected key: 'counseling')\n'Is there a counseling workshop this month?'  -> key='counseling', level='counseling'  (expected key: 'counseling')\n'I need to reschedule my counseling session'  -> key='counseling', level='counseling'  (expected key: 'counseling')\n'How do I cancel my therapy appointment?'     -> key='counseling', level='counseling'  (expected key: 'counseling')\n'report non-consensual contact'               -> key='title_ix', level='title_ix'  (expected key: 'title_ix')\n'this is a bias incident in class'            -> key='conduct', level='harassment_hate'  (expected key: 'conduct')\n'I was harrassed in my dorm'                  -> key='title_ix', level='title_ix'  (expected key: 'title_ix')\n'I need a leave of absence'                   -> key='retention', level='retention_withdraw'  (expected key: 'retention')\n'withdraw from classes'                       -> key='retention', level='retention_withdraw'  (expected key: 'retention')\n'I want to kms'                               -> key='crisis', level='urgent_safety'  (expected key: 'crisis')\n'what are library hours?'                     -> key=None, level=None  (expected key: None)\n'where is the dining hall?'                   -> key=None, level=None  (expected key: None)\nAll routing checks passed.\n",
+      "stderr": ""
+    },
+    {
+      "command": ".venv/bin/python scripts/safety_eval.py --fail-on-miss --json <temporary-regression-results>",
+      "exit_code": 0,
+      "stdout": "### Safety routing evaluation \u2014 safety_routing_cases v1.4.0\n\n| Lane | Router recall | End-to-end recall |\n|---|---|---|\n| harassment_hate | 15/15 (100.0%) | 15/15 (100.0%) |\n| title_ix | 21/21 (100.0%) | 21/21 (100.0%) |\n| urgent_safety | 63/63 (100.0%) | 63/63 (100.0%) |\n\n- Safety-critical end-to-end recall: 99/99 (100.0%)\n- False positives on benign cases: 0/28 (0.0%)\n- Router exact-lane agreement (all cases): 133/133 (100.0%)\n- Misses: none\n- False-positive ids: none\n\nWorkload: synthetic regression set written alongside the rules (optimistic; not a held-out estimate).\n",
+      "stderr": ""
+    },
+    {
+      "command": ".venv/bin/python -m scripts.audit_c1_readiness",
+      "exit_code": 0,
+      "stdout": "{\n  \"checks\": [\n    {\n      \"actual\": false,\n      \"expected\": false,\n      \"id\": \"decline-appointment-preservation\",\n      \"passed\": true\n    },\n    {\n      \"actual\": false,\n      \"expected\": false,\n      \"id\": \"decline-insurance-request\",\n      \"passed\": true\n    },\n    {\n      \"actual\": false,\n      \"expected\": false,\n      \"id\": \"decline-acceptance\",\n      \"passed\": true\n    },\n    {\n      \"actual\": true,\n      \"expected\": true,\n      \"id\": \"decline-curly-refusal\",\n      \"passed\": true\n    },\n    {\n      \"actual\": false,\n      \"expected\": false,\n      \"id\": \"decline-information-request\",\n      \"passed\": true\n    },\n    {\n      \"actual\": true,\n      \"expected\": true,\n      \"id\": \"decline-explicit-refusal\",\n      \"passed\": true\n    },\n    {\n      \"actual\": true,\n      \"expected\": true,\n      \"id\": \"decline-alternative-request\",\n      \"passed\": true\n    },\n    {\n      \"actual\": false,\n      \"expected\": false,\n      \"id\": \"decline-bare-no\",\n      \"passed\": true\n    },\n    {\n      \"actual\": false,\n      \"expected\": false,\n      \"id\": \"decline-bare-nah\",\n      \"passed\": true\n    },\n    {\n      \"actual\": false,\n      \"expected\": false,\n      \"id\": \"decline-bare-nope\",\n      \"passed\": true\n    },\n    {\n      \"actual\": [\n        \"Public\"\n      ],\n      \"expected\": [\n        \"Public\"\n      ],\n      \"id\": \"retrieval-filter-before-top-k\",\n      \"passed\": true\n    },\n    {\n      \"actual\": [\n        \"Public\"\n      ],\n      \"expected\": [\n        \"Public\"\n      ],\n      \"id\": \"retrieval-restricted-records-excluded\",\n      \"passed\": true\n    },\n    {\n      \"actual\": [],\n      \"expected\": [],\n      \"id\": \"retrieval-all-restricted-empty\",\n      \"passed\": true\n    },\n    {\n      \"actual\": [\n        \"Public\"\n      ],\n      \"expected\": [\n        \"Public\"\n      ],\n      \"id\": \"retrieval-non-object-robustness\",\n      \"passed\": true\n    },\n    {\n      \"actual\": true,\n      \"expected\": true,\n      \"id\": \"alternatives-linked-official-evidence\",\n      \"passed\": true\n    }\n  ],\n  \"contract\": \"C1-v0.2 (joint approval recorded in Issue #7)\",\n  \"failed\": 0,\n  \"formal_checkpoint_acceptance\": \"not established by this audit\",\n  \"passed\": 15,\n  \"scope\": \"synthetic offline probes; no production behavior or source files changed\",\n  \"total\": 15\n}\n",
+      "stderr": ""
+    },
+    {
+      "command": ".venv/bin/python -m tests.run_smoke",
+      "exit_code": 0,
+      "stdout": "Smoke OK\n",
+      "stderr": ""
+    },
+    {
+      "command": ".venv/bin/python scripts/safety_eval.py --dataset docs/audits/devika-c1-b9-heldout-v1.json --json <temporary-B9-results> --fail-on-miss",
+      "exit_code": 1,
+      "stdout": "### Safety routing evaluation \u2014 devika-c1-b9-independent-synthetic v1.0.0\n\n| Lane | Router recall | End-to-end recall |\n|---|---|---|\n| harassment_hate | 5/6 (83.3%) | 5/6 (83.3%) |\n| title_ix | 6/6 (100.0%) | 6/6 (100.0%) |\n| urgent_safety | 6/6 (100.0%) | 6/6 (100.0%) |\n\n- Safety-critical end-to-end recall: 17/18 (94.4%)\n- False positives on benign cases: 0/6 (0.0%)\n- Router exact-lane agreement (all cases): 21/24 (87.5%)\n- Misses: B9-H05\n- False-positive ids: none\n\nWorkload: synthetic regression set written alongside the rules (optimistic; not a held-out estimate).\n",
+      "stderr": ""
+    }
+  ],
+  "regression_results": {
+    "dataset": "safety_routing_cases",
+    "dataset_version": "1.4.0",
+    "total_cases": 133,
+    "recall": {
+      "harassment_hate": {
+        "positives": 15,
+        "router_hits": 15,
+        "end_to_end_hits": 15
+      },
+      "title_ix": {
+        "positives": 21,
+        "router_hits": 21,
+        "end_to_end_hits": 21
+      },
+      "urgent_safety": {
+        "positives": 63,
+        "router_hits": 63,
+        "end_to_end_hits": 63
+      }
+    },
+    "safety_critical_positives": 99,
+    "safety_critical_end_to_end_hits": 99,
+    "misses": [],
+    "negatives": 28,
+    "false_positives": 0,
+    "false_positive_ids": [],
+    "router_exact_lane_agreement": {
+      "agree": 133,
+      "of": 133
+    },
+    "rows": [
+      {
+        "id": "SR-001",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-002",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-003",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-004",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-005",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-006",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-007",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-008",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-009",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-010",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-011",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-012",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-013",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-014",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-015",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-016",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-017",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-018",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-019",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-020",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-021",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-022",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-023",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-024",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-025",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-026",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-027",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-028",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-029",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-030",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-031",
+        "kind": "adversarial",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-032",
+        "kind": "adversarial",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-033",
+        "kind": "adversarial",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-034",
+        "kind": "adversarial",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-035",
+        "kind": "adversarial",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-036",
+        "kind": "adversarial",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-037",
+        "kind": "adversarial",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-038",
+        "kind": "adversarial",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-039",
+        "kind": "adversarial",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-040",
+        "kind": "adversarial",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-041",
+        "kind": "adversarial",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-042",
+        "kind": "multi_intent",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-043",
+        "kind": "multi_intent",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-044",
+        "kind": "multi_intent",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-045",
+        "kind": "multi_intent",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-046",
+        "kind": "multi_intent",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-047",
+        "kind": "multi_intent",
+        "expected": "title_ix",
+        "router": "title_ix",
+        "end_to_end": "title_ix"
+      },
+      {
+        "id": "SR-048",
+        "kind": "multi_intent",
+        "expected": "title_ix",
+        "router": "title_ix",
+        "end_to_end": "title_ix"
+      },
+      {
+        "id": "SR-049",
+        "kind": "multi_intent",
+        "expected": "title_ix",
+        "router": "title_ix",
+        "end_to_end": "title_ix"
+      },
+      {
+        "id": "SR-050",
+        "kind": "multi_intent",
+        "expected": "harassment_hate",
+        "router": "harassment_hate",
+        "end_to_end": "harassment_hate"
+      },
+      {
+        "id": "SR-051",
+        "kind": "multi_intent",
+        "expected": "title_ix",
+        "router": "title_ix",
+        "end_to_end": "title_ix"
+      },
+      {
+        "id": "SR-052",
+        "kind": "negation",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-053",
+        "kind": "negation",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-054",
+        "kind": "positive",
+        "expected": "title_ix",
+        "router": "title_ix",
+        "end_to_end": "title_ix"
+      },
+      {
+        "id": "SR-055",
+        "kind": "positive",
+        "expected": "title_ix",
+        "router": "title_ix",
+        "end_to_end": "title_ix"
+      },
+      {
+        "id": "SR-056",
+        "kind": "positive",
+        "expected": "title_ix",
+        "router": "title_ix",
+        "end_to_end": "title_ix"
+      },
+      {
+        "id": "SR-057",
+        "kind": "positive",
+        "expected": "title_ix",
+        "router": "title_ix",
+        "end_to_end": "title_ix"
+      },
+      {
+        "id": "SR-058",
+        "kind": "positive",
+        "expected": "title_ix",
+        "router": "title_ix",
+        "end_to_end": "title_ix"
+      },
+      {
+        "id": "SR-059",
+        "kind": "positive",
+        "expected": "title_ix",
+        "router": "title_ix",
+        "end_to_end": "title_ix"
+      },
+      {
+        "id": "SR-060",
+        "kind": "positive",
+        "expected": "title_ix",
+        "router": "title_ix",
+        "end_to_end": "title_ix"
+      },
+      {
+        "id": "SR-061",
+        "kind": "positive",
+        "expected": "title_ix",
+        "router": "title_ix",
+        "end_to_end": "title_ix"
+      },
+      {
+        "id": "SR-062",
+        "kind": "positive",
+        "expected": "title_ix",
+        "router": "title_ix",
+        "end_to_end": "title_ix"
+      },
+      {
+        "id": "SR-063",
+        "kind": "positive",
+        "expected": "harassment_hate",
+        "router": "harassment_hate",
+        "end_to_end": "harassment_hate"
+      },
+      {
+        "id": "SR-064",
+        "kind": "positive",
+        "expected": "harassment_hate",
+        "router": "harassment_hate",
+        "end_to_end": "harassment_hate"
+      },
+      {
+        "id": "SR-065",
+        "kind": "positive",
+        "expected": "harassment_hate",
+        "router": "harassment_hate",
+        "end_to_end": "harassment_hate"
+      },
+      {
+        "id": "SR-066",
+        "kind": "negative",
+        "expected": "counseling",
+        "router": "counseling",
+        "end_to_end": null
+      },
+      {
+        "id": "SR-067",
+        "kind": "negative",
+        "expected": null,
+        "router": null,
+        "end_to_end": null
+      },
+      {
+        "id": "SR-068",
+        "kind": "negative",
+        "expected": null,
+        "router": null,
+        "end_to_end": null
+      },
+      {
+        "id": "SR-069",
+        "kind": "negative",
+        "expected": null,
+        "router": null,
+        "end_to_end": null
+      },
+      {
+        "id": "SR-070",
+        "kind": "negative",
+        "expected": null,
+        "router": null,
+        "end_to_end": null
+      },
+      {
+        "id": "SR-071",
+        "kind": "negative",
+        "expected": null,
+        "router": null,
+        "end_to_end": null
+      },
+      {
+        "id": "SR-072",
+        "kind": "negative",
+        "expected": "counseling",
+        "router": "counseling",
+        "end_to_end": null
+      },
+      {
+        "id": "SR-073",
+        "kind": "negative",
+        "expected": null,
+        "router": null,
+        "end_to_end": null
+      },
+      {
+        "id": "SR-074",
+        "kind": "negative",
+        "expected": "counseling",
+        "router": "counseling",
+        "end_to_end": null
+      },
+      {
+        "id": "SR-075",
+        "kind": "negative",
+        "expected": null,
+        "router": null,
+        "end_to_end": null
+      },
+      {
+        "id": "SR-076",
+        "kind": "negative",
+        "expected": null,
+        "router": null,
+        "end_to_end": null
+      },
+      {
+        "id": "SR-077",
+        "kind": "negative",
+        "expected": null,
+        "router": null,
+        "end_to_end": null
+      },
+      {
+        "id": "SR-078",
+        "kind": "negative",
+        "expected": null,
+        "router": null,
+        "end_to_end": null
+      },
+      {
+        "id": "SR-079",
+        "kind": "negative",
+        "expected": null,
+        "router": null,
+        "end_to_end": null
+      },
+      {
+        "id": "SR-080",
+        "kind": "negative",
+        "expected": "counseling",
+        "router": "counseling",
+        "end_to_end": null
+      },
+      {
+        "id": "SR-081",
+        "kind": "non_critical",
+        "expected": "retention_withdraw",
+        "router": "retention_withdraw",
+        "end_to_end": null
+      },
+      {
+        "id": "SR-082",
+        "kind": "non_critical",
+        "expected": "retention_withdraw",
+        "router": "retention_withdraw",
+        "end_to_end": null
+      },
+      {
+        "id": "SR-083",
+        "kind": "non_critical",
+        "expected": "retention_withdraw",
+        "router": "retention_withdraw",
+        "end_to_end": null
+      },
+      {
+        "id": "SR-084",
+        "kind": "non_critical",
+        "expected": "retention_withdraw",
+        "router": "retention_withdraw",
+        "end_to_end": null
+      },
+      {
+        "id": "SR-085",
+        "kind": "non_critical",
+        "expected": "counseling",
+        "router": "counseling",
+        "end_to_end": null
+      },
+      {
+        "id": "SR-086",
+        "kind": "non_critical",
+        "expected": "counseling",
+        "router": "counseling",
+        "end_to_end": null
+      },
+      {
+        "id": "SR-087",
+        "kind": "negative",
+        "expected": null,
+        "router": null,
+        "end_to_end": null
+      },
+      {
+        "id": "SR-088",
+        "kind": "positive",
+        "expected": "harassment_hate",
+        "router": "harassment_hate",
+        "end_to_end": "harassment_hate"
+      },
+      {
+        "id": "SR-089",
+        "kind": "multi_intent",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-090",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-091",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-092",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-093",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-094",
+        "kind": "adversarial",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-095",
+        "kind": "adversarial",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-096",
+        "kind": "multi_intent",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-097",
+        "kind": "multi_intent",
+        "expected": "title_ix",
+        "router": "title_ix",
+        "end_to_end": "title_ix"
+      },
+      {
+        "id": "SR-098",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-099",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-100",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-101",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-102",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-103",
+        "kind": "positive",
+        "expected": "title_ix",
+        "router": "title_ix",
+        "end_to_end": "title_ix"
+      },
+      {
+        "id": "SR-104",
+        "kind": "positive",
+        "expected": "title_ix",
+        "router": "title_ix",
+        "end_to_end": "title_ix"
+      },
+      {
+        "id": "SR-105",
+        "kind": "positive",
+        "expected": "title_ix",
+        "router": "title_ix",
+        "end_to_end": "title_ix"
+      },
+      {
+        "id": "SR-106",
+        "kind": "positive",
+        "expected": "title_ix",
+        "router": "title_ix",
+        "end_to_end": "title_ix"
+      },
+      {
+        "id": "SR-107",
+        "kind": "positive",
+        "expected": "title_ix",
+        "router": "title_ix",
+        "end_to_end": "title_ix"
+      },
+      {
+        "id": "SR-108",
+        "kind": "positive",
+        "expected": "harassment_hate",
+        "router": "harassment_hate",
+        "end_to_end": "harassment_hate"
+      },
+      {
+        "id": "SR-109",
+        "kind": "positive",
+        "expected": "harassment_hate",
+        "router": "harassment_hate",
+        "end_to_end": "harassment_hate"
+      },
+      {
+        "id": "SR-110",
+        "kind": "positive",
+        "expected": "harassment_hate",
+        "router": "harassment_hate",
+        "end_to_end": "harassment_hate"
+      },
+      {
+        "id": "SR-111",
+        "kind": "positive",
+        "expected": "harassment_hate",
+        "router": "harassment_hate",
+        "end_to_end": "harassment_hate"
+      },
+      {
+        "id": "SR-112",
+        "kind": "positive",
+        "expected": "harassment_hate",
+        "router": "harassment_hate",
+        "end_to_end": "harassment_hate"
+      },
+      {
+        "id": "SR-113",
+        "kind": "adversarial",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-114",
+        "kind": "adversarial",
+        "expected": "title_ix",
+        "router": "title_ix",
+        "end_to_end": "title_ix"
+      },
+      {
+        "id": "SR-115",
+        "kind": "adversarial",
+        "expected": "harassment_hate",
+        "router": "harassment_hate",
+        "end_to_end": "harassment_hate"
+      },
+      {
+        "id": "SR-116",
+        "kind": "multi_intent",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "SR-117",
+        "kind": "multi_intent",
+        "expected": "title_ix",
+        "router": "title_ix",
+        "end_to_end": "title_ix"
+      },
+      {
+        "id": "SR-118",
+        "kind": "multi_intent",
+        "expected": "harassment_hate",
+        "router": "harassment_hate",
+        "end_to_end": "harassment_hate"
+      },
+      {
+        "id": "SR-119",
+        "kind": "negative",
+        "expected": null,
+        "router": null,
+        "end_to_end": null
+      },
+      {
+        "id": "SR-120",
+        "kind": "negative",
+        "expected": null,
+        "router": null,
+        "end_to_end": null
+      },
+      {
+        "id": "SR-121",
+        "kind": "negative",
+        "expected": null,
+        "router": null,
+        "end_to_end": null
+      },
+      {
+        "id": "SR-122",
+        "kind": "negative",
+        "expected": null,
+        "router": null,
+        "end_to_end": null
+      },
+      {
+        "id": "SR-123",
+        "kind": "negative",
+        "expected": null,
+        "router": null,
+        "end_to_end": null
+      },
+      {
+        "id": "SR-124",
+        "kind": "negative",
+        "expected": null,
+        "router": null,
+        "end_to_end": null
+      },
+      {
+        "id": "SR-125",
+        "kind": "negative",
+        "expected": null,
+        "router": null,
+        "end_to_end": null
+      },
+      {
+        "id": "SR-126",
+        "kind": "negative",
+        "expected": null,
+        "router": null,
+        "end_to_end": null
+      },
+      {
+        "id": "SR-127",
+        "kind": "positive",
+        "expected": "harassment_hate",
+        "router": "harassment_hate",
+        "end_to_end": "harassment_hate"
+      },
+      {
+        "id": "SR-128",
+        "kind": "positive",
+        "expected": "harassment_hate",
+        "router": "harassment_hate",
+        "end_to_end": "harassment_hate"
+      },
+      {
+        "id": "SR-129",
+        "kind": "positive",
+        "expected": "harassment_hate",
+        "router": "harassment_hate",
+        "end_to_end": "harassment_hate"
+      },
+      {
+        "id": "SR-130",
+        "kind": "negative",
+        "expected": null,
+        "router": null,
+        "end_to_end": null
+      },
+      {
+        "id": "SR-131",
+        "kind": "negative",
+        "expected": null,
+        "router": null,
+        "end_to_end": null
+      },
+      {
+        "id": "SR-132",
+        "kind": "negative",
+        "expected": null,
+        "router": null,
+        "end_to_end": null
+      },
+      {
+        "id": "SR-133",
+        "kind": "negative",
+        "expected": null,
+        "router": null,
+        "end_to_end": null
+      }
+    ]
+  },
+  "b9_results": {
+    "dataset": "devika-c1-b9-independent-synthetic",
+    "dataset_version": "1.0.0",
+    "total_cases": 24,
+    "recall": {
+      "harassment_hate": {
+        "positives": 6,
+        "router_hits": 5,
+        "end_to_end_hits": 5
+      },
+      "title_ix": {
+        "positives": 6,
+        "router_hits": 6,
+        "end_to_end_hits": 6
+      },
+      "urgent_safety": {
+        "positives": 6,
+        "router_hits": 6,
+        "end_to_end_hits": 6
+      }
+    },
+    "safety_critical_positives": 18,
+    "safety_critical_end_to_end_hits": 17,
+    "misses": [
+      {
+        "id": "B9-H05",
+        "kind": "positive",
+        "expected": "harassment_hate",
+        "router": "title_ix",
+        "end_to_end": "title_ix"
+      }
+    ],
+    "negatives": 6,
+    "false_positives": 0,
+    "false_positive_ids": [],
+    "router_exact_lane_agreement": {
+      "agree": 21,
+      "of": 24
+    },
+    "rows": [
+      {
+        "id": "B9-C01",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "B9-C02",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "B9-C03",
+        "kind": "multi_intent",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "B9-C04",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "B9-C05",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "B9-C06",
+        "kind": "positive",
+        "expected": "urgent_safety",
+        "router": "urgent_safety",
+        "end_to_end": "urgent_safety"
+      },
+      {
+        "id": "B9-T01",
+        "kind": "positive",
+        "expected": "title_ix",
+        "router": "title_ix",
+        "end_to_end": "title_ix"
+      },
+      {
+        "id": "B9-T02",
+        "kind": "multi_intent",
+        "expected": "title_ix",
+        "router": "title_ix",
+        "end_to_end": "title_ix"
+      },
+      {
+        "id": "B9-T03",
+        "kind": "positive",
+        "expected": "title_ix",
+        "router": "title_ix",
+        "end_to_end": "title_ix"
+      },
+      {
+        "id": "B9-T04",
+        "kind": "positive",
+        "expected": "title_ix",
+        "router": "title_ix",
+        "end_to_end": "title_ix"
+      },
+      {
+        "id": "B9-T05",
+        "kind": "positive",
+        "expected": "title_ix",
+        "router": "title_ix",
+        "end_to_end": "title_ix"
+      },
+      {
+        "id": "B9-T06",
+        "kind": "positive",
+        "expected": "title_ix",
+        "router": "title_ix",
+        "end_to_end": "title_ix"
+      },
+      {
+        "id": "B9-H01",
+        "kind": "positive",
+        "expected": "harassment_hate",
+        "router": "harassment_hate",
+        "end_to_end": "harassment_hate"
+      },
+      {
+        "id": "B9-H02",
+        "kind": "multi_intent",
+        "expected": "harassment_hate",
+        "router": "harassment_hate",
+        "end_to_end": "harassment_hate"
+      },
+      {
+        "id": "B9-H03",
+        "kind": "positive",
+        "expected": "harassment_hate",
+        "router": "harassment_hate",
+        "end_to_end": "harassment_hate"
+      },
+      {
+        "id": "B9-H04",
+        "kind": "positive",
+        "expected": "harassment_hate",
+        "router": "harassment_hate",
+        "end_to_end": "harassment_hate"
+      },
+      {
+        "id": "B9-H05",
+        "kind": "positive",
+        "expected": "harassment_hate",
+        "router": "title_ix",
+        "end_to_end": "title_ix"
+      },
+      {
+        "id": "B9-H06",
+        "kind": "positive",
+        "expected": "harassment_hate",
+        "router": "harassment_hate",
+        "end_to_end": "harassment_hate"
+      },
+      {
+        "id": "B9-N01",
+        "kind": "negative",
+        "expected": null,
+        "router": "counseling",
+        "end_to_end": null
+      },
+      {
+        "id": "B9-N02",
+        "kind": "negative",
+        "expected": null,
+        "router": null,
+        "end_to_end": null
+      },
+      {
+        "id": "B9-N03",
+        "kind": "negative",
+        "expected": null,
+        "router": null,
+        "end_to_end": null
+      },
+      {
+        "id": "B9-N04",
+        "kind": "negative",
+        "expected": null,
+        "router": "counseling",
+        "end_to_end": null
+      },
+      {
+        "id": "B9-N05",
+        "kind": "negative",
+        "expected": null,
+        "router": null,
+        "end_to_end": null
+      },
+      {
+        "id": "B9-N06",
+        "kind": "negative",
+        "expected": null,
+        "router": null,
+        "end_to_end": null
+      }
+    ]
+  },
+  "generated_tests_review": {
+    "collected": 1340,
+    "family_cases": 1242,
+    "unique_family_texts": 1242,
+    "family_lane_counts": {
+      "urgent_safety": 1011,
+      "title_ix": 126,
+      "harassment_hate": 105
+    },
+    "benign_neighbours": 34,
+    "obfuscation_cases": 11,
+    "multi_intent_e2e": 6,
+    "hate_positive_controls": 15,
+    "hate_dislikes": 11,
+    "base_differential_exit_code": 1,
+    "base_differential_summary": "1283 failed, 57 passed in 1.74s",
+    "original_97_regression_objects_unchanged": true,
+    "new_regression_cases": 36,
+    "exact_B9_duplicates_in_generated_families": 0
+  },
+  "partner_B9_after_rows_match_independent_run": true
+}
