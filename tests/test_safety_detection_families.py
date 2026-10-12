@@ -236,3 +236,61 @@ def test_priority_order_holds_for_new_families():
 ])
 def test_documented_caution_bias(text, lane):
     assert _lane(text) == lane
+
+
+# ---------------------------------------------------------------------------
+# O10 (B9-N01): generic "hate" -- policy change, needs Devika's agreement (see PR)
+# ---------------------------------------------------------------------------
+# Recall controls: hate aimed at people, or a named form of hate, stays a conduct report.
+HATE_BIAS_REPORTS = [
+    "someone in my hall said they hate people like me",
+    "they hate me because I'm gay",
+    "this is a hate crime",
+    "someone wrote hate messages on my door",
+    "my roommate keeps saying hateful things about immigrants",
+    "people here hate Muslims",
+    "a group of guys said they hate Black students",
+    "they hate us",
+    "he hates my kind",
+    "students keep hating on me for my accent",
+    "there is hate speech in the class group chat",
+    "someone put up hate flyers outside the chapel",
+    "I keep getting hate messages on Instagram",
+    "a hate group is recruiting on campus",
+    "I hate you",
+]
+
+# Everyday dislike: no person or form of hate, so no conduct template.
+HATE_DISLIKES = [
+    "I hate waiting in line at the health center",
+    "I hate how slow the course portal is",
+    "I hate this weather",
+    "I hate group projects",
+    "I hate speech class",
+    "I hate comments in code reviews",
+    "I hate that the gym closes early on Sundays",
+    "I hate Mondays",
+    "I hate it when my code doesn't compile",
+    "I hate math but I need tutoring",
+    "I hate black coffee",
+]
+
+
+@pytest.mark.parametrize("text", HATE_BIAS_REPORTS)
+def test_hate_aimed_at_people_is_still_a_conduct_report(text):
+    assert _lane(text) == "harassment_hate"
+
+
+@pytest.mark.parametrize("text", HATE_DISLIKES)
+def test_everyday_dislike_is_not_a_conduct_report(text):
+    assert _lane(text) not in SAFETY_CRITICAL_LANES
+
+
+@pytest.mark.parametrize("text,lane", [
+    ("I hate myself", "counseling"),
+    ("I hate my life", "counseling"),
+    ("I hate my body", "counseling"),
+    ("I hate myself and I want to die", "urgent_safety"),
+])
+def test_self_directed_hate_is_unchanged(text, lane):
+    assert _lane(text) == lane

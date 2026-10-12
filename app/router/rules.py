@@ -311,11 +311,13 @@ class Rules:
         ]
 
         # Self-directed distress ("I hate myself / my life / my body") is not a conduct
-        # report; it is excluded here and routed to counseling below (C1 review, PR #4).
+        # report; it routes to counseling below (C1 review, PR #4). No HATE_BIAS pattern
+        # matches it.
         SELF_DIRECTED = r"(?:my\s*self|my\s+(?:life|body))\b"
 
+        # Bare "hate" is no longer a conduct trigger (O10); see HATE_BIAS below.
         CONDUCT = [
-            r"\bslur\b", r"\bhate\b(?!\s+" + SELF_DIRECTED + r")", r"\bracist\b", r"\bhomophobic\b", r"\bableist\b",
+            r"\bslur\b", r"\bracist\b", r"\bhomophobic\b", r"\bableist\b",
             r"\bslurs\b", r"\bthreatened\b", r"\bbull(ied|ies)\b", r"\bintimidated\b",
             r"\bthreat(s|en|ening)?\b", r"\bbully(ing)?\b", r"\bintimidat(e|ion|ing)?\b",
             r"\bdoxx(ing)?\b", r"\bbias\s+incident\b", r"\btargeted\s+harassment\b", r"\bdiscrimination\b",
@@ -352,6 +354,28 @@ class Rules:
             + r"\s+(people|students|folks|kids|classmates|women|men|girls|guys)\b",
             # Name-calling is bullying in itself, like "bullied".
             r"\bcall(s|ed|ing)?\s+(me|us|him|her|them|my\s+\w+)\s+(names|slurs)\b",
+        ]
+
+        # O10 (B9-N01): bare "hate" is usually everyday dislike ("I hate waiting for
+        # appointments"), not a bias report. Conduct now needs hate aimed at people or a named
+        # form of hate. Self-directed hate ("hate myself/my life/my body") stays counseling.
+        HATE = r"\bhat(e|es|ed|ing)"
+        HATE_BIAS = [
+            r"\bhate[\s-]*(crimes?|incidents?|symbols?|graffiti|propaganda|flyers?|literature|campaigns?|rhetoric|"
+            r"violence|vandalism)\b",
+            # "hate speech/group/messages" only after a determiner or verb, because after "I"
+            # these are a verb and its object ("I hate group projects", "I hate speech class").
+            r"\b(a|an|the|some|any|more|of|with|left|leaves|sent|sends|wrote|writes|posted|posts|received|"
+            r"receive|got|get|getting|found|spread(s|ing)?|is|are|was|were|been|there's)\s+hate[\s-]*"
+            r"(speech|groups?|messages?|mail|notes?|letters?|comments?|posts?|attacks?|signs?|words|threats?)\b",
+            r"\bhateful\b",
+            HATE + r"\s+(on\s+)?(me|us|you|him|her|them|people|everyone|anyone|anybody|someone|somebody)\b",
+            HATE + r"\s+(on\s+)?(my|our)\s+(kind|people|race|religion|culture|community|ethnicity|identity|faith)\b",
+            HATE + r"\s+(all\s+)?(those\s+|these\s+|the\s+)?" + IDENTITY
+            + r"\s+(people|students|folks|kids|classmates|women|men|girls|guys)\b",
+            HATE + r"\s+(all\s+)?(those\s+|these\s+|the\s+)?(muslims|jews|christians|hindus|sikhs|atheists|immigrants|"
+            r"foreigners|gays|lesbians|asians|blacks|latinos|latinas|hispanics|arabs|mexicans|indians|africans|"
+            r"refugees)\b",
         ]
 
         # C1 B9: threats or attacks against the student ("promising to beat me up", "said
@@ -401,7 +425,8 @@ class Rules:
                                                        + INGESTION), re.I)], 1),
             "title_ix": Rule("title_ix", "title_ix", [re.compile("|".join(TITLE_IX + SEXUAL_MISCONDUCT), re.I)], 2),
             "harassment_hate": Rule("harassment_hate", "conduct",
-                                    [re.compile("|".join(CONDUCT + BIAS_HOSTILITY + THREAT_OR_ATTACK), re.I)], 3),
+                                    [re.compile("|".join(CONDUCT + BIAS_HOSTILITY + THREAT_OR_ATTACK + HATE_BIAS),
+                                                re.I)], 3),
             "retention_withdraw": Rule("retention_withdraw", "retention", [re.compile("|".join(RETENTION), re.I)], 4),
             "counseling": Rule("counseling", "counseling", [re.compile("|".join(COUNSELING), re.I)], 5),
         }
