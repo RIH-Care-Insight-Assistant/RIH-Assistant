@@ -5,39 +5,31 @@ Maintained only by Abhinav (or his coding agent) on his own feature branches. Re
 ## Current
 
 - **Checkpoint:** C1 (Phases 0–1), close-out. **C1 is not accepted yet**; see `docs/PROJECT_STATE.md` → C1 acceptance.
-- **Branch:** `feature/abhinav-c1-acceptance`, created from `origin/main` @ `835a6f0`. Docs only: `docs/PROJECT_STATE.md` and this file.
-- **All C1 PRs merged (verified on GitHub 2026-10-11):**
-  - My PR #4 (head `6bea6a3`) and Devika's PR #5 (head `4a35cc2`), each approved by the other.
-  - My PR #8 (head `0965e67`, 8/8 checks), approved by Devika, merged by me at 23:29 UTC.
-  - Devika's PR #9 (head `a63ff43`, 8/8 checks), approved by me, merged by Devika at 23:46 UTC.
-  - CI on `main` @ `835a6f0` (run 38185553143): all 8 jobs passed.
-- **My final-`main` validation (B4 rerun, my half of B8): done** on `835a6f0`, WSL2 and native Windows, from fresh clones. Results below. Devika's macOS run of `835a6f0` is in her draft PR #11.
-- **B9 failed on `835a6f0`** (Devika, PR #11): 10/18 expected safety templates, 1/6 benign false positives. I reproduced it exactly. Cause: detection coverage. Each miss was one example of a phrasing family the router lacked; 20/20 extra paraphrases also fell through.
-- **My repair: draft PR #12** (`feature/abhinav-c1-safety-repairs` @ `06ccbe3`, router only):
-  - `298649d` adds the detection families.
-  - `eb1956b` is the O10 `hate` narrowing, a policy change that needs Devika's agreement.
-  - `bb7d729` is the B9-N05 transfer fix; `06ccbe3` adds the docs.
-  - On the disclosed fixture: 17/18 expected template, 18/18 any safety template, 0/6 false positives (regression run).
-  - Evidence: `docs/audit/c1-b9-safety-repair.md` on that branch.
-- **Joint decisions needed before PR #12 merges:** B9-H05 (generic harassment → Title IX; I propose keeping it), O10, and whether explicit threats to kill the student escalate to crisis.
-- **Still open for C1:** PR #12 review and merge; both rerun the post-repair `main` (B8); B7 (I apply the GitHub settings as admin; still unapplied); Devika's adoption of her deferral recommendations. PR #10 stays a draft until then.
-- **Earlier branch `feature/abhinav-c1-closeout-docs` → PR #8** (docs, `.gitignore` and tests; no application code or contract text changes):
-  - Root `AGENTS.md` and `CLAUDE.md` (`CLAUDE.md` imports `AGENTS.md`, so there is one standard).
-  - `docs/MASTER_PLAN.md`, `docs/PROJECT_STATE.md`, `docs/RELEASE_GATES.md` (I own it; Devika contributes and reviews), `docs/instructions/ABHINAV_LAUNCHER.md`.
-  - Architecture §4: dataset reference corrected to v1.2.0; marked approved by both; the proposed response additions marked not approved (C2).
-  - `docs/INTERFACE_CONTRACTS.md`: unchanged from `main`. My earlier one-row edit was reverted because Devika's PR #9 owns the final joint approval record (both rows).
-  - O6: `.gitignore` ignores `**/app/logs/`; `tests/test_audit_log_ignored.py` checks it with `git check-ignore`.
-  - `tests/test_safety_model_paths.py::test_model_features_are_off_by_default`: model features stay off unless explicitly enabled.
-  - `tests/test_repo_assumptions.py`: the agent/state docs only link to files that exist; `CLAUDE.md` imports `AGENTS.md`.
-- **Approvals (2026-10-11):**
-  - C1-v0.2 and architecture §4 items 1–4 (dataset schema v1.2.0): approved by **both** in issue #7. My original statement is kept in #6, closed as a duplicate.
-  - The §4 proposed response additions are **not approved** by either of us; they move to C2.
-  - C2 stack (FastAPI, React + TypeScript, Vite, SQLite): I approved; Devika pending. Node version and lockfile still to agree. Admin endpoints stay protected or disabled until real authentication exists.
-- **My decisions, awaiting Devika:**
-  - Deferrals approved with conditions: O4, O5, O7 (README before any public C2 demo), O8, O9, O10, formal KB freshness, comprehensive held-out testing (Phase 5). Devika's review recommends seven of them and rejects O10; PR #12 now proposes an O10 fix.
-  - New C1 blocker B9: Devika runs a small held-out safety check before C1 acceptance.
-  - Model features stay off until operational safeguards exist.
-- **Devika's repairs (B1–B4):** merged in PR #9. I did not implement any part of them; I reviewed PR #9 and reran the merged result.
+- **Branch:** `feature/abhinav-c1-acceptance` → draft PR #10, with `main` @ `bbc07de` merged in. Docs only: `docs/PROJECT_STATE.md`, `docs/RELEASE_GATES.md` and this file.
+- **All C1 PRs merged (verified on GitHub 2026-10-12):**
+
+  | PR | Author | Head → merge | Approved by |
+  |---|---|---|---|
+  | #4 | me | `6bea6a3` → `7646431` | Devika |
+  | #5 | Devika | `4a35cc2` → `c4780fc` | me |
+  | #8 | me | `0965e67` → `20e62a9` | Devika |
+  | #9 | Devika | `a63ff43` → `835a6f0` | me |
+  | #11 | Devika | `e41e665` → `f464f41` | me |
+  | #13 | Devika | `89e8df0` → `9e8c16a` | me |
+  | #12 | me | `d79f841` → `bbc07de` | Devika |
+
+  The final heads of #8, #9, #11, #12 and #13 passed 8/8. CI on `main` after the 2026-10-12 merges (runs 38199938739, 38200937185, 38203527831) passed 8/8 each.
+- **Final `main` `bbc07de`, my half of B8: done.** WSL2 4628 passed, Ruff clean; Windows 4627 passed, 1 skipped.
+  - Both platforms: safety eval v1.7.0 122/122 with 0/44 false positives; readiness 15/15.
+  - Frozen B9 fixture, original labels: 18/18 with 0/6 false positives.
+  - Devika's 42 review probes: 42/42.
+- **B9:** failed at first (10/18, her held-out record; preserved). Repaired in my PR #12 to 18/18 with 0/6 on the original labels. No B9 label changed.
+- **Routing policies approved by both** (her PR #12 review; my comment of 2026-10-12): non-sexual harassment → conduct; O10 narrowing with hate-report recall; explicit severe threats → urgent guidance.
+- **Still open for C1:**
+  - B7 is not applied. Re-read 2026-10-12: no required checks, admins not enforced, secret scanning off.
+  - Devika's run of `bbc07de` (B8).
+  - Devika's explicit decisions on seven deferrals. O10 was repaired, not deferred.
+  - PR #10 stays a draft until those are recorded.
 
 ## Completed in C1
 
@@ -56,8 +48,9 @@ Maintained only by Abhinav (or his coding agent) on his own feature branches. Re
 | LF line-ending policy | `.gitattributes` |
 | Safety policy, evidence and limitations | `docs/safety/crisis-routing.md` |
 | **PR #4 review fixes:** `DECLINE_PROTECTED_LANES` (retention protected from decline); retention inflections; `transfer` excludes records/insurance; self-directed hate → counseling; counseling template names 988/911; Strands wrapper uses the router's safety check; thread-lifetime limitation documented; dataset v1.1.0 (89 cases) | `app/router/*`, `safety/routing_matrix.csv`, `app/agent/dispatcher.py`, `app/agent/strands_safety.py`, `app/answer/compose.py`, tests, docs (`docs/safety/crisis-routing.md` §7) |
+| **PR #12, B9 repair:** detection families (third-party self-harm, overdose without the word, unwanted sexual contact/messages, coerced sex, bias hostility, threats or attacks); approved policies (non-sexual harassment → conduct, O10 narrowing, severe threats → crisis); exemptions bound to the benign event; coordinated threats; dataset v1.7.0 (172 cases); reconciled pre-C1 harassment checks | `app/router/rules.py`, `safety/routing_matrix.csv`, `tests/test_safety_detection_families.py`, `tests/data/safety_routing_cases.json`, `tests/run_smoke.py`, `tests/test_phase6_demo_scenarios.py`, `scripts/check_routes.py`, `docs/audit/c1-b9-safety-repair.md`, `docs/safety/crisis-routing.md` |
 
-## Tests actually run (2026-10-11)
+## Tests actually run (2026-10-11 to 2026-10-12)
 
 | Environment | Command | Result |
 |---|---|---|
@@ -86,30 +79,45 @@ Maintained only by Abhinav (or his coding agent) on his own feature branches. Re
 | GitHub Actions run 38185553143, push to `main` @ `835a6f0` (PR #9 merge) | full workflow | all 8 jobs passed |
 | WSL2 Ubuntu 26.04.1, Python 3.14.4, ruff 0.16.10, fresh WSL-native clone at `835a6f0` | `ruff check .`; `ruff-c1.toml` lint + format check; `pytest -q`; `check_routes.py`; `safety_eval.py --fail-on-miss`; smoke; KB audit; `scripts.audit_c1_readiness` | clean; clean (8 files formatted); 552 passed; passed; 75/75, FP 0/16, 97/97 exact-lane, exit 0; OK; exit 0 (9 stale, 1 chat-disabled, 2 crisis-content warnings); 15/15 |
 | Windows 11 native 10.0.26200, Python 3.13.2, pytest 9.0.2, fresh clone at `835a6f0` | `pytest -q --basetemp=<writable dir>`; `check_routes.py`; `safety_eval.py --fail-on-miss`; smoke; KB audit; readiness | 551 passed, 1 skipped (symlink test); passed; 75/75, FP 0/16, 97/97, exit 0; OK; exit 0; 15/15 |
-
 | Windows 11 native, Python 3.13.2, `main` @ `835a6f0` (fresh clone) | Devika's B9 fixture (SHA-256 `a909cecc…`) through `safety_eval.py --dataset` | 10/18 expected template, 1/6 FP, 13/24 exact; matches her initial run |
 | same, unmodified `835a6f0` + my new `tests/test_safety_detection_families.py` | `pytest` on that file | 1,283 failed, 57 passed (the tests detect the gaps) |
 | same, `835a6f0` corpus: 647 test/script/app/JSON strings, old vs new rules | lane diff | only `"harm myself"` changes lane (to crisis); no test message changes |
 | WSL2 Ubuntu 26.04.1, Python 3.14.4, ruff 0.16.10, fresh clone of PR #12 @ `06ccbe3` | Ruff global + `ruff-c1.toml` lint/format; `pytest -q`; safety test files; `check_routes.py`; `safety_eval.py --fail-on-miss` (v1.4.0); smoke; KB audit; readiness; B9 fixture | clean; 1964 passed; 1687 passed; passed; 99/99, FP 0/28, 133/133; OK; exit 0; 15/15; 17/18, FP 0/6, 21/24 |
 | Windows 11 native, Python 3.13.2, fresh clone of PR #12 @ `06ccbe3` | same minus Ruff | 1963 passed, 1 skipped (symlink); 1687 passed; passed; 99/99, 0/28, 133/133; OK; exit 0; 15/15; 17/18, 0/6, 21/24 |
+| Revised family tests on `06ccbe3` / `835a6f0` | `pytest` on `tests/test_safety_detection_families.py` | 1,062 / 2,336 failed (the tests detect the review findings) |
+| WSL2 / Windows, fresh clones of PR #12 @ `8d73390` (after Devika's review) | full suite; v1.5.0 eval; B9 fixture; her 42 review probes | 3307 passed / 3306 passed, 1 skipped; 110/110, FP 0/36, 152/152; 18/18, FP 0/6; 42/42 |
+| Re-review pair tests on `8d73390` | `pytest` on the new pairs | 25 failed (the tests detect the re-review findings) |
+| WSL2 / Windows, fresh clones of PR #12 @ `829f4e3` (after re-review; `main` @ `9e8c16a` merged in) | full suite; v1.6.0 eval; B9; 42 probes; her 9 re-review cases | 3421 passed / 3420 passed, 1 skipped; 117/117, FP 0/41, 164/164; 18/18, FP 0/6; 42/42; 9/9 |
+| Coordinated-threat tests on `829f4e3` | `pytest` on the new tests | 696 failed (the tests detect the gap) |
+| WSL2 / Windows, fresh clones of PR #12 @ `d79f841` (coordinated threats) | full suite; safety test files; v1.7.0 eval; B9; 42 probes | 4628 passed / 4627 passed, 1 skipped; 4320 / 4320; 122/122, FP 0/44, 172/172; 18/18, FP 0/6; 42/42 |
+| Lane diff of all repo strings vs the previous head, at each PR #12 step | old vs new rules | `8d73390`: 0 of 1,153 changed; `829f4e3`: 0 of 1,218 changed |
+| GitHub Actions on PR #12 heads | full workflow | `06ccbe3` run 38197474723, `8d73390` run 38200631849 (per Devika's re-review), `829f4e3` and `d79f841`: 8/8 each |
+| GitHub Actions runs 38199938739 / 38200937185 / 38203527831, `main` @ `f464f41` / `9e8c16a` / `bbc07de` | full workflow | 8/8 each |
+| **WSL2 Ubuntu 26.04.1, Python 3.14.4, ruff 0.16.10, fresh clone of final `main` @ `bbc07de`** | Ruff global + `ruff-c1.toml` lint/format; `pytest -q`; safety test files; `check_routes.py`; `safety_eval.py --fail-on-miss` (v1.7.0); smoke; KB audit; readiness; B9 fixture | clean (9 files formatted); **4628 passed**; 4320 passed; passed; **122/122, FP 0/44, 172/172**; OK; exit 0; 15/15; **18/18, FP 0/6**, 22/24 |
+| **Windows 11 native 10.0.26200, Python 3.13.2, pytest 9.0.2, fresh clone of final `main` @ `bbc07de`** | same minus Ruff, plus Devika's 42 review probes | **4627 passed, 1 skipped** (symlink); 4320 passed; passed; 122/122, 0/44, 172/172; OK; exit 0; 15/15; 18/18, 0/6, 22/24; 42/42 |
 
 macOS has not been run locally; CI covers it, and Devika runs her Mac adversarial tests.
 
 ## Needs Devika / joint decision
 
-The authoritative C1 checklist (blockers B1–B9, deferrals, approvals) is `docs/PROJECT_STATE.md`.
-Done: C1-v0.2 and architecture §4 items 1–4 (#7); B1–B4 (PR #9); PR #8 review; her `835a6f0` run and B9 initial run (PR #11); her technical review of PR #10; her decision-log entries C1-D25..D30 (PR #11). Still open:
+The authoritative C1 checklist is `docs/PROJECT_STATE.md`.
 
-1. **Decisions:** B9-H05 (I propose keeping generic harassment on Title IX), O10 (`eb1956b`), and whether explicit threats to kill the student escalate to crisis.
-2. **Review of PR #12**, commit by commit.
-3. **Deferrals:** her review recommends seven with conditions and rejects O10; she still has to adopt them explicitly.
-4. **B8 rerun:** both of us validate the `main` that includes PR #12.
-5. **Merge order** for PR #11 (her evidence) and PR #12 (my repair); they share no files.
-6. **After C1 acceptance:** the revised collaboration model and C2-v0.1 contracts; reconcile with her C2-v0.1 candidate in PR #11.
+Done:
+- C1-v0.2 and architecture §4 items 1–4 (#7).
+- B1–B4 (PR #9) and the decline repair (PR #13).
+- B9: failed, then repaired in PR #12, which she approved.
+- The three routing policies, approved by both.
+- Her reviews of PRs #10 and #12.
+
+Still open:
+1. **B8:** her run of final `main` `bbc07de` on macOS, recorded in her progress file.
+2. **Deferrals:** an explicit accept/reject for O4, O5, O7, O8, O9, KB and HELD-full. Her review recommends conditional acceptance of all seven (C1-D28), but adoption is not recorded. O10 was repaired, not deferred.
+3. **Review of PR #10.** Her approval of its final version records C1 acceptance.
+4. **After C1 acceptance:** the revised collaboration model and C2-v0.1 contracts; reconcile with her C2-v0.1 candidate.
 
 ## Needs a GitHub admin (human)
 
-Abhinav applies these himself (B7); both humans are admins. As of 2026-10-11 after PR #12 opened, none of the recommended branch-protection changes are applied, and secret scanning and push protection are off. Dependabot alerts are on. The exact required check names and the full recommended settings are in `docs/PROJECT_STATE.md` → GitHub settings for `main`.
+Abhinav applies these himself (B7); both humans are admins. As of 2026-10-12 after PR #12 merged, none of the recommended branch-protection changes are applied, and secret scanning and push protection are off. Dependabot alerts are on. The exact required check names and the full recommended settings are in `docs/PROJECT_STATE.md` → GitHub settings for `main`.
 
 ## Resume
 
@@ -124,8 +132,7 @@ ruff check . && python -m pytest -q && python scripts/safety_eval.py --fail-on-m
 ```
 
 **Next safe step:**
-1. Devika and I decide B9-H05, O10 and threat escalation; Devika reviews PR #12 commit by commit. I adjust it to the decisions. No merge without her approval and 8/8 CI.
-2. I apply the GitHub settings listed in `docs/PROJECT_STATE.md` (B7) and confirm them through the protection API.
-3. After PR #12 merges, both of us rerun the new `main` (full suite, safety eval, readiness, disclosed B9 fixture); I record mine here.
-4. I complete the C1 completion report in `docs/PROJECT_STATE.md` and mark PR #10 ready; Devika's approval records acceptance.
-5. Only then: propose the revised collaboration model and C2-v0.1 contracts for joint approval (Devika's PR #11 has a C2-v0.1 candidate to reconcile). No C2 implementation before that.
+1. I apply the GitHub settings listed in `docs/PROJECT_STATE.md` (B7) and confirm them through the protection API.
+2. Devika records her `bbc07de` run (B8) and her seven deferral decisions.
+3. I update the completion report with those records, mark PR #10 ready and request Devika's approval. Her approval records C1 acceptance; then close #7.
+4. Only then: propose the revised collaboration model and C2-v0.1 contracts for joint approval. No C2 implementation before that.
