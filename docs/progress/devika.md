@@ -27,6 +27,11 @@ Last updated: 2026-10-11 (America/New_York). Operator: Devika Rani Sanaboyina.
   update stale PR/evidence summaries, then rerun the next exact head. No approval,
   ready transition or merge performed. No repeated C1 implementation or C2 work.
   Decline-only PR #13 remains separate; this follow-up changes progress notes only.
+- During this review, GitHub records #13 merged at head `89e8df0` as `9e8c16a`
+  (2026-10-12 03:44:21 UTC). This session performed no merge. Progress follow-up
+  `ceae2d4` was pushed after that merge and remains on the feature branch, outside
+  main; it has no open PR or new CI run. No duplicate PR was opened. The reviewed
+  #12 head and its passing CI above are unaffected; #12 is still open/draft.
 
 ## B9-N04 decline repair — latest status
 
