@@ -619,3 +619,115 @@ def test_re_review_pairs_are_balanced():
     assert len(MESSAGE_IDIOMS) == len(LITERAL_THREATS)
     assert INGESTION_AT_A_PLACE and MEDICINE_CARRIED
     assert SEXUAL_REPORTS_WITH_BENIGN_WORDS and SEXUAL_HEALTH_AND_CONSENTED_CARE
+
+
+# ---------------------------------------------------------------------------
+# PR #12 final: coordinated severe threats ("said he will find me and kill me"). The severe
+# verb can follow another action in the same threat; victims include third parties.
+# ---------------------------------------------------------------------------
+_COORD_FRAMES = ["he said he will", "my ex told me she is going to", "someone texted that they would",
+                 "he threatened to", "she promised to", "he is going to", "they are trying to", "he tried to"]
+_COORD_MIDDLES = ["find me and", "come to my dorm and", "wait outside class and then", "break in and",
+                  "get a gun to"]
+_COORD_VICTIMS = ["me", "us", "my roommate", "her", "my friend", "everyone"]
+COORDINATED_THREATS = [f"{f} {m} {s} {v}" for f, m, s, v in itertools.product(
+    _COORD_FRAMES, _COORD_MIDDLES, ["kill", "shoot", "stab", "strangle"], _COORD_VICTIMS)]
+
+# Same frames and middles, ending in an idiom instead of a threat. "threatened to" is left out
+# because "threatened" alone is already a conduct report.
+_IDIOM_FRAMES = [f for f in _COORD_FRAMES if not f.startswith("he threatened")]
+_IDIOM_TAILS = ["shoot me a text", "shoot us an email", "kill it", "kill time", "kill the exam",
+                "shoot some hoops", "choke me up", "kill me with kindness", "shoot me the details"]
+COORDINATED_IDIOMS = [f"{f} {m} {t}" for f, m, t in itertools.product(
+    _IDIOM_FRAMES, ["come over and", "go to the gym and", "study all night and then"], _IDIOM_TAILS)]
+
+
+@pytest.mark.parametrize("text", COORDINATED_THREATS)
+def test_coordinated_threat_routes_to_crisis(text):
+    assert _lane(text) == "urgent_safety"
+
+
+@pytest.mark.parametrize("text", COORDINATED_IDIOMS)
+def test_coordinated_idiom_is_not_a_threat(text):
+    assert _lane(text) not in SAFETY_CRITICAL_LANES
+
+
+@pytest.mark.parametrize("text", [
+    "he said he will find me and kill me",
+    "she said she would come to my dorm and stab me",
+    "my ex texted that he is going to come over and strangle me",
+    "he threatened to wait outside my class and shoot my roommate",
+    "he promised to hunt me down and kill me",
+    "he is going to find me and kill me tonight",
+    "he tried to grab me and choke me",
+    "she said she will follow me home and then shoot me",
+    "he said he would come over to kill me",
+    "my boyfriend said he'd wait until I'm asleep and then he'll strangle me",
+    "a student said he will go to the dining hall and shoot people",
+    "my roommate's ex said he would find her and stab her",
+    "she told my friend she would come to his apartment and strangle him",
+    "someone posted that they will bring a gun to class and shoot the professor",
+    "I don't want counseling, my ex said he will find me and kill me",
+])
+def test_coordinated_threat_gets_exact_crisis_template(dispatcher, text):
+    _assert_exact_route_only(dispatcher, text, "urgent_safety")
+
+
+@pytest.mark.parametrize("text", [
+    "he said he will come over and shoot me a text",
+    "she said she'd stop by and shoot us an email",
+    "he said he would study all night and kill the exam",
+    "they said they would go home and kill time",
+    "he said he'd come over and kill me with kindness",
+    "she said she'd come over and choke me up with her speech",
+    "he promised to call me and shoot me the details",
+    "she said she'll come over to kill the spider",
+    "this homework is going to find me and kill me",
+    "he said he will find me after class and hit me up",
+])
+def test_coordinated_idiom_neighbours_stay_benign(text):
+    assert _lane(text) not in SAFETY_CRITICAL_LANES
+
+
+@pytest.mark.parametrize("text", [
+    "he said he will kill me up close",
+    "he said he would shoot me the second I walk in",
+    "she said she will stab me in my sleep",
+    "he said he would shoot me a text and then shoot me",
+])
+def test_threats_next_to_idiom_words_still_route(text):
+    assert _lane(text) == "urgent_safety"
+
+
+@pytest.mark.parametrize("text", [
+    "a student promised to beat me up after practice",
+    "he said he would find me and hurt me",
+])
+def test_coordinated_non_severe_threats_stay_conduct(text):
+    # Approved policy: only kill/shoot/stab/strangle threats escalate; beatings and "hurt" stay conduct.
+    assert _lane(text) == "harassment_hate"
+
+
+# "shoot/shot + person + determiner + noun" is the sending idiom whatever the noun; a time
+# phrase or a preposition keeps it a threat.
+@pytest.mark.parametrize("text", [
+    "my lab partner said she would finish the data and shoot me the results",
+    "he said he will shoot me the slides",
+    "he shot me the files yesterday",
+    "she is shooting me the link now",
+    "my TA said she would shoot us her notes after class",
+])
+def test_shoot_send_idiom_with_any_object_is_benign(text):
+    assert _lane(text) not in SAFETY_CRITICAL_LANES
+
+
+@pytest.mark.parametrize("text", [
+    "he said he would shoot me the second I walk in",
+    "he said he would shoot my roommate the next time he sees him",
+    "someone shot my friend the other day",
+    "he shot her this morning",
+    "he said he will shoot us all",
+    "she said she would shoot me in the head",
+])
+def test_shoot_with_time_or_place_phrase_is_a_threat(dispatcher, text):
+    _assert_exact_route_only(dispatcher, text, "urgent_safety")

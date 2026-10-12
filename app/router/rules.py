@@ -308,7 +308,6 @@ class Rules:
         # subject, or an attempt, so idioms ("this homework is going to kill me", "shoot me an
         # email", "stabbed me in the back", "hit him up") do not match. Beatings and punches
         # stay conduct.
-        SEVERE = r"(kill|murder|shoot|stab|strangle|choke|slit\s+\w+\s+throat)"
         PERSON = (r"(student|guy|man|woman|person|people|professor|teacher|instructor|ta|kid|girl|boy|roommates?|"
                   r"neighbou?rs?|officer|classmates?|friends?|partner|boyfriend|girlfriend|ex|husband|wife|sister|brother|"
                   r"mom|mother|dad|father|parents|family|kids|child|children|son|daughter|teammates?|advisor|coworkers?|"
@@ -316,40 +315,59 @@ class Rules:
         # PR #12 re-review (P2): "shoot me a text", "shoot us an email", "shoot him a look" are
         # idioms, also inside reported speech ("he said he would shoot me a text"). A victim
         # followed by a message, photo or look object is not a threat, in every branch.
-        NOT_IDIOM = (r"(?!\s+((a|an|the|some|another|quick|short|little)\s+)*(texts?|txts?|messages?|msgs?|e-?mails?|"
-                     r"dms?|pms?|notes?|lines?|reply|replies|photos?|pics?|pictures?|snaps?|looks?|glances?|smiles?|"
-                     r"winks?|calls?|links?|invites?|invitations?|updates?|heads[\s-]*up|questions?|reminders?|"
-                     r"screenshots?|files?)\b|\s+with\s+kindness\b)")
+        NOT_IDIOM = (r"(?!\s+((a|an|the|some|another|quick|short|little|your|his|her|their|my|our|over|back)\s+)*"
+                     r"(texts?|txts?|messages?|msgs?|e-?mails?|dms?|pms?|notes?|lines?|reply|replies|photos?|pics?|"
+                     r"pictures?|snaps?|looks?|glances?|smiles?|winks?|calls?|links?|invites?|invitations?|updates?|"
+                     r"heads[\s-]*up|questions?|reminders?|screenshots?|files?|details?|info|information|address(es)?|"
+                     r"numbers?|locations?|schedules?|answers?|slides?|directions?|lists?|agendas?|feedback|word)\b"
+                     r"|\s+with\s+(kindness|hugs?|love|laughter|compliments?|questions?)\b|\s+up\b(?!\s+(close|front)\b))")
         VICTIM = (r"(me|us|you|him|her|them|everyone|everybody|someone|somebody|people|"
                   r"(my|our|his|her|their|the|a|an|that|this)\s+" + PERSON + r")\b" + NOT_IDIOM)
+        # PR #12 final: in a threat, the severe verb can follow another action ("said he will
+        # find me and kill me", "threatened to wait outside and shoot my roommate", "said she'd
+        # come over to stab me", "and then he'll strangle her"). Up to eight words, a connector,
+        # an optional repeated subject, then the severe verb, all in one clause. The victim and
+        # idiom checks still apply ("come over and shoot me a text" is not a threat).
+        COORDINATED = (r"(([\w'-]+[\s,]+){1,8}?(and|then|and\s+then|before|to|so\s+(he|she|they)\s+can)\s+"
+                       r"((he|she|they|i|we)\s*('ll|'d|\s+will|\s+would|\s+(is|are)\s+going\s+to|\s+gonna)\s+)?)?")
+        # "shoot/shot + person + determiner + noun" is the sending idiom ("shoot me the results",
+        # "shot us her notes"), whatever the noun. A time phrase keeps it a threat ("shoot me
+        # the second I walk in", "the next time", "the other day"), and so does a preposition
+        # ("shoot me in the head", "with a gun").
+        SHOOT_SEND = (r"(?!\s+(a|an|the|some|your|his|her|their|my|our|this|that|these|those|any|over|back)\s+"
+                      r"(?!(second|minute|moment|instant|next|first|last|same|other|day|night|morning|afternoon|"
+                      r"evening|time|times|weekend|week|chance|way|few|couple)\b)[\w'-]+)")
+        SEVERE_NOT_SHOOT = r"(kill|murder|stab|strangle|choke|slit\s+\w+\s+throat)"
+        HARM_TARGET = (COORDINATED + r"(" + SEVERE_NOT_SHOOT + r"\s+" + VICTIM + r"|shoot\s+" + VICTIM
+                       + SHOOT_SEND + r")")
         WEAPON = r"(guns?|pistol|rifle|firearm|handgun|knife|knives|blade|machete|weapons?)"
         SEVERE_THREAT = [
-            r"\bthreat(en|ens|ened|ening)\s+(\w+\s+){0,3}?to\s+" + SEVERE + r"\s+" + VICTIM,
+            r"\bthreat(en|ens|ened|ening)\s+(\w+\s+){0,3}?to\s+" + HARM_TARGET,
             r"\b(promis|vow|swear|swore|sworn|warn)\w*\s+(that\s+)?(\w+\s+){0,2}?(to|'ll|will|would|gonna|going\s+to)\s+"
-            + SEVERE + r"\s+" + VICTIM,
+            + HARM_TARGET,
             # Reported speech: "said he will kill me", "texted that they will shoot my roommate".
             r"\b(said|says|saying|told|tells|telling|text(s|ed|ing)?|messag(es|ed|ing)|wrote|writes|posted|posts|"
             r"yell(s|ed|ing)|shout(s|ed|ing)|scream(s|ed|ing))\s+((me|us|him|her|them|my\s+\w+)\s+)?"
             r"(that\s+|[:\"']\s*)?(he|she|they|someone|somebody|people|everyone|i|we)\s*"
             r"('ll|'d|'s\s+going\s+to|'re\s+going\s+to|'m\s+going\s+to|\s+will|\s+would|\s+gonna|"
             r"\s+(is|are|was|were|am)\s+(going\s+to|gonna|planning\s+to)|\s+plans?\s+to|\s+wants?\s+to)\s+"
-            + SEVERE + r"\s+" + VICTIM,
+            + HARM_TARGET,
             # A person as the subject. Family and roommates are left out here because "my mom is
             # going to kill me" is usually an idiom; a reported threat from anyone still matches above.
             r"\b(he|she|someone|somebody|(a|an|the|this|that|my|our)\s+(stranger|student|guy|man|woman|person|group|"
             r"ex|partner|boyfriend|girlfriend|husband|wife|stalker))\s*('s|\s+is|\s+was)?\s*"
             r"(going\s+to|gonna|trying\s+to|tried\s+to|wants?\s+to|wanted\s+to|plans?\s+to|planning\s+to|will|'ll)\s+"
-            + SEVERE + r"\s+" + VICTIM,
+            + HARM_TARGET,
             r"\bthey('re|\s+are|\s+were)?\s+(trying\s+to|tried\s+to|wants?\s+to|wanted\s+to|plans?\s+to|planning\s+to)\s+"
-            + SEVERE + r"\s+" + VICTIM,
+            + HARM_TARGET,
             # Attempted or in-progress severe violence.
-            r"\b(tried|tries|trying|attempted|attempting)\s+to\s+" + SEVERE + r"\s+" + VICTIM,
+            r"\b(tried|tries|trying|attempted|attempting)\s+to\s+" + HARM_TARGET,
             # In progress, with a person as the subject. "killing" is left out ("this deadline is
             # killing me") and "shooting me a look" is excluded.
             r"\b(he|she|they|someone|somebody|(a|an|the|my|our|this|that)\s+(stranger|" + PERSON[1:]
-            + r")\s*(is|are|was|were|'s|'re)\s+(stabbing|shooting|strangling|choking)\s+" + VICTIM + r"(?!\s+(a|an)\s)",
+            + r")\s*(is|are|was|were|'s|'re)\s+(stabbing|shooting|strangling|choking)\s+" + VICTIM + SHOOT_SEND,
             r"\b(stabbed|strangled|choked)\s+" + VICTIM + r"(?!\s+in\s+the\s+back)",
-            r"\bshot\s+(at\s+)?" + VICTIM + r"(?!\s+(a|an)\s)",
+            r"\bshot\s+(at\s+)?" + VICTIM + SHOOT_SEND,
             # Weapons.
             r"\b(pulled|pointed|aimed|waved|brandished|flashed|drew)\s+(a|an|his|her|their|the)\s+" + WEAPON + r"\b",
             r"\b(threaten\w*|attack\w*|chas(ed|ing)|came\s+at|charged\s+at|swung\s+at|hit|stabbed|shot|cut|jumped)\s+"
@@ -576,20 +594,22 @@ class Rules:
         # me"). Threat wording already routes to conduct; these cover threats and attacks that
         # never say "threat". Threats to kill, shoot, stab or strangle match SEVERE_THREAT
         # (urgent) first. Idioms ("this exam is going to kill me") and "hit me up" do not match.
-        VIOLENCE_AT_ME = (r"((beat|attack|jump|punch|stab|shoot|kill|hurt|harm|strangle|choke)\s+(me|us)\b" + NOT_IDIOM
-                          + r"|hit\s+(me|us)\b(?!\s+up\b))")
+        VIOLENCE_AT_ME = (r"((beat|attack|jump|punch|stab|kill|hurt|harm|strangle|choke)\s+(me|us)\b" + NOT_IDIOM
+                          + r"|shoot\s+(me|us)\b" + NOT_IDIOM + SHOOT_SEND + r"|hit\s+(me|us)\b(?!\s+up\b))")
+        # PR #12 final: the same coordination slot as SEVERE_THREAT, so "said he would find me and
+        # hurt me" is a conduct report too. Kill/shoot/stab/strangle threats match SEVERE_THREAT first.
         THREAT_OR_ATTACK = [
             r"\bbeat(s|ing)?\s+(me|us)\s+up\b", r"\bbeat\s+up\s+(me|us)\b",
             r"\b(promis|vow|swear|swore|sworn|warn)\w*\s+(that\s+)?(\w+\s+){0,2}?(to|'ll|will|would|gonna|going\s+to)\s+"
-            + VIOLENCE_AT_ME,
+            + COORDINATED + VIOLENCE_AT_ME,
             r"\b(said|says|saying|told\s+me|tells\s+me|telling\s+me|text(s|ed|ing)?\s+me|messag(es|ed|ing)\s+me|"
             r"wrote|posted)\s+(that\s+)?(he|she|they|someone|somebody|people|everyone)\s*"
             r"('ll|'d|'s\s+going\s+to|'re\s+going\s+to|\s+will|\s+would|\s+gonna|\s+(is|are|was|were)\s+going\s+to)\s+"
-            + VIOLENCE_AT_ME,
+            + COORDINATED + VIOLENCE_AT_ME,
             r"\b(someone|somebody|people|a\s+stranger|a\s+(student|guy|man|woman|person|group))\s+(is\s+|are\s+|was\s+|were\s+)?"
-            r"(going\s+to|gonna|trying\s+to|tried\s+to|wants?\s+to|wanted\s+to|plans?\s+to|planning\s+to)\s+" + VIOLENCE_AT_ME,
+            r"(going\s+to|gonna|trying\s+to|tried\s+to|wants?\s+to|wanted\s+to|plans?\s+to|planning\s+to)\s+" + COORDINATED + VIOLENCE_AT_ME,
             r"\b(he|she|they)(\s+is|\s+are|\s+was|\s+were|'s|'re)?\s+(trying\s+to|tried\s+to|wants?\s+to|wanted\s+to|"
-            r"plans?\s+to|planning\s+to)\s+" + VIOLENCE_AT_ME,
+            r"plans?\s+to|planning\s+to)\s+" + COORDINATED + VIOLENCE_AT_ME,
             r"\b(punch(es|ed)?|kick(s|ed)?|slapp(ed)?|slaps|shov(es|ed)|chok(es|ed)|strangl(es|ed)|attack(s|ed)|jumped)\s+me\b"
             r"(?!\s+(out|off|up|in\s+line|to\s+the\s+front)\b)",
         ]
