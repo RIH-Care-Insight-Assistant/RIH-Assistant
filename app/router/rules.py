@@ -406,8 +406,11 @@ class Rules:
             # records/insurance/prescriptions ("transfer my medical records" is not retention).
             r"\b(withdraw(ing|n)|drop(ping|ped)\s+out|leav(e|ing)\s+(school|college|umbc)|"
             r"quit(ting)?\s+(school|college)|stop(ping|ped)\s+out)\b",
-            r"\btransfer(ring|red|s)?\b(?!\s+(of\s+)?(my\s+|the\s+|our\s+)?(medical\s+|health\s+|immunization\s+|"
-            r"vaccin\w*\s+)?(records?|files?|insurance|prescriptions?|refills?|care|money|funds|payments?))",
+            # B9-N05: any determiner and up to two describing words ("transfer an immunization
+            # record", "transfer this year's vaccination records").
+            r"\btransfer(ring|red|s)?\b(?!\s+(of\s+)?((a|an|the|my|our|your|his|her|their|this|that|these|those|some|"
+            r"all\s+(of\s+)?my)\s+)?([\w'-]+\s+){0,2}?(records?|files?|insurance|prescriptions?|refills?|care|money|"
+            r"funds|payments?)\b)",
         ]
 
         COUNSELING = [

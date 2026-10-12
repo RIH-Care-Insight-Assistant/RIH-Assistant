@@ -294,3 +294,29 @@ def test_everyday_dislike_is_not_a_conduct_report(text):
 ])
 def test_self_directed_hate_is_unchanged(text, lane):
     assert _lane(text) == lane
+
+
+# ---------------------------------------------------------------------------
+# B9-N05: moving records is not retention; leaving the university still is
+# ---------------------------------------------------------------------------
+@pytest.mark.parametrize("text", [
+    "can I transfer a vaccination record to RIH?",
+    "how do I transfer an old immunization record?",
+    "I need to transfer this year's vaccination records",
+    "please transfer all of my medical files to my new doctor",
+    "can you transfer their insurance information?",
+    "how do I transfer some money to my meal plan?",
+])
+def test_transferring_records_is_not_retention(text):
+    assert _lane(text) != "retention_withdraw"
+
+
+@pytest.mark.parametrize("text", [
+    "I want to transfer to another university",
+    "I'm thinking about transferring schools next year",
+    "how do I transfer out of UMBC?",
+    "I want to transfer, can I get my records?",
+    "I'm transferring to a college closer to home",
+])
+def test_leaving_the_university_is_still_retention(text):
+    assert _lane(text) == "retention_withdraw"
