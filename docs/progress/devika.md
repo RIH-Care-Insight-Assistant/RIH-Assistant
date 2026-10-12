@@ -24,9 +24,21 @@ Last updated: 2026-10-11 (America/New_York). Operator: Devika Rani Sanaboyina.
   appointment clarification remains; counseling/therapy variants retain their
   downstream routing limitation. No broader conversation repair is claimed.
 - [Repair evidence and exact scope](../audits/devika-c1-b9-n04-decline-repair.md).
-  Commit and publication outcome are recorded by the branch/PR history and the
-  follow-up entry below. Next: Abhinav reviews/cross-tests the draft; inspect the
-  latest published PR #12 revision independently. No automatic approval or merge.
+  Repair commit `df5144b4c53128a60dea83fcc37f8e49e32365e5` pushed normally.
+  [Draft PR #13](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/13)
+  created through authenticated `gh`; AbhinavVarma02 review requested and verified.
+  CI run **38200199693 passed all eight jobs** on that implementation head. This
+  documentation follow-up gets a new final-head CI run; check its actual result.
+- **PR #12 re-review waiting for a published revision:** repeated authenticated
+  checks after opening #13 still show `06ccbe386e240150271389220cfc2f4f71bddef0`
+  and the same original four commits; fetched branch is identical to the prior
+  reviewed commit. No revised code or new safety evidence is available. The
+  prior changes-required review remains applicable; no fresh approval or rerun is
+  claimed. Asked the operator for an alternate revision location if one exists.
+- Exact next step: Abhinav reviews/cross-tests #13; after Claude pushes a revised
+  #12, fetch its exact head, compare it with `06ccbe3`, independently reproduce
+  safety/false-positive/B9 evidence and review the earlier findings. Keep the
+  original B9 labels/results and human policy/review gates. Do not merge or start C2.
 
 ## Independent PR #12 review — latest status
 

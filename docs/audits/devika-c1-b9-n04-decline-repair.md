@@ -60,3 +60,20 @@ Open a small draft PR for Abhinav's review and cross-platform validation. Do not
 merge, approve, start C2 or change PR #12's branch. Independently inspect its
 published head after opening this PR; the first checks in this session still show
 `06ccbe386e240150271389220cfc2f4f71bddef0`, the prior reviewed version.
+
+## Publication and subsequent PR #12 inspection
+
+Repair commit: `df5144b4c53128a60dea83fcc37f8e49e32365e5`.
+[Draft PR #13](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/13)
+was created with authenticated `gh` after an all-state branch PR lookup returned
+no existing PR. Author Devikz, base main, correct feature branch and pending
+AbhinavVarma02 review verified. CI run **38200199693 passed all eight jobs** on
+that implementation head. Any subsequent documentation head needs its own CI.
+
+After opening #13, authenticated PR #12 inspection and Git fetch still show
+`06ccbe386e240150271389220cfc2f4f71bddef0`, identical to the prior reviewed head.
+There is no revised code to assess yet. The existing changes-required review
+stands; no independent review of an unpublished revision is claimed. Resume by
+fetching the newly published head and checking all earlier findings with the
+fixed review probes, exact protected-template tests and original-label B9 run.
+Human approvals remain required, and no merge or C2 implementation occurred.
