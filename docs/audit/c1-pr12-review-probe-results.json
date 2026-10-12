@@ -887,6 +887,427 @@
             "pass": true
           }
         ]
+      },
+      "4664534": {
+        "pass": 42,
+        "of": 42,
+        "rows": [
+          {
+            "id": "G01",
+            "expected": "harassment_hate",
+            "router": "harassment_hate",
+            "events": [
+              "route"
+            ],
+            "pass": true
+          },
+          {
+            "id": "G02",
+            "expected": "harassment_hate",
+            "router": "harassment_hate",
+            "events": [
+              "route"
+            ],
+            "pass": true
+          },
+          {
+            "id": "G03",
+            "expected": "harassment_hate",
+            "router": "harassment_hate",
+            "events": [
+              "route"
+            ],
+            "pass": true
+          },
+          {
+            "id": "G04",
+            "expected": "harassment_hate",
+            "router": "harassment_hate",
+            "events": [
+              "route"
+            ],
+            "pass": true
+          },
+          {
+            "id": "S01",
+            "expected": "title_ix",
+            "router": "title_ix",
+            "events": [
+              "route"
+            ],
+            "pass": true
+          },
+          {
+            "id": "S02",
+            "expected": "title_ix",
+            "router": "title_ix",
+            "events": [
+              "route"
+            ],
+            "pass": true
+          },
+          {
+            "id": "S03",
+            "expected": "title_ix",
+            "router": "title_ix",
+            "events": [
+              "route"
+            ],
+            "pass": true
+          },
+          {
+            "id": "S04",
+            "expected": "title_ix",
+            "router": "title_ix",
+            "events": [
+              "route"
+            ],
+            "pass": true
+          },
+          {
+            "id": "V01",
+            "expected": "urgent_safety",
+            "router": "urgent_safety",
+            "events": [
+              "route"
+            ],
+            "pass": true
+          },
+          {
+            "id": "V02",
+            "expected": "urgent_safety",
+            "router": "urgent_safety",
+            "events": [
+              "route"
+            ],
+            "pass": true
+          },
+          {
+            "id": "V03",
+            "expected": "urgent_safety",
+            "router": "urgent_safety",
+            "events": [
+              "route"
+            ],
+            "pass": true
+          },
+          {
+            "id": "V04",
+            "expected": "urgent_safety",
+            "router": "urgent_safety",
+            "events": [
+              "route"
+            ],
+            "pass": true
+          },
+          {
+            "id": "V05",
+            "expected": "urgent_safety",
+            "router": "urgent_safety",
+            "events": [
+              "route"
+            ],
+            "pass": true
+          },
+          {
+            "id": "V06",
+            "expected": "urgent_safety",
+            "router": "urgent_safety",
+            "events": [
+              "route"
+            ],
+            "pass": true
+          },
+          {
+            "id": "V07",
+            "expected": "urgent_safety",
+            "router": "urgent_safety",
+            "events": [
+              "route"
+            ],
+            "pass": true
+          },
+          {
+            "id": "V08",
+            "expected": "urgent_safety",
+            "router": "urgent_safety",
+            "events": [
+              "route"
+            ],
+            "pass": true
+          },
+          {
+            "id": "I01",
+            "expected": null,
+            "router": null,
+            "events": [
+              "route",
+              "plan",
+              "tool"
+            ],
+            "pass": true
+          },
+          {
+            "id": "I02",
+            "expected": null,
+            "router": "counseling",
+            "events": [
+              "route",
+              "plan",
+              "tool"
+            ],
+            "pass": true
+          },
+          {
+            "id": "I03",
+            "expected": null,
+            "router": null,
+            "events": [
+              "route",
+              "plan",
+              "tool"
+            ],
+            "pass": true
+          },
+          {
+            "id": "I04",
+            "expected": null,
+            "router": null,
+            "events": [
+              "route",
+              "plan",
+              "tool"
+            ],
+            "pass": true
+          },
+          {
+            "id": "H01",
+            "expected": "harassment_hate",
+            "router": "harassment_hate",
+            "events": [
+              "route"
+            ],
+            "pass": true
+          },
+          {
+            "id": "H02",
+            "expected": "harassment_hate",
+            "router": "harassment_hate",
+            "events": [
+              "route"
+            ],
+            "pass": true
+          },
+          {
+            "id": "H03",
+            "expected": "harassment_hate",
+            "router": "harassment_hate",
+            "events": [
+              "route"
+            ],
+            "pass": true
+          },
+          {
+            "id": "H04",
+            "expected": "harassment_hate",
+            "router": "harassment_hate",
+            "events": [
+              "route"
+            ],
+            "pass": true
+          },
+          {
+            "id": "H05",
+            "expected": "harassment_hate",
+            "router": "harassment_hate",
+            "events": [
+              "route"
+            ],
+            "pass": true
+          },
+          {
+            "id": "H06",
+            "expected": "harassment_hate",
+            "router": "harassment_hate",
+            "events": [
+              "route"
+            ],
+            "pass": true
+          },
+          {
+            "id": "H07",
+            "expected": "harassment_hate",
+            "router": "harassment_hate",
+            "events": [
+              "route"
+            ],
+            "pass": true
+          },
+          {
+            "id": "H08",
+            "expected": "harassment_hate",
+            "router": "harassment_hate",
+            "events": [
+              "route"
+            ],
+            "pass": true
+          },
+          {
+            "id": "D01",
+            "expected": null,
+            "router": null,
+            "events": [
+              "route",
+              "plan",
+              "tool"
+            ],
+            "pass": true
+          },
+          {
+            "id": "D02",
+            "expected": null,
+            "router": null,
+            "events": [
+              "route",
+              "plan",
+              "tool"
+            ],
+            "pass": true
+          },
+          {
+            "id": "D03",
+            "expected": null,
+            "router": null,
+            "events": [
+              "route",
+              "plan",
+              "tool"
+            ],
+            "pass": true
+          },
+          {
+            "id": "D04",
+            "expected": null,
+            "router": null,
+            "events": [
+              "route",
+              "plan",
+              "tool"
+            ],
+            "pass": true
+          },
+          {
+            "id": "D05",
+            "expected": null,
+            "router": null,
+            "events": [
+              "route",
+              "plan",
+              "tool"
+            ],
+            "pass": true
+          },
+          {
+            "id": "D06",
+            "expected": null,
+            "router": "counseling",
+            "events": [
+              "route",
+              "plan",
+              "tool",
+              "tool"
+            ],
+            "pass": true
+          },
+          {
+            "id": "B01",
+            "expected": null,
+            "router": null,
+            "events": [
+              "route",
+              "plan",
+              "tool"
+            ],
+            "pass": true
+          },
+          {
+            "id": "B02",
+            "expected": null,
+            "router": null,
+            "events": [
+              "route",
+              "plan",
+              "tool"
+            ],
+            "pass": true
+          },
+          {
+            "id": "B03",
+            "expected": null,
+            "router": "counseling",
+            "events": [
+              "route",
+              "plan",
+              "tool"
+            ],
+            "pass": true
+          },
+          {
+            "id": "B04",
+            "expected": null,
+            "router": null,
+            "events": [
+              "route",
+              "plan",
+              "tool"
+            ],
+            "pass": true
+          },
+          {
+            "id": "M01",
+            "expected": null,
+            "router": null,
+            "events": [
+              "route",
+              "plan",
+              "tool"
+            ],
+            "pass": true
+          },
+          {
+            "id": "M02",
+            "expected": null,
+            "router": null,
+            "events": [
+              "route",
+              "plan",
+              "tool"
+            ],
+            "pass": true
+          },
+          {
+            "id": "M03",
+            "expected": null,
+            "router": null,
+            "events": [
+              "route",
+              "plan",
+              "tool"
+            ],
+            "pass": true
+          },
+          {
+            "id": "M04",
+            "expected": null,
+            "router": null,
+            "events": [
+              "route",
+              "plan",
+              "tool"
+            ],
+            "pass": true
+          }
+        ]
       }
     }
   },
@@ -895,6 +1316,95 @@
     "criterion": "expected lane -> exact template and a route-only trace; expected null -> no safety-critical lane",
     "runs": {
       "ebdf2d9": {
+        "pass": 9,
+        "of": 9,
+        "rows": [
+          {
+            "id": "RR-T1",
+            "expected": "urgent_safety",
+            "router": "urgent_safety",
+            "events": [
+              "route"
+            ],
+            "pass": true
+          },
+          {
+            "id": "RR-T2",
+            "expected": "urgent_safety",
+            "router": "urgent_safety",
+            "events": [
+              "route"
+            ],
+            "pass": true
+          },
+          {
+            "id": "RR-T3",
+            "expected": "urgent_safety",
+            "router": "urgent_safety",
+            "events": [
+              "route"
+            ],
+            "pass": true
+          },
+          {
+            "id": "RR-T4",
+            "expected": "urgent_safety",
+            "router": "urgent_safety",
+            "events": [
+              "route"
+            ],
+            "pass": true
+          },
+          {
+            "id": "RR-S1",
+            "expected": "title_ix",
+            "router": "title_ix",
+            "events": [
+              "route"
+            ],
+            "pass": true
+          },
+          {
+            "id": "RR-S2",
+            "expected": "title_ix",
+            "router": "title_ix",
+            "events": [
+              "route"
+            ],
+            "pass": true
+          },
+          {
+            "id": "RR-S3",
+            "expected": "title_ix",
+            "router": "title_ix",
+            "events": [
+              "route"
+            ],
+            "pass": true
+          },
+          {
+            "id": "RR-S4",
+            "expected": "title_ix",
+            "router": "title_ix",
+            "events": [
+              "route"
+            ],
+            "pass": true
+          },
+          {
+            "id": "RR-I1",
+            "expected": null,
+            "router": null,
+            "events": [
+              "route",
+              "plan",
+              "tool"
+            ],
+            "pass": true
+          }
+        ]
+      },
+      "4664534": {
         "pass": 9,
         "of": 9,
         "rows": [

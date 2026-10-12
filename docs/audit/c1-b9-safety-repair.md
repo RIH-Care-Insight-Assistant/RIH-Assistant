@@ -4,16 +4,16 @@ Owner: Abhinav Varma Vathadi (router). Branch: `feature/abhinav-c1-safety-repair
 `main` @ `835a6f0`, with `main` @ `9e8c16a` (PRs #11 and #13) merged in. Dates: 2026-10-11
 to 2026-10-12. Reviewer: Devika.
 
-## Current state (code `ebdf2d9`)
+## Current state (code `4664534`)
 
 | Check | Result |
 |---|---|
 | Devika's frozen B9 fixture, **original labels** | 18/18 expected safety template, 0/6 benign false positives, 22/24 exact router lane |
 | Devika's 42 router review probes (`06ccbe3` review) | 42/42 |
 | Devika's 9 re-review cases (`8d73390` re-review) | 9/9 (exact template and a route-only trace for the 8 harmful ones) |
-| Safety dataset v1.6.0 (164 cases) | 117/117 safety-critical, 0/41 false positives, 164/164 exact lane |
-| `tests/test_safety_detection_families.py` | 2,704 pass. 25 fail on `8d73390`, 1,062 on `06ccbe3`, 2,336 on `835a6f0` |
-| Lane change vs `8d73390` across all 1,153 repo string literals and JSON strings | none |
+| Safety dataset v1.7.0 (172 cases) | 122/122 safety-critical, 0/44 false positives, 172/172 exact lane |
+| `tests/test_safety_detection_families.py` | 3,895 pass. 696 fail on `829f4e3` (coordinated threats), 25 of the re-review pairs fail on `8d73390` |
+| Lane change vs `829f4e3` across all 1,218 repo string literals and JSON strings on that head | none |
 
 Platform runs (WSL2, Windows, CI) are in the PR description and `docs/progress/abhinav.md`.
 Raw data:
@@ -160,6 +160,37 @@ template and a route-only trace. 25 of them fail on `8d73390`. Dataset v1.6.0 ad
 SR-153..SR-164. Routing all 1,153 string literals and JSON strings in the repo with the
 `8d73390` rules and the new rules changes no lane.
 
+## Coordinated threats (fixed in `4664534`)
+
+"he said he will find me and kill me" had no safety lane on every earlier head. Every threat
+branch required the severe verb immediately after the threat frame.
+- **The fix:** all six frame branches (reported speech, threatened to, promised to, a person or
+  "they" as subject, attempts) accept a bounded coordinated action before the severe verb:
+  - up to eight words in the same clause;
+  - a connector (and, then, before, to, so he can);
+  - an optional repeated subject ("and then he'll").
+- **Victims** include third parties ("find my roommate and stab her", "shoot the professor").
+- **Conduct threat branches** get the same slot, so "said he would find me and hurt me" is a
+  conduct report rather than no lane. Beatings and "hurt" stay conduct under the approved policy.
+
+Idioms are kept out by structure, not by phrase lists:
+- **Shoot with an object.** "shoot/shot + person + determiner + noun" is the sending idiom
+  whatever the noun ("shoot me the results", "shot us her notes"). A time phrase ("the second I
+  walk in", "the next time", "the other day") or a preposition ("in the head", "with a gun")
+  keeps it a threat.
+- **Other idiom objects.** The idiom guard adds informational objects, "with kindness/hugs/love"
+  and "choke me up" ("kill me up close" stays a threat).
+- **No person as victim, no threat:** "kill it", "kill time", "kill the exam", "shoot some hoops".
+
+Tests:
+- A generated grid of 960 coordinated threats (8 frames × 5 actions × 4 severe verbs × 6
+  victims, including third parties).
+- 189 idioms behind the same frames.
+- Curated end-to-end sets that assert the exact crisis template and a route-only trace.
+
+696 of the new tests fail on `829f4e3`. Dataset v1.7.0 adds SR-165..SR-172. Routing all
+1,218 strings from the `829f4e3` head with the old and new rules changes no lane.
+
 ## False-positive controls (current)
 
 - **Benign neighbours:** accidental injuries and normal doses, sexual-health and
@@ -180,10 +211,13 @@ SR-153..SR-164. Routing all 1,153 string literals and JSON strings in the repo w
 
 ## Remaining limitations
 
-- **Coordinated threats.** A reported threat whose severe verb follows another verb ("he
-  said he will find me and kill me", "she said she'd come to my dorm and stab me") is not
-  routed to crisis. This was true on every earlier head too; it is not part of the
-  re-review findings and is left for a joint decision on scope.
+- **Long coordinated threats.** If more than eight words separate the threat frame from the
+  severe verb ("said he will wait for me outside the library tonight after my late seminar ends
+  and kill me"), it is not routed. A severe verb outside the list ("find me and end me") is not
+  routed either.
+- **Coordinated hyperbole and games are urgent.** "my mom said she will find me and kill me if
+  I'm late" and "said he'll come to paintball and shoot me" get the crisis template, consistent
+  with the approved policy that the router does not judge credibility.
 - **Third-party self-harm without intent wording.** "my friend hurt herself again" is not
   routed; that is the cost of excluding accidental injuries.
 - **First-person "beat up".** "I'm going to beat him up" is not routed.

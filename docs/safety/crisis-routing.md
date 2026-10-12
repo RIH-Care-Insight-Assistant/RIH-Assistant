@@ -80,6 +80,7 @@ B9 additions (phrasing families; details and evidence in [`../audit/c1-b9-safety
     - Refusal, without asking, never requested, unsolicited, reporting, distribution or a third-party victim cancels the exemption.
     - So does a second event in the same clause.
   - **Message idioms.** "shoot me a text/email/look" is not a threat in any branch, including reported speech.
+  - **Coordinated threats.** In every threat branch the severe verb may follow another action ("said he will find me and kill me", "threatened to wait outside and shoot my roommate"). "shoot + person + determiner + noun" is the sending idiom ("shoot me the results"); a time phrase or a preposition keeps it a threat.
 - **Retention:** moving records or insurance with any determiner ("transfer an immunization record") is not retention.
 
 ## 3. Deliberate trade-offs
@@ -116,9 +117,9 @@ Command: `python scripts/safety_eval.py`. Environment: WSL2 Ubuntu 26.04, Python
 | Router exact-lane agreement, all 97 cases | 33/97 | 97/97 |
 
 After the B9 repair and Devika's PR #12 review (`feature/abhinav-c1-safety-repairs`):
-- v1.3.0 to v1.6.0 add SR-098..SR-164, all in new wording rather than the B9 messages. v1.6.0 adds paired cases from Devika's re-review.
+- v1.3.0 to v1.7.0 add SR-098..SR-172, all in new wording rather than the B9 messages. v1.6.0 adds paired cases from Devika's re-review; v1.7.0 adds coordinated threats.
 - v1.5.0 relabels SR-051 and SR-062 (`title_ix` → `harassment_hate`) and SR-111 (`harassment_hate` → `urgent_safety`) under the policies approved in §8.
-- On v1.6.0 (164 cases): **117/117** safety-critical, **0/41** false positives, **164/164** exact lane.
+- On v1.7.0 (172 cases): **122/122** safety-critical, **0/44** false positives, **172/172** exact lane.
 - On Devika's disclosed B9 fixture, with its **original labels**: 18/18 expected template, 0/6 false positives (regression results; her initial 10/18 is the held-out record). See §8.
 
 Earlier dataset versions, for the record:
@@ -147,7 +148,7 @@ The `main` column used the same dataset and script against an unmodified snapsho
 - The router has no conversation memory. Each message is classified alone.
 - Someone else's "hurt/harm themselves" without intent wording ("my friend hurt herself again") is not routed. This is the cost of excluding accidental injuries.
 - Severe-threat routing needs a reported threat, an attempt or a person as subject. Unusual wording ("he's gonna end me tonight") is not routed, and threats against pets get conduct. Family or roommate subjects without a reporting verb ("my mom is going to kill me") count as idioms.
-- A reported threat whose severe verb follows another verb ("he said he will find me and kill me") is not routed to crisis. Left for a joint decision on scope.
+- Coordinated threats are routed when at most eight words separate the threat frame from the severe verb in one clause ("said he will find me and kill me"). Longer gaps, and verbs outside the list ("find me and end me"), are not.
 - Harassment by an ex or partner without stalking, violence or sexual wording routes to conduct, not Title IX.
 - **Timed-out model threads keep running.** Python cannot kill a thread, so each timed-out Strands call keeps one worker thread alive until the provider returns. Nothing caps how many pile up during an outage. Responses are unaffected (the caller has already returned), but resource use is. Bounded concurrency / circuit breaking is Phase 8 work (audit O9). Model paths are off by default and in CI.
 
@@ -186,17 +187,17 @@ All 26 new review assertions fail on the pre-review commit `e63a5c5` and pass af
 
 Devika's 24-case held-out set (frozen before her first run, not shown to the router owner) found 10/18 expected safety templates on `835a6f0`. Seven safety cases reached planner and retrieval with no lane, and one benign case got the conduct template (O10). The cause was detection coverage, not precedence: every recognised case already returned its exact template. Each miss was one example of a phrasing family the rules lacked (§2, B9 additions).
 
-| Measure (disclosed fixture, original labels, regression run) | `835a6f0` | First repair `bb7d729` | After review `d33a1a5` | After re-review `ebdf2d9` |
-|---|---|---|---|---|
-| Expected safety template | 10/18 | 17/18 | 18/18 | 18/18 |
-| Any safety template on safety cases | 11/18 | 18/18 | 18/18 | 18/18 |
-| Benign cases with a safety template | 1/6 | 0/6 | 0/6 | 0/6 |
+| Measure (disclosed fixture, original labels, regression run) | `835a6f0` | First repair `bb7d729` | After review `d33a1a5` | After re-review `ebdf2d9` | Coordinated threats `4664534` |
+|---|---|---|---|---|---|
+| Expected safety template | 10/18 | 17/18 | 18/18 | 18/18 | 18/18 |
+| Any safety template on safety cases | 11/18 | 18/18 | 18/18 | 18/18 | 18/18 |
+| Benign cases with a safety template | 1/6 | 0/6 | 0/6 | 0/6 | 0/6 |
 
 **Policy decisions, approved by both humans** (Devika in her PR #12 review of `06ccbe3`; Abhinav on 2026-10-12):
 1. Harassment with no sexual or sex-based signal → conduct. B9-H05 now meets its original label.
 2. O10 narrowing, with the hate-report recall her review found missing restored.
 3. Explicit severe threats → crisis (urgent guidance).
 
-After her re-review of `8d73390`, the exemptions are bound to the benign event (`ebdf2d9`). With the **original B9 labels** and no relabelling: 18/18 expected template, 0/6 false positives. Her 42 router review probes: 42/42. Her 9 re-review cases: 9/9.
+After her re-review of `8d73390`, the exemptions are bound to the benign event (`ebdf2d9`), and coordinated threats are routed (`4664534`). With the **original B9 labels** and no relabelling: 18/18 expected template, 0/6 false positives. Her 42 router review probes: 42/42. Her 9 re-review cases: 9/9.
 
 Full evidence, per-case table, tests and limitations: [`../audit/c1-b9-safety-repair.md`](../audit/c1-b9-safety-repair.md).
