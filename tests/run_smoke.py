@@ -12,8 +12,11 @@ def test_routes():
     crisis = d.respond("i want to kms")
     _assert("988" in crisis["text"], "Crisis template should be returned for kms")
 
-    tix = d.respond("I was harassed by someone")
-    _assert("Title IX" in tix["text"], "Title IX template should appear for 'harassed'")
+    # Amended C1 policy (PR #12): non-sexual harassment -> conduct; sexual harassment -> Title IX.
+    har = d.respond("I was harassed by someone")
+    _assert("Student Conduct" in har["text"], "Conduct template should appear for 'harassed'")
+    tix = d.respond("I was sexually harassed by someone")
+    _assert("Title IX" in tix["text"], "Title IX template should appear for 'sexually harassed'")
 
     ret = d.respond("I want to drop from college")
     _assert("Advising" in ret["text"] or "advis" in ret["text"].lower(), "Retention template should appear")
