@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+from datetime import datetime, timezone
 
 import pytest
 
@@ -17,12 +18,15 @@ CLEAN_REDTEAM = {"label": "t", "git_commit": "abc1234", "summary": {
     "attempted": 70, "attack_successes": 0, "attack_success_rate": 0.0, "critical_open": [], "open_findings": []}}
 
 
-def _ready_release():
-    from datetime import datetime, timezone
+# One timestamp per module: the snapshot hash covers it, so a per-call clock read made the GET and
+# the POST of one test disagree whenever a second boundary fell between them (found 1 in 12 runs).
+GENERATED_AT = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
+
+def _ready_release():
     return {"schema_version": EVIDENCE_SCHEMA, "scope": "full", "candidate": {**CANDIDATE, "changed_during_run": False},
             "register_version": GOV.register["register_version"], "controls_version": GOV.controls["catalog_version"],
-            "git_commit": "abc1234", "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "git_commit": "abc1234", "generated_at": GENERATED_AT,
             "checks": [{"id": c, "required": True, "status": "pass"} for c in REQUIRED_CHECKS],
             "redteam_report": copy.deepcopy(CLEAN_REDTEAM)}
 
