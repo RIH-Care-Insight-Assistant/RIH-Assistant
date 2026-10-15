@@ -23,6 +23,9 @@ PyYAML==6.0.3
 
 # Agents (optional at runtime; model features stay off by default)
 strands-agents==1.59.0
+# Not imported directly; pinned to the patched 1.x release (CVE-2026-59951) that strands-agents
+# 1.59.0 allows (mcp<2.2)
+mcp==1.30.0
 strands-agents-tools==0.8.9
 # Local model provider client for the optional Strands planner (loopback Ollama only)
 ollama==0.6.3

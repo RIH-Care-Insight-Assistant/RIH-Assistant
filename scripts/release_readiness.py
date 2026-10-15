@@ -150,9 +150,11 @@ def human_records():
         conn = sqlite3.connect(f"file:{db}?mode=ro", uri=True)
         conn.row_factory = sqlite3.Row
         cols = {r["name"] for r in conn.execute("PRAGMA table_info(risk_reviews)")}
-        reviewer_id = "reviewer_id" if "reviewer_id" in cols else "NULL AS reviewer_id"  # pre-0005 rows never count
-        reviews = [dict(r) for r in conn.execute(
-            f"SELECT seq, risk_id, register_version, decision, reviewer, {reviewer_id}, decided_at FROM risk_reviews")]
+        query = ("SELECT seq, risk_id, register_version, decision, reviewer, reviewer_id, decided_at FROM risk_reviews"
+                 if "reviewer_id" in cols else  # before migration 0005: no account id, so no row counts
+                 "SELECT seq, risk_id, register_version, decision, reviewer, NULL AS reviewer_id, decided_at "
+                 "FROM risk_reviews")
+        reviews = [dict(r) for r in conn.execute(query)]
         accounts = [dict(r) for r in conn.execute("SELECT id, username, roles, disabled FROM users")]
         conn.close()
         return reviews, accounts
