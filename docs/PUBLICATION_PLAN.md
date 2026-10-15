@@ -63,6 +63,14 @@ in the staff UI.
 `blocked_pending_human_decision`. Showcase scope: a local demonstration with synthetic data
 only. Interactive public deployment stays blocked.
 
+**Update 2026-10-15 (records at `c19c745`):** Devika recorded her joint-governance decisions
+([record](audits/devika-final-acceptance-2026-10-15.md#addendum-joint-governance-decisions-l-d9-2026-10-15), decision L-D9). She gave qualified acceptance, prototype scope, of the register,
+the catalog and contracts C2/C3/C4-local-v1. She **deferred the readiness rules**: a `ready` from
+the current code is not trusted, because one reviewer's entries plus evidence from `9c8c7d2` can
+produce it. She authorized a separate public showcase that viewers cannot interact with, on her
+side only. **It still needs Abhinav's matching decision**, because L-D8 limits the showcase to a
+local demonstration. Readiness is still `blocked_pending_human_decision`.
+
 1. **Devika** confirms the local-first workflow (decision L-D1) in a recorded form, for example a
    comment on the PR or issue #7. The repository currently records it as directed by the operator
    only. **Done 2026-10-15:** confirmed by Devika (L-D7, decision D10).
@@ -113,6 +121,13 @@ only. Interactive public deployment stays blocked.
    `controls-3`, the readiness rules as implemented (including the `pending_human_review` gate)
    and contracts C2/C3/C4-local-v1 with their open items (which cover the freshness thresholds and
    rate limits). **Still open:** Devika's decision on all of these except the content binding.
+   **Update 2026-10-15 (L-D9):** Devika gave qualified acceptance (prototype scope) of the register,
+   the catalog and the contracts, including the freshness thresholds and rate limits (one replica
+   only). Her conditions are in the record. She **deferred the readiness rules**, together with
+   C4 open items 2 and 3, until code enforces joint decisions and release evidence that matches
+   the release commit. **Still open:** that fix (it changes application logic and needs separate
+   authorization), both humans' acceptance of the fixed rules, and a new register version that
+   corrects R-08/R-10 plan text and R-08/R-11 evidence, with fresh decisions.
 5. Optionally review the C1 baseline sources (R-05) in the staff UI.
 6. Attribution: Devika's final review B10 (`c36cd2c`..this record) is committed under her identity;
    she directed it and an AI coding agent drafted the cases, code and text, as the report says.
@@ -128,6 +143,11 @@ only. Interactive public deployment stays blocked.
    and red team were last run on `9c8c7d2`, before it. Rerun
    `python scripts/release_readiness.py --e2e --containers` on the head to be published.
    (Not rerun in L-D8, at Abhinav's instruction.)
+9. **Showcase (L-D9):** Devika authorized, on her side only, a separate public showcase that
+   viewers cannot interact with: reviewed synthetic screenshots and architecture diagrams, with
+   no live endpoint and no public chatbot. Abhinav's L-D8 scope is local only. **Nothing is
+   posted until he decides.** Both humans review each image first. Interactive public deployment
+   stays blocked.
 
 ## 3. Proposed PR strategy
 

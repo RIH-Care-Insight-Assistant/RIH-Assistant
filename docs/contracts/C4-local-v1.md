@@ -1,6 +1,6 @@
 # C4-local-v1 — Phase 6–7 governance, evidence and release contracts
 
-Status: **Adopted for local development (2026-10-15). Accepted by Abhinav, prototype scope (2026-10-15, L-D8, [`../audits/abhinav-final-acceptance-2026-10-15.md`](../audits/abhinav-final-acceptance-2026-10-15.md)); awaiting Devika's acceptance.** Extends
+Status: **Adopted for local development (2026-10-15). Accepted by Abhinav, prototype scope (2026-10-15, L-D8, [`../audits/abhinav-final-acceptance-2026-10-15.md`](../audits/abhinav-final-acceptance-2026-10-15.md)). Devika (2026-10-15, L-D9, [`../audits/devika-final-acceptance-2026-10-15.md`](../audits/devika-final-acceptance-2026-10-15.md#addendum-joint-governance-decisions-l-d9-2026-10-15)): open item 1 accepted with the register and catalog conditions; item 2 (readiness rules) NOT accepted and item 3 deferred until code enforces joint decisions and evidence matching the release commit. Items 2 and 3 are therefore not jointly accepted.** Extends
 [C2-local-v1](C2-local-v1.md) and [C3-local-v1](C3-local-v1.md).
 
 ## 1. Versioned governance records (files)

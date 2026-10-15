@@ -117,3 +117,68 @@ readiness.
 6. Optional source review (R-05), UI review (plan task 8).
 7. **Authorization to publish** from both humans, then the integration PR and Devika's GitHub
    review ([`../PUBLICATION_PLAN.md`](../PUBLICATION_PLAN.md) §3), and closing issue #7.
+
+## Addendum: joint-governance decisions (L-D9, 2026-10-15)
+
+Added later on 2026-10-15, at records head **`c19c745`** (code unchanged since `e380883`).
+Devika was at the keyboard and directed this addendum. Everything above it (L-D7, D1–D11) is
+unchanged. Abhinav's record
+([`abhinav-final-acceptance-2026-10-15.md`](abhinav-final-acceptance-2026-10-15.md), L-D8) is also
+unchanged.
+
+### How these decisions were captured
+
+- The coding agent showed Devika the five items below, with the source material for each: the
+  register `risks-3` (all 15 entries, with owners, scores, statuses, missing evidence and stale
+  plan text), the catalog `controls-3` (all 27 controls by type; the integrity check reports 0
+  problems), the readiness code in `app/governance/readiness.py` and `register.py`, contracts
+  C2/C3/C4-local-v1 with each open item, and Abhinav's showcase scope from L-D8. It asked her to
+  accept, accept with qualifications, or defer each item. Her earlier statement that she was
+  satisfied was not treated as approval of anything.
+- For each qualified acceptance, the agent asked a second question to get her conditions. The
+  conditions listed below are the ones she selected. None were added by the agent.
+- Before she decided item 3, the agent ran `assess()` locally on the current register and
+  evidence and showed her the result. With no decisions the status is
+  `blocked_pending_human_decision` (5 pending). With **one** reviewer's `accept_residual` on R-01
+  and R-04 it is **`ready`**, and the candidate is `9c8c7d2`, from before `e380883` and the
+  current head. The flaw being documented does not make the rule safe.
+- These are **prototype-scope** decisions. None of them is a native-speaker review, a clinical or
+  counseling review, an independent evaluation, a security certification, or an approval to
+  serve real users.
+
+### Decisions
+
+| # | Item | Devika's decision | Her conditions (as selected) | Joint status after this addendum |
+|---|---|---|---|---|
+| G1 | **Risk register `risks-3`** (15 risks) | **Qualified acceptance** | (a) Prototype scope only. (b) Before any release, a new register version must correct the stale plan text of R-08 and R-10 (both still describe Phase 7/8 work as future) and add evidence to R-08 and R-11 (none listed), and fresh decisions must then be recorded, because editing an entry changes its digest. (c) Specialist reviews stay: R-01's residual risk is not accepted for real users before native-speaker and clinical review, and the R-05 source review is still required. (d) Owners and likelihood/severity scores remain agent proposals, accepted as a working baseline and not as a validated assessment | Accepted by both at prototype scope (Abhinav L-D8 C1, without conditions). **Devika's conditions apply** |
+| G2 | **Control catalog `controls-3`** (27 controls) | **Qualified acceptance** | (a) Prototype scope only. (b) `C-MULTILINGUAL-CRISIS`, `C-IMPLICIT-RISK` and `C-LANGUAGE-NOTICE` count as unreviewed controls until native-speaker and clinical review. (c) `C-HUMAN-REVIEW` does not enforce joint decisions or evidence freshness, so it does not satisfy the joint-decision requirement until the readiness rules are fixed. (d) `C-DEP-SCAN` and `C-REDTEAM` count only when rerun on the exact head to be published (last run on `9c8c7d2`) | Accepted by both at prototype scope (Abhinav L-D8 C2). **Devika's conditions apply** |
+| G3 | **Readiness rules as implemented** (`app/governance/readiness.py` at `e380883`, including the `pending_human_review` gate) | **Deferred until fixed. Not accepted** | `ready` from the current code is not to be trusted. Acceptance needs code that (i) enforces the joint decisions (R-01, R-04) and (ii) requires the release evidence to match the release commit. That code change is later work, needs separate authorization, and was not made here | **Not jointly accepted.** Abhinav accepted the rules (L-D8 C3); Devika defers. Her acceptance of the content binding (L-D7 D6, both humans) was not part of this question and is unchanged. The `pending_human_review` gate stays in the code, where it can only block. It is not jointly accepted, and its being in force does not make `ready` trustworthy |
+| G4 | **Contracts C2/C3/C4-local-v1** with their open items | **Qualified acceptance** | (a) C2 and C3 open items (C2: API additions, freshness thresholds 180/365/730 days and `baseline` status, tool budgets and timeouts, toolchain versions, ownership split; C3: roles and authorization matrix, lockout and session lifetimes and password rules, rate limits, ingestion bounds and quarantine precedence, dependency upgrades) are accepted for the prototype only. (b) C3's in-memory rate limits are accepted only with one API replica, as documented; scaling out needs a contract revision. (c) **C4 open item 2 (readiness rules) is not accepted**; it follows G3. (d) **C4 open item 3** (reviewers as well as admins may accept residual risk) **is deferred** until a fix makes joint decisions enforced. C4 open item 1 follows G1 and G2 | C2, C3: accepted by both, prototype scope, with Devika's conditions. C4: items 1 by both (with G1/G2 conditions); **items 2 and 3 not jointly accepted** |
+| G5 | **Separate public portfolio showcase that viewers cannot interact with**: reviewed synthetic screenshots and architecture diagrams, no live chatbot | **Authorized by Devika, with conditions** | (a) **This is her authorization only.** Abhinav must make a matching decision before anything is posted, because his L-D8 scope is a local demonstration with no hosted or public URL. (b) Both humans review each image: synthetic data only, the banner visible, the non-official disclaimer present. (c) No live endpoint and no public chatbot that people can use | **Not jointly authorized.** Positions differ (L-D8: local only). Nothing may be posted until Abhinav decides. A public interactive deployment stays blocked and is not authorized by anyone |
+
+### What this addendum does not do
+
+- It does not enter anything in the staff UI. Readiness stays **`blocked_pending_human_decision`**.
+- It does not change application code, the register, the catalog, the readiness code, evidence or
+  gates. It does not push, deploy or post a showcase.
+- It does not authorize publication of the repository, a hosted demo, or any interactive public
+  release.
+- It does not say the readiness implementation is safe. G3 records that it is not trusted.
+
+### Outstanding conditions after L-D9
+
+1. **Readiness fix** (needs separate authorization; it changes application logic): enforce two
+   distinct reviewers' decisions where a decision is joint, and require the release evidence
+   commit to match the release candidate. Both humans then accept the fixed rules (G3, C4 items 2
+   and 3). Until then, a `ready` status is not treated as ready.
+2. **New register version** correcting R-08/R-10 plan text and R-08/R-11 evidence, with fresh
+   decisions against the new digests (G1 b).
+3. **Staff-UI entries** of R-01 and R-04 by both reviewers under their own accounts, with
+   rationales saying prototype only.
+4. **Native-speaker and clinical review** (G1 c, G2 b). The **R-05 source review** (G1 c).
+5. **Release gates on the exact head**: `python scripts/release_readiness.py --e2e --containers`
+   (G2 d). It was last run on `9c8c7d2`.
+6. **Contact numbers** re-verified ([`../safety/crisis-routing.md`](../safety/crisis-routing.md) §6).
+7. **Showcase:** Abhinav's decision on G5, then both humans review the images before anything is
+   posted.
+8. **Authorization to publish** from both humans ([`../PUBLICATION_PLAN.md`](../PUBLICATION_PLAN.md)).

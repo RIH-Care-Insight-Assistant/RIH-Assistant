@@ -29,6 +29,13 @@ C1 is complete and accepted. Under the local-first workflow (`AGENTS.md`; shared
   by both for the prototype only, but neither has entered them in the staff UI. Devika has not
   yet decided on the register, catalog, readiness rules or contracts, which Abhinav accepted.
   Showcase: a local demonstration only.
+- **Devika's joint-governance decisions (2026-10-15, L-D9):**
+  - Qualified acceptance (prototype scope) of the register, the catalog and contracts
+    C2/C3/C4-local-v1.
+  - **Readiness rules deferred, not accepted.** One reviewer's entries plus stale `9c8c7d2`
+    evidence can produce `ready`, so `ready` is not trusted until that is fixed.
+  - A public showcase that viewers cannot interact with is authorized by her only. It needs
+    Abhinav's decision.
 - **Next:** the humans do the reviews and make the decisions in the publication plan §2, then
   authorize (or not) the push and the single integration PR.
 

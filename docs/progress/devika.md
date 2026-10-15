@@ -2,7 +2,29 @@
 
 Last updated: 2026-10-15 (America/New_York). Operator: Devika Rani Sanaboyina.
 
-## Final review decisions (2026-10-15) — latest status
+## Joint-governance decisions (2026-10-15, L-D9) — latest status
+
+- Records at `c19c745`, on the shared PC, local only. I decided each item in the session; an AI
+  coding agent drafted the record. Record:
+  [`../audits/devika-final-acceptance-2026-10-15.md`](../audits/devika-final-acceptance-2026-10-15.md#addendum-joint-governance-decisions-l-d9-2026-10-15) (addendum, decision L-D9).
+- Register `risks-3`: qualified acceptance, prototype scope. Before any release, a corrected
+  register version is needed (R-08/R-10 plan text, R-08/R-11 evidence), with fresh decisions.
+  Specialist reviews and the R-05 source review stay required. Owners and scores are a working
+  baseline.
+- Catalog `controls-3`: qualified acceptance, prototype scope. The multilingual, implicit-risk
+  and notice controls are unreviewed until native-speaker and clinical review. `C-HUMAN-REVIEW`
+  does not meet the joint requirement. Dependency scan and red team count only on the exact head.
+- Readiness rules: **deferred, not accepted.** One reviewer plus `9c8c7d2` evidence can produce
+  `ready`. Not trusted until code enforces joint decisions and evidence that matches the release
+  commit.
+- Contracts C2/C3/C4-local-v1: qualified acceptance, prototype scope. Rate limits only with one
+  replica. C4 item 2 not accepted, item 3 deferred.
+- Public showcase that viewers cannot interact with: authorized by me only, with conditions.
+  Abhinav must decide too. We both review each image. No live endpoint, no public chatbot.
+- Readiness is still `blocked_pending_human_decision`. Nothing entered in the staff UI. Nothing
+  pushed.
+
+## Final review decisions (2026-10-15)
 
 - At head `e380883`, on the shared PC, local only. I made each decision below in the session;
   an AI coding agent drafted the record. Record:

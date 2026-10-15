@@ -171,3 +171,19 @@ register, catalog, readiness rules and contracts; staff-UI entries (none made); 
 and clinical review; contact numbers; the battery on the final head; publication authorization.
 Showcase: a local demonstration with synthetic data only. Interactive public deployment stays
 blocked.
+
+**Update 2026-10-15 (L-D9, [record](audits/devika-final-acceptance-2026-10-15.md#addendum-joint-governance-decisions-l-d9-2026-10-15)):** Devika gave qualified acceptance, prototype scope, of
+the register `risks-3`, the catalog `controls-3` and contracts C2/C3/C4-local-v1, with conditions.
+She **deferred the readiness rules**. As implemented, one reviewer's `accept_residual` on R-01
+and R-04 yields `ready` on evidence from `9c8c7d2`, so `ready` is not trusted until code enforces
+joint decisions and evidence that matches the release commit. She authorized, on her side only,
+a public showcase that viewers cannot interact with. It is not jointly authorized until Abhinav
+decides. Still open:
+- the readiness fix (needs separate authorization);
+- a corrected register version;
+- staff-UI entries;
+- native-speaker and clinical review, and the R-05 source review;
+- contact numbers;
+- the battery on the final head;
+- Abhinav's showcase decision;
+- publication authorization.

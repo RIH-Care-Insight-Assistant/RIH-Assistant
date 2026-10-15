@@ -44,8 +44,14 @@ code. Where a decision is joint (R-01 and R-04), entering both reviewers' decisi
 documented condition that the code does not enforce. Native-speaker and clinical review are not
 checked by the code either. This paragraph and the `pending_human_review` and digest wording in
 the table document the rules as implemented (`57d82f6`, `e685260`). The rules themselves are
-unchanged. Acceptance: the content binding by both humans (L-D7, L-D8); the rest by Abhinav
-(L-D8), awaiting Devika.
+unchanged. Acceptance: the content binding by both humans (L-D7, L-D8); the rest by Abhinav (L-D8).
+**Devika deferred the rest (L-D9): not accepted until fixed.** As implemented, one reviewer's
+`accept_residual` on R-01 and R-04 makes the status `ready` even when the release evidence is
+for an older commit (`9c8c7d2`, before `e380883`). Readiness does not compare the evidence
+commit with the release candidate or check the evidence's age. A `ready` from this code is
+therefore **not** treated as release-ready. Accepting the rules needs code that enforces joint
+decisions and evidence that matches the release commit. That change needs separate
+authorization. Documenting the flaw does not make the rule safe.
 
 ## What is still human work
 

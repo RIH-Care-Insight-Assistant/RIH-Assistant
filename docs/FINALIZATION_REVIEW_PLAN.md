@@ -52,6 +52,23 @@ for Devika: task 6 (register, catalog, readiness rules beyond the content bindin
 (contracts). Still open for both: staff-UI entries (neither has entered one), task 4, task 7 and
 task 10.
 
+## Status (updated 2026-10-15, Devika's joint-governance decisions, records at `c19c745`)
+
+See [`audits/devika-final-acceptance-2026-10-15.md`](audits/devika-final-acceptance-2026-10-15.md#addendum-joint-governance-decisions-l-d9-2026-10-15) (decision L-D9).
+- Task 6: qualified acceptance of the register and the catalog. The readiness rules are
+  **deferred, not accepted**.
+- Task 9: qualified acceptance of contracts C2 and C3. For C4, item 1 is accepted with
+  conditions, item 2 is not accepted and item 3 is deferred.
+- Devika also authorized, on her side only, a public showcase that viewers cannot interact with.
+  It needs Abhinav's decision.
+
+Still open:
+- A readiness fix that enforces joint decisions and evidence matching the release commit. It
+  needs separate authorization.
+- A corrected register version, with fresh decisions.
+- Staff-UI entries.
+- Task 4, task 7 and task 10.
+
 ## Review tasks (in suggested order)
 
 | # | Task | Why it needs a human | Her established area | Files and commands | What gets recorded |

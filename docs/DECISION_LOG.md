@@ -208,3 +208,25 @@ awaiting human acceptance; nothing here records an approval that was not given.
   synthetic data. Interactive public deployment stays blocked. Not native-speaker, clinical or
   independent evaluation. Record:
   [`audits/abhinav-final-acceptance-2026-10-15.md`](audits/abhinav-final-acceptance-2026-10-15.md).
+- **L-D9 (2026-10-15, Devika's joint-governance decisions, made by her at the keyboard; records
+  at `c19c745`, code at `e380883`; drafted into text by the coding agent at her direction):**
+  each item asked separately; her earlier statement of satisfaction not taken as approval.
+  **Qualified acceptance**, prototype scope, of the register `risks-3` (conditions: R-08/R-10
+  plan text and R-08/R-11 evidence corrected in a new register version with fresh decisions
+  before any release; specialist reviews and the R-05 source review stay required; owners and
+  scores are a working baseline, not a validated assessment), the catalog `controls-3`
+  (conditions: the multilingual, implicit-risk and language-notice controls count as unreviewed
+  until native-speaker and clinical review; `C-HUMAN-REVIEW` does not satisfy the joint-decision
+  requirement; dependency scan and red team count only when rerun on the exact head), and
+  contracts C2/C3/C4-local-v1 (prototype only; in-memory rate limits only with one replica; C4
+  item 2 not accepted and item 3 deferred). **Deferred, not accepted:** the readiness rules as
+  implemented. One reviewer's `accept_residual` on R-01 and R-04 makes `assess()` return `ready`
+  on evidence for `9c8c7d2`, which predates `e380883`. `ready` is not trusted until code
+  enforces joint decisions and evidence matching the release commit. That change needs separate
+  authorization. The L-D7 D6 content binding is unchanged. **Authorized by her alone, with
+  conditions:** a separate public showcase that viewers cannot interact with (reviewed synthetic
+  screenshots and architecture diagrams). It needs Abhinav's matching decision, because L-D8
+  limits the showcase to local only. Both review each image. No live endpoint and no public
+  chatbot. Readiness stays `blocked_pending_human_decision`. No staff-UI entry, code, register or
+  gate change. Not native-speaker, clinical or independent evaluation. Record:
+  [`audits/devika-final-acceptance-2026-10-15.md`](audits/devika-final-acceptance-2026-10-15.md#addendum-joint-governance-decisions-l-d9-2026-10-15).

@@ -189,6 +189,67 @@ both humans enter R-01/R-04 in the staff UI under their own accounts; the contac
 re-verified; `python scripts/release_readiness.py --e2e --containers` runs on the final head;
 then both decide on publication.
 
+## Devika's joint-governance decisions (2026-10-15, documentation only)
+
+Devika at the keyboard, directing. An AI coding agent presented each of the five items
+separately, asked for her explicit decision and then for her conditions, and drafted the record.
+Her earlier statement of satisfaction was not taken as approval. Records at `c19c745`, code at
+`e380883`. No application code, test, dataset, evidence file, risk register, control catalog,
+readiness code or gate changed. Record:
+[`audits/devika-final-acceptance-2026-10-15.md`](audits/devika-final-acceptance-2026-10-15.md#addendum-joint-governance-decisions-l-d9-2026-10-15), decision L-D9.
+
+- **Register `risks-3`, qualified acceptance (prototype scope).** Conditions:
+  - Before any release, a new register version must correct the stale plan text of R-08 and
+    R-10, add the missing evidence to R-08 and R-11, and get fresh decisions.
+  - Specialist reviews and the R-05 source review stay required.
+  - Owners and scores are a working baseline, not a validated assessment.
+- **Catalog `controls-3`, qualified acceptance (prototype scope).** Conditions:
+  - The multilingual, implicit-risk and language-notice controls count as unreviewed until
+    native-speaker and clinical review.
+  - `C-HUMAN-REVIEW` does not satisfy the joint-decision requirement.
+  - The dependency scan and the red team count only when rerun on the exact head.
+- **Readiness rules: deferred, not accepted.** `assess()` was recomputed locally and shown to her:
+  - with no decisions: `blocked_pending_human_decision`, 5 pending items;
+  - with one reviewer's `accept_residual` on R-01 and R-04: `ready`, with candidate `9c8c7d2`,
+    from before `e380883`.
+
+  `ready` is not trusted until code enforces joint decisions and evidence that matches the
+  release commit. That change needs separate authorization and was not made. The L-D7 D6
+  content binding is unchanged.
+- **Contracts C2/C3/C4-local-v1, qualified acceptance (prototype scope).** The C3 in-memory rate
+  limits are accepted only with one replica. For C4, item 2 (readiness) is not accepted and
+  item 3 (reviewers accepting residual risk) is deferred.
+- **Showcase:** Devika authorized, with conditions and on her side only, a separate public
+  showcase that viewers cannot interact with (reviewed synthetic screenshots and architecture
+  diagrams).
+  - It needs Abhinav's matching decision, because L-D8 limits the showcase to local only.
+  - Both humans review each image first.
+  - No live endpoint and no public chatbot. Nothing has been posted.
+- **Readiness unchanged:** `blocked_pending_human_decision`. Nothing was entered in the staff UI.
+- **Checks run on the documentation change:** (Windows 11, Python 3.13.2)
+  - `tests/test_repo_assumptions.py`, `tests/test_b10_review.py` (held-out pin intact) and
+    `tests/test_readme_assets.py`: **131 passed**.
+  - `tests/governance`: **23 passed**.
+  - Ruff clean.
+  - `safety_eval.py --fail-on-miss`: no misses, no false positives.
+  - `phase-status.json` parses.
+  - The 15 changed files are LF, with no BOM and no invisible characters. Their relative links
+    and the addendum anchor resolve.
+  - `git diff` shows no change under `app/`, `governance/`, `tests/`, `scripts/` or evidence.
+  - `assess()` with no decisions: `blocked_pending_human_decision`, 5 pending. Decision versions
+    are unchanged: R-01 `risks-3#d0e7adf73bfd2aab`, R-04 `risks-3#70c46a1d29fe0654`.
+  - Full pytest and the release battery were not rerun, because no code changed.
+
+**Exact next action:**
+1. Abhinav decides on the public showcase that viewers cannot interact with.
+2. The humans authorize, or decline, the readiness fix: enforce joint decisions and release
+   evidence that matches the release commit. Both then accept the fixed rules.
+3. A corrected register version is prepared, with R-08/R-10 plan text and R-08/R-11 evidence.
+4. Both humans enter R-01/R-04 in the staff UI under their own accounts.
+5. Native-speaker and clinical review; contact numbers re-verified.
+6. `python scripts/release_readiness.py --e2e --containers` runs on the final head.
+7. Both decide on publication.
+
 ## Phase status
 
 | Phase | Status | Evidence |
@@ -408,8 +469,15 @@ do the reviews and decide the items in [`PUBLICATION_PLAN.md`](PUBLICATION_PLAN.
 - Done 2026-10-15 (L-D8, prototype scope): Abhinav's acceptance of the B10 readiness-rule
   change, his position on R-01 and R-04, and his acceptance of the register, catalog, readiness
   rules and contracts C2/C3/C4-local-v1.
-- Devika's acceptance of C2-local-v1, C3-local-v1 and C4-local-v1, and of the agent-proposed
-  risk register, control catalog and readiness rules (Abhinav has accepted them).
+- Done 2026-10-15 (L-D9): Devika gave qualified acceptance (prototype scope) of the register,
+  the catalog and contracts C2/C3/C4-local-v1, with conditions. She **deferred the readiness
+  rules** and C4 items 2 and 3.
+- Readiness fix: joint decisions enforced, and evidence that matches the release commit. It
+  changes application logic and needs separate authorization. Both humans then accept the
+  fixed rules.
+- A corrected register version (R-08/R-10 plan text, R-08/R-11 evidence), with fresh decisions.
+- Abhinav's decision on the public showcase that viewers cannot interact with (Devika
+  authorized it on her side, L-D9). Both review each image before anything is posted.
 - Native-speaker and clinical review; staff-UI entries of the R-01 and R-04 decisions
   (both humans, each under their own account; neither has entered one) and of the pending-review items.
 - Release battery with containers rerun on the final head (last run on `9c8c7d2`, before
@@ -435,3 +503,7 @@ end of the "Devika's final review decisions" section above.
 Update 2026-10-15: Abhinav has now recorded his decisions
 ([record](audits/abhinav-final-acceptance-2026-10-15.md), L-D8). The next action is the one at the
 end of the "Abhinav's final acceptance" section above.
+
+Update 2026-10-15: Devika has now recorded her joint-governance decisions
+([record](audits/devika-final-acceptance-2026-10-15.md#addendum-joint-governance-decisions-l-d9-2026-10-15), L-D9). The next action is the one at the end of the "Devika's joint-governance
+decisions" section above.

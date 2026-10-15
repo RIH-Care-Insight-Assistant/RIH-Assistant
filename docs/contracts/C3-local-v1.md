@@ -1,6 +1,6 @@
 # C3-local-v1 — Phase 4–5 security, authorization and adversarial-evidence contracts
 
-Status: **Adopted for local development (2026-10-15). Accepted by Abhinav, prototype scope (2026-10-15, L-D8, [`../audits/abhinav-final-acceptance-2026-10-15.md`](../audits/abhinav-final-acceptance-2026-10-15.md)); awaiting Devika's acceptance.** Extends
+Status: **Adopted for local development (2026-10-15). Accepted by Abhinav, prototype scope (2026-10-15, L-D8, [`../audits/abhinav-final-acceptance-2026-10-15.md`](../audits/abhinav-final-acceptance-2026-10-15.md)). Qualified acceptance by Devika, prototype scope (2026-10-15, L-D9, [`../audits/devika-final-acceptance-2026-10-15.md`](../audits/devika-final-acceptance-2026-10-15.md#addendum-joint-governance-decisions-l-d9-2026-10-15)): open items accepted for the prototype only, and the in-memory rate limits only with one API replica (scaling out needs a contract revision).** Extends
 [C2-local-v1](C2-local-v1.md); nothing there is relaxed.
 
 ## 1. Identities and authentication
