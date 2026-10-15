@@ -2,8 +2,9 @@ import { useCallback, useEffect, useState } from "react";
 import { ApiError, staffApi } from "../api/client";
 import type { AuditEvent, Me, SourceRow, UserRow } from "../api/types";
 import { GovernancePanel } from "./GovernancePanel";
+import { ObservabilityPanel } from "./ObservabilityPanel";
 
-type Tab = "sources" | "governance" | "feedback" | "users" | "audit" | "ingest";
+type Tab = "sources" | "governance" | "observability" | "feedback" | "users" | "audit" | "ingest";
 
 function errorText(err: unknown): string {
   if (err instanceof ApiError) {
@@ -256,6 +257,7 @@ function IngestPanel() {
 const TABS: { id: Tab; label: string; roles: string[] }[] = [
   { id: "sources", label: "Sources", roles: ["reviewer", "admin"] },
   { id: "governance", label: "Governance", roles: ["reviewer", "admin"] },
+  { id: "observability", label: "Observability", roles: ["reviewer", "admin"] },
   { id: "feedback", label: "Feedback", roles: ["reviewer", "admin"] },
   { id: "users", label: "Users", roles: ["admin"] },
   { id: "audit", label: "Audit log", roles: ["admin"] },
@@ -302,6 +304,7 @@ export function StaffView() {
           <div role="tabpanel" aria-label={TABS.find((t) => t.id === tab)?.label}>
             {tab === "sources" && <SourcesPanel />}
             {tab === "governance" && <GovernancePanel isAdmin={me.user.roles.includes("admin")} />}
+            {tab === "observability" && <ObservabilityPanel isAdmin={me.user.roles.includes("admin")} />}
             {tab === "feedback" && <FeedbackPanel />}
             {tab === "users" && <UsersPanel />}
             {tab === "audit" && <AuditPanel />}

@@ -15,7 +15,7 @@ test("reviewer rejects a source and students no longer get it cited", async ({ p
   expect(PASSWORD.length).toBeGreaterThan(12);
   await signIn(page, "e2e.reviewer");
   const tabs = page.getByRole("tablist", { name: "Staff sections" });
-  await expect(tabs.getByRole("tab")).toHaveText(["Sources", "Governance", "Feedback"]);
+  await expect(tabs.getByRole("tab")).toHaveText(["Sources", "Governance", "Observability", "Feedback"]);
   await page.getByRole("button", { name: "Reject RIH Billing" }).click();
   await expect(page.getByRole("row", { name: /RIH Billing/ })).toContainText("rejected");
 
@@ -44,6 +44,8 @@ test("reviewer sees the governance dashboard and readiness is not approvable", a
 
 test("admin sees the audit log with denied and allowed decisions", async ({ page }) => {
   await signIn(page, "e2e.admin");
+  await page.getByRole("tab", { name: "Observability" }).click();
+  await expect(page.getByRole("table")).toContainText("/api/v1/chat");
   await page.getByRole("tab", { name: "Audit log" }).click();
   const table = page.getByRole("table");
   await expect(table).toContainText("tool:retrieve_resources");

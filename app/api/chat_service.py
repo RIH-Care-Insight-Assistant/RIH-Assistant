@@ -40,9 +40,10 @@ def _ephemeral(session_id: str, role: str, text: str, result: Optional[AgentResu
 
 
 class ChatService:
-    def __init__(self, db: Database, orchestrator):
+    def __init__(self, db: Database, orchestrator, telemetry=None):
         self.db = db
         self.orchestrator = orchestrator
+        self.telemetry = telemetry
 
     def _resolve_text(self, owner_id: str, session_id: str, message: Optional[str], option_id: Optional[str]):
         if message is not None:
@@ -56,6 +57,18 @@ class ChatService:
     def turn(self, resolve_owner, session_id: str, message: Optional[str], option_id: Optional[str],
              request_id: str = "") -> Dict:
         """`resolve_owner()` returns the owner ID or None; it may raise DatabaseUnavailable."""
+        if self.telemetry is None:
+            return self._turn(resolve_owner, session_id, message, option_id, request_id)
+        with self.telemetry.span("rih.chat_turn", **{"rih.request_id": request_id}) as span:
+            out = self._turn(resolve_owner, session_id, message, option_id, request_id)
+            span.set_attribute("rih.response_type", out["response_type"])
+            span.set_attribute("rih.safety_lane", out["safety_lane"] or "none")
+            span.set_attribute("rih.persisted", out["persisted"])
+            self.telemetry.record_turn(out["response_type"], out["safety_lane"], out["persisted"])
+            return out
+
+    def _turn(self, resolve_owner, session_id: str, message: Optional[str], option_id: Optional[str],
+              request_id: str = "") -> Dict:
         # Safety decision first, on the original text, with no dependency on storage.
         safe = safety_result(message) if message is not None else None
         try:
@@ -67,6 +80,10 @@ class ChatService:
             text, clarified = self._resolve_text(owner_id, session_id, message, option_id)
             ctx = TurnContext(principal=Principal(subject=owner_id, roles=frozenset({"student"})), request_id=request_id)
             result = safe or self.orchestrator.run(text, clarified=clarified, ctx=ctx)
+            if self.telemetry is not None:
+                for e in result.trace:
+                    if e.get("event") == "planner":
+                        self.telemetry.record_planner(str(e.get("status")))
             citations = [citation_of(e) for e in result.evidence]
             saved = self.db.add_turn(
                 owner_id, session_id,

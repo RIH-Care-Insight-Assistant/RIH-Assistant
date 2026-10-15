@@ -115,6 +115,12 @@ export const staffApi = {
     request<unknown>("POST", `/admin/governance/risks/${encodeURIComponent(riskId)}/reviews`, { decision, rationale }),
   releaseDecision: (decision: string, rationale: string, snapshot: string) =>
     request<unknown>("POST", "/admin/governance/release-decisions", { decision, rationale, snapshot_sha256: snapshot }),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  observability: () => request<any>("GET", "/admin/observability/summary?spans=40"),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  incidents: () => request<any>("GET", "/admin/incidents"),
+  simulateIncident: (scenario: string) =>
+    request<{ outcome: string; detected_by: string[] }>("POST", "/admin/incidents/simulate", { scenario }),
   ingest: (url: string, category: string) =>
     request<{ chunk_id: string; status: string; signals: string[] }>("POST", "/admin/ingest", { url, category }),
 };

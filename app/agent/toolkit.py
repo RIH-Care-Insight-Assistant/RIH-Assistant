@@ -198,10 +198,12 @@ class ToolExecutor:
         authorizer: Authorizer,
         *,
         on_event: Optional[Callable[[Dict[str, Any]], None]] = None,
+        tracer=None,
     ):
         self.registry = registry
         self.authorizer = authorizer
         self._on_event = on_event
+        self._tracer = tracer
 
     def _emit(self, ctx: TurnContext, tool: str, status: str, rule_id: str = "", duration_ms: float = 0.0,
               source: str = "") -> None:
@@ -215,6 +217,20 @@ class ToolExecutor:
                 pass  # auditing failures never change the decision
 
     def call(self, name: str, raw_args: Any, ctx: TurnContext, *, source: str = "rule") -> ToolOutcome:
+        if self._tracer is None:
+            return self._call(name, raw_args, ctx, source)
+        with self._tracer.start_as_current_span("rih.tool", attributes={"rih.planner": source}) as span:
+            out = self._call(name, raw_args, ctx, source)
+            span.set_attribute("rih.tool", out.tool)
+            span.set_attribute("rih.tool_status", out.status)
+            if out.rule_id:
+                span.set_attribute("rih.rule_id", out.rule_id)
+            if isinstance(out.output, RetrieveOutput):
+                span.set_attribute("rih.retrieval_status", out.output.status)
+                span.set_attribute("rih.hits", len(out.output.evidence))
+            return out
+
+    def _call(self, name: str, raw_args: Any, ctx: TurnContext, source: str) -> ToolOutcome:
         tool = name if isinstance(name, str) and len(name) <= 64 else "<invalid>"
         spec = self.registry.get(tool)
         if spec is None:

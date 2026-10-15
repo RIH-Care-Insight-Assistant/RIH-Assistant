@@ -10,11 +10,13 @@ import logging
 import os
 import re
 import secrets
+import time
 from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from opentelemetry.trace import Status, StatusCode
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 from ..agent.orchestrator import Orchestrator
@@ -26,12 +28,14 @@ from ..security.policy_engine import POLICY_PATH, PolicyEngine, PolicyError
 from ..security.ratelimit import RateLimiter
 from .admin_routes import router as admin_router
 from .governance_routes import router as governance_router
+from .observability_routes import router as observability_router
 from .chat_service import ChatService
 from .db import Database
 from .errors import MESSAGES, install_error_handlers
 from .routes import router
 from .settings import Settings
 from .staff_store import StaffStore
+from ..observability.telemetry import Telemetry, classify_status, configure_json_logging
 
 logger = logging.getLogger("rih.api")
 
@@ -49,16 +53,42 @@ SECURITY_HEADERS = [
 
 
 class RequestContextMiddleware:
-    """Assigns a request ID, enforces the body-size limit and adds security headers.
+    """Assigns a request ID, enforces the body-size limit, adds security headers and records
+    one privacy-safe span, metric and log line per request (route template, status, latency).
 
     Pure ASGI so it also covers streaming bodies without a Content-Length.
     """
 
-    def __init__(self, app: ASGIApp, max_body_bytes: int):
+    def __init__(self, app: ASGIApp, max_body_bytes: int, telemetry=None):
         self.app = app
         self.max_body = max_body_bytes
+        self.telemetry = telemetry
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http" or self.telemetry is None:
+            await self._handle(scope, receive, send, None)
+            return
+        start = time.perf_counter()
+        status_box = {"status": 500}
+        with self.telemetry.tracer.start_as_current_span(
+            "http.request", attributes={"http.method": scope.get("method", "")}
+        ) as span:
+            try:
+                await self._handle(scope, receive, send, status_box)
+            finally:
+                route = getattr(scope.get("route"), "path", None) or "unmatched"
+                status = status_box["status"]
+                request_id = scope.get("state", {}).get("request_id", "")
+                span.set_attribute("http.route", route)
+                span.set_attribute("http.status_code", status)
+                span.set_attribute("rih.request_id", request_id)
+                span.set_attribute("rih.error_class", classify_status(status))
+                if status >= 500:
+                    span.set_status(Status(StatusCode.ERROR))
+                self.telemetry.record_request(scope.get("method", ""), route, status,
+                                              (time.perf_counter() - start) * 1000, request_id)
+
+    async def _handle(self, scope: Scope, receive: Receive, send: Send, status_box) -> None:
         if scope["type"] != "http":
             await self.app(scope, receive, send)
             return
@@ -71,6 +101,8 @@ class RequestContextMiddleware:
 
         async def send_with_headers(message: Message) -> None:
             if message["type"] == "http.response.start":
+                if status_box is not None:
+                    status_box["status"] = message["status"]
                 hdrs = list(message.get("headers", []))
                 present = {k.lower() for k, _ in hdrs}
                 hdrs.append((b"x-request-id", request_id.encode()))
@@ -149,8 +181,13 @@ def create_app(
     except PolicyError as exc:
         logger.error("policy_unavailable", extra={"reason": str(exc)})
         policy = DenyAll()
+    telemetry = Telemetry(trace_file=os.getenv("RIH_TRACE_FILE") or None)
+    if os.getenv("RIH_LOG_FORMAT", "json").lower() == "json":
+        configure_json_logging()
     if orchestrator is None:
-        executor = ToolExecutor(build_registry(retriever, clarification_payload), policy)
+        executor = ToolExecutor(build_registry(retriever, clarification_payload), policy,
+                                on_event=lambda e: telemetry.record_tool(e["tool"], e["status"], e.get("rule", "")),
+                                tracer=telemetry.tracer)
         orchestrator = Orchestrator(executor=executor, retriever=retriever, llm_planner=llm_planner_from_env())
 
     @asynccontextmanager
@@ -179,7 +216,8 @@ def create_app(
     app.state.db = db
     app.state.catalog = catalog
     app.state.orchestrator = orchestrator
-    app.state.chat = ChatService(db, orchestrator)
+    app.state.chat = ChatService(db, orchestrator, telemetry)
+    app.state.telemetry = telemetry
     app.state.retriever = retriever
     app.state.staff = staff
     app.state.policy = policy
@@ -192,6 +230,7 @@ def create_app(
     app.include_router(router)
     app.include_router(admin_router)
     app.include_router(governance_router)
+    app.include_router(observability_router)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=list(settings.allowed_origins),
@@ -200,7 +239,7 @@ def create_app(
         allow_headers=["content-type", "x-csrf-token", "x-request-id"],
         expose_headers=["x-request-id"],
     )
-    app.add_middleware(RequestContextMiddleware, max_body_bytes=settings.max_body_bytes)
+    app.add_middleware(RequestContextMiddleware, max_body_bytes=settings.max_body_bytes, telemetry=telemetry)
     return app
 
 

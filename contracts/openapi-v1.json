@@ -1022,6 +1022,25 @@
         "title": "SessionList",
         "type": "object"
       },
+      "SimulateRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "scenario": {
+            "enum": [
+              "database_outage",
+              "retrieval_outage",
+              "authz_denial_spike"
+            ],
+            "title": "Scenario",
+            "type": "string"
+          }
+        },
+        "required": [
+          "scenario"
+        ],
+        "title": "SimulateRequest",
+        "type": "object"
+      },
       "StaffUser": {
         "properties": {
           "roles": {
@@ -1408,6 +1427,72 @@
         ]
       }
     },
+    "/api/v1/admin/incidents": {
+      "get": {
+        "operationId": "incidents_api_v1_admin_incidents_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Incidents Api V1 Admin Incidents Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Incidents",
+        "tags": [
+          "observability"
+        ]
+      }
+    },
+    "/api/v1/admin/incidents/simulate": {
+      "post": {
+        "operationId": "simulate_api_v1_admin_incidents_simulate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SimulateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Simulate Api V1 Admin Incidents Simulate Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Simulate",
+        "tags": [
+          "observability"
+        ]
+      }
+    },
     "/api/v1/admin/ingest": {
       "post": {
         "operationId": "ingest_api_v1_admin_ingest_post",
@@ -1448,6 +1533,53 @@
         "summary": "Ingest",
         "tags": [
           "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/observability/summary": {
+      "get": {
+        "operationId": "summary_api_v1_admin_observability_summary_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "spans",
+            "required": false,
+            "schema": {
+              "default": 30,
+              "maximum": 200,
+              "minimum": 0,
+              "title": "Spans",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Summary Api V1 Admin Observability Summary Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Summary",
+        "tags": [
+          "observability"
         ]
       }
     },
