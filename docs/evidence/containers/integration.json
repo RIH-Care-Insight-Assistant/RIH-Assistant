@@ -1,16 +1,16 @@
 {
   "report": "rih-container-integration",
-  "git_commit": "9c8c7d2-dirty",
-  "generated_at": "2026-10-15T15:19:26Z",
+  "git_commit": "c22b360-dirty",
+  "generated_at": "2026-10-15T22:01:40Z",
   "images": {
-    "rih-backend:local": "sha256:e8ccba6e5434",
-    "rih-frontend:local": "sha256:5480927ddd15"
+    "rih-backend:local": "sha256:8ed5a00b83ca",
+    "rih-frontend:local": "sha256:e4579c45594a"
   },
   "results": [
     {
       "check": "stack_health",
       "status": "pass",
-      "duration_s": 0.9,
+      "duration_s": 0.8,
       "health": {
         "backend": "healthy",
         "frontend": "healthy"
@@ -27,7 +27,7 @@
     {
       "check": "runtime_hardening",
       "status": "pass",
-      "duration_s": 2.2,
+      "duration_s": 2.1,
       "containers": {
         "backend": {
           "user": "10001",
@@ -64,7 +64,7 @@
       "check": "student_workflow",
       "status": "pass",
       "duration_s": 0.3,
-      "session": "ses_a2ae59a42472704de826ba02",
+      "session": "ses_739b98cf15fdcbbb4f8bdc27",
       "citations": [
         "Immunizations & Requirements"
       ],
@@ -74,21 +74,21 @@
       "check": "staff_workflow",
       "status": "pass",
       "duration_s": 0.5,
-      "readiness_in_container": "blocked_pending_human_decision",
+      "readiness_in_container": "not_ready",
       "reviewer_users_status": 403,
-      "chat_p95_ms": 15.19
+      "chat_p95_ms": 30.39
     },
     {
       "check": "persistence_across_restart",
       "status": "pass",
-      "duration_s": 2.4,
+      "duration_s": 2.3,
       "recovered_after_s": 1.4,
       "messages_after_restart": 2
     },
     {
       "check": "redteam_over_http",
       "status": "pass",
-      "duration_s": 60.5,
+      "duration_s": 60.6,
       "attempted": 35,
       "attack_successes": 0,
       "open": [],

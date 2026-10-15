@@ -1,7 +1,7 @@
 {
   "report": "rih-container-security",
-  "git_commit": "9c8c7d2-dirty",
-  "generated_at": "2026-10-15T15:18:09Z",
+  "git_commit": "c22b360-dirty",
+  "generated_at": "2026-10-15T22:00:23Z",
   "tools": {
     "trivy": "aquasec/trivy:0.74.0",
     "gitleaks": "ghcr.io/gitleaks/gitleaks:v8.30.1"
@@ -29,7 +29,7 @@
     "status": "pass",
     "leaks": 0,
     "findings": [],
-    "detail": "\u001b[90m3:18PM\u001b[0m \u001b[32mINF\u001b[0m \u001b[1m247 commits scanned.\u001b[0m \u001b[90m3:18PM\u001b[0m \u001b[32mINF\u001b[0m \u001b[1mno leaks found\u001b[0m"
+    "detail": "\u001b[90m10:00PM\u001b[0m \u001b[32mINF\u001b[0m \u001b[1m268 commits scanned.\u001b[0m \u001b[90m10:00PM\u001b[0m \u001b[32mINF\u001b[0m \u001b[1mno leaks found\u001b[0m"
   },
   "status": "pass"
 }

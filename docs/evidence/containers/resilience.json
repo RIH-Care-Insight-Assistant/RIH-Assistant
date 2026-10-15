@@ -1,10 +1,10 @@
 {
   "report": "rih-container-resilience",
-  "git_commit": "9c8c7d2-dirty",
-  "generated_at": "2026-10-15T15:20:08Z",
+  "git_commit": "c22b360-dirty",
+  "generated_at": "2026-10-15T22:02:21Z",
   "images": {
-    "rih-backend:local": "sha256:e8ccba6e5434",
-    "rih-frontend:local": "sha256:5480927ddd15"
+    "rih-backend:local": "sha256:8ed5a00b83ca",
+    "rih-frontend:local": "sha256:e4579c45594a"
   },
   "results": [
     {
@@ -13,7 +13,7 @@
       "duration_s": 6.0,
       "spa_during_outage": 200,
       "api_during_outage": 503,
-      "recovered_after_s": 1.3,
+      "recovered_after_s": 1.4,
       "session_survived": true
     },
     {
@@ -34,7 +34,7 @@
     {
       "check": "incident_simulations",
       "status": "pass",
-      "duration_s": 6.1,
+      "duration_s": 5.9,
       "scenarios": {
         "database_outage": {
           "outcome": "recovered",
@@ -88,7 +88,7 @@
     {
       "check": "database_unwritable",
       "status": "pass",
-      "duration_s": 2.4,
+      "duration_s": 2.3,
       "ready": {
         "database": "unavailable",
         "knowledge_base": "ok",
@@ -100,14 +100,14 @@
     {
       "check": "model_unavailable_and_timeout",
       "status": "pass",
-      "duration_s": 12.5,
+      "duration_s": 12.2,
       "unreachable": {
         "latencies_ms": [
-          1011,
+          1010,
           1010,
           7,
           6,
-          7
+          6
         ],
         "responses": [
           "answer",
@@ -120,11 +120,11 @@
       },
       "timeout": {
         "latencies_ms": [
-          1014,
-          1011,
+          1010,
+          1010,
           7,
           6,
-          7
+          6
         ],
         "responses": [
           "answer",
@@ -139,7 +139,7 @@
     {
       "check": "corrupt_and_stale_kb",
       "status": "pass",
-      "duration_s": 4.9,
+      "duration_s": 4.7,
       "corrupt_kb": {
         "billing_cited": false,
         "fake_number_shown": false,

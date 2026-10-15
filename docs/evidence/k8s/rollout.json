@@ -1,7 +1,7 @@
 {
   "report": "rih-k8s-rollout",
-  "git_commit": "9c8c7d2-dirty",
-  "generated_at": "2026-10-15T15:23:34Z",
+  "git_commit": "c22b360-dirty",
+  "generated_at": "2026-10-15T22:05:55Z",
   "cluster": {
     "kind": "kind v0.33.0 go1.26.7 windows/amd64",
     "server": "v1.37.0"
@@ -16,10 +16,10 @@
     {
       "check": "good_rollout",
       "status": "pass",
-      "duration_s": 6.2,
+      "duration_s": 6.3,
       "revision": "1 -> 2",
       "image": "rih-backend:v2",
-      "requests": 22,
+      "requests": 23,
       "failed": 0,
       "availability": 1.0,
       "failure_kinds": []
@@ -27,7 +27,7 @@
     {
       "check": "failed_rollout_keeps_serving",
       "status": "pass",
-      "duration_s": 40.4,
+      "duration_s": 40.3,
       "rollout_status_exit": 1,
       "previous_image_still_serving": "rih-backend:v2",
       "requests": 197,
