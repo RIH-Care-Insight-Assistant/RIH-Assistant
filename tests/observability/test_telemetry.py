@@ -82,6 +82,23 @@ def test_json_logs_are_allowlisted_and_correlated(api, app):
     assert SECRET_TEXT not in buf.getvalue() and sid not in buf.getvalue()
 
 
+def test_server_access_log_cannot_record_paths_or_addresses(app):
+    # R-08: uvicorn's default access log wrote "GET /api/v1/sessions/<id>/messages" and the client
+    # address to stdout (reproduced 2026-10-15). The app disables it; rih.http logs route templates.
+    buf = io.StringIO()
+    handler = logging.StreamHandler(buf)
+    access = logging.getLogger("uvicorn.access")
+    previous = access.level
+    access.setLevel(logging.INFO)  # as uvicorn configures it
+    access.addHandler(handler)
+    try:
+        access.info('%s - "%s %s HTTP/%s" %d', "127.0.0.1:5000", "GET", "/api/v1/sessions/ses_synthetic/messages", "1.1", 200)
+    finally:
+        access.removeHandler(handler)
+        access.setLevel(previous)
+    assert buf.getvalue() == ""
+
+
 def test_formatter_drops_unknown_fields():
     rec = logging.LogRecord("rih.test", logging.INFO, __file__, 1, "evt", None, None)
     rec.fields = {"route": "/x", "message_text": "secret", "password": "p"}

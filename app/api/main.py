@@ -187,6 +187,9 @@ def create_app(
     else:  # "off" silences application logs (used by quiet in-process test batteries)
         logging.getLogger("rih").handlers = [logging.NullHandler()]
         logging.getLogger("rih").propagate = False
+    # uvicorn's access log prints raw paths (session ids) and client addresses outside the
+    # allowlisted JSON logs; rih.http already records every request by route template (R-08).
+    logging.getLogger("uvicorn.access").disabled = True
     if orchestrator is None:
         executor = ToolExecutor(build_registry(retriever, clarification_payload), policy,
                                 on_event=lambda e: telemetry.record_tool(e["tool"], e["status"], e.get("rule", "")),
