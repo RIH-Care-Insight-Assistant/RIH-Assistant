@@ -1,0 +1,103 @@
+{
+  "report": "rih-container-integration",
+  "git_commit": "25612ae-dirty",
+  "generated_at": "2026-10-15T03:39:35Z",
+  "images": {
+    "rih-backend:local": "sha256:1982698f80ac",
+    "rih-frontend:local": "sha256:da025ee9a597"
+  },
+  "results": [
+    {
+      "check": "stack_health",
+      "status": "pass",
+      "duration_s": 0.8,
+      "health": {
+        "backend": "healthy",
+        "frontend": "healthy"
+      },
+      "ready": {
+        "status": "ready",
+        "checks": {
+          "database": "ok",
+          "knowledge_base": "ok",
+          "policy": "ok"
+        }
+      }
+    },
+    {
+      "check": "runtime_hardening",
+      "status": "pass",
+      "duration_s": 2.0,
+      "containers": {
+        "backend": {
+          "user": "10001",
+          "read_only_rootfs": true,
+          "cap_drop": [
+            "ALL"
+          ],
+          "no_new_privileges": true,
+          "memory_limit_mb": 768,
+          "pids_limit": 256
+        },
+        "frontend": {
+          "user": "101",
+          "read_only_rootfs": true,
+          "cap_drop": [
+            "ALL"
+          ],
+          "no_new_privileges": true,
+          "memory_limit_mb": 128,
+          "pids_limit": 128
+        }
+      },
+      "backend_published_ports": []
+    },
+    {
+      "check": "frontend_headers",
+      "status": "pass",
+      "duration_s": 0.3,
+      "spa_csp": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; c",
+      "server_header": "nginx",
+      "api_request_id": true
+    },
+    {
+      "check": "student_workflow",
+      "status": "pass",
+      "duration_s": 0.2,
+      "session": "ses_9ae8b4dae07815a063b9b4e8",
+      "citations": [
+        "Immunizations & Requirements"
+      ],
+      "messages_in_history": 8
+    },
+    {
+      "check": "staff_workflow",
+      "status": "pass",
+      "duration_s": 0.5,
+      "readiness_in_container": "blocked_pending_human_decision",
+      "reviewer_users_status": 403,
+      "chat_p95_ms": 14.27
+    },
+    {
+      "check": "persistence_across_restart",
+      "status": "pass",
+      "duration_s": 2.3,
+      "recovered_after_s": 1.3,
+      "messages_after_restart": 2
+    },
+    {
+      "check": "redteam_over_http",
+      "status": "pass",
+      "duration_s": 60.6,
+      "attempted": 35,
+      "attack_successes": 2,
+      "open": [
+        "SB-07",
+        "SB-08"
+      ],
+      "evidence": "docs/evidence/redteam/containers-http.json"
+    }
+  ],
+  "passed": 7,
+  "total": 7
+}

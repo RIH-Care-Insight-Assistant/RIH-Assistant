@@ -1,311 +1,142 @@
 # RIH Care Insight Assistant
-_A Safety-First, Campus-Focused Conversational System for Retriever Integrated Health (RIH)_
 
-## Overview
-The **RIH Care Insight Assistant** is a structured, lightweight, safety-aligned conversational system designed specifically for UMBC's **Retriever Integrated Health (RIH)**.
+_A safety-first assistant that helps students find campus health and support resources._
 
-**Core objective:**
-- Guide students to the appropriate RIH service, and when the student declines, provide safe campus alternatives that match their needs.
+> **Independent student prototype.** This is not an official UMBC or Retriever Integrated
+> Health (RIH) service. It shares information; it does not diagnose, counsel, treat or respond
+> to emergencies. In an emergency call 911, or call or text 988. All conversations, accounts
+> and test data in this repository are synthetic.
 
-This system emphasizes:
-- Non-bypassable safety routing
-- Strict guardrails
-- Explainable, rule-based logic
-- Verified retrieval of RIH information
-- Strands-powered optional enhancements
-- Fully tested decline-handling workflows
-- Deterministic, debuggable behavior suitable for production or research
+The assistant routes every message through deterministic safety rules first (crisis, Title IX,
+conduct), then answers ordinary questions only from reviewed knowledge-base sources with
+citations. When a student declines a service it offers verified campus alternatives. A staff
+area lets authorized reviewers govern sources, risks and releases.
 
-This repository contains:
-- Full multi-phase architecture
-- Safety router
-- Planners (rule and LLM-based)
-- Retrievers
-- Tools
-- Decline-handling logic
-- Test suite (PyTest)
-- CLI interface for demonstration
+**Status (2026-10-15):** Phases 0–8 of the upgrade are complete on the local branch
+`feature/rih-local-enhancement-phases-2-9`; Phase 9 (local Kubernetes) is in progress. See
+[`docs/LOCAL_FIRST_PROGRESS.md`](docs/LOCAL_FIRST_PROGRESS.md) for executed evidence and
+[`docs/limitations.md`](docs/limitations.md) for what it does not do.
 
----
+## What is in the box
 
-> **Status (2026-10-14):** the project is being upgraded locally (Phases 2–9, see
-> [`docs/LOCAL_FIRST_PROGRESS.md`](docs/LOCAL_FIRST_PROGRESS.md)). It is an independent student
-> prototype, **not an official UMBC or RIH service**, and uses synthetic data only. The CLI
-> below still works; the full-stack app is described next.
-
-## Full-stack application (Phase 2)
-
-| Part | Technology | Location |
+| Area | Highlights | Where |
 |---|---|---|
-| Backend API | FastAPI + Pydantic, SQLite (numbered migrations) | `app/api/` |
-| Orchestration | Deterministic safety stage, decline handling, rule planner, structured evidence | `app/agent/orchestrator.py` |
-| Frontend | React 19 + TypeScript + Vite | `frontend/` |
-| API contract | OpenAPI snapshot, checked by tests | `contracts/openapi-v1.json`, `docs/contracts/C2-local-v1.md` |
+| Safety core | Deterministic crisis / Title IX / conduct routing before any planner, retrieval or model; obfuscation-resistant; safety works even when storage, retrieval or policy fail | `app/router/`, `app/agent/orchestrator.py`, [`docs/safety/crisis-routing.md`](docs/safety/crisis-routing.md) |
+| Full stack | FastAPI + Pydantic API with SQLite; React 19 + TypeScript + Vite UI (chat, history, clarification, citations with provenance, feedback, resources, staff area) | `app/api/`, `frontend/`, [`contracts/openapi-v1.json`](contracts/openapi-v1.json) |
+| Governed agents | Typed tool registry; every call validated, authorized, budgeted, time-limited; optional Strands planner on a **local** Ollama model that can only propose governed tool calls | `app/agent/toolkit.py`, `app/agent/strands_planner.py` |
+| Governed RAG | Source inventory, approval, content hashing, freshness, injection quarantine, eligibility before ranking, citation validation; hybrid ranker chosen by benchmark | `app/rag/`, `kb/governance/` |
+| Security | Staff authentication (scrypt, lockout, hardened cookies), Policy-as-Code RBAC (default deny), CSRF/Origin checks, rate limits, SSRF-safe ingestion, audit | `app/security/`, `policy/authorization.json` |
+| Red team | 70 versioned adversarial scenarios, attack success rates, purple-team fixes | [`docs/security/redteam-report.md`](docs/security/redteam-report.md) |
+| Governance | NIST AI RMF-aligned risk register, control→test traceability, human review and release decisions, readiness assessment | [`docs/governance/nist-ai-rmf-alignment.md`](docs/governance/nist-ai-rmf-alignment.md) |
+| Observability | OpenTelemetry traces/metrics, JSON logs with trace IDs, privacy allowlists, incident simulation | [`docs/architecture/observability.md`](docs/architecture/observability.md) |
+| Release gates | 18-gate local battery with readiness verdict; negative verification | `scripts/release_readiness.py` |
+| Containers | Hardened images, Compose stack, container scans, integration and resilience checks | `deploy/`, `compose.yaml`, [`docs/evidence/containers/`](docs/evidence/containers/) |
 
-Run it locally (two terminals, from the repository root; Python venv active, Node 24):
+Architecture: [`docs/architecture/system-overview.md`](docs/architecture/system-overview.md).
+
+## Quick start with Docker (recommended)
+
+Requirements: Docker Desktop (or Docker Engine with Compose v2). No accounts or API keys.
 
 ```bash
-STRANDS_ENABLED=false RIH_PLANNER=RULE RIH_COOKIE_SECURE=false uvicorn app.api.main:app --host 127.0.0.1 --port 8000
-npm --prefix frontend ci && npm --prefix frontend run dev    # http://127.0.0.1:5173
-```
-
-Checks: `python -m pytest -q` (backend and C1 suites), `npm --prefix frontend run lint`,
-`npm --prefix frontend run typecheck`, `npm --prefix frontend test`, `npm --prefix frontend run build`,
-and the Playwright workflow `npm --prefix frontend run e2e` (set `RIH_PYTHON` to your venv's
-Python if `python` is not it).
-
----
-
-## Architecture Summary
-
-### System Flow
-```text
-User Input
-    ↓
-Safety Router (Non-Bypassable)
-    ↓
-IF Crisis → Crisis Template and Exit
-    ↓
-IF Safe →
-    Phase 6 Strands Enhancement Layer (optional)
-      - Misspelling Corrector
-      - Clarification Detector (Clarify v2)
-      - Response Enhancer
-    ↓
-Phase 7 Decline Detector
-      - If user refuses RIH services → Suggest Alternatives
-    ↓
-Planner (Rule or LLM)
-      - retrieve
-      - clarify
-      - templates
-    ↓
-Final Response
-```
-
-### Features by Phase
-| Phase | Description | Status |
-|-------|-------------|--------|
-| Phase 1 | Safety Router (Crisis, Title IX, Conduct, Retention) | Completed |
-| Phase 2 | Retriever + RIH FAQ Knowledge Base | Completed |
-| Phase 3 | Safety Lane Templates | Completed |
-| Phase 4 | Rule-Based Planner | Completed |
-| Phase 5 | Ambiguity Detection + Auto Clarify | Completed |
-| Phase 6 | Strands Layer: Clarify v2, Spelling Correction, Response Enhancement | Completed |
-| Phase 7 | Regex-based Decline Detector + Safe Campus Alternatives | Completed |
-
----
-
-## Repository Structure
-```text
-RIH-Assistant/
-│
-├── app/
-│   ├── agent/
-│   │   ├── dispatcher.py
-│   │   ├── misspelling_corrector.py
-│   │   ├── planner.py
-│   │   ├── planner_llm.py
-│   │   ├── response_enhancer.py
-│   │   └── strands_safety.py
-│   │
-│   ├── answer/
-│   │   ├── alternatives.py
-│   │   └── compose.py
-│   │
-│   ├── dev/
-│   │   ├── compare_strands.py
-│   │   └── strands_smoke.py
-│   │
-│   ├── retriever/
-│   │   └── retriever.py
-│   │
-│   ├── router/
-│   │   ├── rules.py
-│   │   └── safety_router.py
-│   │
-│   ├── tools/
-│   │   ├── base.py
-│   │   ├── clarify_detector.py
-│   │   ├── clarify_tool.py
-│   │   ├── decline_detector.py
-│   │   ├── policy_tools.py
-│   │   └── retrieve_tool.py
-│   │
-│   └── ui/
-│       ├── audit.py
-│       ├── cli.py
-│       └── __init__.py
-│
-├── kb/
-│   └── chunks_sample.jsonl
-│
-├── safety/
-│   ├── Safety_Playbook.md
-│   ├── copy_guidelines.md
-│   └── routing_matrix.csv
-│
-├── scripts/
-│   ├── check_routes.py
-│   ├── crawl_site.py
-│   ├── extract_keywords.py
-│   └── propose_routing.py
-│
-├── tests/
-│
-├── .gitignore
-├── LICENSE
-├── README.md
-└── requirements.txt
-```
-
----
-
-## Installation
-
-### 1. Clone the Repository
-```bash
-git clone https://github.com/YOUR_USERNAME/RIH-Assistant.git
+git clone https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant.git
 cd RIH-Assistant
+docker compose up -d --build
 ```
 
-### 2. Create a Virtual Environment
+Open <http://127.0.0.1:8080>. To use the staff area, create an account inside the API
+container (you will be prompted for a password; it is never echoed or stored in plain text):
+
 ```bash
-python3 -m venv venv
-source venv/bin/activate
+docker compose exec backend python scripts/manage_users.py create --username your.name --role admin
 ```
 
-### 3. Install Requirements
+Stop with `docker compose down`; reset all local demo data with `docker compose down -v`.
+The demo runs over loopback HTTP, so it sets `RIH_COOKIE_SECURE=false`; anywhere else, put it
+behind HTTPS and set it to `true`.
+
+## Local development
+
+Python 3.13 or 3.14 (verified locally; the CI matrix also targets 3.11 and 3.12) and Node 24. From the repository root:
+
 ```bash
-pip install -r requirements.txt
+python3 -m venv .venv && . .venv/bin/activate      # Windows PowerShell: .venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt -r requirements-dev.txt
+export STRANDS_ENABLED=false RIH_PLANNER=RULE RIH_COOKIE_SECURE=false
+uvicorn app.api.main:app --host 127.0.0.1 --port 8000
 ```
 
----
+In a second terminal:
 
-## Running the Assistant (CLI)
-
-### Step 1: Run without Strands
 ```bash
-export STRANDS_ENABLED=false
+npm --prefix frontend ci
+npm --prefix frontend run dev        # http://127.0.0.1:5173 (proxies /api to port 8000)
+```
+
+The original command-line interface still works:
+
+```bash
 python -m app.ui.cli
 ```
 
-### Step 2: Run with Strands Enabled
+### Optional local model planner
+
+Model features are **off by default**. With [Ollama](https://ollama.com) running locally and a
+small model pulled (for example `qwen2.5:1.5b`), the Strands planner can choose governed tools:
+
 ```bash
-export STRANDS_ENABLED=true
-export AWS_ACCESS_KEY_ID=YOUR_KEY
-export AWS_SECRET_ACCESS_KEY=YOUR_SECRET
-export AWS_DEFAULT_REGION=us-east-1
-python -m app.ui.cli
+export STRANDS_ENABLED=true RIH_PLANNER=LLM RIH_OLLAMA_MODEL=qwen2.5:1.5b
 ```
 
----
+Only loopback hosts are accepted and cloud-routed model names are refused. The model never
+writes the answer text and never sees safety messages.
 
-## Example Queries to Try
+## Tests and release gates
 
-### Safety Router
-- I want to hurt myself
-- I was assaulted
-- I feel unsafe on campus
-
-### Counseling / Medical Questions
-- How do I book a counseling appointment?
-- Where is RIH located?
-- Do you offer any workshops?
-- What happens in my first counseling session?
-
-### Decline Handling (Phase 7)
-- I don't want counseling
-- No thanks, any other options?
-- I prefer something else on campus
-- I'm overwhelmed but not interested in therapy
-
----
-
-## Running All Tests
 ```bash
-pytest -q tests
-```
-**Expected output:**
-```text
-56 passed, 1 warning
-```
-
----
-
-## Strands Integration (Optional)
-Strands is disabled by default. To enable it:
-```bash
-export STRANDS_ENABLED=true
-export AWS_ACCESS_KEY_ID=...
-export AWS_SECRET_ACCESS_KEY=...
+export STRANDS_ENABLED=false RIH_PLANNER=RULE
+ruff check .
+python -m pytest -q                                  # backend, safety, security, governance, observability
+python scripts/safety_eval.py --fail-on-miss         # safety routing dataset
+npm --prefix frontend run lint && npm --prefix frontend run typecheck && npm --prefix frontend test
+npm --prefix frontend run e2e                        # Playwright workflows against the real API
+python scripts/redteam.py                            # adversarial suite (exit 1 on a critical failure)
+python scripts/release_readiness.py --e2e            # all 18 gates + readiness verdict
+python scripts/container_checks.py integration       # after `docker compose up -d --build`
+python scripts/container_checks.py resilience
+python scripts/container_security.py                 # Trivy + gitleaks through Docker
 ```
 
-Then the assistant will apply:
-- Clarify v2
-- Spelling correction
-- Response enhancement
+Latest recorded results (Windows 11, Python 3.13, Node 24): pytest 5187 passed and 1 skipped
+(a symlink test); safety evaluation 172/172; frontend 24/24; end-to-end 5/5; red team 2 of 70
+attacks succeeded (both known high findings, no critical); container integration 7/7 and
+resilience 7/7; scans clean. Release readiness is **blocked pending human decisions** on the two
+open high findings, as designed. Details: [`docs/evidence/`](docs/evidence/).
 
----
+## Documentation
 
-## Safe Alternatives (Phase 7)
-When students decline RIH services, they are safely redirected to:
-- The Gathering Space for Spiritual Well-Being (i3b)
-- Retriever Essentials
-- UMBC RAC (fitness and wellness)
-- Library
-- Academic Success Center
-- Campus Life and Student Organizations
-- Career Center
+| Topic | Document |
+|---|---|
+| Demo walkthrough (student, staff, governance, resilience) | [`docs/demo-walkthrough.md`](docs/demo-walkthrough.md) |
+| Architecture | [`docs/architecture/system-overview.md`](docs/architecture/system-overview.md), [`agents-and-rag.md`](docs/architecture/agents-and-rag.md), [`observability.md`](docs/architecture/observability.md) |
+| Security evaluation | [`docs/security/security-evaluation.md`](docs/security/security-evaluation.md), [`redteam-report.md`](docs/security/redteam-report.md), [`docs/THREAT_MODEL.md`](docs/THREAT_MODEL.md) |
+| Governance | [`docs/governance/nist-ai-rmf-alignment.md`](docs/governance/nist-ai-rmf-alignment.md) |
+| Contracts | [`docs/INTERFACE_CONTRACTS.md`](docs/INTERFACE_CONTRACTS.md) |
+| Known limitations | [`docs/limitations.md`](docs/limitations.md) |
+| Troubleshooting | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
+| Project process and state | [`AGENTS.md`](AGENTS.md), [`docs/PROJECT_STATE.md`](docs/PROJECT_STATE.md), [`docs/LOCAL_FIRST_PROGRESS.md`](docs/LOCAL_FIRST_PROGRESS.md) |
 
-This fulfills the core project promise:
-**Always guide to RIH first. If declined, recommend safe, approved UMBC alternatives.**
+## History
 
----
+The project began as a Python CLI prototype built in seven internal phases (safety router,
+templates, retrieval, planners, optional Strands enhancement, clarification, decline handling).
+The current upgrade follows a ten-phase roadmap (Phases 0–9, checkpoints C1–C5); C1 was
+completed and accepted through reviewed pull requests, and Phases 2–9 are being built under a
+local-first workflow described in [`AGENTS.md`](AGENTS.md).
 
-## Expected Outcome
-The repository delivers:
-- A working prototype
-- Full documentation
-- Complete safety architecture
-- Robust decline handling
-- 100 percent passing test suite
-- Demonstrable CLI interface
-
----
-## Tests ( some unique tests )
-
-**1. Basic RIH Questions:**
-
-<img width="892" height="299" alt="image" src="https://github.com/user-attachments/assets/359c5b09-b397-4478-95d5-2b6947d654ef" />
-
-<img width="677" height="341" alt="image" src="https://github.com/user-attachments/assets/2c201833-d223-4764-a5a6-4723f0a50026" />
-
-**2. Ambiguity Questions**
-
-<img width="1158" height="219" alt="image" src="https://github.com/user-attachments/assets/24ef1019-cc7a-49c0-8599-5dc7fcf14c3d" />
-
-
-**3. Decline Detection (Phase 7)**
-
-<img width="1054" height="205" alt="image" src="https://github.com/user-attachments/assets/963b1465-3933-4f15-a039-66a3be451eae" />
-
-<img width="1258" height="214" alt="image" src="https://github.com/user-attachments/assets/e676818a-5933-4b0a-8ade-857b78c47e15" />
-
-<img width="1245" height="221" alt="image" src="https://github.com/user-attachments/assets/60423274-3cb7-472a-a999-d3b5993d2a04" />
-
-**4. Crisis Routing (non-bypassable)**
-
-<img width="1341" height="149" alt="image" src="https://github.com/user-attachments/assets/8a060fcc-8147-4b01-913f-61fb8bc74481" />
-
-<img width="1383" height="79" alt="image" src="https://github.com/user-attachments/assets/8e460d3d-e54e-4b07-b938-d59f7e9f7fcc" />
-
-<img width="1209" height="58" alt="image" src="https://github.com/user-attachments/assets/cf8b04d9-506a-4de9-b0c2-1defd4e5d8fa" />
-
-
-
----
 ## Maintainers
+
 - Abhinav Varma Vathadi
 - Devika Rani Sanaboyina
-- UMBC, MPS Data Science
+
+UMBC, MPS Data Science. Licensed under the terms in [`LICENSE`](LICENSE).

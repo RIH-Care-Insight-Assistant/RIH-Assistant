@@ -15,8 +15,8 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 
 | Field | Value |
 |---|---|
-| Current phase | Phase 8 — Docker, resilience and portfolio delivery |
-| Current task | Phase 7 committed; starting Phase 8 (containers, Compose, failure tests, docs) |
+| Current phase | Phase 9 — local Kubernetes (kind) |
+| Current task | Phase 8 committed; starting Phase 9 (kind cluster, Kustomize manifests, NetworkPolicies, rollout/rollback) |
 | Last local commit | see `git log -1` (this file is updated with each milestone) |
 
 ## Phase status
@@ -30,7 +30,7 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 | 5 | **Complete (local)** | 70-scenario suite; ASR 7.1% → 2.9% after mitigation ([report](security/redteam-report.md)) |
 | 6 | **Complete (local)** | Register, controls, readiness, governance API and dashboard ([alignment](governance/nist-ai-rmf-alignment.md)) |
 | 7 | **Complete (local)** | Telemetry, incidents, 18-gate battery, negative verification ([details](architecture/observability.md)) |
-| 8 | Not started | – |
+| 8 | **Complete (local)** | Hardened images, Compose, scans, integration 7/7, resilience 7/7, portfolio docs |
 | 9 | Not started | – |
 
 ## Validation log (executed runs only)
@@ -59,6 +59,25 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 
 | 2026-10-15 | `8975840` | Windows 11, Python 3.13.2, Node 24.14.0 | `scripts/release_readiness.py --e2e` | **18/18 gates pass** (pytest 5187 passed, 1 skipped; safety 172/172; pip-audit and npm audit clean; red team 2/70, no critical; E2E 5/5); readiness **blocked_pending_human_decision** (SB-07, SB-08) ([evidence](evidence/release/latest.json)) |
 | 2026-10-15 | `8975840` | same | `scripts/negative_verification.py --write` | 3/3 deliberate regressions blocked (`not_ready`) in disposable worktrees; working tree untouched |
+
+| 2026-10-15 | `25612ae` (images built from it) | Windows 11, Docker Desktop 29.8.1, Trivy 0.74.0, gitleaks 8.30.1 | `container_security.py --write`; `container_checks.py integration --write`; `container_checks.py resilience --write` | Images 0 fixable HIGH/CRITICAL; config 0; secrets 0; integration **7/7** (red team over HTTP 2/35, only SB-07/SB-08); resilience **7/7** ([evidence](evidence/containers/)) |
+
+### Phase 8 deliverables
+
+- `deploy/docker/backend.Dockerfile`, `frontend.Dockerfile`, `deploy/nginx/default.conf.template`,
+  `compose.yaml`, `.dockerignore`: digest-pinned bases, non-root, read-only root filesystems,
+  dropped capabilities, limits, health checks, internal network, loopback-only port, volume.
+- `scripts/container_security.py` (Trivy images and config, gitleaks), `.gitleaks.toml`.
+- `scripts/container_checks.py`: integration (hardening, headers, workflows, persistence, red team
+  over HTTP with production limits) and resilience (interruptions, crash restart, incident
+  simulations, unwritable DB, unreachable/hanging model, corrupt/expired KB).
+- Fixes from the container work: pip removed from the runtime image; newer nginx base (68 CVEs);
+  duplicate security headers through the proxy (red-team ID-04).
+- Frontend: one bounded retry for idempotent reads; writes never retried.
+- Portfolio docs: rewritten [README](../README.md) (closes deferral O7),
+  [system overview](architecture/system-overview.md), [demo walkthrough](demo-walkthrough.md),
+  [security evaluation](security/security-evaluation.md), [limitations](limitations.md),
+  [troubleshooting](troubleshooting.md).
 
 ### Phase 7 deliverables
 
@@ -167,8 +186,7 @@ benchmark. Citations carry no governance status until Phase 3.
 
 ## Next executable action
 
-Phase 8: start Docker Desktop; backend and frontend Dockerfiles (non-root, health checks,
-pinned bases), Compose with persistent volume, resource limits and read-only filesystems,
-container scanning, resilience/failure tests (model timeout, retrieval outage, database
-unavailability, corrupt/stale KB, invalid tool output, service restarts), red-team run against
-the container over loopback, README/architecture/demo/troubleshooting docs.
+Phase 9: install kind (user-local binary), create a cluster with a NetworkPolicy-enforcing CNI,
+load the images, deploy with Kustomize (Deployments, Services, ConfigMap, Secret, probes,
+limits, restricted security contexts, NetworkPolicies, PVC), verify workflows and policy
+enforcement, rollout and rollback, restart/recovery, teardown scripts and docs.

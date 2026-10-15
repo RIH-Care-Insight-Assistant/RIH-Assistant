@@ -103,7 +103,9 @@ them; once added, a gate is never removed or weakened to get a pass.
 | **Aggregated battery (Phase 7)** | `python scripts/release_readiness.py --e2e` | Exit 1 (not ready) on any failed required gate or open critical finding; exit 2 while human residual-risk decisions are pending |
 | Negative verification (Phase 7) | `python scripts/negative_verification.py --write` | Any deliberate regression that the battery does not block |
 
-Container and Kubernetes checks are added in Phases 8–9. Evidence of the latest run:
+| Containers (Phase 8) | `python scripts/release_readiness.py --e2e --containers` (adds `container_security`, `container_integration`, `container_resilience`) | Any fixable HIGH/CRITICAL image vulnerability, HIGH/CRITICAL misconfiguration or secret; any failed integration or resilience check |
+
+Kubernetes checks are added in Phase 9. Evidence of the latest run:
 [`evidence/release/latest.json`](evidence/release/latest.json); details in
 [`architecture/observability.md`](architecture/observability.md).
 

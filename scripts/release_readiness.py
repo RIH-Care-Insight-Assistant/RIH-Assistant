@@ -123,6 +123,15 @@ GATES = {
     "redteam": gate_redteam,
 }
 E2E = {"e2e": lambda st: check_cmd("e2e", [npm(), "run", "e2e"], cwd=ROOT / "frontend", detail_pattern=r"passed|failed")}
+# Container gates need Docker and a running `docker compose up -d --build` stack (Phase 8).
+CONTAINERS = {
+    "container_security": lambda st: check_cmd("container_security", [PY, "scripts/container_security.py"],
+                                               detail_pattern=r"image|config|secrets"),
+    "container_integration": lambda st: check_cmd("container_integration", [PY, "scripts/container_checks.py",
+                                                                           "integration"], detail_pattern=r"checks passed"),
+    "container_resilience": lambda st: check_cmd("container_resilience", [PY, "scripts/container_checks.py",
+                                                                         "resilience"], detail_pattern=r"checks passed"),
+}
 
 
 def human_decisions():
@@ -150,6 +159,7 @@ def main() -> int:
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # tool output may contain non-ASCII
     ap = argparse.ArgumentParser()
     ap.add_argument("--e2e", action="store_true")
+    ap.add_argument("--containers", action="store_true", help="also run the Docker container gates")
     ap.add_argument("--checks", nargs="*")
     ap.add_argument("--out")
     ap.add_argument("--no-write", action="store_true")
@@ -159,9 +169,9 @@ def main() -> int:
     from app.governance.register import load_governance
     from scripts.redteam import git_commit
 
-    gates = dict(GATES, **(E2E if args.e2e else {}))
+    gates = dict(GATES, **(E2E if args.e2e else {}), **(CONTAINERS if args.containers else {}))
     if args.checks:
-        gates = {k: v for k, v in {**GATES, **E2E}.items() if k in args.checks}
+        gates = {k: v for k, v in {**GATES, **E2E, **CONTAINERS}.items() if k in args.checks}
     state: dict = {}
     checks = []
     for name, fn in gates.items():
