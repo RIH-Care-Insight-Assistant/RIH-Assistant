@@ -41,6 +41,8 @@ class Settings:
     max_body_bytes: int = 64 * 1024
     environment: str = "development"
     trust_proxy: bool = False  # honour X-Forwarded-For only behind our own reverse proxy
+    # Joint-reviewer binding "slot:username,..." (governance/reviewers.json); unset counts no decision.
+    governance_reviewers: str | None = None
 
     @classmethod
     def from_env(cls) -> "Settings":
@@ -57,4 +59,5 @@ class Settings:
             max_body_bytes=_int("RIH_MAX_BODY_BYTES", 64 * 1024, 1024, 1024 * 1024),
             environment=(os.getenv("RIH_ENV") or "development").strip().lower(),
             trust_proxy=_bool("RIH_TRUST_PROXY", False),
+            governance_reviewers=os.getenv("RIH_GOVERNANCE_REVIEWERS") or None,
         )

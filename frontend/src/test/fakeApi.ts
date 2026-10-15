@@ -136,9 +136,13 @@ export function installFakeApi(state: Partial<FakeState> = {}): FakeState {
         integrity_problems: [], items: s.risks ?? [] });
     }
     if (p === "/admin/governance/readiness" && s.staff) {
-      return json(200, s.readiness ?? { status: "not_ready", register_version: "risks-1", candidate: null,
-        blockers: ["release battery evidence is missing"], pending_human_decisions: [], redteam: null, checks: [],
-        evidence_generated_at: null, snapshot_sha256: "a".repeat(64) });
+      return json(200, s.readiness ?? { scope: "interactive_public_deployment",
+        scope_note: "Covers only deploying the interactive assistant for public use.", status: "not_ready",
+        register_version: "risks-1", candidate: null, blockers: ["release battery evidence is missing"],
+        pending_human_decisions: [], redteam: null, checks: [], evidence_generated_at: null,
+        reviewers: { roster_version: "reviewers-1", slots: ["abhinav", "devika"], configured: false, bound: {},
+          problems: ["joint reviewers are not bound to staff accounts"], fingerprint: "f" },
+        snapshot_sha256: "a".repeat(64) });
     }
     if (p.startsWith("/admin/governance/") && method === "POST" && s.staff) {
       s.reviews.push({ path: p, body });

@@ -3,7 +3,7 @@
   "branch": "feature/rih-local-enhancement-phases-2-9",
   "base_commit": "6ab77a862379a16d6d63d81e9d4ea709a55f2496",
   "updated": "2026-10-15",
-  "current_phase": "finalization_complete_local",
+  "current_phase": "final_completion_phase_A_done",
   "published": false,
   "phases": {
     "2": {
@@ -65,19 +65,19 @@
     }
   },
   "awaiting_humans": [
-    "Staff-UI entries of the R-01 and R-04 decisions under each reviewer's own account, and of the pending_human_review items; both humans' prototype-scope positions are recorded (L-D7, L-D8); neither has entered a staff-UI decision",
-    "Readiness rules: accepted by Abhinav (L-D8), DEFERRED by Devika (L-D9) until code enforces joint decisions and release evidence matching the release commit (a change to application logic that needs separate authorization); 'ready' from the current code is not trusted. The e685260 content binding is accepted by both",
+    "Staff-UI entries of every risk's decision under each joint reviewer's own bound account (L-D13: all 15 risks, both slots); neither has entered a staff-UI decision",
+    "Readiness rules L-D13: accepted by both (supersedes the L-D9 deferral). Operators must bind RIH_GOVERNANCE_REVIEWERS to two distinct staff accounts (admin role for release approval)",
     "Register risks-3, catalog controls-3 and contracts C2/C3/C4-local-v1: accepted by Abhinav (L-D8) and with qualifications by Devika (L-D9); her conditions include a corrected register version (R-08/R-10 plan text, R-08/R-11 evidence) with fresh decisions before any release; C4 items 2 and 3 not jointly accepted",
     "Native-speaker review of the multilingual lexicon and the notice's Spanish sentence; clinical input on the warning-sign lists",
     "Re-verify the template contact numbers (crisis-routing.md section 6)",
-    "Rerun release_readiness.py --e2e --containers on the final head (last battery on 9c8c7d2, before e380883)",
+    "Rerun release_readiness.py --e2e --containers on the final candidate (evidence schema 2; the committed evidence from 9c8c7d2 is schema 1 and is rejected)",
     "Optional review of the C1 baseline sources (R-05)",
     "Authorization to publish (push, one integration PR, review, merge) per docs/PUBLICATION_PLAN.md",
     "Close issue #7 on GitHub",
     "Showcase follow-ups (L-D11): S3 only after the contact numbers are re-verified and a fresh decision by both; any change to the deployed page needs a new review by both and a new build hash"
   ],
   "head": "see git log -1 (finalization documentation commit)",
-  "final_readiness": "blocked_pending_human_decision",
+  "final_readiness": "not_ready (L-D13 rules: evidence must match the candidate; see readiness_correction)",
   "finalization": {
     "status": "complete_local",
     "resumed_from": "bdf7659",
@@ -365,5 +365,36 @@
       }
     ]
   },
-  "showcase_published": true
+  "showcase_published": true,
+  "readiness_correction": {
+    "date": "2026-10-15",
+    "decision_log": "L-D13",
+    "directed_by": "Abhinav Varma Vathadi and Devika Rani Sanaboyina (both at the keyboard; each authorized and accepted separately; an AI coding agent proposed, implemented and drafted the records)",
+    "defect": "one reviewer's accept_residual on R-01/R-04 with evidence from 9c8c7d2 produced ready (reproduced on 6e94784)",
+    "authorized_by": [
+      "Abhinav Varma Vathadi",
+      "Devika Rani Sanaboyina"
+    ],
+    "accepted_by": [
+      "Abhinav Varma Vathadi",
+      "Devika Rani Sanaboyina"
+    ],
+    "files": [
+      "app/governance/readiness.py",
+      "app/governance/reviewers.py",
+      "app/governance/candidate.py",
+      "app/governance/register.py",
+      "app/api/governance_routes.py",
+      "app/api/migrations/0005_joint_governance.sql",
+      "governance/reviewers.json",
+      "governance/release_candidate.json",
+      "scripts/release_readiness.py",
+      "scripts/negative_verification.py",
+      "frontend (governance panel and types)"
+    ],
+    "tests": "tests/governance/test_readiness.py (new), test_register.py, tests/api/test_governance_api.py, GovernancePanel.test.tsx, e2e staff-workflow",
+    "validation": "Windows 11, Python 3.13.2, Node 24.14.0: ruff x2 clean; pytest 5491 passed, 1 skipped; routes passed; safety eval no misses; OpenAPI snapshot matches; eslint and tsc clean; vitest 70/70; build OK; E2E 8/8",
+    "readiness_now": "not_ready (schema-1 evidence from 9c8c7d2; no reviewer binding)",
+    "commit": "see git log (feat(governance): enforce joint decisions ...)"
+  }
 }

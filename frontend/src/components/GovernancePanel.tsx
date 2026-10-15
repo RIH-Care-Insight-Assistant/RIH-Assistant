@@ -1,17 +1,31 @@
 import { useCallback, useEffect, useState } from "react";
 import { ApiError, staffApi } from "../api/client";
-import type { Readiness, RiskItem } from "../api/types";
+import type { Readiness, RiskItem, SlotDecision } from "../api/types";
 import { Icon } from "./Icon";
 import { tone } from "./tone";
 
 const STATUS_LABEL: Record<Readiness["status"], string> = {
-  ready: "Ready (an admin may record an approval)",
+  ready: "Ready (both joint reviewers must approve)",
   not_ready: "Not ready",
   blocked_pending_human_decision: "Blocked: human decisions pending",
 };
 
+const KIND_LABEL: Record<string, string> = {
+  joint_decision: "joint decision",
+  review_item: "agent-drafted item",
+  specialist_review: "specialist review",
+};
+
+function slotText(d: SlotDecision | null): string {
+  if (!d) return "none recorded";
+  const who = d.reviewer ? ` by ${d.reviewer}` : "";
+  return `${d.decision}${who}${d.current ? "" : " (for earlier content of this risk or its controls; not current)"}`;
+}
+
 function message(err: unknown): string {
-  if (err instanceof ApiError && err.status === 403) return "The server refused this action for your role or the current state.";
+  if (err instanceof ApiError && err.status === 403) {
+    return "The server refused this action: only accounts bound to a joint-reviewer slot decide, and approval needs a ready assessment.";
+  }
   if (err instanceof ApiError && err.status === 422) return "Check the form: a rationale of at least 10 characters is required.";
   return err instanceof ApiError ? err.message : "Something went wrong.";
 }
@@ -57,7 +71,21 @@ export function GovernancePanel({ isAdmin }: { isAdmin: boolean }) {
           </div>
           <span className={tone(ready.status)}>{ready.status.replace(/_/g, " ")}</span>
         </div>
-        {ready.candidate && <p className="muted">Candidate {ready.candidate} · evidence {ready.evidence_generated_at}</p>}
+        <p className="muted">{ready.scope_note}</p>
+        {ready.candidate && (
+          <p className="muted">
+            Candidate {ready.candidate}{ready.candidate_digest ? ` (${ready.candidate_digest.slice(0, 12)})` : ""} · evidence{" "}
+            {ready.evidence_generated_at}
+          </p>
+        )}
+        {ready.reviewers && (
+          <p className="muted">
+            Joint reviewers:{" "}
+            {ready.reviewers.configured
+              ? ready.reviewers.slots.map((s) => `${s} (${ready.reviewers?.bound[s] ?? "unbound"})`).join(", ")
+              : `${ready.reviewers.slots.join(" and ")}, not bound to staff accounts; no decision counts`}
+          </p>
+        )}
         <dl className="stats">
           <div className="stat"><dt>Risks in register</dt><dd>{risks.length}</dd></div>
           <div className="stat"><dt>High residual risks</dt><dd>{highResidual}</dd></div>
@@ -83,7 +111,11 @@ export function GovernancePanel({ isAdmin }: { isAdmin: boolean }) {
           {ready.pending_human_decisions.length > 0 && (
             <div>
               <h4>Decisions waiting for a person</h4>
-              <ul>{ready.pending_human_decisions.map((p) => <li key={p.risk + p.reason}>{p.risk}: {p.reason}</li>)}</ul>
+              <ul>
+                {ready.pending_human_decisions.map((p) => (
+                  <li key={p.risk + p.kind + p.reason}>{p.risk} · {KIND_LABEL[p.kind] ?? p.kind}: {p.reason}</li>
+                ))}
+              </ul>
             </div>
           )}
         </div>
@@ -107,11 +139,11 @@ export function GovernancePanel({ isAdmin }: { isAdmin: boolean }) {
 
       <div className="table-wrap">
         <table className="table">
-          <caption>Risk register: inherent and residual scores (likelihood × severity), controls, red-team findings and human decisions.</caption>
+          <caption>Risk register: inherent and residual scores (likelihood × severity), controls, red-team findings and each joint reviewer's decision.</caption>
           <thead>
             <tr>
               <th scope="col">Risk</th><th scope="col">Inherent</th><th scope="col">Residual</th><th scope="col">Status</th>
-              <th scope="col">Controls</th><th scope="col">Findings</th><th scope="col">Human decision</th>
+              <th scope="col">Controls</th><th scope="col">Findings</th><th scope="col">Joint decisions</th>
             </tr>
           </thead>
           <tbody>
@@ -119,6 +151,13 @@ export function GovernancePanel({ isAdmin }: { isAdmin: boolean }) {
               <tr key={r.id}>
                 <td>
                   <strong>{r.id}</strong> {r.title}<div className="muted">{r.category} · {r.nist.join(", ")} · {r.proposed_owner}</div>
+                  {(r.required_specialist_reviews ?? []).length > 0 && (
+                    <ul className="muted" aria-label={`Specialist reviews for ${r.id}`}>
+                      {(r.required_specialist_reviews ?? []).map((sr) => (
+                        <li key={sr.id}>Specialist review ({sr.kind.replace(/_/g, " ")}, {sr.status}): {sr.description}</li>
+                      ))}
+                    </ul>
+                  )}
                   {(r.pending_human_review ?? []).length > 0 && (
                     <ul className="muted" aria-label={`Awaiting human review for ${r.id}`}>
                       {(r.pending_human_review ?? []).map((item) => <li key={item}>Awaiting human review: {item}</li>)}
@@ -131,10 +170,9 @@ export function GovernancePanel({ isAdmin }: { isAdmin: boolean }) {
                 <td className="muted">{r.controls.join(", ")}</td>
                 <td>{r.findings.join(", ") || "—"}</td>
                 <td>
-                  {r.human_decision ? `${r.human_decision.decision} by ${r.human_decision.reviewer}` : "none recorded"}
-                  {r.human_decision && r.human_decision_current === false && (
-                    <span className="muted"> (for an earlier version of this risk; not current)</span>
-                  )}
+                  <ul className="slot-decisions" aria-label={`Joint decisions for ${r.id}`}>
+                    {Object.entries(r.joint_decisions).map(([slot, d]) => <li key={slot}>{slot}: {slotText(d)}</li>)}
+                  </ul>
                 </td>
               </tr>
             ))}
@@ -193,6 +231,7 @@ export function GovernancePanel({ isAdmin }: { isAdmin: boolean }) {
           }}
         >
           <h4>Release decision (admin)</h4>
+          <p className="muted">Counts only from an account bound to a joint-reviewer slot; approval needs both slots on the same snapshot.</p>
           <label htmlFor="release-decision">Decision</label>
           <select id="release-decision" value={release.decision} onChange={(e) => setRelease({ ...release, decision: e.target.value })}>
             <option value="defer">Defer</option>

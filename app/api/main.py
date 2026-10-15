@@ -230,6 +230,7 @@ def create_app(
     app.state.limiter = limiter or RateLimiter()
     app.state.fetch_source = None  # tests inject a fake fetcher; production uses app.rag.ingest
     app.state.evidence_loader = None  # tests inject evidence; production reads docs/evidence/
+    app.state.candidate_loader = None  # tests inject a candidate; production asks git (none in images)
     app.state.policy_ok = lambda: retriever.healthy() and not isinstance(policy, DenyAll)
 
     install_error_handlers(app)

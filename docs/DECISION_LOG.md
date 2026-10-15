@@ -272,3 +272,30 @@ awaiting human acceptance; nothing here records an approval that was not given.
   - **Unchanged:** the application stays unpublished, and readiness is unchanged.
 
   Record: [`showcase/deployment-2026-10-15.md`](showcase/deployment-2026-10-15.md#revision-1-footer-sentence-removed-2026-10-15-l-d12).
+- **L-D13 (2026-10-15, readiness correction; Abhinav and Devika both at the keyboard; each
+  answered their own questions, asked separately by name; an AI coding agent reproduced the
+  defect, proposed the design, implemented it and drafted this record at their direction):**
+  - **Defect reproduced on `6e94784`:** with evidence from `9c8c7d2`, one account's
+    `accept_residual` on R-01 and R-04 made `assess()` return `ready`.
+  - **Authorization:** Abhinav and Devika each authorized the proposed correction (items 1–9)
+    before any code changed.
+  - **Implemented:** a joint-reviewer roster (`governance/reviewers.json`) bound to distinct
+    staff accounts at deploy time; per-person decisions that another person cannot override;
+    decisions bound to the risk and its linked controls; a release-candidate digest over release
+    paths that excludes documentation and evidence (`governance/release_candidate.json`);
+    evidence schema 2 with candidate, version, scope, age (7 days) and all-21-gates checks;
+    no red-team fallback; structured specialist reviews that contributor decisions cannot clear;
+    joint release approval on one snapshot; scope limited to interactive public deployment.
+  - **Disclosed and accepted with the rules:** (a) every risk needs both decisions, with
+    `confirm_assessment` only for settled risks; (b) only bound accounts may record decisions;
+    (c) release decisions stay admin-only, so both bound accounts need the admin role to
+    approve; (d) a container without git always reports `not_ready`.
+  - **Acceptance:** Abhinav **accepted** and Devika **accepted** the rules as implemented, for
+    this prototype. This supersedes Devika's L-D9 deferral of the Phase 6 rules and covers C4
+    items 2 and 3 as now implemented.
+  - **Unchanged:** no human decision was entered anywhere; the register and catalog content are
+    unchanged in this step (risks-3, controls-3). Readiness on the current tree is `not_ready`
+    (old-schema evidence, no reviewer binding). Interactive public deployment stays blocked.
+
+  Rules: [`governance/nist-ai-rmf-alignment.md`](governance/nist-ai-rmf-alignment.md#readiness-rules).
+

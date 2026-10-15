@@ -10,7 +10,8 @@ const RISK: RiskItem = {
   id: "R-01", title: "Missed crisis", category: "safety", nist: ["Map"], description: "d", proposed_owner: "Abhinav",
   likelihood: 3, severity: 5, residual_likelihood: 2, residual_severity: 5, inherent_score: 15, inherent_band: "high",
   residual_score: 10, residual_band: "medium", controls: ["C-SAFETY-FIRST"], findings: ["SB-07"],
-  mitigation_status: "partially_mitigated", mitigation_plan: "p", evidence: [], human_decision: null,
+  mitigation_status: "partially_mitigated", mitigation_plan: "p", evidence: [], decision_version: "risks-1#0/controls-1#0",
+  joint_decisions: { abhinav: null, devika: null },
 };
 
 beforeEach(() => resetClientStateForTests());
@@ -22,7 +23,9 @@ describe("GovernancePanel", () => {
     render(<GovernancePanel isAdmin={false} />);
     expect(await screen.findByRole("heading", { name: /Release readiness: Not ready/ })).toBeInTheDocument();
     expect(screen.getByText("release battery evidence is missing")).toBeInTheDocument();
-    expect(screen.getByRole("row", { name: /R-01/ })).toHaveTextContent("none recorded");
+    expect(screen.getByRole("list", { name: "Joint decisions for R-01" })).toHaveTextContent(
+      "abhinav: none recordeddevika: none recorded");
+    expect(screen.getByText(/abhinav and devika, not bound to staff accounts; no decision counts/)).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Release decision (admin)" })).not.toBeInTheDocument();
     await user.selectOptions(screen.getByLabelText("Risk"), "R-01");
     await user.selectOptions(screen.getByLabelText("Decision"), "accept_residual");
@@ -41,14 +44,26 @@ describe("GovernancePanel", () => {
     expect(list).toHaveTextContent("Awaiting human review: synthetic agent-drafted term list");
   });
 
-  it("marks a decision given for earlier content of the risk as not current", async () => {
-    const decision = { register_version: "risks-2#0000000000000000", decision: "accept_residual", rationale: "Synthetic.",
-      reviewer: "rita.reviewer", reviewer_roles: "reviewer", decided_at: "2026-10-15T00:00:00Z" };
-    const stale = { ...RISK, human_decision: decision, human_decision_current: false };
-    installFakeApi({ staff: { username: "rita.reviewer", roles: ["reviewer"] }, risks: [stale] });
+  it("shows each joint reviewer's own decision and marks one for earlier content as not current", async () => {
+    const decision = { decision: "accept_residual", reviewer: "rita.reviewer", decided_at: "2026-10-15T00:00:00Z",
+      decision_version: "risks-2#0000000000000000/controls-2#0", current: false };
+    const rejected = { ...decision, decision: "require_mitigation", reviewer: "dana.admin", current: true };
+    const risk = { ...RISK, joint_decisions: { abhinav: decision, devika: rejected } };
+    installFakeApi({ staff: { username: "rita.reviewer", roles: ["reviewer"] }, risks: [risk] });
     render(<GovernancePanel isAdmin={false} />);
-    const row = await screen.findByRole("row", { name: /R-01/ });
-    expect(row).toHaveTextContent("accept_residual by rita.reviewer (for an earlier version of this risk; not current)");
+    const list = await screen.findByRole("list", { name: "Joint decisions for R-01" });
+    expect(list).toHaveTextContent(
+      "abhinav: accept_residual by rita.reviewer (for earlier content of this risk or its controls; not current)");
+    expect(list).toHaveTextContent("devika: require_mitigation by dana.admin");
+  });
+
+  it("lists mandatory specialist reviews separately from agent-drafted items", async () => {
+    const risk = { ...RISK, required_specialist_reviews: [
+      { id: "SR-1", kind: "native_speaker", description: "synthetic lexicon check", status: "required" as const }] };
+    installFakeApi({ staff: { username: "rita.reviewer", roles: ["reviewer"] }, risks: [risk] });
+    render(<GovernancePanel isAdmin={false} />);
+    const list = await screen.findByRole("list", { name: "Specialist reviews for R-01" });
+    expect(list).toHaveTextContent("Specialist review (native speaker, required): synthetic lexicon check");
   });
 
   it("offers approval to admins only when the assessment is ready", async () => {

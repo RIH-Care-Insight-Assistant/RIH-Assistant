@@ -38,7 +38,9 @@ test("reviewer sees the governance dashboard and readiness is not approvable", a
   await page.getByLabel("Decision", { exact: true }).selectOption("confirm_assessment");
   await page.getByLabel("Rationale").fill("Synthetic E2E review: assessment matches the stale baseline sources.");
   await page.getByRole("button", { name: "Record review" }).click();
-  await expect(page.getByRole("row", { name: /R-05/ })).toContainText("confirm_assessment by e2e.reviewer");
+  await expect(page.getByRole("list", { name: "Joint decisions for R-05" })).toContainText(
+    "abhinav: confirm_assessment by e2e.reviewer");
+  await expect(page.getByRole("list", { name: "Joint decisions for R-05" })).toContainText("devika: none recorded");
   await expect(page.getByRole("heading", { name: "Release decision (admin)" })).toHaveCount(0);
 });
 

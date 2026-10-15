@@ -1,4 +1,4 @@
-"""Risk register and control catalog: integrity, traceability and readiness rules."""
+"""Risk register and control catalog: integrity and traceability (readiness: test_readiness.py)."""
 
 from __future__ import annotations
 
@@ -7,8 +7,7 @@ import json
 
 import pytest
 
-from app.governance.readiness import assess
-from app.governance.register import ROOT, Governance, band, decision_version, load_governance, score
+from app.governance.register import ROOT, band, load_governance, score
 
 GOV = load_governance()
 
@@ -43,102 +42,6 @@ def test_scoring_bands():
     assert score(3, 5) == 15 and band(15) == "high" and band(8) == "medium" and band(7) == "low"
 
 
-def _gov(**patch):
-    g = Governance(copy.deepcopy(GOV.register), copy.deepcopy(GOV.controls), [])
-    for r in g.risks:
-        r.update(patch.get(r["id"], {}))
-    return g
-
-
-PASSING_RELEASE = {"git_commit": "abc1234", "generated_at": "2026-10-15T00:00:00Z",
-                   "checks": [{"id": "pytest", "required": True, "status": "pass"}]}
-CLEAN_REDTEAM = {"label": "x", "git_commit": "abc1234", "summary": {
-    "attempted": 70, "attack_successes": 0, "attack_success_rate": 0.0, "critical_open": [], "open_findings": []}}
-
-
-def _no_high_residuals():
-    # Make every risk mitigated and reviewed so only the inputs under test decide the result.
-    return _gov(**{r["id"]: {"mitigation_status": "mitigated", "pending_human_review": []} for r in GOV.risks})
-
-
-def test_ready_only_when_everything_passes():
-    a = assess(_no_high_residuals(), {}, PASSING_RELEASE, CLEAN_REDTEAM)
-    assert a["status"] == "ready" and a["blockers"] == [] and len(a["snapshot_sha256"]) == 64
-
-
-def test_missing_or_failed_evidence_is_not_ready():
-    g = _no_high_residuals()
-    assert assess(g, {}, None, CLEAN_REDTEAM)["status"] == "not_ready"
-    assert assess(g, {}, PASSING_RELEASE, None)["status"] == "not_ready"
-    failed = {**PASSING_RELEASE, "checks": [{"id": "safety_eval", "required": True, "status": "fail"}]}
-    a = assess(g, {}, failed, CLEAN_REDTEAM)
-    assert a["status"] == "not_ready" and "safety_eval" in a["blockers"][0]
-
-
-def test_open_critical_finding_blocks_release():
-    rt = copy.deepcopy(CLEAN_REDTEAM)
-    rt["summary"]["critical_open"] = ["PI-05"]
-    rt["summary"]["open_findings"] = [{"id": "PI-05", "severity": "critical"}]
-    assert assess(_no_high_residuals(), {}, PASSING_RELEASE, rt)["status"] == "not_ready"
-
-
-def test_open_high_finding_needs_a_human_residual_risk_decision():
-    rt = copy.deepcopy(CLEAN_REDTEAM)
-    rt["summary"]["open_findings"] = [{"id": "SB-07", "severity": "high"}]
-    g = _no_high_residuals()
-    a = assess(g, {}, PASSING_RELEASE, rt)
-    assert a["status"] == "blocked_pending_human_decision"
-    r01 = next(r for r in g.risks if r["id"] == "R-01")
-    decision = {"R-01": {"decision": "accept_residual", "register_version": decision_version(g.register, r01)}}
-    assert assess(g, decision, PASSING_RELEASE, rt)["status"] == "ready"
-    stale = {"R-01": {"decision": "accept_residual", "register_version": "risks-0"}}
-    assert assess(g, stale, PASSING_RELEASE, rt)["status"] == "blocked_pending_human_decision"
-
-
-def test_untracked_open_finding_blocks():
-    rt = copy.deepcopy(CLEAN_REDTEAM)
-    rt["summary"]["open_findings"] = [{"id": "ZZ-99", "severity": "high"}]
-    assert assess(_no_high_residuals(), {}, PASSING_RELEASE, rt)["status"] == "not_ready"
-
-
-def test_reviewer_requiring_mitigation_blocks():
-    g = _no_high_residuals()
-    r03 = next(r for r in g.risks if r["id"] == "R-03")
-    d = {"R-03": {"decision": "require_mitigation", "register_version": decision_version(g.register, r03)}}
-    assert assess(g, d, PASSING_RELEASE, CLEAN_REDTEAM)["status"] == "not_ready"
-
-
-def test_high_residual_risk_not_mitigated_needs_decision():
-    g = _gov(**{r["id"]: {"mitigation_status": "mitigated", "pending_human_review": []} for r in GOV.risks})
-    g.risks[0].update({"residual_likelihood": 3, "residual_severity": 5, "mitigation_status": "partially_mitigated"})
-    a = assess(g, {}, PASSING_RELEASE, CLEAN_REDTEAM)
-    assert a["status"] == "blocked_pending_human_decision"
-    assert a["pending_human_decisions"][0]["risk"] == g.risks[0]["id"]
-
-
-def test_unreviewed_agent_mitigation_blocks_until_a_human_decides():
-    g = _no_high_residuals()
-    g.risks[0]["pending_human_review"] = ["agent-drafted term list"]
-    a = assess(g, {}, PASSING_RELEASE, CLEAN_REDTEAM)
-    assert a["status"] == "blocked_pending_human_decision"
-    assert a["pending_human_decisions"] == [{"risk": g.risks[0]["id"], "reason": "awaiting human review: agent-drafted term list"}]
-    version = decision_version(g.register, g.risks[0])
-    accepted = {g.risks[0]["id"]: {"decision": "accept_residual", "register_version": version}}
-    assert assess(g, accepted, PASSING_RELEASE, CLEAN_REDTEAM)["status"] == "ready"
-    stale = {g.risks[0]["id"]: {"decision": "accept_residual", "register_version": "risks-1"}}
-    assert assess(g, stale, PASSING_RELEASE, CLEAN_REDTEAM)["status"] == "blocked_pending_human_decision"
-    required = {g.risks[0]["id"]: {"decision": "require_mitigation", "register_version": version}}
-    assert assess(g, required, PASSING_RELEASE, CLEAN_REDTEAM)["status"] == "not_ready"
-
-
-def test_current_register_stays_blocked_with_a_clean_red_team():
-    # The finalization mitigations close the SB-07/SB-08/RP-06 scenarios, but they are
-    # agent-drafted: a clean adversarial run alone must not make the release ready.
-    a = assess(GOV, {}, PASSING_RELEASE, CLEAN_REDTEAM)
-    assert a["status"] == "blocked_pending_human_decision"
-    assert {p["risk"] for p in a["pending_human_decisions"]} >= {"R-01", "R-04"}
-
-
 @pytest.mark.parametrize("mutate", [
     lambda r: r.update({"pending_human_review": "not a list"}),
     lambda r: r.update({"pending_human_review": [""]}),
@@ -148,6 +51,19 @@ def test_current_register_stays_blocked_with_a_clean_red_team():
     lambda r: r.update({"mitigation_status": "accepted"}),  # acceptance is a human record, not a file status
     lambda r: r.update({"nist": ["Optimize"]}),
     lambda r: r.update({"evidence": ["docs/evidence/does-not-exist.json"]}),
+    # L-D13: specialist reviews are structured, and "completed" must cite an existing report.
+    lambda r: r.update({"required_specialist_reviews": "native speaker"}),
+    lambda r: r.update({"required_specialist_reviews": [{"id": "SR-X", "kind": "astrology", "description": "d",
+                                                         "status": "required"}]}),
+    lambda r: r.update({"required_specialist_reviews": [{"id": "SR-X", "kind": "clinical", "description": "d",
+                                                         "status": "waived"}]}),
+    lambda r: r.update({"required_specialist_reviews": [{"id": "SR-X", "kind": "clinical", "description": "d",
+                                                         "status": "completed"}]}),
+    lambda r: r.update({"required_specialist_reviews": [{"id": "SR-X", "kind": "clinical", "description": "d",
+                                                         "status": "completed", "evidence": "docs/nope.md"}]}),
+    lambda r: r.update({"required_specialist_reviews": [
+        {"id": "SR-X", "kind": "clinical", "description": "d", "status": "required"},
+        {"id": "SR-X", "kind": "clinical", "description": "d", "status": "required"}]}),
 ])
 def test_integrity_checks_catch_bad_entries(tmp_path, mutate):
     reg = copy.deepcopy(GOV.register)
@@ -160,14 +76,20 @@ def test_integrity_checks_catch_bad_entries(tmp_path, mutate):
 def test_decision_is_bound_to_the_risk_content_not_only_the_register_label():
     # B10 (Devika's review): a decision given for one version of a risk must not cover
     # agent-drafted items added to that risk later under the same register label.
-    g = _no_high_residuals()
+    from tests.governance.test_readiness import Reviews, _both, _settled, run
+
+    g = _settled()
     g.risks[0]["pending_human_review"] = ["agent-drafted term list"]
-    accepted = {g.risks[0]["id"]: {"decision": "accept_residual", "register_version": decision_version(g.register, g.risks[0])}}
-    assert assess(g, accepted, PASSING_RELEASE, CLEAN_REDTEAM)["status"] == "ready"
+    reviews = _both(g)
+    assert run(g, reviews)["status"] == "ready"
+    label = g.register["register_version"]
     g.risks[0]["pending_human_review"].append("new agent-drafted pattern list")
-    assert g.register["register_version"] == g.register["register_version"]  # label unchanged
-    a = assess(g, accepted, PASSING_RELEASE, CLEAN_REDTEAM)
+    assert g.register["register_version"] == label
+    a = run(g, reviews)
     assert a["status"] == "blocked_pending_human_decision"
-    assert {"risk": g.risks[0]["id"], "reason": "awaiting human review: new agent-drafted pattern list"} in a["pending_human_decisions"]
-    label_only = {g.risks[0]["id"]: {"decision": "accept_residual", "register_version": g.register["register_version"]}}
-    assert assess(g, label_only, PASSING_RELEASE, CLEAN_REDTEAM)["status"] == "blocked_pending_human_decision"
+    assert {"risk": g.risks[0]["id"], "kind": "review_item",
+            "reason": "awaiting joint review: new agent-drafted pattern list"} in a["pending_human_decisions"]
+    label_only = Reviews().all(g, "abhinav", "accept_residual")
+    for row in label_only.rows:
+        row["register_version"] = label
+    assert run(g, label_only)["status"] == "blocked_pending_human_decision"

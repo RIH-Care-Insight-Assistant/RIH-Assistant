@@ -158,15 +158,32 @@ export interface UserRow {
   created_at: string;
 }
 
-// ---- Governance (Phase 6)
+// ---- Governance (Phase 6; joint rules L-D13)
 
-export interface HumanDecision {
+/** One joint reviewer's own latest decision on a risk. */
+export interface SlotDecision {
   decision: string;
-  rationale: string;
-  reviewer: string;
-  reviewer_roles: string;
-  decided_at: string;
-  register_version: string;
+  reviewer: string | null;
+  decided_at: string | null;
+  decision_version: string | null;
+  /** False when it was given for earlier content of the risk or its controls. */
+  current: boolean;
+}
+
+export interface SpecialistReview {
+  id: string;
+  kind: string;
+  description: string;
+  status: "required" | "completed";
+  evidence?: string;
+}
+
+export interface ReviewerRoster {
+  roster_version: string | null;
+  slots: string[];
+  configured: boolean;
+  bound: Record<string, string | null>;
+  problems: string[];
 }
 
 export interface RiskItem {
@@ -190,17 +207,22 @@ export interface RiskItem {
   mitigation_plan: string;
   evidence: string[];
   pending_human_review?: string[];
-  human_decision: HumanDecision | null;
-  /** False when the latest decision was given for earlier content of this risk. */
-  human_decision_current?: boolean;
+  required_specialist_reviews?: SpecialistReview[];
+  decision_version: string;
+  /** Keyed by roster slot; null when that person has recorded nothing. */
+  joint_decisions: Record<string, SlotDecision | null>;
 }
 
 export interface Readiness {
+  scope: string;
+  scope_note: string;
   status: "ready" | "not_ready" | "blocked_pending_human_decision";
   register_version: string;
   candidate: string | null;
+  candidate_digest?: string | null;
+  reviewers?: ReviewerRoster & { fingerprint: string };
   blockers: string[];
-  pending_human_decisions: { risk: string; reason: string }[];
+  pending_human_decisions: { risk: string; kind: string; reason: string }[];
   redteam: { label: string; attempted: number; attack_successes: number; attack_success_rate: number; critical_open: string[] } | null;
   checks: { id: string; status: string; required?: boolean; detail?: string }[];
   evidence_generated_at: string | null;

@@ -31,6 +31,8 @@ def main() -> None:
     prefix = os.environ.get("RIH_E2E_STAFF_PREFIX", "e2e")
     if prefix not in {"e2e", "demo"}:
         raise SystemExit("RIH_E2E_STAFF_PREFIX must be 'e2e' or 'demo'")
+    # Synthetic accounts fill the joint-reviewer slots in this throwaway backend only (L-D13).
+    os.environ.setdefault("RIH_GOVERNANCE_REVIEWERS", f"abhinav:{prefix}.reviewer,devika:{prefix}.admin")
     if staff_pw:  # synthetic demo staff for end-to-end tests; password comes from the test runner
         from app.api.db import Database
         from app.api.staff_store import StaffStore

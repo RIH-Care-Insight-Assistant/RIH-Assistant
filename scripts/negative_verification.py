@@ -100,7 +100,11 @@ def main() -> int:
                 "check_results": [{k: c[k] for k in ("id", "status", "detail")} for c in ev["checks"]],
                 "readiness": ev["readiness"]["status"],
                 "exit_code": proc.returncode,
-                "blocked": ev["readiness"]["status"] == "not_ready" and proc.returncode == 1,
+                # A subset run in a modified tree is never ready (L-D13), so "blocked" also requires
+                # that one of the regression's own checks failed and is named as a blocker.
+                "blocked": ev["readiness"]["status"] == "not_ready" and proc.returncode == 1 and any(
+                    f"required check {c['id']} is fail" in ev["readiness"]["blockers"]
+                    for c in ev["checks"] if c["status"] == "fail"),
             })
             print(f"{name}: readiness={ev['readiness']['status']} exit={proc.returncode} "
                   f"failed={[c['id'] for c in ev['checks'] if c['status'] != 'pass']}")

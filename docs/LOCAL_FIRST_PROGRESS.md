@@ -15,7 +15,7 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 
 | Field | Value |
 |---|---|
-| Current phase | **All phases and the finalization complete locally; awaiting human reviews, decisions and publication authorization** |
+| Current phase | **Final completion stage (2026-10-15): Phase A (readiness correction, L-D13) done; next Phase B (governance cleanup), then C (validation), D (publication audit), E (joint push authorization), F (final records)** |
 | Current task | Done: SB-07/SB-08/RP-06 mitigations, final audit, final batteries, [final report](FINAL_REPORT.md), [publication plan](PUBLICATION_PLAN.md), [review plan](FINALIZATION_REVIEW_PLAN.md); Devika's final review B10 ([report](audits/devika-final-review-2026-10-15.md)) and her decisions at `e380883` ([record](audits/devika-final-acceptance-2026-10-15.md)); Abhinav's decisions, records at `84c55bf` ([record](audits/abhinav-final-acceptance-2026-10-15.md)); joint showcase decision and image review L-D10 ([record](showcase/image-review-checklist.md)); showcase content approved and published by both, L-D11 ([record](showcase/deployment-2026-10-15.md)), live at <https://rih-care-insight-showcase.pages.dev/>; the application is not published |
 | Last local commit | see `git log -1` (this file is updated with each milestone) |
 
@@ -346,6 +346,33 @@ request.
 **Exact next action:** none for the showcase. Any page or image change needs a new review by
 both and a new build hash. S3 waits for the contact numbers. The application items at the end
 of "Devika's joint-governance decisions" stay open.
+
+## Final completion stage, Phase A: readiness correction (2026-10-15, L-D13)
+
+Abhinav and Devika both at the keyboard; each answered separately by name. An AI coding agent
+reproduced the defect, proposed the design, implemented it and drafted the records at their
+direction. Record: [`DECISION_LOG.md`](DECISION_LOG.md) L-D13; rules:
+[`governance/nist-ai-rmf-alignment.md`](governance/nist-ai-rmf-alignment.md#readiness-rules).
+
+- **Defect reproduced on `6e94784`:** one account's `accept_residual` on R-01/R-04 plus evidence
+  from `9c8c7d2` gave `ready`. That reproduction is now a test.
+- **Authorized** by both before coding; **accepted** by both as implemented.
+- **Change:** joint-reviewer roster and deploy-time binding (`RIH_GOVERNANCE_REVIEWERS`),
+  per-person decisions, control-bound decision versions, candidate digest
+  (`governance/release_candidate.json`, docs and evidence excluded), evidence schema 2 with
+  freshness and compatibility checks, no red-team fallback, specialist reviews, joint release
+  approval, scope limited to interactive public deployment. Migration `0005`. Staff UI shows
+  each reviewer's decision.
+- **Checks** (Windows 11, Python 3.13.2, Node 24.14.0): ruff ×2 clean; pytest **5491 passed,
+  1 skipped** (68 new); routes passed; safety eval no misses; OpenAPI snapshot matches; eslint
+  and tsc clean; vitest **70/70**; build OK; E2E **8/8** against the real API.
+- **Readiness now:** `not_ready`, because the committed evidence is schema 1 from `9c8c7d2` and
+  no reviewers are bound. This is expected until Phase C.
+
+**Exact next action:** Phase B. Prepare register `risks-4` and catalog `controls-4` (R-08/R-10
+plan text, R-08/R-11 evidence, specialist reviews including R-05), keep `risks-3`/`controls-3`
+as history, re-verify the crisis contact numbers, then ask both humans to approve the new
+content.
 
 ## Phase status
 

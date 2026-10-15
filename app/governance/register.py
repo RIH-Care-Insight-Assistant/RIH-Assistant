@@ -23,6 +23,8 @@ MITIGATION_STATUSES = ("open", "mitigating", "partially_mitigated", "mitigated")
 CATEGORIES = ("safety", "security", "privacy", "integrity", "reliability", "transparency", "governance")
 NIST_FUNCTIONS = ("Govern", "Map", "Measure", "Manage")
 CONTROL_TYPES = ("preventive", "detective", "corrective", "governance")
+SPECIALIST_KINDS = ("native_speaker", "clinical", "independent_security", "source_review")
+SPECIALIST_STATUSES = ("required", "completed")
 RELEASE_GATE_REFS = {"release-gate:pip_audit", "release-gate:npm_audit", "release-gate:bandit", "release-gate:redteam"}
 
 
@@ -36,14 +38,24 @@ def risk_digest(risk: Dict[str, Any]) -> str:
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()[:16]
 
 
-def decision_version(register: Dict[str, Any], risk: Dict[str, Any]) -> str:
-    """The version a human decision on `risk` is bound to: register label plus the risk's digest.
+def controls_digest(controls: Dict[str, Any], ids: List[str]) -> str:
+    """Short SHA-256 of the catalog entries a risk relies on (unknown ids are hashed as missing)."""
+    by_id = {c.get("id"): c for c in controls.get("controls", [])}
+    linked = [{"id": i, "control": by_id.get(i)} for i in sorted(set(ids))]
+    canonical = json.dumps(linked, sort_keys=True, ensure_ascii=True, separators=(",", ":"))
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()[:16]
 
-    B10 (Devika's review): binding to the label alone let an edited risk (new agent-drafted
-    `pending_human_review` items, new scores) keep an acceptance given for its earlier content
-    whenever nobody bumped the label. Any change to the entry now makes the decision stale.
+
+def decision_version(register: Dict[str, Any], risk: Dict[str, Any], controls: Dict[str, Any]) -> str:
+    """The version a human decision on `risk` is bound to.
+
+    Register label and the risk's digest, plus the catalog label and a digest of the controls
+    the risk lists. B10 (Devika's review): binding to the label alone let an edited risk keep an
+    acceptance given for its earlier content. L-D13: an edited control (a weakened description,
+    removed tests or implementation) now makes the decision stale too.
     """
-    return f"{register['register_version']}#{risk_digest(risk)}"
+    return (f"{register['register_version']}#{risk_digest(risk)}"
+            f"/{controls.get('catalog_version')}#{controls_digest(controls, risk.get('controls', []))}")
 
 
 def score(likelihood: int, severity: int) -> int:
@@ -117,6 +129,7 @@ def load_governance(register_path: Path = REGISTER_PATH, controls_path: Path = C
                     problems.append(f"{c['id']}: test reference not found: {t}")
     fixture_ids = {s["id"] for s in json.loads(REDTEAM_FIXTURE.read_text(encoding="utf-8"))["scenarios"]}
     risk_ids = set()
+    specialist_ids: set = set()
     for r in reg.get("risks", []):
         rid = r.get("id")
         if rid in risk_ids:
@@ -147,10 +160,35 @@ def load_governance(register_path: Path = REGISTER_PATH, controls_path: Path = C
         review = r.get("pending_human_review", [])
         if not isinstance(review, list) or not all(isinstance(x, str) and x.strip() for x in review):
             problems.append(f"{rid}: pending_human_review must be a list of descriptions")
+        specialist = r.get("required_specialist_reviews", [])
+        if not isinstance(specialist, list):
+            problems.append(f"{rid}: required_specialist_reviews must be a list")
+            specialist = []
+        for sr in specialist:
+            if not isinstance(sr, dict):
+                problems.append(f"{rid}: invalid specialist review entry")
+                continue
+            sid = sr.get("id")
+            if not sid or sid in specialist_ids:
+                problems.append(f"{rid}: specialist review id missing or duplicated: {sid}")
+            specialist_ids.add(sid)
+            if sr.get("kind") not in SPECIALIST_KINDS:
+                problems.append(f"{rid}: {sid}: unknown specialist review kind")
+            if not str(sr.get("description", "")).strip():
+                problems.append(f"{rid}: {sid}: no description")
+            if sr.get("status") not in SPECIALIST_STATUSES:
+                problems.append(f"{rid}: {sid}: status must be required or completed")
+            # A completed specialist review must cite its report; without it the entry stays a blocker.
+            if sr.get("status") == "completed":
+                if not sr.get("evidence"):
+                    problems.append(f"{rid}: {sid}: completed without evidence")
+                elif check_paths and not (ROOT / sr["evidence"]).is_file():
+                    problems.append(f"{rid}: {sid}: evidence missing: {sr['evidence']}")
     return Governance(reg, cat, problems)
 
 
-def risk_view(r: Dict[str, Any], decision: Dict[str, Any] | None, current_version: str | None = None) -> Dict[str, Any]:
+def risk_view(r: Dict[str, Any], decisions: Dict[str, Any]) -> Dict[str, Any]:
+    """`decisions`: the joint-decision state of this risk from readiness.joint_decisions()."""
     inherent = score(r["likelihood"], r["severity"])
     residual = score(r["residual_likelihood"], r["residual_severity"])
     return {
@@ -160,7 +198,6 @@ def risk_view(r: Dict[str, Any], decision: Dict[str, Any] | None, current_versio
         "inherent_score": inherent, "inherent_band": band(inherent),
         "residual_score": residual, "residual_band": band(residual),
         "pending_human_review": list(r.get("pending_human_review", [])),
-        "human_decision": decision,
-        # False when the latest decision was given for different content of this risk.
-        "human_decision_current": decision is not None and decision.get("register_version") == current_version,
+        "required_specialist_reviews": [dict(sr) for sr in r.get("required_specialist_reviews", [])],
+        **decisions,
     }

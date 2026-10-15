@@ -7,7 +7,12 @@
 Writes docs/evidence/release/latest.json (and a timestamped copy) unless --no-write or --out.
 Exit status: 0 ready, 2 blocked pending a human decision, 1 not ready (a required check failed,
 a critical red-team finding is open, or evidence is missing). Environment: set
-RIH_PYTEST_ARGS for extra pytest arguments (for example a writable --basetemp on Windows).
+RIH_PYTEST_ARGS for extra pytest arguments (for example a writable --basetemp on Windows), and
+RIH_GOVERNANCE_REVIEWERS to bind the joint-reviewer slots to staff accounts in RIH_DB_PATH.
+
+The evidence records the release-candidate identity (governance/release_candidate.json) taken
+before any gate ran, and whether release paths changed during the run. Readiness only accepts
+evidence whose candidate digest matches the tree being assessed (rules L-D13).
 """
 
 from __future__ import annotations
@@ -134,24 +139,25 @@ CONTAINERS = {
 }
 
 
-def human_decisions():
-    """Latest risk reviews from the local database, if it exists (human records only)."""
+def human_records():
+    """All risk reviews and staff accounts from the local database, if it exists (read-only)."""
     import sqlite3
 
     db = Path(os.environ.get("RIH_DB_PATH") or ROOT / "var" / "rih.sqlite3")
     if not db.exists():
-        return {}
+        return [], []
     try:
         conn = sqlite3.connect(f"file:{db}?mode=ro", uri=True)
         conn.row_factory = sqlite3.Row
-        rows = conn.execute(
-            "SELECT r.risk_id, r.register_version, r.decision, r.reviewer, r.decided_at FROM risk_reviews r JOIN "
-            "(SELECT risk_id, MAX(seq) m FROM risk_reviews GROUP BY risk_id) x ON x.risk_id = r.risk_id AND x.m = r.seq"
-        ).fetchall()
+        cols = {r["name"] for r in conn.execute("PRAGMA table_info(risk_reviews)")}
+        reviewer_id = "reviewer_id" if "reviewer_id" in cols else "NULL AS reviewer_id"  # pre-0005 rows never count
+        reviews = [dict(r) for r in conn.execute(
+            f"SELECT seq, risk_id, register_version, decision, reviewer, {reviewer_id}, decided_at FROM risk_reviews")]
+        accounts = [dict(r) for r in conn.execute("SELECT id, username, roles, disabled FROM users")]
         conn.close()
-        return {r["risk_id"]: dict(r) for r in rows}
+        return reviews, accounts
     except sqlite3.Error:
-        return {}
+        return [], []
 
 
 def main() -> int:
@@ -165,8 +171,10 @@ def main() -> int:
     ap.add_argument("--no-write", action="store_true")
     args = ap.parse_args()
 
-    from app.governance.readiness import assess
+    from app.governance import candidate as release_candidate
+    from app.governance.readiness import EVIDENCE_SCHEMA, assess
     from app.governance.register import load_governance
+    from app.governance.reviewers import resolve
     from scripts.redteam import git_commit
 
     gates = dict(GATES, **(E2E if args.e2e else {}), **(CONTAINERS if args.containers else {}))
@@ -178,12 +186,20 @@ def main() -> int:
     # (container_integration refreshes docs/evidence/redteam/containers-http.json), which used to
     # make every full run report "-dirty". The end state is recorded separately.
     candidate = git_commit()
+    identity = release_candidate.compute()
     for name, fn in gates.items():
         res = fn(state)
         checks.append(res)
         print(f"{res['status'].upper():5s} {res['id']:22s} {res['duration_s']:7.1f}s  {res['detail']}")
+    after = release_candidate.compute()
+    gov = load_governance()
     evidence = {
         "report": "rih-release-readiness",
+        "schema_version": EVIDENCE_SCHEMA,
+        "candidate": {**{k: identity.get(k) for k in ("manifest_version", "digest", "git_commit", "clean", "problems")},
+                      "changed_during_run": after.get("digest") != identity.get("digest") or not after.get("clean")},
+        "register_version": gov.register.get("register_version"),
+        "controls_version": gov.controls.get("catalog_version"),
         "git_commit": candidate,
         "git_commit_after_gates": git_commit(),
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -193,13 +209,15 @@ def main() -> int:
         "checks": checks,
         "redteam_report": state.get("redteam_report"),
     }
-    readiness = assess(load_governance(), human_decisions(), evidence, state.get("redteam_report"))
+    reviews, accounts = human_records()
+    binding = resolve(os.environ.get("RIH_GOVERNANCE_REVIEWERS"), accounts)
+    readiness = assess(gov, reviews, evidence, binding=binding, candidate=after)
     evidence["readiness"] = {k: readiness[k] for k in ("status", "blockers", "pending_human_decisions", "snapshot_sha256")}
     print(f"\nREADINESS: {readiness['status']}")
     for b in readiness["blockers"]:
         print(f"  blocker: {b}")
     for p in readiness["pending_human_decisions"]:
-        print(f"  pending: {p['risk']} {p['reason']}")
+        print(f"  pending: {p['risk']} [{p['kind']}] {p['reason']}")
     text = json.dumps(evidence, indent=2, ensure_ascii=True) + "\n"
     if args.out:
         Path(args.out).write_text(text, encoding="utf-8", newline="\n")
