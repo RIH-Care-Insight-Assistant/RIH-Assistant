@@ -73,6 +73,40 @@ def _load_kb() -> List[Dict]:
     _cached_kb = items
     return items
 
+# (KB_DIR, the _load_kb() list it was built from, gated records); rebuilt when either changes.
+_cached_legacy: Tuple[str, List[Dict], List[Dict]] | None = None
+
+# Red-team finding RP-06: the C1 path ranked every KB file record, so a poisoned record
+# committed to kb/ reached CLI answers. Ranking now starts from the records that pass the
+# governed-RAG integrity checks. Blocking reasons: not in the inventory, content changed
+# since the inventory entry, an ineligible approval status, or instruction-like content.
+# Host and freshness checks stay with the governed API, which can show notices; the CLI
+# cannot. Fail closed: if the policy or inventory cannot be loaded, nothing is ranked.
+_LEGACY_BLOCKING = {"not_in_inventory", "content_changed_since_review", "quarantined_instruction_like_content"}
+
+
+def _blocked(reasons: List[str]) -> bool:
+    return any(r in _LEGACY_BLOCKING or r.startswith("status_") for r in reasons)
+
+
+def _legacy_corpus() -> List[Dict]:
+    """The ordinary-chat records the legacy ranking may use (see RP-06 above)."""
+    global _cached_legacy
+    items = _load_kb()
+    if _cached_legacy is not None and _cached_legacy[0] == str(KB_DIR) and _cached_legacy[1] is items:
+        return _cached_legacy[2]
+    from ..rag.evidence import evidence_from_record
+    from ..rag.governance import GovernanceError, SourceGovernance
+
+    try:
+        gov = SourceGovernance.load(Path(KB_DIR) / "governance")
+        gated = [c for c in items if not _blocked(gov.assess(evidence_from_record(c)).reasons)]
+    except GovernanceError:
+        gated = []
+    _cached_legacy = (str(KB_DIR), items, gated)
+    return gated
+
+
 def _build_idf(items: List[Dict]) -> None:
     """Compute smoothed IDF over tokens from text/title/category."""
     global _idf, _total_docs
@@ -96,7 +130,7 @@ def _build_idf(items: List[Dict]) -> None:
 
 def _ensure_idf():
     global _idf
-    items = _load_kb()
+    items = _legacy_corpus()
     if _idf is None:
         _build_idf(items)
 
@@ -145,7 +179,7 @@ def retrieve(query: str, k: int = 3, top_k: int | None = None) -> List[Dict]:
     limit = int(top_k) if top_k is not None else int(k)
     limit = max(1, limit)
 
-    items = _load_kb()
+    items = _legacy_corpus()
     if not items:
         return []
 
@@ -164,8 +198,9 @@ def retrieve(query: str, k: int = 3, top_k: int | None = None) -> List[Dict]:
 def chat_corpus() -> List[Dict]:
     """Read-only copy of the ordinary-chat corpus, after the C1 eligibility filters.
 
-    Additive (Phase 2): the API's resource listing and governed retrieval start from
-    exactly the records `retrieve()` may rank, so the C1 restrictions stay authoritative.
+    Additive (Phase 2): governed retrieval starts from these records, so the C1
+    restrictions stay authoritative. `retrieve()` ranks the subset that also passes the
+    integrity gate (`_legacy_corpus`); the governed retriever applies its full checks.
     """
     return [dict(c) for c in _load_kb()]
 
@@ -173,14 +208,15 @@ def chat_corpus() -> List[Dict]:
 def retrieve_scored(query: str, limit: int = 3) -> List[Tuple[float, Dict]]:
     """Like `retrieve()`, but returns `(score, record)` pairs. Same ranking and filters."""
     limit = max(1, int(limit))
-    scored = [(s, dict(c)) for c in _load_kb() if (s := _score(query, c)) > 0]
+    scored = [(s, dict(c)) for c in _legacy_corpus() if (s := _score(query, c)) > 0]
     scored.sort(key=lambda x: x[0], reverse=True)
     return scored[:limit]
 
 
 # Utility for tests to clear the cache when they swap KB_DIR
 def _reset_cache():
-    global _cached_kb, _idf, _total_docs
+    global _cached_kb, _cached_legacy, _idf, _total_docs
     _cached_kb = None
+    _cached_legacy = None
     _idf = None
     _total_docs = 0

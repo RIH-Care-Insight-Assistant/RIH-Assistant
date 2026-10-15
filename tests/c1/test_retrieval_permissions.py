@@ -6,6 +6,7 @@ import pytest
 
 from app.agent.dispatcher import Dispatcher
 from app.answer.compose import compose_answer
+from app.evaluation.kb_fixture import write_governance
 from app.retriever import retriever
 from app.tools.retrieve_tool import RetrieveTool
 
@@ -24,6 +25,8 @@ def corpus(tmp_path, monkeypatch):
         (tmp_path / "synthetic.jsonl").write_text(
             "\n".join(json.dumps(record) for record in records), encoding="utf-8"
         )
+        # RP-06: the legacy retriever ranks inventory-listed records only.
+        write_governance(tmp_path, records)
         retriever._reset_cache()
 
     return seed

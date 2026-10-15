@@ -23,6 +23,7 @@ import contextlib
 import hashlib
 import json
 import secrets
+import shutil
 import tempfile
 import time
 from dataclasses import asdict, dataclass, field
@@ -532,6 +533,8 @@ def run_legacy(scenarios: List[Dict[str, Any]], label: str) -> List[ScenarioResu
                 src = (ROOT / "kb" / "chunks_sample.jsonl").read_text(encoding="utf-8")
                 rec = {"page_type": "general", "category": "hours", "updated_on": "2026-10-01", **s["kb_inject"]}
                 (tmp / "chunks.jsonl").write_text(src + json.dumps(rec) + "\n", encoding="utf-8")
+                # The real kb/ holds governance/ next to the chunks; the poisoned record is not in it.
+                shutil.copytree(ROOT / "kb" / "governance", tmp / "governance")
                 old = legacy_retriever.KB_DIR
                 legacy_retriever.KB_DIR = tmp
                 legacy_retriever._reset_cache()

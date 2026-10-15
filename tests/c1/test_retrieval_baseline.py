@@ -5,6 +5,7 @@ import json
 import pytest
 
 from app.answer.compose import compose_answer
+from app.evaluation.kb_fixture import write_governance
 from app.retriever import retriever
 
 
@@ -21,6 +22,8 @@ def seed(kb_dir, records):
     (kb_dir / "sample.jsonl").write_text(
         "\n".join(json.dumps(record) for record in records), encoding="utf-8"
     )
+    # RP-06: the legacy retriever ranks inventory-listed records only.
+    write_governance(kb_dir, records)
 
 
 def test_empty_and_missing_knowledge_base_use_grounded_fallback(isolated_kb, monkeypatch):

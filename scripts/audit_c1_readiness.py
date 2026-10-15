@@ -13,6 +13,7 @@ from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
 from app.answer.alternatives import safe_alternatives
+from app.evaluation.kb_fixture import write_governance
 from app.retriever import retriever
 from app.tools.decline_detector import DeclineDetector
 
@@ -81,6 +82,7 @@ def audit() -> dict:
                 (path / "synthetic.jsonl").write_text(
                     "\n".join(json.dumps(item) for item in records), encoding="utf-8"
                 )
+                write_governance(path, records)  # RP-06: inventory-listed records only
                 retriever._reset_cache()
 
             def titles(**kwargs):
