@@ -1,6 +1,6 @@
 // In-memory fake of the /api/v1 contract for component tests (no network, synthetic data).
 import { vi } from "vitest";
-import type { ChatResponse, Message, Session, SourceRow } from "../api/types";
+import type { ChatResponse, Message, Readiness, RiskItem, Session, SourceRow } from "../api/types";
 
 export interface FakeState {
   sessions: Session[];
@@ -9,6 +9,8 @@ export interface FakeState {
   nextChat?: (body: Record<string, unknown>) => Partial<ChatResponse> | { status: number; error: string };
   staff?: { username: string; roles: string[] };
   sources?: SourceRow[];
+  risks?: RiskItem[];
+  readiness?: Readiness;
   reviews: { path: string; body: unknown }[];
 }
 
@@ -129,6 +131,22 @@ export function installFakeApi(state: Partial<FakeState> = {}): FakeState {
       return json(200, { status: (body as { status: string }).status });
     }
     if (p === "/admin/users" && s.staff?.roles.includes("admin")) return json(200, { items: [] });
+    if (p === "/admin/governance/risks" && s.staff) {
+      return json(200, { register_version: "risks-1", framework: "Aligned with NIST AI RMF.", status_note: "Agent-proposed.",
+        integrity_problems: [], items: s.risks ?? [] });
+    }
+    if (p === "/admin/governance/readiness" && s.staff) {
+      return json(200, s.readiness ?? { status: "not_ready", register_version: "risks-1", candidate: null,
+        blockers: ["release battery evidence is missing"], pending_human_decisions: [], redteam: null, checks: [],
+        evidence_generated_at: null, snapshot_sha256: "a".repeat(64) });
+    }
+    if (p.startsWith("/admin/governance/") && method === "POST" && s.staff) {
+      s.reviews.push({ path: p, body });
+      if (p.endsWith("release-decisions") && !s.staff.roles.includes("admin")) {
+        return json(403, { error: { code: "forbidden", message: "x", request_id: "r" } });
+      }
+      return json(201, { ok: true });
+    }
     if (p.startsWith("/admin")) {
       return s.staff
         ? json(403, { error: { code: "forbidden", message: "x", request_id: "r" } })

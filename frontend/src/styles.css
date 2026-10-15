@@ -156,3 +156,10 @@ main:focus { outline: none; }
 .stats dd { margin: 0; font-size: 1.6rem; font-weight: 600; }
 .plain-list { list-style: none; padding: 0; }
 .plain-list li { padding: 4px 0; border-bottom: 1px solid var(--border); }
+
+.readiness { border: 2px solid var(--border); border-radius: var(--radius); padding: 10px 12px; margin-bottom: 12px; }
+.readiness--ready { border-color: #15803d; }
+.readiness--not_ready { border-color: var(--error-text); }
+.readiness--blocked_pending_human_decision { border-color: var(--safety-border); }
+.readiness h3 { margin-top: 0; font-size: 1.05rem; }
+.inline-form textarea { font: inherit; padding: .4rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); }

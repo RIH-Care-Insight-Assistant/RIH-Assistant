@@ -110,6 +110,7 @@ a recorded approval by either human.
 |---|---|---|
 | [C2-local-v1](contracts/C2-local-v1.md) | Phase 2–3: REST API, errors, limits, sessions, feedback, SQLite schema, anonymous ownership and CSRF, agent/tool registry and budgets, governed retrieval, provenance, freshness, citations, frontend rules | Adopted locally; awaiting human acceptance. Derived from Devika's [C2-v0.1 candidate](audits/devika-c2-v0.1-candidate.md) |
 | [C3-local-v1](contracts/C3-local-v1.md) | Phase 4–5: staff authentication, roles, Policy-as-Code authorization matrix, admin API, audit, rate limits, secure ingestion, scanning | Adopted locally; awaiting human acceptance |
+| [C4-local-v1](contracts/C4-local-v1.md) | Phase 6–7: risk register and control catalog, human review and release-decision records, governance API, readiness rules | Adopted locally; awaiting human acceptance |
 
 Later versions (authentication, RBAC and Policy-as-Code; adversarial evidence;
 governance and release records; deployment) are added to this table as their phases

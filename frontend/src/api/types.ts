@@ -157,3 +157,49 @@ export interface UserRow {
   disabled: boolean;
   created_at: string;
 }
+
+// ---- Governance (Phase 6)
+
+export interface HumanDecision {
+  decision: string;
+  rationale: string;
+  reviewer: string;
+  reviewer_roles: string;
+  decided_at: string;
+  register_version: string;
+}
+
+export interface RiskItem {
+  id: string;
+  title: string;
+  category: string;
+  nist: string[];
+  description: string;
+  proposed_owner: string;
+  likelihood: number;
+  severity: number;
+  residual_likelihood: number;
+  residual_severity: number;
+  inherent_score: number;
+  inherent_band: string;
+  residual_score: number;
+  residual_band: string;
+  controls: string[];
+  findings: string[];
+  mitigation_status: string;
+  mitigation_plan: string;
+  evidence: string[];
+  human_decision: HumanDecision | null;
+}
+
+export interface Readiness {
+  status: "ready" | "not_ready" | "blocked_pending_human_decision";
+  register_version: string;
+  candidate: string | null;
+  blockers: string[];
+  pending_human_decisions: { risk: string; reason: string }[];
+  redteam: { label: string; attempted: number; attack_successes: number; attack_success_rate: number; critical_open: string[] } | null;
+  checks: { id: string; status: string; required?: boolean; detail?: string }[];
+  evidence_generated_at: string | null;
+  snapshot_sha256: string;
+}

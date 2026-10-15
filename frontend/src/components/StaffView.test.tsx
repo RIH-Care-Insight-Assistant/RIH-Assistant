@@ -35,7 +35,7 @@ describe("StaffView", () => {
     await user.type(screen.getByLabelText("Password"), "synthetic-Test-pass-0001");
     await user.click(screen.getByRole("button", { name: "Sign in" }));
     const tabs = await screen.findByRole("tablist", { name: "Staff sections" });
-    expect(within(tabs).getAllByRole("tab").map((t) => t.textContent)).toEqual(["Sources", "Feedback"]);
+    expect(within(tabs).getAllByRole("tab").map((t) => t.textContent)).toEqual(["Sources", "Governance", "Feedback"]);
     await user.type(await screen.findByLabelText("Review note for RIH Billing"), "checked official page");
     await user.click(screen.getByRole("button", { name: "Reject RIH Billing" }));
     await waitFor(() => expect(api.reviews).toHaveLength(1));
@@ -47,7 +47,7 @@ describe("StaffView", () => {
     const user = userEvent.setup();
     render(<StaffView />);
     const tabs = await screen.findByRole("tablist", { name: "Staff sections" });
-    expect(within(tabs).getAllByRole("tab")).toHaveLength(5);
+    expect(within(tabs).getAllByRole("tab")).toHaveLength(6);
     await user.click(screen.getByRole("button", { name: "Sign out" }));
     expect(await screen.findByRole("heading", { name: "Staff sign-in" })).toBeInTheDocument();
   });

@@ -9,7 +9,9 @@ import type {
   Me,
   MessagePage,
   Rating,
+  Readiness,
   Resource,
+  RiskItem,
   Session,
   SourceRow,
   UserRow,
@@ -107,6 +109,12 @@ export const staffApi = {
     request<UserRow>("POST", "/admin/users", { username, password, roles }),
   disableUser: (id: string) => request<{ disabled: boolean }>("POST", `/admin/users/${encodeURIComponent(id)}/disable`, {}),
   audit: (limit = 100) => request<{ items: AuditEvent[] }>("GET", `/admin/audit?limit=${limit}`),
+  risks: () => request<{ register_version: string; framework: string; status_note: string; integrity_problems: string[]; items: RiskItem[] }>("GET", "/admin/governance/risks"),
+  readiness: () => request<Readiness>("GET", "/admin/governance/readiness"),
+  reviewRisk: (riskId: string, decision: string, rationale: string) =>
+    request<unknown>("POST", `/admin/governance/risks/${encodeURIComponent(riskId)}/reviews`, { decision, rationale }),
+  releaseDecision: (decision: string, rationale: string, snapshot: string) =>
+    request<unknown>("POST", "/admin/governance/release-decisions", { decision, rationale, snapshot_sha256: snapshot }),
   ingest: (url: string, category: string) =>
     request<{ chunk_id: string; status: string; signals: string[] }>("POST", "/admin/ingest", { url, category }),
 };

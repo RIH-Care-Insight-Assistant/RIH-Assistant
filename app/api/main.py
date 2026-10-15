@@ -25,6 +25,7 @@ from ..agent.orchestrator import clarification_payload
 from ..security.policy_engine import POLICY_PATH, PolicyEngine, PolicyError
 from ..security.ratelimit import RateLimiter
 from .admin_routes import router as admin_router
+from .governance_routes import router as governance_router
 from .chat_service import ChatService
 from .db import Database
 from .errors import MESSAGES, install_error_handlers
@@ -184,11 +185,13 @@ def create_app(
     app.state.policy = policy
     app.state.limiter = limiter or RateLimiter()
     app.state.fetch_source = None  # tests inject a fake fetcher; production uses app.rag.ingest
+    app.state.evidence_loader = None  # tests inject evidence; production reads docs/evidence/
     app.state.policy_ok = lambda: retriever.healthy() and not isinstance(policy, DenyAll)
 
     install_error_handlers(app)
     app.include_router(router)
     app.include_router(admin_router)
+    app.include_router(governance_router)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=list(settings.allowed_origins),

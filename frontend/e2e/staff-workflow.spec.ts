@@ -15,7 +15,7 @@ test("reviewer rejects a source and students no longer get it cited", async ({ p
   expect(PASSWORD.length).toBeGreaterThan(12);
   await signIn(page, "e2e.reviewer");
   const tabs = page.getByRole("tablist", { name: "Staff sections" });
-  await expect(tabs.getByRole("tab")).toHaveText(["Sources", "Feedback"]);
+  await expect(tabs.getByRole("tab")).toHaveText(["Sources", "Governance", "Feedback"]);
   await page.getByRole("button", { name: "Reject RIH Billing" }).click();
   await expect(page.getByRole("row", { name: /RIH Billing/ })).toContainText("rejected");
 
@@ -27,6 +27,19 @@ test("reviewer rejects a source and students no longer get it cited", async ({ p
   await page.getByRole("button", { name: "Send" }).click();
   await expect(page.getByText("Here's what I found:").last()).toBeVisible();
   await expect(page.getByRole("link", { name: "RIH Billing" })).toHaveCount(0);
+});
+
+test("reviewer sees the governance dashboard and readiness is not approvable", async ({ page }) => {
+  await signIn(page, "e2e.reviewer");
+  await page.getByRole("tab", { name: "Governance" }).click();
+  await expect(page.getByRole("heading", { name: /Release readiness:/ })).toBeVisible();
+  await expect(page.getByRole("table")).toContainText("R-01");
+  await page.getByLabel("Risk", { exact: true }).selectOption("R-05");
+  await page.getByLabel("Decision", { exact: true }).selectOption("confirm_assessment");
+  await page.getByLabel("Rationale").fill("Synthetic E2E review: assessment matches the stale baseline sources.");
+  await page.getByRole("button", { name: "Record review" }).click();
+  await expect(page.getByRole("row", { name: /R-05/ })).toContainText("confirm_assessment by e2e.reviewer");
+  await expect(page.getByRole("heading", { name: "Release decision (admin)" })).toHaveCount(0);
 });
 
 test("admin sees the audit log with denied and allowed decisions", async ({ page }) => {

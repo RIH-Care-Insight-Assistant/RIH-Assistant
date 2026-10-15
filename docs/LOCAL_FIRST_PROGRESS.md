@@ -15,8 +15,8 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 
 | Field | Value |
 |---|---|
-| Current phase | Phase 6 — governance and risk management |
-| Current task | Phase 5 committed; starting Phase 6 (risk register, controls, evidence links, dashboard) |
+| Current phase | Phase 7 — observability and security release gates |
+| Current task | Phase 6 committed; starting Phase 7 (OpenTelemetry, logs, metrics, release battery, CI) |
 | Last local commit | see `git log -1` (this file is updated with each milestone) |
 
 ## Phase status
@@ -28,7 +28,7 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 | 3 | **Complete (local)** | Governed toolkit, RAG, benchmark, live Strands run below |
 | 4 | **Complete (local)** | Auth, RBAC, Policy-as-Code, audit, ingestion, scans below |
 | 5 | **Complete (local)** | 70-scenario suite; ASR 7.1% → 2.9% after mitigation ([report](security/redteam-report.md)) |
-| 6 | Not started | – |
+| 6 | **Complete (local)** | Register, controls, readiness, governance API and dashboard ([alignment](governance/nist-ai-rmf-alignment.md)) |
 | 7 | Not started | – |
 | 8 | Not started | – |
 | 9 | Not started | – |
@@ -54,6 +54,22 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 
 | 2026-10-15 | `e23843b` (pre) / `a92c358` (post) | Windows 11, Python 3.13.2 | `scripts/redteam.py` local and legacy targets | Governed API 5/70 → **2/70** attack successes; C1 CLI 6/17 → 3/17; critical 0/27 throughout ([report](security/redteam-report.md)) |
 | 2026-10-15 | `a92c358` + docs | Windows 11, Python 3.13.2 | `pytest -q`; safety eval; routes; smoke | **5139 passed, 2 skipped**; 172/172, 0 FP; routes passed; smoke OK |
+
+| 2026-10-15 | Phase 6 working tree | Windows 11, Python 3.13.2; Node 24.14.0 | `pytest -q`; eslint; tsc; vitest; playwright | **5167 passed, 1 skipped**; frontend **20/20**; **E2E 5/5** (adds the governance review flow) |
+
+### Phase 6 deliverables
+
+- `governance/risk_register.json` (15 risks, NIST functions, proposed owners, inherent and
+  residual scores, controls, findings, plans, evidence) and `governance/controls.json`
+  (23 controls mapped to existing tests and code), both agent-proposed and awaiting review.
+- `app/governance/register.py` (integrity and traceability checks) and `readiness.py`
+  (not_ready / blocked_pending_human_decision / ready, snapshot hash).
+- Migration 0003 and `app/api/governance_routes.py`: risk reviews (reviewer/admin) and release
+  decisions (admin, bound to the snapshot, approval refused unless ready); all audited.
+- Staff UI **Governance** tab; contract [C4-local-v1](contracts/C4-local-v1.md); alignment
+  write-up [governance/nist-ai-rmf-alignment.md](governance/nist-ai-rmf-alignment.md).
+- Current readiness: `not_ready` because the release battery evidence does not exist yet
+  (Phase 7) and SB-07/SB-08 need human residual-risk decisions.
 
 ### Phase 5 deliverables
 
@@ -137,7 +153,8 @@ benchmark. Citations carry no governance status until Phase 3.
 
 ## Next executable action
 
-Phase 6: versioned risk register (`governance/risk_register.json`) with owners, categories,
-likelihood/severity, risk→control→test mapping, mitigation tracking, evidence references and
-links to Phase 5 findings; human review records and residual-risk decisions stored by
-authorized staff (never pre-filled); release-readiness assessment; governance API and dashboard.
+Phase 7: OpenTelemetry tracing with privacy-safe attributes, request/correlation IDs in
+structured JSON logs, security and tool events, metrics (latency histograms, error classes),
+incident simulation, the release battery (`scripts/release_readiness.py`) writing
+`docs/evidence/release/latest.json`, CI jobs for frontend/security/red-team, and negative
+verification of the gate in a disposable worktree.

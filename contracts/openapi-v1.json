@@ -836,6 +836,40 @@
         "title": "ReadyChecks",
         "type": "object"
       },
+      "ReleaseDecisionRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "decision": {
+            "enum": [
+              "approve",
+              "reject",
+              "defer"
+            ],
+            "title": "Decision",
+            "type": "string"
+          },
+          "rationale": {
+            "maxLength": 1000,
+            "minLength": 10,
+            "title": "Rationale",
+            "type": "string"
+          },
+          "snapshot_sha256": {
+            "maxLength": 64,
+            "minLength": 64,
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Snapshot Sha256",
+            "type": "string"
+          }
+        },
+        "required": [
+          "decision",
+          "rationale",
+          "snapshot_sha256"
+        ],
+        "title": "ReleaseDecisionRequest",
+        "type": "object"
+      },
       "Resource": {
         "properties": {
           "category": {
@@ -908,6 +942,33 @@
           "status"
         ],
         "title": "ReviewRequest",
+        "type": "object"
+      },
+      "RiskReviewRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "decision": {
+            "enum": [
+              "accept_residual",
+              "require_mitigation",
+              "confirm_assessment",
+              "reopen"
+            ],
+            "title": "Decision",
+            "type": "string"
+          },
+          "rationale": {
+            "maxLength": 1000,
+            "minLength": 10,
+            "title": "Rationale",
+            "type": "string"
+          }
+        },
+        "required": [
+          "decision",
+          "rationale"
+        ],
+        "title": "RiskReviewRequest",
         "type": "object"
       },
       "Session": {
@@ -1115,6 +1176,235 @@
         "summary": "Feedback Summary",
         "tags": [
           "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/governance/controls": {
+      "get": {
+        "operationId": "list_controls_api_v1_admin_governance_controls_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response List Controls Api V1 Admin Governance Controls Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Controls",
+        "tags": [
+          "governance"
+        ]
+      }
+    },
+    "/api/v1/admin/governance/readiness": {
+      "get": {
+        "operationId": "readiness_api_v1_admin_governance_readiness_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Readiness Api V1 Admin Governance Readiness Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Readiness",
+        "tags": [
+          "governance"
+        ]
+      }
+    },
+    "/api/v1/admin/governance/release-decisions": {
+      "get": {
+        "operationId": "list_release_decisions_api_v1_admin_governance_release_decisions_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response List Release Decisions Api V1 Admin Governance Release Decisions Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Release Decisions",
+        "tags": [
+          "governance"
+        ]
+      },
+      "post": {
+        "operationId": "decide_release_api_v1_admin_governance_release_decisions_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReleaseDecisionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Decide Release Api V1 Admin Governance Release Decisions Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Decide Release",
+        "tags": [
+          "governance"
+        ]
+      }
+    },
+    "/api/v1/admin/governance/risks": {
+      "get": {
+        "operationId": "list_risks_api_v1_admin_governance_risks_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response List Risks Api V1 Admin Governance Risks Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Risks",
+        "tags": [
+          "governance"
+        ]
+      }
+    },
+    "/api/v1/admin/governance/risks/{risk_id}/reviews": {
+      "get": {
+        "operationId": "risk_reviews_api_v1_admin_governance_risks__risk_id__reviews_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "risk_id",
+            "required": true,
+            "schema": {
+              "title": "Risk Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Risk Reviews Api V1 Admin Governance Risks  Risk Id  Reviews Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Risk Reviews",
+        "tags": [
+          "governance"
+        ]
+      },
+      "post": {
+        "operationId": "review_risk_api_v1_admin_governance_risks__risk_id__reviews_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "risk_id",
+            "required": true,
+            "schema": {
+              "title": "Risk Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RiskReviewRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Review Risk Api V1 Admin Governance Risks  Risk Id  Reviews Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Review Risk",
+        "tags": [
+          "governance"
         ]
       }
     },
