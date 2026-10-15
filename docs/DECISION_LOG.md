@@ -261,3 +261,14 @@ awaiting human acceptance; nothing here records an approval that was not given.
     deployment stays blocked. Readiness is unchanged (`blocked_pending_human_decision`).
 
   Record: [`showcase/deployment-2026-10-15.md`](showcase/deployment-2026-10-15.md).
+- **L-D12 (2026-10-15, showcase revision 1; Abhinav at the keyboard, Devika present; each
+  answered separately; drafted by the coding agent at their direction):**
+  - **Change:** at their request, the footer sentence "UMBC-inspired colors; not affiliated with
+    or endorsed by UMBC. Screenshots captured from the running prototype on 2026-10-15." was
+    removed. Nothing else changed.
+  - **Approval:** each approved revised build `6c1ceb5a` and its redeployment.
+  - **Deployed:** production deployment `bf572d8c` at the same URL. All 14 files are
+    byte-identical to the build.
+  - **Unchanged:** the application stays unpublished, and readiness is unchanged.
+
+  Record: [`showcase/deployment-2026-10-15.md`](showcase/deployment-2026-10-15.md#revision-1-footer-sentence-removed-2026-10-15-l-d12).

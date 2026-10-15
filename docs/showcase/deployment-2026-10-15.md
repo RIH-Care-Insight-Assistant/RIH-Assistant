@@ -137,3 +137,48 @@ Any change to the page or an image needs a new review by both humans and a new b
 needs the contact numbers re-verified and a fresh decision by both. To take the site down, a
 human signs in to Abhinav's Cloudflare dashboard and deletes the `rih-care-insight-showcase` Pages
 project. That is irreversible, so it is not done without both humans asking for it.
+
+## Revision 1: footer sentence removed (2026-10-15, L-D12)
+
+At both humans' request, one sentence was removed from the footer of `showcase/index.html`:
+"UMBC-inspired colors; not affiliated with or endorsed by UMBC. Screenshots captured from the
+running prototype on 2026-10-15." The footer keeps "Built by Abhinav Varma Vathadi and Devika
+Rani Sanaboyina. Synthetic demo data only."
+
+Nothing else changed: the top non-official disclaimer, the diagram disclaimers, all captions
+and caveats, the 12 images (still matching their pins), `showcase.css` and the application
+code, including the app's own footer in `frontend/src/App.tsx`. The page no longer contains
+the words "not affiliated with or endorsed by UMBC". The non-official statement remains in the
+top box and in the D1 and D2 captions.
+
+| Item | Value |
+|---|---|
+| Build hash | `6c1ceb5a900a082716601f2d0886c93afce1d0e6fefa2d3f84bc2b87c3f554f6` (14 files) |
+| Changed file | `index.html` `9fd151aecb07fe90392117db5e207149b1abfe1f91e2696bbbef5b4c9688f8ba`; the other 13 hashes are unchanged from the listing above |
+| Local checks | `tests/test_showcase.py` and `tests/test_readme_assets.py` 8/8; preview on 127.0.0.1: 12/12 images, no scripts, no overflow |
+
+| Question (asked separately) | Abhinav | Devika |
+|---|---|---|
+| Approve revised build `6c1ceb5a` and its redeployment to the same Pages project | **Approve and redeploy** | **Approve and redeploy** |
+
+**Redeployment:** the same project, `rih-care-insight-showcase`, by Direct Upload with the same
+wrangler version. A human logged in to Abhinav's Cloudflare account with the Pages-only scopes.
+The upload came from a copy outside git and sent 1 changed file (13 were already stored).
+Production deployment `bf572d8c-3ede-4127-bfee-7a43b334054d`. Wrangler was logged out
+afterwards.
+
+**Smoke checks on <https://rih-care-insight-showcase.pages.dev/>:**
+
+- **Files:** 14/14 returned HTTP 200 and were byte-identical to `6c1ceb5a`, on the first pass.
+- **Old footer:** the removed sentence is absent.
+- **HTTPS:** `http://` returns 301 to HTTPS, and the certificate is valid.
+- **Desktop browser:** 12/12 images, 12 captions, 3 caveat boxes and the disclaimer 3 times.
+  There are 0 scripts, 0 forms, 0 third-party requests and no console messages.
+- **Mobile (375 px):** 12/12 images, no overflow.
+
+**Previous deployment:** Cloudflare keeps past deployments, so
+`https://f2f20997.rih-care-insight-showcase.pages.dev/` still serves build `bc01772e` with the
+old footer. The production URL serves only the revised build. Deleting the old deployment is a
+human step in the Cloudflare dashboard and was not done.
+
+The application branch is not pushed, no PR exists, and readiness is unchanged.

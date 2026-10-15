@@ -11,6 +11,8 @@ Last updated: 2026-10-15 (America/New_York). Operator: Devika Rani Sanaboyina.
   My L-D9 conditions hold: images reviewed by both, no live endpoint, no public chatbot.
   Record: [`../showcase/deployment-2026-10-15.md`](../showcase/deployment-2026-10-15.md).
 - The application branch is not pushed, there is no PR, and readiness is unchanged.
+- Revision 1 (L-D12): the footer sentence about UMBC-inspired colors and the capture date was
+  removed. Abhinav and I each approved build `6c1ceb5a`, and it is redeployed to the same URL.
 
 ## Joint-governance decisions (2026-10-15, L-D9)
 

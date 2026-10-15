@@ -333,6 +333,16 @@ register, catalog, readiness code, evidence or gate changed. Record:
   exists, interactive public deployment stays blocked, and readiness stays
   `blocked_pending_human_decision`.
 
+**Revision 1 (L-D12, [record](showcase/deployment-2026-10-15.md#revision-1-footer-sentence-removed-2026-10-15-l-d12)):**
+the footer sentence about UMBC-inspired colors and the capture date was removed at both humans'
+request.
+- Each separately approved build `6c1ceb5a` and its redeployment.
+- Production deployment `bf572d8c` serves 14/14 byte-identical files with 12/12 images on
+  desktop and at 375 px. Local showcase tests passed 8/8.
+- The old deployment URL `f2f20997.…pages.dev` still serves the previous build; it was not
+  deleted.
+- No image, diagram or application code changed.
+
 **Exact next action:** none for the showcase. Any page or image change needs a new review by
 both and a new build hash. S3 waits for the contact numbers. The application items at the end
 of "Devika's joint-governance decisions" stay open.

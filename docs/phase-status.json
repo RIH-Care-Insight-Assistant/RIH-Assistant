@@ -348,7 +348,22 @@
     "files": 14,
     "smoke_checks": "14/14 files HTTP 200 and byte-identical over HTTPS (second pass; first pass seconds after deploy had 4x 522 and 2 mismatches from edge propagation); http->https 301; valid certificate; public without login; 12/12 images desktop and 375px mobile, no overflow; 0 scripts, 0 forms, 0 third-party requests, no console messages; robots noindex; unknown paths return the static index",
     "application_published": false,
-    "readiness_unchanged": "blocked_pending_human_decision"
+    "readiness_unchanged": "blocked_pending_human_decision",
+    "revisions": [
+      {
+        "date": "2026-10-15",
+        "decision_log": "L-D12",
+        "change": "footer sentence 'UMBC-inspired colors; not affiliated with or endorsed by UMBC. Screenshots captured from the running prototype on 2026-10-15.' removed; nothing else changed",
+        "build_hash": "6c1ceb5a900a082716601f2d0886c93afce1d0e6fefa2d3f84bc2b87c3f554f6",
+        "approval": {
+          "abhinav": "approve and redeploy",
+          "devika": "approve and redeploy"
+        },
+        "deployment_id": "bf572d8c-3ede-4127-bfee-7a43b334054d",
+        "smoke_checks": "14/14 files HTTP 200 and byte-identical over HTTPS; sentence absent; 12/12 images desktop and 375px, no overflow; 0 scripts/forms/third-party requests; http->https 301",
+        "note": "previous deployment URL f2f20997.rih-care-insight-showcase.pages.dev still serves bc01772e; not deleted"
+      }
+    ]
   },
   "showcase_published": true
 }

@@ -9,6 +9,8 @@ Maintained only by Abhinav (or his coding agent) on his own feature branches. Re
   <https://rih-care-insight-showcase.pages.dev/> (Cloudflare Pages Free, Direct Upload, build
   `bc01772e`). Record: [`../showcase/deployment-2026-10-15.md`](../showcase/deployment-2026-10-15.md).
 - The application branch is not pushed, there is no PR, and readiness is unchanged.
+- Revision 1 (L-D12): we removed the footer sentence about UMBC-inspired colors and the capture
+  date. Devika and I each approved build `6c1ceb5a`, and it is redeployed to the same URL.
 
 ## Showcase decision (2026-10-15, L-D10)
 
