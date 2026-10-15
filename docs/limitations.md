@@ -58,5 +58,12 @@ Honest scope of what this prototype does **not** do or guarantee. Linked risks a
 - SQLite is a single-node store; no backups or migrations rollback beyond reapplying a volume.
 - Observability is local (in-memory ring buffer, optional JSONL); there is no external collector.
 - GitHub Actions jobs for the new gates exist but have not run yet (no pushes during local work).
-- Contracts, the risk register, thresholds and policies were proposed in one operator's session
-  and await both humans' recorded acceptance (`docs/phase-status.json`).
+- Contracts, the risk register (`risks-4`), the control catalog (`controls-4`) and the readiness
+  rules (L-D13) are accepted by both humans for the prototype ([decision log](DECISION_LOG.md)).
+  Owners and scores remain a working baseline, not a validated assessment.
+- Interactive public release is blocked. It needs each joint reviewer's own decision on every risk
+  in the staff interface, and four specialist reviews that have not been done: native-speaker
+  (SR-01), clinical (SR-02), campus source review (SR-03) and independent security assessment
+  (SR-04).
+- A deployed container cannot assess its own readiness, because it has no git to identify the
+  release candidate. It always reports `not_ready`; assessment runs from a source checkout.

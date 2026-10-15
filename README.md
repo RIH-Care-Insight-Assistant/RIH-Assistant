@@ -24,10 +24,17 @@ from approved knowledge-base sources, with citations. When a student turns down 
 assistant offers other verified campus options instead of pushing. Staff reviewers have a
 separate area to govern sources, risks and release decisions.
 
-**Status (2026-10-15):** Phases 0–9 of our roadmap are implemented and validated locally on the
-branch `feature/rih-local-enhancement-phases-2-9`. Release readiness is deliberately
-**blocked pending human decisions** (see [Known limitations](#known-limitations)); nothing here
-is production-ready.
+**Status (2026-10-15):** Phases 0–9 of our roadmap are implemented and validated on the branch
+`feature/rih-local-enhancement-phases-2-9`. We record four authorizations separately:
+- **Prototype acceptance:** given by both of us, for synthetic data only.
+- **Public source code:** this repository.
+- **Static showcase:** below.
+- **Interactive deployment:** not authorized. The chatbot runs only on your own machine.
+
+For interactive release, our readiness rules require both of us to decide on every risk, release
+evidence for the exact code being released, and completed native-speaker, clinical, campus-source
+and independent security reviews. None of those reviews has happened, so readiness is
+**not ready** (see [Known limitations](#known-limitations)). Nothing here is production-ready.
 
 **Static showcase:** <https://rih-care-insight-showcase.pages.dev/> is a page with reviewed
 screenshots and diagrams that viewers cannot interact with. It has no chatbot or API, and the
@@ -67,6 +74,9 @@ script, `npm --prefix frontend run screenshots`. Nothing is mocked up.
 
 The risk register ([image](docs/assets/screenshots/governance-risk-register.png)) and the
 server-gated staff sign-in ([image](docs/assets/screenshots/staff-signin.png)) are captured too.
+The governance screenshots were taken before the joint-decision rules (L-D13). The current
+screen shows each joint reviewer's own decision, the specialist reviews and the release scope.
+We kept the reviewed images rather than replacing them.
 
 ### Design system
 
@@ -258,17 +268,19 @@ loopback ports, so it needs the Python environment from [Local setup](#local-set
 `RIH_PYTHON` to the venv's Python if `python` is not on your path).
 
 The complete list of release gates is in [`docs/RELEASE_GATES.md`](docs/RELEASE_GATES.md).
-Recorded results from our last full validation (2026-10-15, Windows 11 and WSL2 Ubuntu; raw
-evidence in [`docs/evidence/`](docs/evidence/)):
+Recorded results from our final validation (2026-10-15, release candidate `c22b360`, Windows 11
+and WSL2 Ubuntu; raw evidence in [`docs/evidence/`](docs/evidence/)):
 
 | Check | Result |
 |---|---|
-| Release battery (with containers) | 21 of 21 gates passed |
+| Release battery (with containers) | 21 of 21 gates passed on the candidate (5494 tests passed, 1 skipped on Windows; 5495 passed on WSL2). Two earlier runs failed and are kept: they found a dependency advisory and a static-analysis issue, both fixed |
 | Safety routing regression set | 172 of 172 routed as expected, no false positives on benign cases |
 | Independent held-out set (Devika, 208 cases, frozen before review) | 149 of 208 on the first, unfixed run; 0 of 82 benign or ambiguous messages escalated. The gaps found were then fixed, so later runs are no longer held out |
 | Red team (70 versioned scenarios) | 5 of 70 attacks succeeded initially; 0 of 70 after mitigation, 0 of 35 over HTTP in Compose and kind |
 | Containers | integration 7/7, resilience 7/7, image and config scans clean |
 | Kubernetes | verify 7/7, rollout and rollback 5/5 with no failed requests, recovery 4/4 |
+| Release gate negative check | 3 of 3 deliberate critical regressions blocked |
+| Server log privacy probe | no message text, ids, tokens or credentials in server output |
 
 The safety regression set was written alongside the rules, so its score is optimistic; the
 held-out first run is the more realistic estimate. Write-ups:
@@ -286,8 +298,14 @@ held-out first run is the more realistic estimate. Write-ups:
   yet re-reviewed under the governed process, so answers show baseline and staleness notices.
 - One API replica, SQLite storage, local HTTP only, and password login without MFA.
 - The GitHub Actions jobs for the newer gates have not run on GitHub yet.
-- Release readiness stays `blocked_pending_human_decision` until we record the remaining
-  reviews and risk decisions listed in [`docs/FINAL_REPORT.md`](docs/FINAL_REPORT.md).
+- No independent security assessment has been done. The red-team scenarios were written in our
+  own sessions.
+- Interactive release stays blocked until both of us decide on every risk in the staff interface,
+  and the native-speaker, clinical, campus-source and independent security reviews are completed
+  (see [`docs/FINAL_REPORT.md`](docs/FINAL_REPORT.md)).
+- On the Office of Equity and Civil Rights page, the phone links dial different numbers from the
+  ones displayed. Our templates use the displayed numbers; the office has not yet confirmed which
+  number is correct ([crisis routing §6](docs/safety/crisis-routing.md)).
 
 The full list is in [`docs/limitations.md`](docs/limitations.md).
 

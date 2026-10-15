@@ -1,10 +1,71 @@
-# Publication plan (prepared, not executed)
+# Publication plan
+
+## Current plan (final completion stage)
+
+Status on 2026-10-15: prepared, **not executed**. Sections 1 to 5 below are the earlier plan
+and its updates, kept as the record. Where they conflict with this section, this section
+applies.
+
+### What publication means here
+
+| Decision | Scope | Status |
+|---|---|---|
+| Source-code publication | Push `feature/rih-local-enhancement-phases-2-9` to the existing public repository `RIH-Care-Insight-Assistant/RIH-Assistant`, open one integration PR into `main`, Devika reviews on GitHub, CI runs, merge after approval | **Needs both humans' explicit authorization**, asked separately |
+| Interactive public deployment | Running the chatbot for public use | **Not authorized**, and not part of this plan. Readiness is `not_ready` (L-D13 rules), with 4 specialist reviews and every joint decision outstanding |
+| Static showcase | <https://rih-care-insight-showcase.pages.dev/> | Already live (L-D11, L-D12); unchanged by this plan |
+| Prototype acceptance | Synthetic-data prototype | Recorded (L-D7, L-D8, L-D13, L-D14) |
+
+### Publication audit (2026-10-15, branch head after the Phase D records)
+
+- **Commits:** 56 or more on top of `origin/main` `6ab77a8`, which has not moved. Authors and
+  committers are only `Abhinav Varma Vathadi <97978338+AbhinavVarma02@users.noreply.github.com>`
+  and `Devika Rani Sanaboyina <165278681+Devikz@users.noreply.github.com>`. The only trailers
+  are `Co-authored-by` lines naming one of the two, on commits whose attribution both accepted.
+  There is no AI attribution. History is not rewritten.
+- **Secrets:** gitleaks found no leaks in 268 commits (container_security gate, `c22b360`).
+  The added files include no `.env`, database, log, key or bundle. The only addresses and
+  credentials in the diff are deliberate test fixtures (credentials-in-URL rejection cases,
+  synthetic SSRF addresses, loopback). `bootstrap.env` and `var/` are gitignored.
+- **Personal data:** none. Every account, conversation and test case is synthetic; the only
+  e-mail addresses are the two GitHub noreply identities.
+- **Licensing:** the repository is MIT. Knowledge-base text consists of one-line summaries that are
+  already public on `main`; the branch adds only source metadata. Images are screenshots and
+  diagrams of this application, with no university logos. Dependencies are referenced by
+  lockfiles, not vendored. There are no web fonts.
+- **Disclaimers:** the README, the app banner and the footer state that this is an independent
+  prototype, not an official UMBC or RIH service and not clinically validated.
+- **Exposure:** publishing source code starts no service. The repository has no deployment
+  workflow, and CI runs tests only. The Compose and kind manifests bind to loopback.
+- **Branch protection on `main`** (read 2026-10-15; not to be changed): 1 approving review,
+  code-owner review (no CODEOWNERS file exists), resolved conversations, no force pushes or
+  deletions, no required status checks, admins not enforced. The plan will not use admin
+  bypass.
+- **Issue #7:** its purpose, joint approval of C1-v0.2, was met on 2026-10-11, and its follow-ups
+  (B1 to B4, B9, deferrals, `RELEASE_GATES.md` ownership) closed with C1 acceptance (PR #10,
+  `6ab77a8`). It may be closed after the merge, with a comment that links the record, if both
+  agree.
+
+### Steps (only after both authorize)
+
+1. Create a git bundle backup outside the repository and verify it.
+2. Confirm that `origin` is `RIH-Care-Insight-Assistant/RIH-Assistant`, that the `gh` account is
+   one of the two contributors, and that `origin/main` is still `6ab77a8`.
+3. Push the feature branch (no force) and open one integration PR into `main`. The PR body
+   covers the implementation summary, validation results, known limitations, the unresolved
+   safety restrictions and the four separate authorizations. It has no AI footer.
+4. Devika reviews and approves on GitHub from her own account. CI runs for the first time on
+   this PR. Any CI-only failure is fixed with new commits on the branch.
+5. Merge with a normal merge commit, only after her approval and green CI. Verify `main`,
+   attribution and a clean tree.
+6. Close issue #7 only if both agree, with an accurate comment.
+7. Record the merge commit and links (Phase F). Deploy nothing.
+
 
 Nothing has been pushed. This plan needs **explicit authorization from both humans** before any
 step that changes GitHub. It respects the jointly approved branch protection on `main` (one
 required approval from the other contributor, resolved conversations, no force pushes).
 
-## 1. What would be published
+## 1. What would be published (earlier plan)
 
 - Branch `feature/rih-local-enhancement-phases-2-9`, 26 commits on top of `main` `6ab77a8`: the 17
   Phase 2–9 commits, 2 documentation commits (`512b945`, `bdf7659`) and 7 finalization commits.

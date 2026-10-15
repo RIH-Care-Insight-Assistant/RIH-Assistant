@@ -8,6 +8,23 @@ Machine: shared Windows 11 PC (WSL2 Ubuntu 26.04.1, Docker Desktop 29.8.1, kind 
 This report separates what executed checks verified from what remains open. It makes no claim
 of production readiness, clinical validation, certification or guaranteed security.
 
+## Final completion stage (2026-10-15): current status
+
+This section supersedes the status table in §0, which is kept as the record of the
+finalization session. Both humans were at the keyboard and answered each decision separately.
+An AI coding agent drafted the code and records at their direction.
+
+| Category | Items |
+|---|---|
+| **Corrected and accepted** | The readiness defect found in L-D9 is fixed: joint per-person decisions, decisions bound to risk and control content, evidence bound to a release-candidate digest, specialist reviews as blockers, and scope limited to interactive deployment. Authorized and accepted by both (L-D13) |
+| **Governance** | Register `risks-4` and catalog `controls-4` approved by both (L-D14). Earlier versions are kept in `governance/history/` |
+| **New finding, fixed** | R-08: uvicorn's access log recorded session ids and client addresses (`58a2417`). The battery found CVE-2026-59951 in the transitive `mcp` dependency and string-built SQL in new battery code (both fixed in `c22b360`) |
+| **Validated** | Candidate `c22b360`: battery 21/21; containers 7/7 and 7/7 with clean scans; kind 7/7, 5/5, 4/4; negative verification 3/3; WSL2 pytest 5495 passed. Details in [`LOCAL_FIRST_PROGRESS.md`](LOCAL_FIRST_PROGRESS.md) |
+| **Not performed** | Native-speaker review (SR-01), clinical review (SR-02), campus source review (SR-03), independent security assessment (SR-04). No staff-UI decision has been entered |
+| **Interactive public deployment** | **Not authorized.** Readiness is `not_ready`: no reviewer accounts are bound, and 39 human items are pending |
+| **Source-code publication** | A separate decision by both humans; see [`PUBLICATION_PLAN.md`](PUBLICATION_PLAN.md#current-plan-final-completion-stage) |
+| **Static showcase** | Live and unchanged (L-D11, L-D12); all 14 files match the approved build |
+
 ## 0. Status at a glance
 
 | Category | Items |
