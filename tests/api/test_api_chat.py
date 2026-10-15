@@ -70,6 +70,17 @@ def test_clarification_round_trip(api):
     assert body["response_type"] != "clarification"  # no clarification loop
 
 
+def test_medical_appointment_option_is_not_answered_with_counseling_guidance(api):
+    # The router puts every appointment phrasing in the counseling lane; choosing
+    # "Medical appointment" must still get grounded appointment pages, not the counseling template.
+    sid = api.new_session()
+    api.chat(sid, "I need to make an appointment")
+    body = api.chat(sid, option="medical_appointment").json()
+    assert body["message"]["text"] != template_for("counseling")
+    assert body["response_type"] == "answer"
+    assert body["citations"][0]["title"] == "RIH Appointments"
+
+
 def test_clarification_option_must_match_pending_question(api):
     sid = api.new_session()
     api.chat(sid, "What are the RIH hours?")

@@ -52,7 +52,12 @@ class Planner:
                         {"tool": "retrieve", "input": {"query": user_text}},
                     ]
 
-                # (c) otherwise plain counseling template
+                # (c) medical appointment → Retrieve. The router puts every appointment
+                # phrasing in this lane, so the counseling template would answer the wrong question.
+                if _looks_like_appointment(t):
+                    return [{"tool": "retrieve", "input": {"query": user_text}}]
+
+                # (d) otherwise plain counseling template
                 return [{"tool": "counseling", "input": {}}]
 
             tool = "retention" if route_level == "retention_withdraw" else route_level

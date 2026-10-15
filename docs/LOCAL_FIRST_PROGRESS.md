@@ -85,11 +85,39 @@ containers, kind, red team and the release battery (no backend, deployment or sa
 changed; the nginx CSP is unchanged).
 
 Observed while capturing (not changed here, backend behaviour): choosing "Medical appointment"
-after "I need to make an appointment" returns the counseling guidance template. Worth a look in
-the routing review.
+after "I need to make an appointment" returns the counseling guidance template. Fixed in the
+next section.
 
 **Exact next action:** the humans review the screenshots and README; publication still waits
 on the decisions in [`FINAL_REPORT.md`](FINAL_REPORT.md) §9 and [`PUBLICATION_PLAN.md`](PUBLICATION_PLAN.md).
+
+## Medical-appointment clarification fix (2026-10-15, complete locally, awaiting human acceptance)
+
+Directed by Abhinav; an AI coding agent investigated and drafted the change. **Awaiting human
+acceptance:** this changes what the counseling lane answers, so Devika reviews it with the
+routing changes. The deterministic safety router and its patterns are unchanged.
+
+- **Cause:** `COUNSELING` in `app/router/rules.py` matches any `appointment|schedule|...`
+  text, so "I want to schedule a medical appointment" (the fixed text of the
+  `medical_appointment` option) is routed to the non-safety `counseling` lane. The
+  orchestrator's guidance short-circuit is skipped because the text has an appointment marker,
+  and the rule planner's counseling branch only planned clarify→retrieve for *non-medical*
+  appointments; a medical one fell through to the plain counseling template.
+- **Fix (`app/agent/planner.py`):** in the counseling lane, an appointment-like text with a
+  medical marker now plans `retrieve` instead of the counseling template. It now cites
+  "RIH Appointments" first. The CLI Dispatcher uses the same planner.
+- **Tests:** `tests/api/test_api_chat.py::test_medical_appointment_option_is_not_answered_with_counseling_guidance`
+  (failed before the fix, passes after); `tests/test_phase5_routing_planner.py::test_planner_medical_appointment_in_counseling_lane_retrieves`.
+
+Validation (Windows 11, Python 3.13.2, Node 24.14.0): ruff clean; pytest **5419 passed,
+1 skipped** (2 new), passing on 3 consecutive runs; routes passed; safety eval 122/122
+safety-critical recall, 0/44 false positives, 172/172 lane agreement, no misses; E2E **8/8**.
+One earlier full run, right after the E2E run, reported 1 failure. It did not recur and its
+name was not captured. Not rerun: containers, kind, red team, release battery. The
+`conversation-history.png` screenshot shows only the first turn, so it was not regenerated.
+
+**Exact next action:** Devika reviews and accepts or rejects the planner change; publication
+still waits on the decisions in [`FINAL_REPORT.md`](FINAL_REPORT.md) §9.
 
 ## Phase status
 

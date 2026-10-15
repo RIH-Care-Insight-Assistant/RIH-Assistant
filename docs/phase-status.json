@@ -184,5 +184,16 @@
     "status": "complete_local",
     "readiness_unchanged": "blocked_pending_human_decision",
     "next_action": "humans review the new screenshots and README; publication still waits on the recorded human decisions"
+  },
+  "medical_appointment_fix": {
+    "date": "2026-10-15",
+    "directed_by": "Abhinav Varma Vathadi (an AI coding agent investigated and drafted the change)",
+    "baseline_commit": "ef6a497",
+    "cause": "the COUNSELING router rule matches every appointment phrasing, and the rule planner's counseling branch answered medical appointments with the counseling template",
+    "change": "app/agent/planner.py: counseling-lane appointment text with a medical marker plans retrieve; router patterns and the safety stage unchanged",
+    "status": "complete_local",
+    "acceptance": "awaiting human acceptance (Devika, routing review)",
+    "validation": "Windows 11, Python 3.13.2, Node 24.14.0: ruff clean; pytest 5419 passed, 1 skipped (2 new), passing on 3 consecutive runs; routes passed; safety eval 122/122, 0/44 false positives, no misses; E2E 8/8; one earlier full run after E2E reported 1 failure, which did not recur and was not captured",
+    "not_rerun": "containers, kind, red team, release battery"
   }
 }
