@@ -214,9 +214,11 @@ def integration() -> List[Dict[str, Any]]:
 def run_fault_backend(name: str, port: int, env: Dict[str, str], extra: List[str] | None = None) -> None:
     sh("docker", "rm", "-f", name)
     args = ["docker", "run", "-d", "--name", name, "--network", FAULT_NET, "-p", f"127.0.0.1:{port}:8000",
-            "--read-only", "--tmpfs", "/tmp", "--cap-drop", "ALL", "--security-opt", "no-new-privileges:true",
-            "-e", f"RIH_ALLOWED_ORIGINS=http://127.0.0.1:{port}", "-e", "RIH_COOKIE_SECURE=false",
-            "-e", "RIH_DB_PATH=/tmp/rih.sqlite3"]
+            # Disposable fault containers keep their database in a private tmpfs at the image's
+            # default /data path (nothing persists after the check).
+            "--read-only", "--tmpfs", "/data:uid=10001,gid=10001", "--cap-drop", "ALL",
+            "--security-opt", "no-new-privileges:true",
+            "-e", f"RIH_ALLOWED_ORIGINS=http://127.0.0.1:{port}", "-e", "RIH_COOKIE_SECURE=false"]
     for k, v in env.items():
         args += ["-e", f"{k}={v}"]
     args += (extra or []) + [IMAGE]
