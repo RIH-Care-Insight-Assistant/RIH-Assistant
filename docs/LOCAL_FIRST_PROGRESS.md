@@ -19,7 +19,7 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 | Current task | Done: SB-07/SB-08/RP-06 mitigations, final audit, final batteries, [final report](FINAL_REPORT.md), [publication plan](PUBLICATION_PLAN.md), [review plan](FINALIZATION_REVIEW_PLAN.md); Devika's final review B10 ([report](audits/devika-final-review-2026-10-15.md)) |
 | Last local commit | see `git log -1` (this file is updated with each milestone) |
 
-## Repository cleanup (2026-10-15, in progress)
+## Repository cleanup (2026-10-15, complete locally)
 
 Directed jointly by Abhinav and Devika (both present); an AI coding agent drafted the changes
 at their direction. Commits alternate author: one person authors and commits, the other is a
@@ -29,16 +29,28 @@ at their direction. Commits alternate author: one person authors and commits, th
 |---|---|---|
 | Baseline at `5831764` (Windows, Python 3.13.2): ruff ×2 clean; pytest **5415 passed, 1 skipped**; routes passed; safety eval no misses, no false positives | Done | — |
 | Batch 1: removed `app/dev/` (2 manual demo scripts), unused `ClarifyTool`/`TitleIXTool`/`ConductTool` classes, C1 `crawl_site.py`/`extract_keywords.py`/`propose_routing.py`, unused `pytest-cov`; `requests` kept pinned (transitive, patched) | Done: pytest 5413 passed, 1 skipped (2 fewer module-import cases); ruff ×2; routes; smoke | `58346a3` |
-| Batch 2: merged `docs/audit/` into `docs/audits/` (links updated); README rewritten (overview, features, architecture, stack, structure, setup, usage, Docker, kind, testing, limitations, contributors) | Done | see `git log` |
-| Batch 3: final validation (Python, frontend, CLI, safety, red team) and records | **Next** | — |
+| Batch 2: merged `docs/audit/` into `docs/audits/` (links updated); README rewritten (overview, features, architecture, stack, structure, setup, usage, Docker, kind, testing, limitations, contributors) | Done: repo-integrity and C1 tests 282 passed, 1 skipped; all relative links in changed docs resolve | `0024835` |
+| Batch 3: final validation and records (results below) | Done | see `git log` |
 
 Deferred on purpose: consolidating the two LLM planners (`planner_llm.py` for the CLI,
 `strands_planner.py` for the API) and the legacy versus governed retrievers, because both paths
 are safety-relevant and covered by parity tests; moving single-file root folders (`contracts/`,
 `policy/`, `security/`), which images, manifests and tests reference.
 
-**Exact next action:** run the final battery listed in batch 3, record results here and in
-`phase-status.json`, and commit.
+Batch 3 results at `0024835` (Windows 11, Python 3.13.2, Node 24.14.0, Docker 29.8.1):
+ruff ×2 clean; pytest **5413 passed, 1 skipped**; routes passed; safety eval 172/172, 0/44 false
+positives, no misses; smoke OK; OpenAPI snapshot and source inventory match; C1 readiness audit
+15/15 (run with `PYTHONPATH=.`, as before); probes unchanged (34/34, 15/15, benign 16/16 and
+14/14, uncovered 0/4 with notice 4/4); red team local **0/70**, legacy CLI **0/17**; Bandit
+clean; frontend lint and typecheck clean, **26/26** tests, build OK. Containers rebuilt
+(`requirements.txt` changed; backend image `de7f0ddce1b9`, frontend unchanged `5480927ddd15`;
+no `pytest_cov` or `app.dev` in the image): `container_checks.py integration` **7/7**, HTTP red
+team 0/35. That check rewrote the tracked `containers-http.json` without `--write`; the committed
+copy was restored. Not rerun: E2E (frontend and API code unchanged), resilience, Trivy, kind
+(manifests unchanged; the image differs only by removed unimported code and one test plugin).
+
+**Exact next action:** none for the cleanup. Publication still waits on the human decisions in
+[`FINAL_REPORT.md`](FINAL_REPORT.md) §9 and [`PUBLICATION_PLAN.md`](PUBLICATION_PLAN.md).
 
 ## Phase status
 

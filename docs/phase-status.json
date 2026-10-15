@@ -155,13 +155,18 @@
         "summary": "removed unused app/dev scripts, unused clarify/policy tool classes, C1 crawl/keyword helpers, pytest-cov"
       },
       {
-        "commit": "see git log",
+        "commit": "0024835",
         "summary": "merged docs/audit into docs/audits; README rewritten; progress records"
+      },
+      {
+        "commit": "see git log",
+        "summary": "final validation and records"
       }
     ],
-    "status": "in_progress",
-    "next_action": "run the final validation battery (Python, frontend, CLI, safety, red team) and record results",
-    "deployment_revalidation": "not yet decided; the backend image changes only by removed unimported modules and pytest-cov",
-    "readiness_unchanged": "blocked_pending_human_decision"
+    "status": "complete_local",
+    "next_action": "none for the cleanup; publication waits on the recorded human decisions",
+    "deployment_revalidation": "compose rebuilt and integration 7/7; resilience, Trivy and kind not rerun (manifests unchanged)",
+    "readiness_unchanged": "blocked_pending_human_decision",
+    "final_validation": "at 0024835: ruff x2 clean; pytest 5413 passed, 1 skipped; routes; safety 172/172, 0/44 FP; smoke; OpenAPI and inventory match; C1 audit 15/15; probes unchanged; red team 0/70, CLI 0/17; Bandit clean; frontend lint, typecheck, 26/26, build; container integration 7/7 (HTTP red team 0/35) on rebuilt images"
   }
 }
