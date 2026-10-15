@@ -55,6 +55,7 @@ def test_reviews_and_release_decisions_are_role_checked_and_attributed(staff, ap
     items = reviewer.get("/api/v1/admin/governance/risks").json()["items"]
     r01 = next(i for i in items if i["id"] == "R-01")
     assert r01["human_decision"]["decision"] == "accept_residual" and r01["human_decision"]["reviewer"] == "rita.reviewer"
+    assert r01["human_decision_current"] is True  # bound to R-01's current content (B10)
 
     snap = admin.get("/api/v1/admin/governance/readiness").json()
     decision = {"decision": "defer", "rationale": "Synthetic: waiting for the full battery.",

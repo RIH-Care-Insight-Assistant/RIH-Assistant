@@ -7,6 +7,7 @@ are written only through role-checked staff routes.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 from dataclasses import dataclass, field
@@ -27,6 +28,22 @@ RELEASE_GATE_REFS = {"release-gate:pip_audit", "release-gate:npm_audit", "releas
 
 class RegisterError(Exception):
     pass
+
+
+def risk_digest(risk: Dict[str, Any]) -> str:
+    """Short SHA-256 of one risk entry's full content (canonical JSON)."""
+    canonical = json.dumps(risk, sort_keys=True, ensure_ascii=True, separators=(",", ":"))
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()[:16]
+
+
+def decision_version(register: Dict[str, Any], risk: Dict[str, Any]) -> str:
+    """The version a human decision on `risk` is bound to: register label plus the risk's digest.
+
+    B10 (Devika's review): binding to the label alone let an edited risk (new agent-drafted
+    `pending_human_review` items, new scores) keep an acceptance given for its earlier content
+    whenever nobody bumped the label. Any change to the entry now makes the decision stale.
+    """
+    return f"{register['register_version']}#{risk_digest(risk)}"
 
 
 def score(likelihood: int, severity: int) -> int:
@@ -133,7 +150,7 @@ def load_governance(register_path: Path = REGISTER_PATH, controls_path: Path = C
     return Governance(reg, cat, problems)
 
 
-def risk_view(r: Dict[str, Any], decision: Dict[str, Any] | None) -> Dict[str, Any]:
+def risk_view(r: Dict[str, Any], decision: Dict[str, Any] | None, current_version: str | None = None) -> Dict[str, Any]:
     inherent = score(r["likelihood"], r["severity"])
     residual = score(r["residual_likelihood"], r["residual_severity"])
     return {
@@ -144,4 +161,6 @@ def risk_view(r: Dict[str, Any], decision: Dict[str, Any] | None) -> Dict[str, A
         "residual_score": residual, "residual_band": band(residual),
         "pending_human_review": list(r.get("pending_human_review", [])),
         "human_decision": decision,
+        # False when the latest decision was given for different content of this risk.
+        "human_decision_current": decision is not None and decision.get("register_version") == current_version,
     }

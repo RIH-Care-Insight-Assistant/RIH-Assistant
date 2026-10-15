@@ -18,7 +18,7 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from .register import ROOT, Governance, band, score
+from .register import ROOT, Governance, band, decision_version, score
 
 RELEASE_EVIDENCE = ROOT / "docs" / "evidence" / "release" / "latest.json"
 REDTEAM_FALLBACK = ROOT / "docs" / "evidence" / "redteam" / "post-mitigation-local.json"
@@ -40,7 +40,9 @@ def assess(
     blockers: List[str] = []
     pending: List[Dict[str, str]] = []
     version = gov.register["register_version"]
-    current = {rid: d for rid, d in decisions.items() if d.get("register_version") == version}
+    # A decision counts only for the exact risk content it was given for (register.decision_version).
+    bound = {r["id"]: decision_version(gov.register, r) for r in gov.risks}
+    current = {rid: d for rid, d in decisions.items() if d.get("register_version") == bound.get(rid)}
 
     if gov.problems:
         blockers.append(f"register/catalog integrity: {len(gov.problems)} problem(s)")

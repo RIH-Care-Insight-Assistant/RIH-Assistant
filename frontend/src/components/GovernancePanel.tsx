@@ -98,7 +98,12 @@ export function GovernancePanel({ isAdmin }: { isAdmin: boolean }) {
                 <td>{r.mitigation_status}</td>
                 <td className="muted">{r.controls.join(", ")}</td>
                 <td>{r.findings.join(", ") || "—"}</td>
-                <td>{r.human_decision ? `${r.human_decision.decision} by ${r.human_decision.reviewer}` : "none recorded"}</td>
+                <td>
+                  {r.human_decision ? `${r.human_decision.decision} by ${r.human_decision.reviewer}` : "none recorded"}
+                  {r.human_decision && r.human_decision_current === false && (
+                    <span className="muted"> (for an earlier version of this risk; not current)</span>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>

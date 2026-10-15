@@ -191,6 +191,8 @@ export interface RiskItem {
   evidence: string[];
   pending_human_review?: string[];
   human_decision: HumanDecision | null;
+  /** False when the latest decision was given for earlier content of this risk. */
+  human_decision_current?: boolean;
 }
 
 export interface Readiness {

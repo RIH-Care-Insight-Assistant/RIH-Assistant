@@ -8,7 +8,7 @@ import json
 import pytest
 
 from app.governance.readiness import assess
-from app.governance.register import ROOT, Governance, band, load_governance, score
+from app.governance.register import ROOT, Governance, band, decision_version, load_governance, score
 
 GOV = load_governance()
 
@@ -88,7 +88,8 @@ def test_open_high_finding_needs_a_human_residual_risk_decision():
     g = _no_high_residuals()
     a = assess(g, {}, PASSING_RELEASE, rt)
     assert a["status"] == "blocked_pending_human_decision"
-    decision = {"R-01": {"decision": "accept_residual", "register_version": g.register["register_version"]}}
+    r01 = next(r for r in g.risks if r["id"] == "R-01")
+    decision = {"R-01": {"decision": "accept_residual", "register_version": decision_version(g.register, r01)}}
     assert assess(g, decision, PASSING_RELEASE, rt)["status"] == "ready"
     stale = {"R-01": {"decision": "accept_residual", "register_version": "risks-0"}}
     assert assess(g, stale, PASSING_RELEASE, rt)["status"] == "blocked_pending_human_decision"
@@ -102,7 +103,8 @@ def test_untracked_open_finding_blocks():
 
 def test_reviewer_requiring_mitigation_blocks():
     g = _no_high_residuals()
-    d = {"R-03": {"decision": "require_mitigation", "register_version": g.register["register_version"]}}
+    r03 = next(r for r in g.risks if r["id"] == "R-03")
+    d = {"R-03": {"decision": "require_mitigation", "register_version": decision_version(g.register, r03)}}
     assert assess(g, d, PASSING_RELEASE, CLEAN_REDTEAM)["status"] == "not_ready"
 
 
@@ -120,7 +122,7 @@ def test_unreviewed_agent_mitigation_blocks_until_a_human_decides():
     a = assess(g, {}, PASSING_RELEASE, CLEAN_REDTEAM)
     assert a["status"] == "blocked_pending_human_decision"
     assert a["pending_human_decisions"] == [{"risk": g.risks[0]["id"], "reason": "awaiting human review: agent-drafted term list"}]
-    version = g.register["register_version"]
+    version = decision_version(g.register, g.risks[0])
     accepted = {g.risks[0]["id"]: {"decision": "accept_residual", "register_version": version}}
     assert assess(g, accepted, PASSING_RELEASE, CLEAN_REDTEAM)["status"] == "ready"
     stale = {g.risks[0]["id"]: {"decision": "accept_residual", "register_version": "risks-1"}}
@@ -153,3 +155,19 @@ def test_integrity_checks_catch_bad_entries(tmp_path, mutate):
     p = tmp_path / "risk_register.json"
     p.write_text(json.dumps(reg), encoding="utf-8")
     assert load_governance(register_path=p).problems
+
+
+def test_decision_is_bound_to_the_risk_content_not_only_the_register_label():
+    # B10 (Devika's review): a decision given for one version of a risk must not cover
+    # agent-drafted items added to that risk later under the same register label.
+    g = _no_high_residuals()
+    g.risks[0]["pending_human_review"] = ["agent-drafted term list"]
+    accepted = {g.risks[0]["id"]: {"decision": "accept_residual", "register_version": decision_version(g.register, g.risks[0])}}
+    assert assess(g, accepted, PASSING_RELEASE, CLEAN_REDTEAM)["status"] == "ready"
+    g.risks[0]["pending_human_review"].append("new agent-drafted pattern list")
+    assert g.register["register_version"] == g.register["register_version"]  # label unchanged
+    a = assess(g, accepted, PASSING_RELEASE, CLEAN_REDTEAM)
+    assert a["status"] == "blocked_pending_human_decision"
+    assert {"risk": g.risks[0]["id"], "reason": "awaiting human review: new agent-drafted pattern list"} in a["pending_human_decisions"]
+    label_only = {g.risks[0]["id"]: {"decision": "accept_residual", "register_version": g.register["register_version"]}}
+    assert assess(g, label_only, PASSING_RELEASE, CLEAN_REDTEAM)["status"] == "blocked_pending_human_decision"

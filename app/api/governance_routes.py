@@ -14,7 +14,7 @@ from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel, ConfigDict, Field
 
 from ..governance.readiness import assess, current_evidence
-from ..governance.register import RegisterError, load_governance, risk_view
+from ..governance.register import RegisterError, decision_version, load_governance, risk_view
 from .admin_routes import require
 from .db import DatabaseUnavailable, iso, utcnow
 from .errors import ApiError
@@ -71,7 +71,7 @@ def list_risks(request: Request, _u: dict = Depends(require("read", "admin:gover
         "framework": gov.register["framework"],
         "status_note": gov.register["status"],
         "integrity_problems": gov.problems,
-        "items": [risk_view(r, a["reviews"].get(r["id"])) for r in gov.risks],
+        "items": [risk_view(r, a["reviews"].get(r["id"]), decision_version(gov.register, r)) for r in gov.risks],
     }
 
 
@@ -101,9 +101,11 @@ def risk_reviews(risk_id: str, request: Request, _u: dict = Depends(require("rea
 def review_risk(risk_id: str, body: RiskReviewRequest, request: Request,
                 user: dict = Depends(require("review", "admin:governance", mutation=True))) -> dict:
     gov = _gov()
-    if risk_id not in {r["id"] for r in gov.risks}:
+    risk = next((r for r in gov.risks if r["id"] == risk_id), None)
+    if risk is None:
         raise ApiError("not_found")
-    row = {"risk_id": risk_id, "register_version": gov.register["register_version"], "decision": body.decision,
+    # Bound to this risk's exact content: editing the entry later makes the decision stale.
+    row = {"risk_id": risk_id, "register_version": decision_version(gov.register, risk), "decision": body.decision,
            "rationale": body.rationale.strip(), "reviewer": user["username"],
            "reviewer_roles": ",".join(user["roles"]), "decided_at": iso(utcnow())}
     try:

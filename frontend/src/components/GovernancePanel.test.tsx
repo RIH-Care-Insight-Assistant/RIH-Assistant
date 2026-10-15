@@ -41,6 +41,16 @@ describe("GovernancePanel", () => {
     expect(list).toHaveTextContent("Awaiting human review: synthetic agent-drafted term list");
   });
 
+  it("marks a decision given for earlier content of the risk as not current", async () => {
+    const decision = { register_version: "risks-2#0000000000000000", decision: "accept_residual", rationale: "Synthetic.",
+      reviewer: "rita.reviewer", reviewer_roles: "reviewer", decided_at: "2026-10-15T00:00:00Z" };
+    const stale = { ...RISK, human_decision: decision, human_decision_current: false };
+    installFakeApi({ staff: { username: "rita.reviewer", roles: ["reviewer"] }, risks: [stale] });
+    render(<GovernancePanel isAdmin={false} />);
+    const row = await screen.findByRole("row", { name: /R-01/ });
+    expect(row).toHaveTextContent("accept_residual by rita.reviewer (for an earlier version of this risk; not current)");
+  });
+
   it("offers approval to admins only when the assessment is ready", async () => {
     installFakeApi({ staff: { username: "adam.admin", roles: ["admin"] }, risks: [RISK] });
     render(<GovernancePanel isAdmin />);
