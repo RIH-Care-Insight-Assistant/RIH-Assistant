@@ -1,7 +1,7 @@
 {
   "report": "rih-k8s-recovery",
-  "git_commit": "7226667",
-  "generated_at": "2026-10-15T03:59:12Z",
+  "git_commit": "9c8c7d2-dirty",
+  "generated_at": "2026-10-15T15:23:50Z",
   "cluster": {
     "kind": "kind v0.33.0 go1.26.7 windows/amd64",
     "server": "v1.37.0"
@@ -10,16 +10,16 @@
     {
       "check": "backend_pod_deleted",
       "status": "pass",
-      "duration_s": 3.1,
+      "duration_s": 3.2,
       "recovered_after_s": 2.7,
-      "total_s": 2.7,
+      "total_s": 2.8,
       "session_messages_after": 2,
       "new_pod": true
     },
     {
       "check": "frontend_pod_deleted",
       "status": "pass",
-      "duration_s": 8.1,
+      "duration_s": 8.0,
       "replaced_after_s": 5.7,
       "requests": 38,
       "failed": 0,
@@ -29,14 +29,14 @@
     {
       "check": "container_crash_restarts",
       "status": "pass",
-      "duration_s": 3.7,
+      "duration_s": 3.8,
       "restart_count_before": 0,
       "recovered_after_s": 3.4
     },
     {
       "check": "readiness_gates_traffic",
       "status": "pass",
-      "duration_s": 0.2,
+      "duration_s": 0.3,
       "ready_endpoints": 1,
       "ready": {
         "status": "ready",

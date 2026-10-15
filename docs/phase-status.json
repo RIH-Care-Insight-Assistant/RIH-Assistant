@@ -106,7 +106,13 @@
       "docs/evidence/strands-live-finalization-2026-10-15.json"
     ]
   },
-  "final_battery_commit": "b87f572",
+  "final_battery_commit": "9c8c7d2",
+  "post_b10_container_and_k8s": {
+    "images_built_from": "9c8c7d2",
+    "battery": "21/21 (docs/evidence/release/release-20261015T151747Z.json)",
+    "containers": "security clean, integration 7/7, resilience 7/7",
+    "kind": "verify 7/7, rollout 5/5, recovery 4/4; cluster deleted"
+  },
   "devika_final_review": {
     "status": "review_complete_local_signoff_pending",
     "directed_by": "Devika Rani Sanaboyina",

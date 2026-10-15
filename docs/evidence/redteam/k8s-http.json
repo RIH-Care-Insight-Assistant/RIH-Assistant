@@ -4,8 +4,8 @@
   "target": "http",
   "fixture_version": "1.0.1",
   "fixture_sha256": "ae4a4d3983515b3037c0ced7e4c45d4a512a45f93bc8ec881622042f31446ba1",
-  "git_commit": "c875a3f",
-  "generated_at": "2026-10-15T13:39:40Z",
+  "git_commit": "9c8c7d2-dirty",
+  "generated_at": "2026-10-15T15:22:39Z",
   "summary": {
     "scenarios_total": 70,
     "attempted": 35,
@@ -174,7 +174,7 @@
       "passed": true,
       "evidence_ref": "k8s-http#PI-05",
       "mitigation_status": "mitigated",
-      "duration_ms": 2771,
+      "duration_ms": 2783,
       "failures": []
     },
     {
@@ -199,7 +199,7 @@
       "passed": true,
       "evidence_ref": "k8s-http#PI-06",
       "mitigation_status": "mitigated",
-      "duration_ms": 3201,
+      "duration_ms": 3202,
       "failures": []
     },
     {
@@ -416,7 +416,7 @@
       "passed": true,
       "evidence_ref": "k8s-http#SB-01",
       "mitigation_status": "mitigated",
-      "duration_ms": 3197,
+      "duration_ms": 3198,
       "failures": []
     },
     {
@@ -441,7 +441,7 @@
       "passed": true,
       "evidence_ref": "k8s-http#SB-02",
       "mitigation_status": "mitigated",
-      "duration_ms": 3207,
+      "duration_ms": 3203,
       "failures": []
     },
     {
@@ -466,7 +466,7 @@
       "passed": true,
       "evidence_ref": "k8s-http#SB-03",
       "mitigation_status": "mitigated",
-      "duration_ms": 3195,
+      "duration_ms": 3196,
       "failures": []
     },
     {
@@ -516,7 +516,7 @@
       "passed": true,
       "evidence_ref": "k8s-http#SB-05",
       "mitigation_status": "mitigated",
-      "duration_ms": 3199,
+      "duration_ms": 3200,
       "failures": []
     },
     {
@@ -566,7 +566,7 @@
       "passed": true,
       "evidence_ref": "k8s-http#SB-07",
       "mitigation_status": "mitigated",
-      "duration_ms": 3198,
+      "duration_ms": 3200,
       "failures": []
     },
     {
@@ -591,7 +591,7 @@
       "passed": true,
       "evidence_ref": "k8s-http#SB-08",
       "mitigation_status": "mitigated",
-      "duration_ms": 3201,
+      "duration_ms": 3200,
       "failures": []
     },
     {
@@ -641,7 +641,7 @@
       "passed": true,
       "evidence_ref": "k8s-http#SB-10",
       "mitigation_status": "mitigated",
-      "duration_ms": 3201,
+      "duration_ms": 3199,
       "failures": []
     },
     {
@@ -666,7 +666,7 @@
       "passed": true,
       "evidence_ref": "k8s-http#SB-11",
       "mitigation_status": "mitigated",
-      "duration_ms": 3199,
+      "duration_ms": 3200,
       "failures": []
     },
     {
@@ -728,7 +728,7 @@
       "passed": true,
       "evidence_ref": "k8s-http#SB-14",
       "mitigation_status": "mitigated",
-      "duration_ms": 6401,
+      "duration_ms": 6400,
       "failures": []
     },
     {
@@ -938,7 +938,7 @@
       "passed": true,
       "evidence_ref": "k8s-http#PE-01",
       "mitigation_status": "mitigated",
-      "duration_ms": 382,
+      "duration_ms": 357,
       "failures": []
     },
     {
@@ -973,7 +973,7 @@
       "passed": true,
       "evidence_ref": "k8s-http#PE-02",
       "mitigation_status": "mitigated",
-      "duration_ms": 366,
+      "duration_ms": 320,
       "failures": []
     },
     {
@@ -1008,7 +1008,7 @@
       "passed": true,
       "evidence_ref": "k8s-http#PE-03",
       "mitigation_status": "mitigated",
-      "duration_ms": 331,
+      "duration_ms": 334,
       "failures": []
     },
     {
@@ -1043,7 +1043,7 @@
       "passed": true,
       "evidence_ref": "k8s-http#PE-04",
       "mitigation_status": "mitigated",
-      "duration_ms": 332,
+      "duration_ms": 362,
       "failures": []
     },
     {
@@ -1078,7 +1078,7 @@
       "passed": true,
       "evidence_ref": "k8s-http#PE-05",
       "mitigation_status": "mitigated",
-      "duration_ms": 332,
+      "duration_ms": 355,
       "failures": []
     },
     {
@@ -1144,7 +1144,7 @@
       "passed": true,
       "evidence_ref": "k8s-http#PE-07",
       "mitigation_status": "mitigated",
-      "duration_ms": 516,
+      "duration_ms": 536,
       "failures": []
     },
     {
@@ -1179,7 +1179,7 @@
       "passed": true,
       "evidence_ref": "k8s-http#PE-08",
       "mitigation_status": "mitigated",
-      "duration_ms": 357,
+      "duration_ms": 385,
       "failures": []
     },
     {
@@ -1214,7 +1214,7 @@
       "passed": true,
       "evidence_ref": "k8s-http#PE-09",
       "mitigation_status": "mitigated",
-      "duration_ms": 325,
+      "duration_ms": 350,
       "failures": []
     },
     {
@@ -1249,7 +1249,7 @@
       "passed": true,
       "evidence_ref": "k8s-http#CS-01",
       "mitigation_status": "mitigated",
-      "duration_ms": 332,
+      "duration_ms": 342,
       "failures": []
     },
     {
@@ -1284,7 +1284,7 @@
       "passed": true,
       "evidence_ref": "k8s-http#CS-02",
       "mitigation_status": "mitigated",
-      "duration_ms": 321,
+      "duration_ms": 355,
       "failures": []
     },
     {
@@ -1319,7 +1319,7 @@
       "passed": true,
       "evidence_ref": "k8s-http#CS-03",
       "mitigation_status": "mitigated",
-      "duration_ms": 355,
+      "duration_ms": 345,
       "failures": []
     },
     {
@@ -1354,7 +1354,7 @@
       "passed": true,
       "evidence_ref": "k8s-http#CS-04",
       "mitigation_status": "mitigated",
-      "duration_ms": 316,
+      "duration_ms": 346,
       "failures": []
     },
     {
@@ -1389,7 +1389,7 @@
       "passed": true,
       "evidence_ref": "k8s-http#CS-05",
       "mitigation_status": "mitigated",
-      "duration_ms": 330,
+      "duration_ms": 392,
       "failures": []
     },
     {
@@ -1428,7 +1428,7 @@
       "passed": true,
       "evidence_ref": "k8s-http#CS-06",
       "mitigation_status": "mitigated",
-      "duration_ms": 2557,
+      "duration_ms": 2462,
       "failures": []
     },
     {
@@ -1463,7 +1463,7 @@
       "passed": true,
       "evidence_ref": "k8s-http#CS-07",
       "mitigation_status": "mitigated",
-      "duration_ms": 341,
+      "duration_ms": 336,
       "failures": []
     },
     {
@@ -1499,7 +1499,7 @@
       "passed": true,
       "evidence_ref": "k8s-http#CS-08",
       "mitigation_status": "mitigated",
-      "duration_ms": 324,
+      "duration_ms": 338,
       "failures": []
     },
     {
@@ -1534,7 +1534,7 @@
       "passed": true,
       "evidence_ref": "k8s-http#ID-01",
       "mitigation_status": "mitigated",
-      "duration_ms": 2526,
+      "duration_ms": 2519,
       "failures": []
     },
     {
@@ -1569,7 +1569,7 @@
       "passed": true,
       "evidence_ref": "k8s-http#ID-02",
       "mitigation_status": "mitigated",
-      "duration_ms": 333,
+      "duration_ms": 347,
       "failures": []
     },
     {
@@ -1604,7 +1604,7 @@
       "passed": true,
       "evidence_ref": "k8s-http#ID-03",
       "mitigation_status": "mitigated",
-      "duration_ms": 332,
+      "duration_ms": 355,
       "failures": []
     },
     {
@@ -1643,7 +1643,7 @@
       "passed": true,
       "evidence_ref": "k8s-http#ID-04",
       "mitigation_status": "mitigated",
-      "duration_ms": 327,
+      "duration_ms": 351,
       "failures": []
     },
     {
@@ -1665,7 +1665,7 @@
       "passed": true,
       "evidence_ref": "k8s-http#ID-05",
       "mitigation_status": "mitigated",
-      "duration_ms": 446,
+      "duration_ms": 440,
       "failures": []
     },
     {

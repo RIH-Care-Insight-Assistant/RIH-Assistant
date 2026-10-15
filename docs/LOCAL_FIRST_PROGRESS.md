@@ -78,6 +78,9 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 | 2026-10-15 | `c36cd2c` → `ef3c83d` | Windows 11, Python 3.13.2 | Devika's B10 held-out set (208 cases, frozen and hash-pinned before the patterns were read); `scripts/heldout_eval.py` | First run, unfixed: **149/208**; explicit 32/36, variants 18/32, implicit English **2/14**, implicit other 0/6, negated 7/12, uncovered 0/17 (notice 14/17); 0/82 benign or ambiguous escalated ([report](audits/devika-final-review-2026-10-15.md)) |
 | 2026-10-15 | `666e253`, `e685260`, `9bd6689` | Windows 11, Python 3.13.2, Node 24.14.0 | `pytest -q`; held-out rerun; probes; safety eval; repo scan (2,713 strings); `redteam.py` local and legacy; RP-06 test without the fix | **5414 passed, 1 skipped**; held-out 179/208 (not held out after fixing), 0/82 escalated; probes unchanged; 172/172, 0/44 FP; routing unchanged on all 2,713 strings; red team **0/70**, CLI **0/17**; new RP-06 test fails without `9bd6689` |
 | 2026-10-15 | `31a9f39` | Windows 11, Python 3.13.2, Node 24.14.0 | `release_readiness.py --e2e` (containers not rerun) | **18/18 gates pass** (pytest 5415 passed, 1 skipped; safety 172/172; pip-audit and npm audit clean; Bandit clean; frontend 26/26; E2E 5/5; red team 0/70); readiness **blocked_pending_human_decision** (5 review items: SB-07, SB-08, B10 additions, notice wording, RP-06) ([evidence](evidence/release/latest.json)) |
+| 2026-10-15 | `9c8c7d2` (images rebuilt from it: backend `e8ccba6e5434`, frontend `5480927ddd15`) | Windows 11, Python 3.13.2, Node 24.14.0, Docker 29.8.1 | `docker compose up -d --build`; `release_readiness.py --e2e --containers` | **21/21 gates pass** (pytest 5415 passed, 1 skipped; safety 172/172; pip-audit, npm audit, Bandit, Trivy, gitleaks clean; frontend 26/26; E2E 5/5; red team 0/70; container integration 7/7, HTTP red team 0/35; resilience 7/7); readiness **blocked_pending_human_decision** (same 5 review items) ([evidence](evidence/release/release-20261015T151747Z.json)). Candidate `9c8c7d2` clean; `-dirty` after the gates only because the integration gate rewrote `containers-http.json` |
+| 2026-10-15 | `9c8c7d2` images | same | `container_security.py --write`; `container_checks.py integration --write`; `resilience --write` | Images 0 fixable HIGH/CRITICAL, config 0, secrets 0; integration **7/7** (HTTP red team 0/35); resilience **7/7** ([evidence](evidence/containers/)). Evidence says `-dirty` only because the battery had already rewritten evidence files; no code changed |
+| 2026-10-15 | `9c8c7d2` images | kind v0.33.0 on Docker Desktop | `k8s.py up`; `verify --write`; `rollout --write`; `recovery --write`; `down`; `kind get clusters` | verify **7/7** (NetworkPolicies enforced; red team over the cluster 0/35); rollout **5/5** with 0 failed requests; recovery **4/4** ([evidence](evidence/k8s/)); cluster deleted, none remain. Compose stack left running with the rebuilt images |
 
 ### Phase 9 deliverables
 
@@ -247,6 +250,6 @@ Devika's held-out check and pattern review (B10) are done: see
 last section lists the decisions left. Next, both humans make the
 [`PUBLICATION_PLAN.md`](PUBLICATION_PLAN.md) §2 decisions, starting with R-01 in the staff UI
 with the held-out figures in view, and authorize or decline publication. Container and
-Kubernetes gates were not rerun after B10 (images predate it); rebuild and rerun them before
-publication. No agent action is pending; any fix found in review goes on this branch
+Kubernetes gates were rerun after B10 on images rebuilt from `9c8c7d2` (21/21 battery; kind
+verify 7/7, rollout 5/5, recovery 4/4). No agent action is pending; any fix found in review goes on this branch
 as a new commit.
