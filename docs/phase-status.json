@@ -72,7 +72,7 @@
     "Contact numbers re-checked 2026-10-15 (all match the displayed numbers); the ECR page's link targets (410-455-2735, 410-455-3230) differ from its displayed numbers: confirm with the office before any real use",
     "Release battery rerun on the final candidate: done (c22b360, 21/21, schema 2)",
     "R-05 source review is now mandatory specialist review SR-03 (blocks interactive deployment)",
-    "Authorization to publish (push, one integration PR, review, merge) per docs/PUBLICATION_PLAN.md",
+    "Source publication authorized by both (L-D15): push, one integration PR, Devika's GitHub review and approval, green CI, merge. Interactive deployment NOT authorized",
     "Close issue #7 on GitHub",
     "Showcase follow-ups (L-D11): S3 only after the contact numbers are re-verified and a fresh decision by both; any change to the deployed page needs a new review by both and a new build hash"
   ],
@@ -423,5 +423,14 @@
     "heldout_b10": "179/208 (not held out)",
     "flaky_test": "found and fixed in f42db4c (per-call timestamp in a test helper)",
     "showcase": "live, 14/14 files match the approved build"
+  },
+  "source_publication": {
+    "decision_log": "L-D15",
+    "authorized_by": [
+      "Abhinav Varma Vathadi",
+      "Devika Rani Sanaboyina"
+    ],
+    "interactive_deployment": "not authorized",
+    "status": "authorized; push pending"
   }
 }

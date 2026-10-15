@@ -318,4 +318,15 @@ awaiting human acceptance; nothing here records an approval that was not given.
     Decisions bound to earlier content do not carry over. No human decision was entered.
   - Owners and scores stay a working baseline (L-D9 G1 d). The static showcase is unchanged;
     S3 stays deferred until both decide on it.
+- **L-D15 (2026-10-15, source-code publication; Abhinav and Devika both at the keyboard; each
+  answered separately by name, after the publication summary and audit in
+  [`PUBLICATION_PLAN.md`](PUBLICATION_PLAN.md#current-plan-final-completion-stage)):**
+  - **Authorized by Abhinav and by Devika:** push `feature/rih-local-enhancement-phases-2-9`
+    without force to the existing public repository `RIH-Care-Insight-Assistant/RIH-Assistant`
+    and open one integration PR into `main`. Devika reviews and approves on GitHub from her own
+    account; merge only after her approval and green CI, under the existing branch protection.
+  - **Not authorized:** interactive public deployment of the chatbot. Readiness stays
+    `not_ready` under the L-D13 rules, and SR-01 to SR-04 are still required.
+  - The static showcase (L-D11, L-D12) is unchanged. Prototype acceptance is recorded separately
+    (L-D7, L-D8, L-D13, L-D14).
 
