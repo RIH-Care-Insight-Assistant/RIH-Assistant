@@ -1,4 +1,5 @@
-"""A scripted Strands `Model` for offline tests: it emits predetermined tool calls or text.
+"""A scripted Strands `Model` for offline tests and adversarial runs: it emits predetermined
+tool calls or text.
 
 It exercises the real Strands agent loop (tool specs, tool execution, results fed back)
 without any network or model provider.

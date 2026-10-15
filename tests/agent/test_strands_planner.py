@@ -16,7 +16,7 @@ from app.agent.resilience import CircuitBreaker
 from app.agent.strands_planner import PlannerUnavailable, StrandsToolPlanner, ollama_model_from_env
 from app.agent.toolkit import Principal, StaticAgentAuthorizer, ToolExecutor, TurnContext, build_registry
 from app.answer.compose import crisis_message
-from tests.agent.scripted_model import ScriptedModel
+from app.evaluation.scripted_model import ScriptedModel
 from tests.rag.conftest import governed, record
 
 HOURS = record("Clinic Hours", "The clinic is open weekdays; check the hours page for breaks.")

@@ -11,6 +11,7 @@ import os
 import re
 import secrets
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -21,7 +22,7 @@ from ..rag.governed_retriever import GovernedRetriever
 from .catalog import GovernedCatalog
 from ..agent.toolkit import Decision, ToolExecutor, build_registry
 from ..agent.orchestrator import clarification_payload
-from ..security.policy_engine import PolicyEngine, PolicyError
+from ..security.policy_engine import POLICY_PATH, PolicyEngine, PolicyError
 from ..security.ratelimit import RateLimiter
 from .admin_routes import router as admin_router
 from .chat_service import ChatService
@@ -132,6 +133,7 @@ def create_app(
     retriever: GovernedRetriever | None = None,
     policy: PolicyEngine | None = None,
     limiter: RateLimiter | None = None,
+    policy_path: Path | None = None,
 ) -> FastAPI:
     settings = settings or Settings.from_env()
     db = db or Database(settings.db_path)
@@ -141,7 +143,7 @@ def create_app(
                            extra_corpus=staff.staged_records)
     catalog = catalog or GovernedCatalog(retriever)
     try:
-        policy = policy or PolicyEngine.load()
+        policy = policy or PolicyEngine.load(policy_path or POLICY_PATH)
         policy.set_audit(lambda event: staff.record_audit("authz", event))
     except PolicyError as exc:
         logger.error("policy_unavailable", extra={"reason": str(exc)})

@@ -10,7 +10,7 @@ from app.agent.resilience import CircuitBreaker
 from app.agent.strands_planner import StrandsToolPlanner
 from app.agent.toolkit import Principal, ToolExecutor, TurnContext, build_registry
 from app.security.policy_engine import PolicyEngine
-from tests.agent.scripted_model import ScriptedModel
+from app.evaluation.scripted_model import ScriptedModel
 from tests.rag.conftest import governed, record
 
 INJECTIONS = [
