@@ -3,7 +3,7 @@
   "branch": "feature/rih-local-enhancement-phases-2-9",
   "base_commit": "6ab77a862379a16d6d63d81e9d4ea709a55f2496",
   "updated": "2026-10-15",
-  "current_phase": 7,
+  "current_phase": 8,
   "published": false,
   "phases": {
     "2": {
@@ -41,11 +41,14 @@
       ]
     },
     "7": {
-      "status": "in_progress",
-      "evidence": []
+      "status": "complete_local",
+      "evidence": [
+        "docs/evidence/release/latest.json",
+        "docs/evidence/release/negative-verification.json"
+      ]
     },
     "8": {
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": []
     },
     "9": {

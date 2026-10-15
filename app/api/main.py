@@ -182,8 +182,11 @@ def create_app(
         logger.error("policy_unavailable", extra={"reason": str(exc)})
         policy = DenyAll()
     telemetry = Telemetry(trace_file=os.getenv("RIH_TRACE_FILE") or None)
-    if os.getenv("RIH_LOG_FORMAT", "json").lower() != "off":  # "off" silences app logs (test batteries)
+    if os.getenv("RIH_LOG_FORMAT", "json").lower() != "off":
         configure_json_logging()
+    else:  # "off" silences application logs (used by quiet in-process test batteries)
+        logging.getLogger("rih").handlers = [logging.NullHandler()]
+        logging.getLogger("rih").propagate = False
     if orchestrator is None:
         executor = ToolExecutor(build_registry(retriever, clarification_payload), policy,
                                 on_event=lambda e: telemetry.record_tool(e["tool"], e["status"], e.get("rule", "")),

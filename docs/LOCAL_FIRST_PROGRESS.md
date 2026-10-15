@@ -15,8 +15,8 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 
 | Field | Value |
 |---|---|
-| Current phase | Phase 7 — observability and security release gates |
-| Current task | Phase 6 committed; starting Phase 7 (OpenTelemetry, logs, metrics, release battery, CI) |
+| Current phase | Phase 8 — Docker, resilience and portfolio delivery |
+| Current task | Phase 7 committed; starting Phase 8 (containers, Compose, failure tests, docs) |
 | Last local commit | see `git log -1` (this file is updated with each milestone) |
 
 ## Phase status
@@ -29,7 +29,7 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 | 4 | **Complete (local)** | Auth, RBAC, Policy-as-Code, audit, ingestion, scans below |
 | 5 | **Complete (local)** | 70-scenario suite; ASR 7.1% → 2.9% after mitigation ([report](security/redteam-report.md)) |
 | 6 | **Complete (local)** | Register, controls, readiness, governance API and dashboard ([alignment](governance/nist-ai-rmf-alignment.md)) |
-| 7 | Not started | – |
+| 7 | **Complete (local)** | Telemetry, incidents, 18-gate battery, negative verification ([details](architecture/observability.md)) |
 | 8 | Not started | – |
 | 9 | Not started | – |
 
@@ -56,6 +56,20 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 | 2026-10-15 | `a92c358` + docs | Windows 11, Python 3.13.2 | `pytest -q`; safety eval; routes; smoke | **5139 passed, 2 skipped**; 172/172, 0 FP; routes passed; smoke OK |
 
 | 2026-10-15 | Phase 6 working tree | Windows 11, Python 3.13.2; Node 24.14.0 | `pytest -q`; eslint; tsc; vitest; playwright | **5167 passed, 1 skipped**; frontend **20/20**; **E2E 5/5** (adds the governance review flow) |
+
+| 2026-10-15 | `8975840` | Windows 11, Python 3.13.2, Node 24.14.0 | `scripts/release_readiness.py --e2e` | **18/18 gates pass** (pytest 5187 passed, 1 skipped; safety 172/172; pip-audit and npm audit clean; red team 2/70, no critical; E2E 5/5); readiness **blocked_pending_human_decision** (SB-07, SB-08) ([evidence](evidence/release/latest.json)) |
+| 2026-10-15 | `8975840` | same | `scripts/negative_verification.py --write` | 3/3 deliberate regressions blocked (`not_ready`) in disposable worktrees; working tree untouched |
+
+### Phase 7 deliverables
+
+- `app/observability/telemetry.py`: per-app OpenTelemetry traces and metrics, privacy allowlists,
+  JSON logs with trace/request IDs, error classification, latency percentiles.
+- Instrumented request middleware, chat turns and governed tool calls; staff Observability tab
+  and `GET /admin/observability/summary`.
+- Incident simulation (`app/observability/incidents.py`, migration 0004), admin-only and gated.
+- `scripts/release_readiness.py` (18 gates + readiness) and `scripts/negative_verification.py`.
+- CI jobs: API contract/governance, security scan, red team, frontend, E2E (not yet run on GitHub).
+- The battery found an environment-dependent logging test, fixed in `8975840`.
 
 ### Phase 6 deliverables
 
@@ -153,8 +167,8 @@ benchmark. Citations carry no governance status until Phase 3.
 
 ## Next executable action
 
-Phase 7: OpenTelemetry tracing with privacy-safe attributes, request/correlation IDs in
-structured JSON logs, security and tool events, metrics (latency histograms, error classes),
-incident simulation, the release battery (`scripts/release_readiness.py`) writing
-`docs/evidence/release/latest.json`, CI jobs for frontend/security/red-team, and negative
-verification of the gate in a disposable worktree.
+Phase 8: start Docker Desktop; backend and frontend Dockerfiles (non-root, health checks,
+pinned bases), Compose with persistent volume, resource limits and read-only filesystems,
+container scanning, resilience/failure tests (model timeout, retrieval outage, database
+unavailability, corrupt/stale KB, invalid tool output, service restarts), red-team run against
+the container over loopback, README/architecture/demo/troubleshooting docs.

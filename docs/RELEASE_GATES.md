@@ -98,9 +98,14 @@ them; once added, a gate is never removed or weakened to get a pass.
 | Dependencies (Phase 4) | `python -m pip_audit -r requirements.txt`; `npm --prefix frontend audit` | Any known vulnerability |
 | Static analysis (Phase 4) | `python -m bandit -q -r app scripts -ll` | Any medium or high finding |
 
-Later phases append their gates here (frontend checks, API contract snapshot,
-end-to-end workflow, adversarial suite, governance evidence, container and Kubernetes
-checks) together with the aggregated release-readiness command.
+| Red team (Phase 5, 7) | `python scripts/redteam.py` | Any open **critical** scenario (high findings need a recorded human decision via governance) |
+| Governance integrity (Phase 6) | register/catalog checks (in `pytest` and the battery) | Missing controls, tests, evidence or untracked open findings |
+| **Aggregated battery (Phase 7)** | `python scripts/release_readiness.py --e2e` | Exit 1 (not ready) on any failed required gate or open critical finding; exit 2 while human residual-risk decisions are pending |
+| Negative verification (Phase 7) | `python scripts/negative_verification.py --write` | Any deliberate regression that the battery does not block |
+
+Container and Kubernetes checks are added in Phases 8–9. Evidence of the latest run:
+[`evidence/release/latest.json`](evidence/release/latest.json); details in
+[`architecture/observability.md`](architecture/observability.md).
 
 Rules for the local procedure:
 - A critical safety or authorization failure means **not release-ready**, whatever else passes.
@@ -119,5 +124,5 @@ Owners follow the launchers; details are agreed in each checkpoint's contracts.
 | 3 | Tool-contract tests (allowed, denied, malformed); citation validity; recorded retrieval benchmark | Abhinav (tools), Devika (citations, benchmark) |
 | 4 | Deterministic authorization/RBAC tests; secret and dependency scanning; static analysis | Both |
 | 5 | Adversarial suite with measured attack success rates | Both |
-| 7 | Critical safety/security release gate in CI; negative-regression proof on an isolated branch | Abhinav (gate logic), Devika (negative proof) |
+| 7 | Critical safety/security release gate in CI (jobs added; first run happens at publication) | Abhinav (gate logic), Devika (negative proof) |
 | 8 | Container checks; resilience and failure-injection tests | Both |
