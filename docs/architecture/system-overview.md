@@ -4,6 +4,11 @@ Detailed notes: [`agents-and-rag.md`](agents-and-rag.md) (Phase 3),
 [`observability.md`](observability.md) (Phase 7), [`python-application.md`](python-application.md)
 (C1 Python core), contracts in [`../INTERFACE_CONTRACTS.md`](../INTERFACE_CONTRACTS.md).
 
+Rendered overviews (sources in [`diagrams/`](diagrams/), regenerated with
+`npm --prefix frontend run screenshots`): [system architecture](../assets/architecture/system-architecture.png)
+and [one chat turn](../assets/architecture/request-flow.png). The Mermaid views below are the
+text versions.
+
 ## Deployment (Docker Compose, Phase 8)
 
 ```mermaid

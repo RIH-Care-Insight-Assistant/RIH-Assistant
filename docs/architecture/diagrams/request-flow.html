@@ -1,0 +1,60 @@
+<!doctype html>
+<!--
+  Editable source for docs/assets/architecture/request-flow.png.
+  Regenerate: npm --prefix frontend run screenshots   (frontend/screenshots/diagrams.spec.ts)
+  Follows the turn pipeline in docs/architecture/agents-and-rag.md and system-overview.md.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>RIH Care Insight Assistant: safety-first request flow</title>
+<link rel="stylesheet" href="diagram.css">
+</head>
+<body>
+<main id="diagram" class="sheet sheet--flow">
+  <header class="title">
+    <span class="mark" aria-hidden="true"></span>
+    <div>
+      <h1>One chat turn: safety first, then governed retrieval</h1>
+      <p><code>POST /api/v1/chat</code> · every stage below runs on the server</p>
+    </div>
+  </header>
+
+  <div class="pipe pipe--7">
+    <div class="step"><i>A</i><b>Request guards</b><span>CSRF + Origin, rate limit, body limit, owner cookie</span></div>
+    <div class="arrow"></div>
+    <div class="step step--safety"><i>B</i><b>Safety router</b><span>Deterministic rules on the original text, with obfuscation and language variants</span></div>
+    <div class="arrow"><em>other</em></div>
+    <div class="step"><i>C</i><b>Decline or guidance?</b><span>Student said no to a service, or a counseling or retention question</span></div>
+    <div class="arrow"><em>other</em></div>
+    <div class="step"><i>D</i><b>Planner</b><span>Rule planner; or the optional local model proposes tool calls (failures fall back to rules)</span></div>
+    <div class="arrow"></div>
+    <div class="step step--gov"><i>E</i><b>Governed executor</b><span>Validated, authorized, budgeted, time-limited tool calls</span></div>
+    <div class="arrow"></div>
+    <div class="step step--gov"><i>F</i><b>Governed retrieval</b><span>Ineligible sources removed before ranking</span></div>
+    <div class="arrow"></div>
+    <div class="step"><i>G</i><b>Answer</b><span>Citations validated against the evidence ledger; freshness and baseline notices</span></div>
+
+    <span class="vline vline--safety c3 r2"><em>crisis · Title IX · conduct</em></span>
+    <span class="vline c5 r2"><em>yes</em></span>
+    <span class="vline vline--gov c9 r2"><em>refused</em></span>
+
+    <div class="box box--alert r3 cols-1-4"><b>Fixed safety guidance</b><span>Terminal: no tools, no model, no retrieval. Returned even if storage fails.</span></div>
+    <div class="box r3 cols-5-8"><b>safe_alternatives or guidance_template</b><span>Verified campus options or a fixed template, through the same governed executor.</span></div>
+    <div class="box box--gov r3 cols-9-13"><b>Denied or invalid call</b><span>Fails closed and is audited. A model or retrieved text can never grant a permission.</span></div>
+  </div>
+
+  <div class="notes">
+    <div class="note-card"><b>Persistence</b><span>The turn is stored owner-bound in SQLite; safety replies are still sent if storage is unavailable.</span></div>
+    <div class="note-card"><b>Telemetry</b><span>Spans for the request, the turn and each tool call carry status and policy rule only, never message text.</span></div>
+    <div class="note-card"><b>No model can lower safety</b><span>The router runs before any model, and model output is never used as answer text.</span></div>
+  </div>
+
+  <footer class="legend">
+    <span><i class="swatch swatch--safety"></i>Safety-critical, deterministic</span>
+    <span><i class="swatch swatch--gov"></i>Policy enforcement and governance</span>
+    <span><i class="swatch swatch--gold"></i>Request flow</span>
+  </footer>
+</main>
+</body>
+</html>
