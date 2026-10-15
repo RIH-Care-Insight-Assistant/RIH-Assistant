@@ -24,7 +24,7 @@ def test_fixture_schema():
     assert set(FIXTURE["threat_classes"]) == {s["class"] for s in FIXTURE["scenarios"]}
 
 
-@pytest.mark.parametrize("sid", ["PI-05", "PI-08", "RP-02", "SB-01", "UT-01", "IA-04", "PE-02", "PE-07", "CS-06",
+@pytest.mark.parametrize("sid", ["PI-05", "PI-08", "RP-02", "SB-01", "SB-04", "SB-05", "SB-06", "UT-01", "IA-04", "PE-02", "PE-07", "CS-06",
                                  "ID-03", "MR-01", "UF-05", "AR-01"])
 def test_representative_scenarios_are_defended(sid):
     [result] = redteam.run_local([SCENARIOS[sid]], "pytest")

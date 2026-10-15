@@ -143,7 +143,14 @@ The `main` column used the same dataset and script against an unmodified snapsho
 
 - Purely implicit risk with no trigger phrase, e.g. "I gave away all my stuff and wrote goodbye letters".
 - Spelling errors in crisis terms beyond the typo map, unless the optional corrector is enabled. Example: "kil myslf" without the corrector.
-- Repeated-letter obfuscation ("kiiiill"), symbol substitution inside words ("k*ll"), and `1`→`l` substitution ("ki11").
+- ~~Repeated-letter obfuscation ("kiiiill"), symbol substitution inside words ("k*ll"), and `1`→`l` substitution ("ki11").~~
+  **Mitigated in Phase 5** (red-team findings SB-04, SB-05, SB-06): `route()` now also checks
+  escalate-only de-obfuscation variants (runs of 3+ repeated letters collapsed, `1` read as
+  `l`, and `*`, `#` or `|` inside a word read as a vowel). A variant can only raise a message to
+  a safety-critical lane. Regression: `tests/test_safety_obfuscation_variants.py`; the safety
+  dataset still gives 172/172 exact lanes and 0/44 benign false positives, and the B9 benign
+  cases stay 0/6. Other symbols, mixed obfuscations and repeated letters combined with other
+  tricks are still not covered.
 - Non-English messages.
 - The router has no conversation memory. Each message is classified alone.
 - Someone else's "hurt/harm themselves" without intent wording ("my friend hurt herself again") is not routed. This is the cost of excluding accidental injuries.
