@@ -51,9 +51,15 @@ required approval from the other contributor, resolved conversations, no force p
 
 Work item by item with [`FINALIZATION_REVIEW_PLAN.md`](FINALIZATION_REVIEW_PLAN.md).
 
+**Update 2026-10-15 (head `e380883`):** Devika recorded her decisions in
+[`audits/devika-final-acceptance-2026-10-15.md`](audits/devika-final-acceptance-2026-10-15.md)
+(decision L-D7). Her acceptance is prototype-scope reviewer acceptance only. Status per item is
+marked below. Readiness is still `blocked_pending_human_decision` because nothing has been entered
+in the staff UI.
+
 1. **Devika** confirms the local-first workflow (decision L-D1) in a recorded form, for example a
    comment on the PR or issue #7. The repository currently records it as directed by the operator
-   only.
+   only. **Done 2026-10-15:** confirmed by Devika (L-D7, decision D10).
 2. **Review the finalization mitigations.** Readiness lists them as pending human review:
    - (a) the SB-07 multilingual crisis lexicon;
    - (b) the SB-08 implicit-risk lists;
@@ -66,6 +72,9 @@ Work item by item with [`FINALIZATION_REVIEW_PLAN.md`](FINALIZATION_REVIEW_PLAN.
    **Done 2026-10-15** ([report](audits/devika-final-review-2026-10-15.md)): first run 149/208, implicit English 2/14;
    B10 additions (`666e253`) are a new item (e) awaiting the same native-speaker and clinical
    review. Her sign-off on (a), (b) and (e) is still to be recorded.
+   **Update 2026-10-15:** Devika accepted (a), (b), (c), (d) and (e) as reviewer, prototype scope
+   (decisions D1–D5). **Still open:** native-speaker review of (a), (c) and (e); clinical review of
+   (b) and (e); entering these as reviewed in the staff UI.
 3. **Residual-risk decisions**, recorded by a reviewer in the staff UI of the running instance:
    - R-01: crisis wording in languages outside the lexicon (probes 0/4, held-out 0/17 routed), indirect wording,
      implicit risk outside the lists. Accept with the compensating controls (the always-visible
@@ -73,6 +82,9 @@ Work item by item with [`FINALIZATION_REVIEW_PLAN.md`](FINALIZATION_REVIEW_PLAN.
    - R-04: the CLI gate.
 
    Readiness stays `blocked_pending_human_decision` until then.
+   **Update 2026-10-15:** Devika's position is to accept R-01 and R-04 for the synthetic-data
+   prototype only (D8, D9). **Still open:** Abhinav's position (the decisions are joint) and the
+   entries in the staff UI under the reviewers' own accounts.
 4. Both humans review and accept, change or reject:
    - contracts C2-local-v1 (now with `language_support`), C3-local-v1 and C4-local-v1;
    - the agent-proposed risk register (`risks-3`), control catalog (`controls-3`) and readiness
@@ -80,6 +92,10 @@ Work item by item with [`FINALIZATION_REVIEW_PLAN.md`](FINALIZATION_REVIEW_PLAN.
      the risk's content (`e685260`). Under
      [`RELEASE_GATES.md`](RELEASE_GATES.md), adding a gate needs both humans' agreement;
    - the freshness thresholds and rate limits.
+
+   **Update 2026-10-15:** Devika accepted B10's content binding of decisions (`e685260`, D6).
+   **Still open:** Abhinav's acceptance of that rule; both humans on the contracts, the rest of
+   the register, catalog and readiness rules, and the thresholds and limits.
 5. Optionally review the C1 baseline sources (R-05) in the staff UI.
 6. Attribution: Devika's final review B10 (`c36cd2c`..this record) is committed under her identity;
    she directed it and an AI coding agent drafted the cases, code and text, as the report says.
@@ -87,7 +103,13 @@ Work item by item with [`FINALIZATION_REVIEW_PLAN.md`](FINALIZATION_REVIEW_PLAN.
    engineering work before publication, it is recorded under her own identity as the plan
    describes. A `Co-authored-by` trailer is used only for work she actually co-authored and only
    if both agree. History is not rewritten.
+   **Update 2026-10-15:** Devika keeps the B10 attribution as recorded, with no trailer (D11).
 7. Re-verify the template contact numbers ([`safety/crisis-routing.md`](safety/crisis-routing.md) §6).
+   **Still open.**
+8. The medical-appointment fix `e380883` changes what the counseling lane answers. **Update
+   2026-10-15:** accepted by Devika (D7). **Still open:** the release battery, containers, kind
+   and red team were last run on `9c8c7d2`, before it. Rerun
+   `python scripts/release_readiness.py --e2e --containers` on the head to be published.
 
 ## 3. Proposed PR strategy
 

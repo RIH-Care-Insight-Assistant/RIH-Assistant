@@ -2,7 +2,25 @@
 
 Last updated: 2026-10-15 (America/New_York). Operator: Devika Rani Sanaboyina.
 
-## Final safety and security review B10 (2026-10-15) — latest status
+## Final review decisions (2026-10-15) — latest status
+
+- At head `e380883`, on the shared PC, local only. I made each decision below in the session;
+  an AI coding agent drafted the record. Record:
+  [`../audits/devika-final-acceptance-2026-10-15.md`](../audits/devika-final-acceptance-2026-10-15.md)
+  (decision L-D7).
+- Accepted as routing reviewer, for the synthetic-data prototype only: SB-07 lexicon and SB-08
+  lists with the B10 additions; the `language_support` notice wording, including the Spanish
+  sentence; the fail-toward-crisis guard; RP-06 gate and refresh; the B10 content binding of
+  risk decisions; the medical-appointment fix `e380883`.
+- Residual risks R-01 and R-04: accepted for the prototype only, with the banner, notice and
+  RP-06 gate as controls. Not for real students before native-speaker and clinical review.
+- Confirmed L-D1. B10 attribution kept as recorded, no trailer.
+- Not done, and not implied: native-speaker or clinical review; a held-out set written by me;
+  staff-UI entries (R-01/R-04 jointly with Abhinav); Abhinav's acceptance of the readiness-rule
+  change; contracts and register acceptance; battery rerun on the final head; publication.
+  Readiness is still `blocked_pending_human_decision`. Nothing pushed.
+
+## Final safety and security review B10 (2026-10-15)
 
 - On the shared Windows PC, branch `feature/rih-local-enhancement-phases-2-9`, local only.
   I directed the review; an AI coding agent drafted the cases, fixes and records. Commits

@@ -32,6 +32,16 @@ the R-01/R-04 decisions (tasks 5-6), and tasks 1 and 7-10. The held-out cases we
 an AI agent; a set written without seeing the patterns by Devika, native speakers or a
 clinician is still recommended.
 
+## Status (updated 2026-10-15, Devika's decisions at `e380883`)
+
+See [`audits/devika-final-acceptance-2026-10-15.md`](audits/devika-final-acceptance-2026-10-15.md)
+(decision L-D7). Done by Devika, as reviewer and for the prototype only: task 1 (L-D1 confirmed);
+task 3 sign-off (SB-07, SB-08, B10 additions, notice wording, fail-safe guard); task 5 (RP-06
+accepted; R-04 accepted for the prototype); her part of task 6 for the B10 content binding; R-01
+accepted for the prototype; the medical-appointment fix `e380883`. Still open: task 4
+(native-speaker and clinical review); staff-UI entry of all decisions, jointly with Abhinav for
+R-01/R-04; the rest of task 6; tasks 7–10.
+
 ## Review tasks (in suggested order)
 
 | # | Task | Why it needs a human | Her established area | Files and commands | What gets recorded |

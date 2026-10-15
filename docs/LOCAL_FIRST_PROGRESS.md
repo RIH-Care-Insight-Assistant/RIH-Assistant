@@ -16,7 +16,7 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 | Field | Value |
 |---|---|
 | Current phase | **All phases and the finalization complete locally; awaiting human reviews, decisions and publication authorization** |
-| Current task | Done: SB-07/SB-08/RP-06 mitigations, final audit, final batteries, [final report](FINAL_REPORT.md), [publication plan](PUBLICATION_PLAN.md), [review plan](FINALIZATION_REVIEW_PLAN.md); Devika's final review B10 ([report](audits/devika-final-review-2026-10-15.md)) |
+| Current task | Done: SB-07/SB-08/RP-06 mitigations, final audit, final batteries, [final report](FINAL_REPORT.md), [publication plan](PUBLICATION_PLAN.md), [review plan](FINALIZATION_REVIEW_PLAN.md); Devika's final review B10 ([report](audits/devika-final-review-2026-10-15.md)) and her decisions at `e380883` ([record](audits/devika-final-acceptance-2026-10-15.md)) |
 | Last local commit | see `git log -1` (this file is updated with each milestone) |
 
 ## Repository cleanup (2026-10-15, complete locally)
@@ -117,7 +117,35 @@ name was not captured. Not rerun: containers, kind, red team, release battery. T
 `conversation-history.png` screenshot shows only the first turn, so it was not regenerated.
 
 **Exact next action:** Devika reviews and accepts or rejects the planner change; publication
-still waits on the decisions in [`FINAL_REPORT.md`](FINAL_REPORT.md) §9.
+still waits on the decisions in [`FINAL_REPORT.md`](FINAL_REPORT.md) §9. **Done:** accepted by
+Devika on 2026-10-15 (next section, D7).
+
+## Devika's final review decisions (2026-10-15, documentation only)
+
+Devika at the keyboard, directing; an AI coding agent asked her about each open item and
+drafted the record. Reviewed head `e380883`. No application code, test, dataset, evidence file,
+risk register or gate changed. Record:
+[`audits/devika-final-acceptance-2026-10-15.md`](audits/devika-final-acceptance-2026-10-15.md),
+decision L-D7.
+
+- **Accepted by Devika, prototype scope only:** SB-07 lexicon and SB-08 lists with the B10
+  additions; `language_support` notice wording including the Spanish sentence; the
+  fail-toward-crisis guard; the RP-06 gate and refresh; the B10 content binding of decisions
+  (`e685260`); the medical-appointment fix `e380883`; residual risks R-01 and R-04 with their
+  compensating controls. L-D1 confirmed. B10 attribution kept as recorded.
+- **Not performed, not implied:** native-speaker review, clinical review, an independent or
+  Devika-written held-out set, independent security assessment. The only held-out figure stays
+  the first run, 149/208; 179/208 after B10 is not held out.
+- **Readiness unchanged:** `blocked_pending_human_decision`. Nothing is entered in the staff UI.
+- **Checks run on the documentation change** (Windows 11, Python 3.13.2): `tests/test_repo_assumptions.py`,
+  `tests/test_b10_review.py` (held-out pin intact), `tests/test_readme_assets.py`: **131 passed**;
+  `phase-status.json` parses; relative links in changed files resolve; `safety_eval.py --fail-on-miss`
+  no misses, no false positives. Full pytest and the release battery were not rerun (no code changed).
+
+**Exact next action:** both humans enter the R-01/R-04 decisions and the pending-review items in
+the staff UI; Abhinav records his position on the readiness-rule change (`e685260`), register,
+controls and contracts; rerun the release battery with containers on the final head; then decide
+on publication.
 
 ## Phase status
 
@@ -332,14 +360,17 @@ do the reviews and decide the items in [`PUBLICATION_PLAN.md`](PUBLICATION_PLAN.
 
 ## Blockers and items awaiting humans
 
-- Devika's recorded confirmation of the local-first workflow (L-D1); acceptance of
-  C2-local-v1, C3-local-v1 and C4-local-v1; review of the agent-proposed risk register,
-  control catalog and readiness rules.
-- Devika's sign-off on the agent-drafted finalization mitigations and the B10 additions (her
-  held-out check and pattern review are done; see the B10 report), native-speaker and clinical
-  review, and residual-risk decisions on R-01 and R-04.
-- Acceptance of the B10 change to the readiness rules (decisions bound to a risk's content;
-  register `risks-3`, catalog `controls-3`).
+- Done 2026-10-15 (L-D7, prototype scope): Devika's L-D1 confirmation, her sign-off on the
+  SB-07/SB-08 mitigations, B10 additions, notice wording and RP-06, her acceptance of the
+  B10 readiness-rule change and `e380883`, and her position on R-01 and R-04.
+- Acceptance of C2-local-v1, C3-local-v1 and C4-local-v1 (both humans); review of the
+  agent-proposed risk register, control catalog and readiness rules (both humans).
+- Native-speaker and clinical review; staff-UI entries of the R-01 and R-04 decisions
+  (joint with Abhinav) and of the pending-review items.
+- Abhinav's acceptance of the B10 change to the readiness rules (decisions bound to a risk's
+  content; register `risks-3`, catalog `controls-3`).
+- Release battery with containers rerun on the final head (last run on `9c8c7d2`, before
+  `e380883`); template contact numbers re-verified.
 - Authorization to publish (push, one integration PR, Devika's review, merge).
 - Issue #7 is still open on GitHub (human action).
 
@@ -353,3 +384,7 @@ with the held-out figures in view, and authorize or decline publication. Contain
 Kubernetes gates were rerun after B10 on images rebuilt from `9c8c7d2` (21/21 battery; kind
 verify 7/7, rollout 5/5, recovery 4/4). No agent action is pending; any fix found in review goes on this branch
 as a new commit.
+
+Update 2026-10-15: Devika has now recorded her decisions
+([record](audits/devika-final-acceptance-2026-10-15.md), L-D7). The next action is the one at the
+end of the "Devika's final review decisions" section above.

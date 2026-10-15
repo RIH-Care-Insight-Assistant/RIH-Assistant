@@ -150,6 +150,15 @@ New: [`FINALIZATION_REVIEW_PLAN.md`](FINALIZATION_REVIEW_PLAN.md).
   held-out check, the routing-pattern review required by the safety policy, the RP-06 decision,
   register and source reviews, UI review, contracts, and the PR review.
 
+- **Update 2026-10-15 (after this report was written):** Devika's B10 review
+  ([report](audits/devika-final-review-2026-10-15.md)) and her decisions at `e380883`
+  ([record](audits/devika-final-acceptance-2026-10-15.md), decision L-D7) are now recorded under
+  her identity. The statements above describe the state before them and are kept as written.
+
 ## 9. Decisions waiting for the humans
 
 Listed in [`phase-status.json`](phase-status.json) and [`PUBLICATION_PLAN.md`](PUBLICATION_PLAN.md) §2.
+Devika's prototype-scope decisions (L-D7) are marked there. Still open: staff-UI entries
+(R-01/R-04 jointly), Abhinav's acceptance of the readiness-rule change and the register,
+controls and contracts, native-speaker and clinical review, contact-number re-verification,
+a battery rerun on the final head, and publication authorization.

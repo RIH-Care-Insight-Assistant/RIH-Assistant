@@ -65,13 +65,13 @@
     }
   },
   "awaiting_humans": [
-    "Devika's sign-off on the SB-07/SB-08 patterns and the B10 additions (review done: docs/audits/devika-final-review-2026-10-15.md)",
-    "Devika's recorded confirmation of the local-first workflow (L-D1)",
+    "Staff-UI entries of the R-01 and R-04 decisions (joint) and of the pending_human_review items; Devika's prototype-scope position is recorded in docs/audits/devika-final-acceptance-2026-10-15.md",
+    "Abhinav's acceptance of the B10 readiness-rule change (decisions bound to risk content, e685260)",
     "Native-speaker review of the multilingual lexicon and the notice's Spanish sentence; clinical input on the warning-sign lists",
-    "Acceptance of the RP-06 CLI behaviour change",
-    "Residual-risk decisions on R-01 and R-04 in the staff UI",
-    "Acceptance of contracts C2-local-v1 (with language_support), C3-local-v1, C4-local-v1",
-    "Review of the register (risks-3), control catalog (controls-3) and readiness rules, including pending_human_review and the B10 content binding of decisions",
+    "Acceptance of contracts C2-local-v1 (with language_support), C3-local-v1, C4-local-v1 (both humans)",
+    "Review of the register (risks-3), control catalog (controls-3) and readiness rules, including pending_human_review (both humans)",
+    "Re-verify the template contact numbers (crisis-routing.md section 6)",
+    "Rerun release_readiness.py --e2e --containers on the final head (last battery on 9c8c7d2, before e380883)",
     "Optional review of the C1 baseline sources (R-05)",
     "Authorization to publish (push, one integration PR, review, merge) per docs/PUBLICATION_PLAN.md",
     "Close issue #7 on GitHub"
@@ -114,7 +114,7 @@
     "kind": "verify 7/7, rollout 5/5, recovery 4/4; cluster deleted"
   },
   "devika_final_review": {
-    "status": "review_complete_local_signoff_pending",
+    "status": "review_complete_local_decisions_recorded",
     "directed_by": "Devika Rani Sanaboyina",
     "drafted_by": "AI coding agent at Devika's direction",
     "report": "docs/audits/devika-final-review-2026-10-15.md",
@@ -192,8 +192,39 @@
     "cause": "the COUNSELING router rule matches every appointment phrasing, and the rule planner's counseling branch answered medical appointments with the counseling template",
     "change": "app/agent/planner.py: counseling-lane appointment text with a medical marker plans retrieve; router patterns and the safety stage unchanged",
     "status": "complete_local",
-    "acceptance": "awaiting human acceptance (Devika, routing review)",
+    "acceptance": "accepted by Devika on 2026-10-15, prototype scope (docs/audits/devika-final-acceptance-2026-10-15.md, D7); battery, containers, kind and red team not rerun since",
     "validation": "Windows 11, Python 3.13.2, Node 24.14.0: ruff clean; pytest 5419 passed, 1 skipped (2 new), passing on 3 consecutive runs; routes passed; safety eval 122/122, 0/44 false positives, no misses; E2E 8/8; one earlier full run after E2E reported 1 failure, which did not recur and was not captured",
     "not_rerun": "containers, kind, red team, release battery"
+  },
+  "devika_final_acceptance": {
+    "date": "2026-10-15",
+    "reviewer": "Devika Rani Sanaboyina (at the keyboard, directing; an AI coding agent asked about each item and drafted the record)",
+    "reviewed_head": "e380883092f1d3ef600ee60b1b7e8ad52eb1e3d8",
+    "record": "docs/audits/devika-final-acceptance-2026-10-15.md",
+    "decision_log": "L-D7",
+    "scope": "reviewer acceptance for the synthetic-data prototype only",
+    "accepted": [
+      "D1 SB-07 lexicon with B10 additions",
+      "D2 SB-08 warning-sign lists with B10 additions",
+      "D3 language_support notice wording including the Spanish sentence",
+      "D4 fail-toward-crisis guard in route()",
+      "D5 RP-06 gate and restart-free refresh",
+      "D6 B10 content binding of risk decisions (Devika only; Abhinav pending)",
+      "D7 medical-appointment fix e380883",
+      "D8 R-01 accepted for the prototype only, with banner and notice",
+      "D9 R-04 accepted for the prototype only, with the RP-06 gate",
+      "D10 L-D1 confirmed",
+      "D11 B10 attribution kept as recorded, no trailer"
+    ],
+    "not_performed": [
+      "native-speaker review",
+      "clinical or counseling review",
+      "held-out set written by Devika or anyone without seeing the patterns",
+      "independent security assessment",
+      "real-user evaluation (by design)"
+    ],
+    "heldout_figure_of_record": "first run 149/208 (implicit English 2/14); 179/208 after B10 is not held out",
+    "staff_ui_decisions_entered": false,
+    "readiness_unchanged": "blocked_pending_human_decision"
   }
 }

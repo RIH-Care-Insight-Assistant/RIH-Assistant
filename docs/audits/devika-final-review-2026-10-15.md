@@ -180,3 +180,12 @@ Listed with their place in [`../PUBLICATION_PLAN.md`](../PUBLICATION_PLAN.md) §
    whether any trailer is wanted. History is not rewritten.
 8. **§2.7** Re-verify the template contact numbers.
 9. Authorization to publish.
+
+## Follow-up (appended 2026-10-15; the sections above are unchanged)
+
+Devika's decisions on items 1-7 above, made at head `e380883`, are recorded in
+[`devika-final-acceptance-2026-10-15.md`](devika-final-acceptance-2026-10-15.md). The R-01
+and R-04 decisions there are prototype-scope reviewer acceptances. They are not yet entered
+in the staff UI, so readiness remains `blocked_pending_human_decision`. Items 2 and 3 still
+need native-speaker and clinical review. Items 5 and 6 also need Abhinav. Items 8 and 9 are
+open.

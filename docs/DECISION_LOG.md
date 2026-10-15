@@ -180,3 +180,16 @@ awaiting human acceptance; nothing here records an approval that was not given.
   inventory changes (`9bd6689`). Drafted by the coding agent at Devika's direction. (c) changes
   the readiness rules, which both humans must accept (PUBLICATION_PLAN.md §2.4). Report:
   [`audits/devika-final-review-2026-10-15.md`](audits/devika-final-review-2026-10-15.md).
+- **L-D7 (2026-10-15, Devika's decisions, made by her at the keyboard at head `e380883`;
+  drafted into text by the coding agent at her direction):** as routing-pattern reviewer
+  she accepts, for the synthetic-data prototype only, the SB-07 lexicon and SB-08 lists
+  with the B10 additions, the `language_support` notice wording including its Spanish
+  sentence, the fail-toward-crisis guard, the RP-06 gate and its refresh, the B10 content
+  binding of decisions (`e685260`), and the medical-appointment fix `e380883`. She accepts
+  residual risks R-01 and R-04 for the prototype only, with the stated compensating controls,
+  and not for real students before native-speaker and clinical review. She confirms L-D1 and
+  keeps the B10 attribution as recorded. Not native-speaker, clinical or independent
+  evaluation. Still awaiting: the staff-UI entries of R-01/R-04 (joint with Abhinav), Abhinav's
+  acceptance of the readiness-rule change, the register, controls and contracts, and
+  publication authorization. Record:
+  [`audits/devika-final-acceptance-2026-10-15.md`](audits/devika-final-acceptance-2026-10-15.md).
