@@ -64,6 +64,27 @@ class StaffStore:
             )
         return {"id": uid, "username": username, "roles": roles, "disabled": False, "created_at": now}
 
+    def bootstrap_admin(self, username: Optional[str], password: Optional[str]) -> str:
+        """Create the first admin from deployment secrets, only while no staff account exists.
+
+        Returns "created", "skipped" (accounts already exist or nothing configured) or "rejected"
+        (weak password or invalid name). The password is never logged or returned.
+        """
+        from ..security.passwords import WeakPassword, check_strength
+
+        if not username or not password:
+            return "skipped"
+        with self.db.connect() as conn:
+            if conn.execute("SELECT COUNT(*) FROM users").fetchone()[0]:
+                return "skipped"
+        name = username.strip().lower()
+        try:
+            check_strength(password, name)
+            self.create_user(name, password, ["admin"], created_by="bootstrap")
+        except (WeakPassword, ValueError):
+            return "rejected"
+        return "created"
+
     def list_users(self) -> List[Dict[str, Any]]:
         with self.db.connect() as conn:
             rows = conn.execute("SELECT id, username, roles, disabled, created_at FROM users ORDER BY username").fetchall()

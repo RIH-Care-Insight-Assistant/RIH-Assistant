@@ -198,7 +198,10 @@ def create_app(
         try:
             applied = db.migrate()
             purged = db.purge_expired()
-            logger.info("startup", extra={"migrations_applied": applied, "expired_owners_purged": purged})
+            boot = staff.bootstrap_admin(os.getenv("RIH_BOOTSTRAP_ADMIN_USERNAME"),
+                                         os.getenv("RIH_BOOTSTRAP_ADMIN_PASSWORD"))
+            logger.info("startup", extra={"migrations_applied": applied, "expired_owners_purged": purged,
+                                          "reason": f"bootstrap_admin={boot}"})
         except Exception as exc:  # the API still serves safety guidance without storage
             logger.error("startup_storage_unavailable", extra={"error_type": type(exc).__name__})
         yield

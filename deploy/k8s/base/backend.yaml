@@ -1,0 +1,130 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rih-backend-config
+data:
+  RIH_ENV: production
+  RIH_DB_PATH: /data/rih.sqlite3
+  RIH_ALLOWED_ORIGINS: http://127.0.0.1:8090,http://localhost:8090
+  RIH_COOKIE_SECURE: "false"   # loopback HTTP demo on kind only; use TLS and "true" anywhere else
+  RIH_TRUST_PROXY: "true"      # X-Forwarded-For is set by the project's own nginx
+  RIH_INCIDENT_SIMULATION: "false"
+  STRANDS_ENABLED: "false"
+  RIH_PLANNER: RULE
+  RIH_LOG_FORMAT: json
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rih-data
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rih-backend
+  labels:
+    app.kubernetes.io/name: rih-backend
+    app.kubernetes.io/component: api
+spec:
+  # One replica: SQLite on a ReadWriteOnce volume, and in-memory rate limits (see docs/limitations.md).
+  replicas: 1
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1          # the new pod starts and becomes ready before the old one stops
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: rih-backend
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: rih-backend
+        app.kubernetes.io/component: api
+    spec:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: api
+          image: rih-backend:local
+          imagePullPolicy: Never
+          ports:
+            - name: http
+              containerPort: 8000
+          lifecycle:
+            preStop:   # keep serving while endpoint removal propagates (rollout finding, Phase 9)
+              exec:
+                command: ["sleep", "5"]
+          envFrom:
+            - configMapRef:
+                name: rih-backend-config
+            - secretRef:
+                name: rih-bootstrap
+                optional: true
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 768Mi
+          startupProbe:
+            httpGet: {path: /api/v1/health, port: http}
+            periodSeconds: 2
+            failureThreshold: 30
+          livenessProbe:
+            httpGet: {path: /api/v1/health, port: http}
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          readinessProbe:
+            httpGet: {path: /api/v1/ready, port: http}
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 2
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: rih-data
+        - name: tmp
+          emptyDir:
+            sizeLimit: 16Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rih-backend
+  labels:
+    app.kubernetes.io/name: rih-backend
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: rih-backend
+  ports:
+    - name: http
+      port: 8000
+      targetPort: http
