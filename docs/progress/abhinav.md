@@ -172,3 +172,14 @@ ruff check . && python -m pytest -q && python scripts/safety_eval.py --fail-on-m
   Readiness `blocked_pending_human_decision` (4 review items).
 - No Devika work is recorded for this session. Her review tasks are in
   `docs/FINALIZATION_REVIEW_PLAN.md`.
+
+## 2026-10-15 — Final acceptance and joint-governance decisions (L-D8)
+
+- At the keyboard and directing; Devika not present. An AI coding agent presented the
+  outstanding decisions and drafted the record:
+  [`../audits/abhinav-final-acceptance-2026-10-15.md`](../audits/abhinav-final-acceptance-2026-10-15.md).
+- Accepted, prototype scope only: the B10 content binding (`e685260`; now accepted by both); R-01
+  and R-04 (joint position recorded); for my part, register `risks-3`, catalog `controls-3`, the
+  readiness rules and contracts C2/C3/C4-local-v1, all awaiting Devika.
+- No staff-UI decision entered (my choice). Showcase limited to a local demonstration with
+  synthetic data; interactive public deployment stays blocked. Battery not rerun.

@@ -57,6 +57,12 @@ Work item by item with [`FINALIZATION_REVIEW_PLAN.md`](FINALIZATION_REVIEW_PLAN.
 marked below. Readiness is still `blocked_pending_human_decision` because nothing has been entered
 in the staff UI.
 
+**Update 2026-10-15 (records at `84c55bf`):** Abhinav recorded his decisions in
+[`audits/abhinav-final-acceptance-2026-10-15.md`](audits/abhinav-final-acceptance-2026-10-15.md)
+(decision L-D8), prototype scope only. He made no staff-UI entry. Readiness is still
+`blocked_pending_human_decision`. Showcase scope: a local demonstration with synthetic data
+only. Interactive public deployment stays blocked.
+
 1. **Devika** confirms the local-first workflow (decision L-D1) in a recorded form, for example a
    comment on the PR or issue #7. The repository currently records it as directed by the operator
    only. **Done 2026-10-15:** confirmed by Devika (L-D7, decision D10).
@@ -85,6 +91,12 @@ in the staff UI.
    **Update 2026-10-15:** Devika's position is to accept R-01 and R-04 for the synthetic-data
    prototype only (D8, D9). **Still open:** Abhinav's position (the decisions are joint) and the
    entries in the staff UI under the reviewers' own accounts.
+   **Update 2026-10-15 (L-D8):** Abhinav accepts R-01 and R-04 for the synthetic-data prototype
+   only, with the same controls and limits, so the joint position is now recorded in the
+   repository. **Still open:** the staff-UI entries. Neither human has entered one, and Abhinav
+   chose not to in this session. Note: readiness reads only the latest review per risk, so one
+   reviewer's `accept_residual` on both risks makes it `ready`. Entering both reviewers'
+   decisions is a documented condition, not one the code enforces.
 4. Both humans review and accept, change or reject:
    - contracts C2-local-v1 (now with `language_support`), C3-local-v1 and C4-local-v1;
    - the agent-proposed risk register (`risks-3`), control catalog (`controls-3`) and readiness
@@ -96,6 +108,11 @@ in the staff UI.
    **Update 2026-10-15:** Devika accepted B10's content binding of decisions (`e685260`, D6).
    **Still open:** Abhinav's acceptance of that rule; both humans on the contracts, the rest of
    the register, catalog and readiness rules, and the thresholds and limits.
+   **Update 2026-10-15 (L-D8):** Abhinav accepted the content binding, so it now has both
+   humans' acceptance. He also accepted, prototype scope, the register `risks-3`, the catalog
+   `controls-3`, the readiness rules as implemented (including the `pending_human_review` gate)
+   and contracts C2/C3/C4-local-v1 with their open items (which cover the freshness thresholds and
+   rate limits). **Still open:** Devika's decision on all of these except the content binding.
 5. Optionally review the C1 baseline sources (R-05) in the staff UI.
 6. Attribution: Devika's final review B10 (`c36cd2c`..this record) is committed under her identity;
    she directed it and an AI coding agent drafted the cases, code and text, as the report says.
@@ -105,11 +122,12 @@ in the staff UI.
    if both agree. History is not rewritten.
    **Update 2026-10-15:** Devika keeps the B10 attribution as recorded, with no trailer (D11).
 7. Re-verify the template contact numbers ([`safety/crisis-routing.md`](safety/crisis-routing.md) §6).
-   **Still open.**
+   **Still open** (not done in L-D8).
 8. The medical-appointment fix `e380883` changes what the counseling lane answers. **Update
    2026-10-15:** accepted by Devika (D7). **Still open:** the release battery, containers, kind
    and red team were last run on `9c8c7d2`, before it. Rerun
    `python scripts/release_readiness.py --e2e --containers` on the head to be published.
+   (Not rerun in L-D8, at Abhinav's instruction.)
 
 ## 3. Proposed PR strategy
 

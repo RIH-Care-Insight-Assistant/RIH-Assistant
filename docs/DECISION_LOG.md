@@ -193,3 +193,18 @@ awaiting human acceptance; nothing here records an approval that was not given.
   acceptance of the readiness-rule change, the register, controls and contracts, and
   publication authorization. Record:
   [`audits/devika-final-acceptance-2026-10-15.md`](audits/devika-final-acceptance-2026-10-15.md).
+- **L-D8 (2026-10-15, Abhinav's decisions, made by him at the keyboard; records reviewed at
+  `84c55bf`, code at `e380883`; drafted into text by the coding agent at his direction; Devika
+  not present):** he accepts the B10 content binding of risk decisions (`e685260`), so that
+  readiness-rule change now has both humans' acceptance. He accepts residual risks R-01 and R-04
+  for the synthetic-data prototype only, with the same compensating controls and limits as
+  L-D7, which completes the joint position in the repository. For his part, at prototype scope,
+  he accepts the register `risks-3`, the catalog `controls-3`, the readiness rules as
+  implemented (including the `pending_human_review` gate) and contracts C2/C3/C4-local-v1 with
+  their open items. Devika has not decided these, so they remain **awaiting her acceptance**.
+  He chose not to enter staff-UI decisions in this session, and none exist (`risk_reviews` 0
+  rows on the running instance, checked read-only), so readiness stays
+  `blocked_pending_human_decision`. He limits any showcase to a local demonstration with
+  synthetic data. Interactive public deployment stays blocked. Not native-speaker, clinical or
+  independent evaluation. Record:
+  [`audits/abhinav-final-acceptance-2026-10-15.md`](audits/abhinav-final-acceptance-2026-10-15.md).

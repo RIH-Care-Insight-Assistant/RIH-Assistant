@@ -1,6 +1,6 @@
 # C3-local-v1 — Phase 4–5 security, authorization and adversarial-evidence contracts
 
-Status: **Adopted for local development (2026-10-15); awaiting human acceptance.** Extends
+Status: **Adopted for local development (2026-10-15). Accepted by Abhinav, prototype scope (2026-10-15, L-D8, [`../audits/abhinav-final-acceptance-2026-10-15.md`](../audits/abhinav-final-acceptance-2026-10-15.md)); awaiting Devika's acceptance.** Extends
 [C2-local-v1](C2-local-v1.md); nothing there is relaxed.
 
 ## 1. Identities and authentication

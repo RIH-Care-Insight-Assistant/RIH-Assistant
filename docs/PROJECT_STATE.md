@@ -24,6 +24,11 @@ C1 is complete and accepted. Under the local-first workflow (`AGENTS.md`; shared
   mitigations await review, and R-01 stays partially mitigated (other languages and wording).
   Report: [`FINAL_REPORT.md`](FINAL_REPORT.md); plan: [`PUBLICATION_PLAN.md`](PUBLICATION_PLAN.md);
   review tasks: [`FINALIZATION_REVIEW_PLAN.md`](FINALIZATION_REVIEW_PLAN.md).
+- **Human decisions (2026-10-15):** Devika (L-D7) and Abhinav (L-D8) recorded prototype-scope
+  decisions. The B10 content binding has both humans' acceptance. R-01 and R-04 are accepted
+  by both for the prototype only, but neither has entered them in the staff UI. Devika has not
+  yet decided on the register, catalog, readiness rules or contracts, which Abhinav accepted.
+  Showcase: a local demonstration only.
 - **Next:** the humans do the reviews and make the decisions in the publication plan §2, then
   authorize (or not) the push and the single integration PR.
 

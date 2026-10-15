@@ -42,6 +42,16 @@ accepted for the prototype; the medical-appointment fix `e380883`. Still open: t
 (native-speaker and clinical review); staff-UI entry of all decisions, jointly with Abhinav for
 R-01/R-04; the rest of task 6; tasks 7–10.
 
+## Status (updated 2026-10-15, Abhinav's decisions, records at `84c55bf`)
+
+See [`audits/abhinav-final-acceptance-2026-10-15.md`](audits/abhinav-final-acceptance-2026-10-15.md)
+(decision L-D8). Abhinav accepted, prototype scope only: the B10 content binding (both humans
+have now accepted it); R-01 and R-04 (the joint position is now recorded in the repository); and,
+for his part, the register, catalog, readiness rules and contracts C2/C3/C4-local-v1. Still open
+for Devika: task 6 (register, catalog, readiness rules beyond the content binding) and task 9
+(contracts). Still open for both: staff-UI entries (neither has entered one), task 4, task 7 and
+task 10.
+
 ## Review tasks (in suggested order)
 
 | # | Task | Why it needs a human | Her established area | Files and commands | What gets recorded |

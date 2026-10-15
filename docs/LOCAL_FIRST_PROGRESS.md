@@ -16,7 +16,7 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 | Field | Value |
 |---|---|
 | Current phase | **All phases and the finalization complete locally; awaiting human reviews, decisions and publication authorization** |
-| Current task | Done: SB-07/SB-08/RP-06 mitigations, final audit, final batteries, [final report](FINAL_REPORT.md), [publication plan](PUBLICATION_PLAN.md), [review plan](FINALIZATION_REVIEW_PLAN.md); Devika's final review B10 ([report](audits/devika-final-review-2026-10-15.md)) and her decisions at `e380883` ([record](audits/devika-final-acceptance-2026-10-15.md)) |
+| Current task | Done: SB-07/SB-08/RP-06 mitigations, final audit, final batteries, [final report](FINAL_REPORT.md), [publication plan](PUBLICATION_PLAN.md), [review plan](FINALIZATION_REVIEW_PLAN.md); Devika's final review B10 ([report](audits/devika-final-review-2026-10-15.md)) and her decisions at `e380883` ([record](audits/devika-final-acceptance-2026-10-15.md)); Abhinav's decisions, records at `84c55bf` ([record](audits/abhinav-final-acceptance-2026-10-15.md)) |
 | Last local commit | see `git log -1` (this file is updated with each milestone) |
 
 ## Repository cleanup (2026-10-15, complete locally)
@@ -146,6 +146,48 @@ decision L-D7.
 the staff UI; Abhinav records his position on the readiness-rule change (`e685260`), register,
 controls and contracts; rerun the release battery with containers on the final head; then decide
 on publication.
+
+## Abhinav's final acceptance (2026-10-15, documentation only)
+
+Abhinav at the keyboard, directing; Devika not present. An AI coding agent presented the
+outstanding decisions in groups, asked for his explicit answer on each, and drafted the record.
+Records reviewed at `84c55bf`, code at `e380883`. No application code, test, dataset, evidence
+file, risk register, control catalog or readiness code changed. Record:
+[`audits/abhinav-final-acceptance-2026-10-15.md`](audits/abhinav-final-acceptance-2026-10-15.md),
+decision L-D8.
+
+- **Accepted by Abhinav, prototype scope only:** the B10 content binding (`e685260`), which now
+  has both humans' acceptance; R-01 and R-04 with the L-D7 controls and limits, so the joint
+  position is recorded in the repository; for his part, the register `risks-3`, the catalog
+  `controls-3`, the readiness rules as implemented (including the `pending_human_review` gate)
+  and contracts C2/C3/C4-local-v1 with their open items. Devika's acceptance of these is still
+  needed.
+- **Staff UI:** not used, by his choice. The running Compose instance was checked read-only:
+  only synthetic `ctr*` accounts, and `risk_reviews`, `release_decisions` and `source_reviews`
+  have 0 rows. Its backend image predates `e380883`, but its register, catalog and governance
+  code are byte-identical to the head. The readiness code takes the latest review per risk and
+  does not enforce the joint requirement or the specialist reviews. This is now documented in
+  [`governance/nist-ai-rmf-alignment.md`](governance/nist-ai-rmf-alignment.md#readiness-rules)
+  (wording only; the rules are unchanged).
+- **Showcase:** a local demonstration with synthetic data only. Interactive public deployment
+  stays blocked.
+- **Not performed, not implied:** native-speaker review, clinical review, contact-number
+  re-verification, a battery rerun on the head (not rerun, at his instruction).
+- **Readiness unchanged:** `blocked_pending_human_decision`, 5 pending items, recomputed locally
+  with `assess()`. Decision versions are unchanged: R-01 `risks-3#d0e7adf73bfd2aab`, R-04
+  `risks-3#70c46a1d29fe0654`.
+- **Checks run on the documentation change** (Windows 11, Python 3.13.2):
+  `tests/test_repo_assumptions.py`, `tests/test_b10_review.py` (held-out pin intact) and
+  `tests/test_readme_assets.py`: **131 passed**. `tests/governance`: **23 passed**. Ruff clean.
+  `safety_eval.py --fail-on-miss`: no misses, no false positives. `phase-status.json` parses.
+  Changed files are LF with no BOM and no invisible characters, and their relative links
+  resolve. Full pytest and the release battery were not rerun (no code changed; battery
+  deferred at Abhinav's instruction).
+
+**Exact next action:** Devika decides on the register, catalog, readiness rules and contracts;
+both humans enter R-01/R-04 in the staff UI under their own accounts; the contact numbers are
+re-verified; `python scripts/release_readiness.py --e2e --containers` runs on the final head;
+then both decide on publication.
 
 ## Phase status
 
@@ -363,12 +405,13 @@ do the reviews and decide the items in [`PUBLICATION_PLAN.md`](PUBLICATION_PLAN.
 - Done 2026-10-15 (L-D7, prototype scope): Devika's L-D1 confirmation, her sign-off on the
   SB-07/SB-08 mitigations, B10 additions, notice wording and RP-06, her acceptance of the
   B10 readiness-rule change and `e380883`, and her position on R-01 and R-04.
-- Acceptance of C2-local-v1, C3-local-v1 and C4-local-v1 (both humans); review of the
-  agent-proposed risk register, control catalog and readiness rules (both humans).
+- Done 2026-10-15 (L-D8, prototype scope): Abhinav's acceptance of the B10 readiness-rule
+  change, his position on R-01 and R-04, and his acceptance of the register, catalog, readiness
+  rules and contracts C2/C3/C4-local-v1.
+- Devika's acceptance of C2-local-v1, C3-local-v1 and C4-local-v1, and of the agent-proposed
+  risk register, control catalog and readiness rules (Abhinav has accepted them).
 - Native-speaker and clinical review; staff-UI entries of the R-01 and R-04 decisions
-  (joint with Abhinav) and of the pending-review items.
-- Abhinav's acceptance of the B10 change to the readiness rules (decisions bound to a risk's
-  content; register `risks-3`, catalog `controls-3`).
+  (both humans, each under their own account; neither has entered one) and of the pending-review items.
 - Release battery with containers rerun on the final head (last run on `9c8c7d2`, before
   `e380883`); template contact numbers re-verified.
 - Authorization to publish (push, one integration PR, Devika's review, merge).
@@ -388,3 +431,7 @@ as a new commit.
 Update 2026-10-15: Devika has now recorded her decisions
 ([record](audits/devika-final-acceptance-2026-10-15.md), L-D7). The next action is the one at the
 end of the "Devika's final review decisions" section above.
+
+Update 2026-10-15: Abhinav has now recorded his decisions
+([record](audits/abhinav-final-acceptance-2026-10-15.md), L-D8). The next action is the one at the
+end of the "Abhinav's final acceptance" section above.

@@ -1,10 +1,10 @@
 # C2-local-v1 — Phase 2–3 application, agent and evidence contracts
 
-Status: **Adopted for local development (2026-10-14); awaiting human acceptance.**
+Status: **Adopted for local development (2026-10-14). Accepted by Abhinav, prototype scope (2026-10-15, L-D8, [`../audits/abhinav-final-acceptance-2026-10-15.md`](../audits/abhinav-final-acceptance-2026-10-15.md)); awaiting Devika's acceptance.**
 Derived from Devika's [C2-v0.1 candidate](../audits/devika-c2-v0.1-candidate.md), which
 remains her proposal and is not an approval. Where this version differs from the
-candidate, the row says so. Neither human has approved this exact version; the
-differences are listed for them in [Open items](#open-items-for-human-acceptance).
+candidate, the row says so. Abhinav accepted this exact version on 2026-10-15 (L-D8);
+Devika has not yet decided on it. The differences are listed in [Open items](#open-items-for-human-acceptance).
 C1-v0.2 contracts in [`../INTERFACE_CONTRACTS.md`](../INTERFACE_CONTRACTS.md) are unchanged:
 `Dispatcher.respond() -> {text, trace}`, `route()`, `retrieve(query, k=3, top_k=None)`,
 `DeclineDetector.is_decline()`, `safe_alternatives()` and the CLI keep their shapes.

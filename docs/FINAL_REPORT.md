@@ -162,3 +162,12 @@ Devika's prototype-scope decisions (L-D7) are marked there. Still open: staff-UI
 (R-01/R-04 jointly), Abhinav's acceptance of the readiness-rule change and the register,
 controls and contracts, native-speaker and clinical review, contact-number re-verification,
 a battery rerun on the final head, and publication authorization.
+
+**Update 2026-10-15 (L-D8, [record](audits/abhinav-final-acceptance-2026-10-15.md)):** Abhinav
+accepted the content binding (both humans have now accepted it), R-01 and R-04 for the prototype
+only (joint position recorded), and, for his part, the register, catalog, readiness rules and
+contracts C2/C3/C4-local-v1, all at prototype scope. Still open: Devika's decision on the
+register, catalog, readiness rules and contracts; staff-UI entries (none made); native-speaker
+and clinical review; contact numbers; the battery on the final head; publication authorization.
+Showcase: a local demonstration with synthetic data only. Interactive public deployment stays
+blocked.

@@ -33,11 +33,19 @@ is linked to a risk; the register file contains no human decisions.
 | Status | When |
 |---|---|
 | `not_ready` | Register/catalog integrity problem; release battery evidence missing or a required check not passing; adversarial evidence missing; an open critical finding; an open finding not tracked by any risk; a reviewer's latest decision is `require_mitigation` |
-| `blocked_pending_human_decision` | No blocker, but an open high finding, or a high residual risk that is not mitigated, has no `accept_residual` decision for the current register version |
+| `blocked_pending_human_decision` | No blocker, but an open high finding, a high residual risk that is not mitigated, or a risk listing `pending_human_review` items (agent-drafted mitigations) has no `accept_residual` decision for that risk's current content (`<register label>#<risk digest>`) |
 | `ready` | Neither of the above. An admin may then record `approve`; readiness itself approves nothing |
 
 Release decisions must quote the snapshot hash the admin saw; approving is refused unless the
 status is `ready`.
+
+Only the **latest** review of each risk counts, and one reviewer's decision is enough for the
+code. Where a decision is joint (R-01 and R-04), entering both reviewers' decisions is a
+documented condition that the code does not enforce. Native-speaker and clinical review are not
+checked by the code either. This paragraph and the `pending_human_review` and digest wording in
+the table document the rules as implemented (`57d82f6`, `e685260`). The rules themselves are
+unchanged. Acceptance: the content binding by both humans (L-D7, L-D8); the rest by Abhinav
+(L-D8), awaiting Devika.
 
 ## What is still human work
 

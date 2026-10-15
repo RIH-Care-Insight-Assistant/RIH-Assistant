@@ -65,11 +65,10 @@
     }
   },
   "awaiting_humans": [
-    "Staff-UI entries of the R-01 and R-04 decisions (joint) and of the pending_human_review items; Devika's prototype-scope position is recorded in docs/audits/devika-final-acceptance-2026-10-15.md",
-    "Abhinav's acceptance of the B10 readiness-rule change (decisions bound to risk content, e685260)",
+    "Staff-UI entries of the R-01 and R-04 decisions under each reviewer's own account, and of the pending_human_review items; both humans' prototype-scope positions are recorded (L-D7, L-D8); neither has entered a staff-UI decision",
+    "Devika's acceptance of the register (risks-3), control catalog (controls-3) and readiness rules including pending_human_review (Abhinav accepted, L-D8; the e685260 content binding is accepted by both)",
+    "Devika's acceptance of contracts C2-local-v1 (with language_support), C3-local-v1, C4-local-v1 (Abhinav accepted, L-D8)",
     "Native-speaker review of the multilingual lexicon and the notice's Spanish sentence; clinical input on the warning-sign lists",
-    "Acceptance of contracts C2-local-v1 (with language_support), C3-local-v1, C4-local-v1 (both humans)",
-    "Review of the register (risks-3), control catalog (controls-3) and readiness rules, including pending_human_review (both humans)",
     "Re-verify the template contact numbers (crisis-routing.md section 6)",
     "Rerun release_readiness.py --e2e --containers on the final head (last battery on 9c8c7d2, before e380883)",
     "Optional review of the C1 baseline sources (R-05)",
@@ -225,6 +224,35 @@
     ],
     "heldout_figure_of_record": "first run 149/208 (implicit English 2/14); 179/208 after B10 is not held out",
     "staff_ui_decisions_entered": false,
+    "readiness_unchanged": "blocked_pending_human_decision"
+  },
+  "abhinav_final_acceptance": {
+    "date": "2026-10-15",
+    "decision_maker": "Abhinav Varma Vathadi (at the keyboard, directing; an AI coding agent presented each group, asked for his explicit answer and drafted the record; Devika not present)",
+    "records_reviewed_at": "84c55bf",
+    "code_reviewed_at": "e380883092f1d3ef600ee60b1b7e8ad52eb1e3d8",
+    "record": "docs/audits/abhinav-final-acceptance-2026-10-15.md",
+    "decision_log": "L-D8",
+    "scope": "prototype scope only (synthetic data, local demonstration, no real students)",
+    "accepted": [
+      "A1 B10 content binding of risk decisions (e685260); now accepted by both humans",
+      "B1 R-01 accepted for the prototype only, with banner and notice; joint position recorded",
+      "B2 R-04 accepted for the prototype only, with the RP-06 gate and governed retrieval; joint position recorded",
+      "C1 register risks-3 (Abhinav only; awaiting Devika)",
+      "C2 control catalog controls-3 (Abhinav only; awaiting Devika)",
+      "C3 readiness rules as implemented, including pending_human_review (Abhinav only; awaiting Devika except the content binding)",
+      "D1-D3 contracts C2/C3/C4-local-v1 with their open items (Abhinav only; awaiting Devika)"
+    ],
+    "showcase_scope": "local demonstration only (loopback demo on the shared PC, screenshots or recordings of synthetic data); interactive public deployment remains blocked",
+    "staff_ui_decisions_entered": false,
+    "staff_ui_check": "running Compose instance inspected read-only: only synthetic ctr* accounts; risk_reviews, release_decisions, source_reviews 0 rows",
+    "not_performed": [
+      "staff-UI entries (skipped by his choice)",
+      "native-speaker review",
+      "clinical or counseling review",
+      "contact-number re-verification",
+      "release battery rerun on the head (not rerun, at his instruction)"
+    ],
     "readiness_unchanged": "blocked_pending_human_decision"
   }
 }
