@@ -170,3 +170,13 @@ awaiting human acceptance; nothing here records an approval that was not given.
   readiness rule keeps the release blocked while a risk lists `pending_human_review` items, until a
   reviewer records a decision. Under the routing-pattern rule in `safety/crisis-routing.md` §1,
   (a) and (b) require Devika's review before they count as accepted.
+- **L-D6 (2026-10-15, Devika's final review B10; engineering decisions, awaiting human
+  acceptance):** (a) a frozen 208-case held-out set (`c36cd2c`) and its unfixed first run
+  (`ef3c83d`) are kept as evidence and never edited (hash-pinned, enforced by a test);
+  (b) lexicon, warning-sign and notice-word additions and a fail-toward-crisis guard in
+  `route()` (`666e253`); (c) human risk decisions bind to the risk's content
+  (`<register label>#<digest>`), so editing a risk makes its decision stale; register
+  `risks-3`, catalog `controls-3` (`e685260`); (d) the RP-06 legacy gate refreshes when the
+  inventory changes (`9bd6689`). Drafted by the coding agent at Devika's direction. (c) changes
+  the readiness rules, which both humans must accept (PUBLICATION_PLAN.md §2.4). Report:
+  [`audits/devika-final-review-2026-10-15.md`](audits/devika-final-review-2026-10-15.md).

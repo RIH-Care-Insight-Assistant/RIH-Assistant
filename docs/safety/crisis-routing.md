@@ -260,3 +260,28 @@ Review needed before these count as accepted:
 3. **Clinical or counseling input**: whether the warning-sign lists and the two-signal rule are
    appropriate, and whether the crisis template is the right response for them.
 4. **Both humans**: accept the residual risk (other languages, other wording) or request more work.
+
+## 10. Devika's held-out check and pattern review, B10 (2026-10-15)
+
+Devika directed an independent check of §9 before reviewing the patterns: 208 synthetic cases
+were frozen (`c36cd2c`, SHA-256 pinned) before the pattern files were opened, then run unfixed
+(`ef3c83d`). The cases were drafted by an AI agent at her direction, so they are held out from
+the patterns but not independent of AI authorship.
+
+| Measure (router; CLI and API agree) | First run, held out | After B10 fixes (not held out) |
+|---|---|---|
+| Explicit crisis, 12 covered languages | 32/36 | 36/36 |
+| Spelling, script, dialect and Unicode variants | 18/32 | 31/32 |
+| Implicit warning signs, English / other languages | **2/14** / 0/6 | 9/14 / 0/6 |
+| Negated grammar that still states risk | 7/12 | 12/12 |
+| Uncovered languages routed / routed or notice | 0/17 / 14/17 | 0/17 / 17/17 |
+| Benign and ambiguous cases escalated | 0/82 | 0/82 |
+
+The B10 commits (`666e253`, `e685260`, `9bd6689`) add lexicon forms, warning-sign phrases and
+notice words. They also make `route()` fail toward the crisis template if an escalate-only
+check raises. Every addition is agent-drafted at Devika's direction and awaits native-speaker
+and clinical review like the rest of §9. Recorded as a `pending_human_review` item on R-01.
+Full findings, residual risks and the decisions left to humans are in
+[`../audits/devika-final-review-2026-10-15.md`](../audits/devika-final-review-2026-10-15.md).
+This section records review work. It is not Devika's sign-off on the patterns, which she gives
+in the staff UI or the integration PR.

@@ -1,6 +1,25 @@
 # Devika progress
 
-Last updated: 2026-10-12 (America/New_York). Operator: Devika Rani Sanaboyina.
+Last updated: 2026-10-15 (America/New_York). Operator: Devika Rani Sanaboyina.
+
+## Final safety and security review B10 (2026-10-15) — latest status
+
+- On the shared Windows PC, branch `feature/rih-local-enhancement-phases-2-9`, local only.
+  I directed the review; an AI coding agent drafted the cases, fixes and records. Commits
+  are under my identity. Report: [`../audits/devika-final-review-2026-10-15.md`](../audits/devika-final-review-2026-10-15.md).
+- Held-out set (208 synthetic cases) frozen and hash-pinned in `c36cd2c` before the SB-07/SB-08
+  patterns were opened; first run `ef3c83d`: **149/208**; implicit English **2/14**, variants
+  18/32, negated risk 7/12, uncovered languages 0/17 (notice 14/17); 0/82 benign or ambiguous
+  escalations.
+- Fixes: `666e253` (lexicon, warning signs, notice words, fail-safe `route()`), `e685260`
+  (risk decisions bound to the risk's content; `risks-3`, `controls-3`), `9bd6689` (RP-06 gate
+  refreshes on inventory change). Same set afterwards 179/208. That is not a held-out figure.
+- Checks run: full pytest 5414 passed, 1 skipped; safety eval 172/172, 0/44 FP; agent probes
+  unchanged; red team 0/70 and 0/17; repository scan routing unchanged on 2,713 strings.
+- Not done, and not implied: my sign-off on the patterns, native-speaker and clinical review,
+  R-01/R-04 decisions, contract and register acceptance, publication. Nothing pushed.
+- Next: decide R-01 in the staff UI with the held-out numbers in view; arrange native-speaker
+  and clinical review; ideally write a second held-out set myself without looking at the patterns.
 
 ## B9-N04 decline repair — latest status
 

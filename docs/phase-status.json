@@ -65,13 +65,13 @@
     }
   },
   "awaiting_humans": [
+    "Devika's sign-off on the SB-07/SB-08 patterns and the B10 additions (review done: docs/audits/devika-final-review-2026-10-15.md)",
     "Devika's recorded confirmation of the local-first workflow (L-D1)",
-    "Devika's independent held-out check and routing-pattern review of the SB-07/SB-08 changes (docs/FINALIZATION_REVIEW_PLAN.md)",
     "Native-speaker review of the multilingual lexicon and the notice's Spanish sentence; clinical input on the warning-sign lists",
     "Acceptance of the RP-06 CLI behaviour change",
     "Residual-risk decisions on R-01 and R-04 in the staff UI",
     "Acceptance of contracts C2-local-v1 (with language_support), C3-local-v1, C4-local-v1",
-    "Review of the register (risks-2), control catalog (controls-2) and readiness rules, including pending_human_review",
+    "Review of the register (risks-3), control catalog (controls-3) and readiness rules, including pending_human_review and the B10 content binding of decisions",
     "Optional review of the C1 baseline sources (R-05)",
     "Authorization to publish (push, one integration PR, review, merge) per docs/PUBLICATION_PLAN.md",
     "Close issue #7 on GitHub"
@@ -106,5 +106,36 @@
       "docs/evidence/strands-live-finalization-2026-10-15.json"
     ]
   },
-  "final_battery_commit": "b87f572"
+  "final_battery_commit": "b87f572",
+  "devika_final_review": {
+    "status": "review_complete_local_signoff_pending",
+    "directed_by": "Devika Rani Sanaboyina",
+    "drafted_by": "AI coding agent at Devika's direction",
+    "report": "docs/audits/devika-final-review-2026-10-15.md",
+    "commits": [
+      "c36cd2c",
+      "ef3c83d",
+      "666e253",
+      "e685260",
+      "9bd6689",
+      "B10 documentation commit (git log)"
+    ],
+    "heldout": {
+      "dataset": "docs/audits/devika-final-heldout-v1.json",
+      "sha256": "767975b51943b4e6e06fa81dfebe8ae43f2081641c12c52cf576a87787170fe5",
+      "first_run": "149/208 (implicit English 2/14, benign/ambiguous escalated 0/82)",
+      "after_b10_not_held_out": "179/208 (implicit English 9/14, benign/ambiguous escalated 0/82)"
+    },
+    "findings_fixed": [
+      "F2 lexicon gaps",
+      "F3 ASCII-language notice",
+      "F4 mixed-script words",
+      "F5 fail-safe route()",
+      "F6 decision bound to risk content",
+      "F7 RP-06 cache staleness"
+    ],
+    "findings_partly_fixed": [
+      "F1 implicit-risk recall"
+    ]
+  }
 }

@@ -22,6 +22,16 @@ written down until she has actually done the work.
   [`progress/devika.md`](progress/devika.md).
 - History is **not rewritten** to move credit. Earlier commits stay authored as they are.
 
+## Status (updated 2026-10-15, Devika's final review B10)
+
+See [`audits/devika-final-review-2026-10-15.md`](audits/devika-final-review-2026-10-15.md). Done, with Devika directing and an AI coding agent drafting:
+task 2 (held-out set frozen in `c36cd2c`, first run `ef3c83d`: 149/208, implicit English 2/14);
+the review part of tasks 3, 5 and 6 (findings F1-F10, fixes `666e253`, `e685260`, `9bd6689`).
+Not done: her sign-off on the patterns (task 3), native-speaker and clinical review (task 4),
+the R-01/R-04 decisions (tasks 5-6), and tasks 1 and 7-10. The held-out cases were drafted by
+an AI agent; a set written without seeing the patterns by Devika, native speakers or a
+clinician is still recommended.
+
 ## Review tasks (in suggested order)
 
 | # | Task | Why it needs a human | Her established area | Files and commands | What gets recorded |

@@ -63,8 +63,11 @@ Work item by item with [`FINALIZATION_REVIEW_PLAN.md`](FINALIZATION_REVIEW_PLAN.
    Under the routing-pattern rule ([`safety/crisis-routing.md`](safety/crisis-routing.md) §1),
    (a) and (b) need Devika's review. They also need native-speaker review and clinical input.
    Recommended before (a)/(b) review: Devika's independent held-out check (plan task 2).
+   **Done 2026-10-15** ([report](audits/devika-final-review-2026-10-15.md)): first run 149/208, implicit English 2/14;
+   B10 additions (`666e253`) are a new item (e) awaiting the same native-speaker and clinical
+   review. Her sign-off on (a), (b) and (e) is still to be recorded.
 3. **Residual-risk decisions**, recorded by a reviewer in the staff UI of the running instance:
-   - R-01: crisis wording in languages outside the lexicon (probes 0/4 routed), indirect wording,
+   - R-01: crisis wording in languages outside the lexicon (probes 0/4, held-out 0/17 routed), indirect wording,
      implicit risk outside the lists. Accept with the compensating controls (the always-visible
      banner and the per-reply notice), or request more work.
    - R-04: the CLI gate.
@@ -72,12 +75,15 @@ Work item by item with [`FINALIZATION_REVIEW_PLAN.md`](FINALIZATION_REVIEW_PLAN.
    Readiness stays `blocked_pending_human_decision` until then.
 4. Both humans review and accept, change or reject:
    - contracts C2-local-v1 (now with `language_support`), C3-local-v1 and C4-local-v1;
-   - the agent-proposed risk register (`risks-2`), control catalog (`controls-2`) and readiness
-     rules, including the new `pending_human_review` rule. Under
+   - the agent-proposed risk register (`risks-3`), control catalog (`controls-3`) and readiness
+     rules, including the new `pending_human_review` rule and B10's binding of each decision to
+     the risk's content (`e685260`). Under
      [`RELEASE_GATES.md`](RELEASE_GATES.md), adding a gate needs both humans' agreement;
    - the freshness thresholds and rate limits.
 5. Optionally review the C1 baseline sources (R-05) in the staff UI.
-6. Attribution: no Phase 2–9 or finalization work by Devika is recorded. If she does review or
+6. Attribution: Devika's final review B10 (`c36cd2c`..this record) is committed under her identity;
+   she directed it and an AI coding agent drafted the cases, code and text, as the report says.
+   Before B10, no Phase 2–9 or finalization work by Devika is recorded. If she does review or
    engineering work before publication, it is recorded under her own identity as the plan
    describes. A `Co-authored-by` trailer is used only for work she actually co-authored and only
    if both agree. History is not rewritten.
