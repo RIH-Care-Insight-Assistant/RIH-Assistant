@@ -20,6 +20,14 @@ template is conditional, as for the caution-biased idioms in docs/safety/crisis-
 STATUS: drafted by the coding agent on 2026-10-15, informed by commonly published
 warning-sign lists, not by a clinician. Routing patterns change only through PRs Devika
 reviews; this list needs that review and clinical review before real use.
+
+B10 additions (2026-10-15, Devika's held-out check; docs/audits/devika-final-review-2026-10-15.md):
+entries marked "B10" add standard warning-sign wording the held-out set showed missing:
+"better off without me", no reason to keep living, not expecting to be alive, never
+wanting to wake up again, lethality questions, wanting everything to end for good,
+arranging care for after "I'm gone", saving up pills; and two weak kinds ("won't need
+them anymore", "made my decision"). Drafted by the coding agent at Devika's direction;
+they need the same clinical review as the rest.
 """
 
 from __future__ import annotations
@@ -27,7 +35,8 @@ from __future__ import annotations
 import re
 from typing import List, Set
 
-STATUS = "agent-drafted 2026-10-15; awaiting Devika's routing review and clinical review"
+STATUS = ("agent-drafted 2026-10-15 (B10 additions at Devika's direction); awaiting Devika's routing "
+          "sign-off and clinical review")
 
 _PILLS = (r"(pills?|tablets?|capsules?|meds|medications?|medicines?|painkillers?|sleeping\s+pills|"
           r"tylenol|advil|ibuprofen|acetaminophen|paracetamol|aspirin|benadryl|xanax|insulin)\b")
@@ -57,6 +66,23 @@ STRONG: List[str] = [
     r"\b(bought|got|have|found|buying|getting|ordered)\s+(a\s+|the\s+|some\s+)?(rope|noose|gun|pistol|firearm|"
     r"razor\s+blades?)\b[^.!?]{0,40}?\b(know|picked|chose|planned|decided)\s+(where|when|how)\b",
     r"\b(i'?m|i\s+am)\s+ready\s+to\s+die\b",
+    # B10 additions
+    r"\b(everyone|everybody|they|you|people|my\s+\w+|the\s+world|all\s+of\s+you|you\s+all)\s+(would|will|'?d)\s+"
+    r"(all\s+)?be\s+better\s+off\s+(without\s+me|if\s+i\s+(was|were)\s+(dead|gone|never\s+born))\b"
+    r"(?!\s+(on|in|at|for)\s+(the|this|my|our|a)\s+(team|project|group|lab|shift|trip|class)\b)",
+    r"\b(no|any|don'?t\s+have\s+a(ny)?)\s+(reason|point)\s+(for\s+me\s+)?(in\s+|to\s+)?(keep\s+|go\s+on\s+|going\s+on\s+)?"
+    r"(living|being\s+alive|staying\s+alive|to\s+live(?!\s+(on|in|off|at|with|near|here|there|together|abroad)\b))",
+    r"\b(won'?t|wont|will\s+not|don'?t\s+think\s+i'?ll|not\s+going\s+to)\s+(still\s+)?be\s+alive\b",
+    r"\b(never|don'?t|do\s+not)\s+want\s+to\s+wake\s+up\s+(again|ever|anymore|any\s+more)\b",
+    r"\bnever\s+want\s+to\s+wake\s+up\s*([.!?,;]|$)",
+    r"\bhow\s+(many|much)\b[^.!?]{0,60}?\b(would|does|will|should|do)\s+(it|i|you)\s+(take|need)\s+to\s+"
+    r"(die|not\s+wake\s+up|never\s+wake\s+up|kill\s+(me|myself)|overdose|od)\b",
+    r"\b(want|wish|need)\s+(it\s+all|everything|all\s+of\s+(it|this))\s+to\s+(end|stop|be\s+over)\s+"
+    r"(permanently|forever|for\s+good)\b",
+    r"\bwant\s+it\s+all\s+to\s+end\b(?!\s+(soon|already|so|and\s+then)\b)",
+    r"\b(take\s+care\s+of|look\s+after|feed|adopt|walk)\b[^.!?]{0,40}?\b" + _GONE,
+    r"\blast\s+(message|text|post|note)\s+(i'?ll|i\s+will)\s+ever\s+(send|write|post)\b",
+    r"\b((saving|saved)\s+up|stash(ing|ed)?(\s+up)?)\s+(on\s+)?((all\s+)?my|the|some)?\s*(\w+\s+)?" + _PILLS,
 ]
 
 WEAK = {
@@ -74,6 +100,11 @@ WEAK = {
                   r"meeting)\b)",
     "means": r"\b(bought|got|have|found|buying|getting|ordered)\s+(a\s+|the\s+|some\s+)?(rope|gun|pistol|firearm)\b",
     "ready": r"\b(i'?m|i\s+am)\s+ready\s+to\s+go\b(?!\s+(to|home|out|back|now|on|for|with|and|shopping|there)\b)",
+    # B10 additions
+    "no_need": r"\b(won'?t|wont|will\s+not)\s+(need|be\s+needing)\s+(it|them|this|these|those|anything|any\s+of\s+(it|this|them))"
+               r"\s+(anymore|any\s+more|where\s+i'?m\s+going|after\s+(tonight|today|this\s+week))\b",
+    "decided": r"\b(made|i'?ve\s+made)\s+(my|the)\s+(decision|choice)\b(?!\s+(about|on|to|regarding|for|between|of)\b)"
+               r"(?![^.!?]{0,20}\b(major|class|course|school|college|offer|job|apartment|roommate)\b)",
 }
 
 _STRONG_RE = [re.compile(rx, re.IGNORECASE) for rx in STRONG]

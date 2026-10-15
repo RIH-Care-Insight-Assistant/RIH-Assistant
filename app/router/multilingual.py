@@ -11,12 +11,21 @@ crisis-routing.md); every entry here needs that review, and native-speaker revie
 any real use. Languages not listed fall through to the keyword router, which only reads
 English; the API then adds an unsupported-language notice (app/router/language.py).
 
+B10 additions (2026-10-15, Devika's held-out check, docs/audits/devika-final-review-2026-10-15.md):
+entries marked "B10" close explicit first-person forms the held-out set showed missing
+(SMS spelling, colloquial and reflexive forms, romanized Japanese, Korean, Arabic and
+Russian, Egyptian/Levantine/Gulf Arabic). They were drafted by the coding agent at Devika's
+direction and need the same native-speaker review as the rest of the lexicon.
+
 Two views of the text are matched:
 - "folded": NFKC, format characters removed, casefolded, apostrophes unified, accents
   removed ("daño" -> "dano", "não" -> "nao"). Used for Latin-script languages.
 - "plain": NFKC, format characters removed, casefolded, Arabic letter variants and
   diacritics unified, Devanagari nukta removed, "ё" -> "е". Used for other scripts and
   for Vietnamese, whose tone marks carry meaning.
+Both views first fold mixed-script words: in a word that mixes Latin and Cyrillic letters,
+look-alike letters of the minority script are read as the majority script (a Latin "o"
+inside a Cyrillic word reads as Cyrillic "о", and a Cyrillic "а" inside a Latin word as "a").
 """
 
 from __future__ import annotations
@@ -25,7 +34,8 @@ import re
 import unicodedata
 from typing import Dict, List, Optional, Tuple
 
-STATUS = "agent-drafted 2026-10-15; awaiting Devika's routing review and native-speaker/clinical review"
+STATUS = ("agent-drafted 2026-10-15 (B10 additions at Devika's direction); awaiting Devika's routing "
+          "sign-off and native-speaker/clinical review")
 
 _APOSTROPHES = re.compile("[\u2018\u2019\u201a\u201b\u02b9\u02bb\u02bc\u2032\u00b4`\uff07]")
 _ARABIC_ALEF = re.compile("[\u0622\u0623\u0625\u0671]")
@@ -34,14 +44,15 @@ _ARABIC_MARKS = re.compile("[\u064b-\u065f\u0670\u0640]")
 # lang -> (name, [(view, pattern), ...])
 LEXICON: Dict[str, Tuple[str, List[Tuple[str, str]]]] = {
     "es": ("Spanish", [
-        ("folded", r"\b(quiero|quisiera|deseo|queria|ganas\s+de)\s+(morir(me)?|matarme|suicidarme|"
+        ("folded", r"\b(quiero|kiero|quisiera|deseo|queria|ganas\s+de)\s+(morir(me)?|matarme|suicidarme|"
                    r"quitarme\s+la\s+vida|hacerme\s+dano|lastimarme)\b"),
         ("folded", r"\b(voy\s+a|pienso\s+en|pensando\s+en|intente|intento)\s+(matarme|suicidarme|"
                    r"quitarme\s+la\s+vida|hacerme\s+dano|lastimarme)\b"),
-        ("folded", r"\bme\s+(quiero|quisiera)\s+(morir|matar|suicidar)\b"),
+        ("folded", r"\bme\s+(quiero|kiero|quisiera)\s+(morir|matar|suicidar)\b"),
         ("folded", r"\bme\s+voy\s+a\s+(matar|suicidar)\b"),
         ("folded", r"\b(suicidarme|suicidarse|suicidarte|suicidio|suicida|suicidas)\b"),
         ("folded", r"\bno\s+quiero\s+(seguir\s+)?vivir\b"),
+        ("folded", r"\bno\s+quiero\s+seguir\s+viviendo\b"),  # B10
         ("folded", r"\b(acabar\s+con\s+mi\s+vida|cortarme\s+las\s+venas)\b"),
         ("folded", r"\b(estaria|estarian|estarias)\s+mejor\s+(sin\s+mi|muert[oa]s?)\b"),
         ("folded", r"\b(ojala|quisiera|desearia)\s+(estar|estuviera)\s+muert[oa]\b"),
@@ -56,6 +67,7 @@ LEXICON: Dict[str, Tuple[str, List[Tuple[str, str]]]] = {
         ("folded", r"\bmettre\s+fin\s+a\s+((mes|ses|tes)\s+jours|ma\s+vie)\b"),
         ("folded", r"\bje\s+vais\s+me\s+(tuer|suicider)\b"),
         ("folded", r"\bje\s+(veux|vais)\s+me\s+faire\s+du\s+mal\b"),
+        ("folded", r"\b(je\s+(veux|vais)|envie\s+de)\s+me\s+foutre\s+en\s+l'?air\b"),  # B10 slang
     ]),
     "pt": ("Portuguese", [
         ("folded", r"\b(quero|queria)\s+(morrer|me\s+matar|me\s+suicidar|tirar\s+(a\s+)?minha\s+(propria\s+)?vida)\b"),
@@ -63,6 +75,7 @@ LEXICON: Dict[str, Tuple[str, List[Tuple[str, str]]]] = {
         ("folded", r"\bnao\s+quero\s+(mais\s+viver|viver\s+mais)\b"),
         ("folded", r"\b(se|me)\s+suicidar\b"),
         ("folded", r"\b(quero|vou)\s+me\s+(machucar|cortar)\b"),
+        ("folded", r"\b(quero|vou|queria|penso\s+em)\s+acabar\s+com\s+(a\s+)?minha\s+(propria\s+)?vida\b"),  # B10
     ]),
     "de": ("German", [
         ("folded", r"\bich\s+(will|mochte|wurde\s+gerne?)\s+(sterben|tot\s+sein)\b"),
@@ -70,6 +83,9 @@ LEXICON: Dict[str, Tuple[str, List[Tuple[str, str]]]] = {
         ("folded", r"\b(selbstmord|suizid)\w*"),
         ("folded", r"\bich\s+(will|mochte)\s+nicht\s+mehr\s+leben\b"),
         ("folded", r"\b(will|werde|mochte)\s+mich\s+(selbst\s+)?verletzen\b"),
+        ("folded", r"\b(mir|sich|dir)\s+das\s+leben\s+(zu\s+)?nehmen\b"),  # B10
+        ("folded", r"\bich\s+bringe?\s+mich\s+um\b"),  # B10 colloquial; "das bringt mich um" stays out
+        ("folded", r"\bsich\s+(umbringen|umzubringen)\b"),  # B10 third person
     ]),
     "it": ("Italian", [
         ("folded", r"\b(voglio|vorrei)\s+(morire|uccidermi|suicidarmi|farla\s+finita|togliermi\s+la\s+vita)\b"),
@@ -77,6 +93,7 @@ LEXICON: Dict[str, Tuple[str, List[Tuple[str, str]]]] = {
                    r"togliermi\s+la\s+vita|farla\s+finita)\b"),
         ("folded", r"\bsuicidarmi\b"),
         ("folded", r"\bnon\s+voglio\s+piu\s+vivere\b"),
+        ("folded", r"\b(voglio|vorrei)\s+ammazzarmi\b|\bmi\s+(voglio|vorrei)\s+ammazzare\b"),  # B10
     ]),
     "zh": ("Chinese", [
         ("plain", r"自杀|自殺|轻生|輕生|不想活|活不下去|割腕|结束(自己的)?生命|結束(自己的)?生命"),
@@ -84,26 +101,37 @@ LEXICON: Dict[str, Tuple[str, List[Tuple[str, str]]]] = {
     ]),
     "ja": ("Japanese", [
         ("plain", r"死にたい|生きていたくない|自殺"),
+        ("plain", r"しにたい|シニタイ|生きたくない"),  # B10 kana spelling; "don't want to live"
+        ("folded", r"\bshinitai\b"),  # B10 romaji
     ]),
     "ko": ("Korean", [
         ("plain", r"자살|죽고\s*싶|살고\s*싶지\s*않|자해|극단적\s*선택"),
+        ("folded", r"\bjukgo\s*sip"),  # B10 romanized
     ]),
     "vi": ("Vietnamese", [
         ("plain", r"muốn\s+chết|tự\s+tử|tự\s+sát|không\s+muốn\s+sống"),
         ("folded", r"\b(muon\s+chet|khong\s+muon\s+song)\b"),  # typed without tone marks
+        ("folded", r"\bmuon\s+tu\s+(tu|sat)\b"),  # B10
+        ("plain", r"kết\s+thúc\s+cuộc\s+(đời|sống)\s+(của\s+)?(mình|tôi)"),  # B10
     ]),
     "hi": ("Hindi", [
         ("plain", r"आत्महत्या|खुदकुशी|मरना\s*चाहत|जान\s*देना\s*चाहत|खुद\s*को\s*मार"),
+        ("plain", r"(अपनी|मेरी)\s*जान\s*लेना\s*चाहत"),  # B10
         ("folded", r"\b(marna|mar\s+jana)\s+(chahta|chahti|chahte|hai)\b"),  # romanized Hindi
         ("folded", r"\b(aatmahatya|atmahatya|aatmhatya|atmhatya|khudkushi|khudkhushi)\b"),
         ("folded", r"\bkhud\s+ko\s+maa?r\s*(na|dunga|dungi|lunga|lungi|dalunga|dalungi)\b"),
     ]),
     "ar": ("Arabic", [
         ("plain", r"انتحار|انتحر|اريد\s+ان\s+اموت|اريد\s+الموت|اقتل\s+نفسي|انهي\s+حياتي|انهاء\s+حياتي"),
+        # B10: Egyptian, Levantine and Gulf "I want to die"; "... من" ("die of ...") stays out
+        ("plain", r"(عايز|عاوز|عايزه|عاوزه|بدي|ابغى|ابي)\s+(ا)?موت(?!\s+من)"),
+        ("folded", r"\b(bdi|baddi|biddi|3ayez|3ayz|3ayza|3awez|abgha)\s+a?(mou?t|moot)\b(?!\s+(min|men)\b)"),  # B10 Arabizi
     ]),
     "ru": ("Russian", [
         ("plain", r"хочу\s+умереть|покончить\s+с\s+собой|покончу\s+с\s+собой|суицид|самоубийств|"
                   r"убить\s+себя|убью\s+себя|не\s+хочу\s+жить"),
+        ("plain", r"хочу\s+сдохнуть"),  # B10 vulgar "want to croak"
+        ("folded", r"\b(hochu|khochu|xochu)\s+(umeret|sdohnut)\b|\bpokonchit\s+s\s+soboj?\b"),  # B10 transliterated
     ]),
 }
 
@@ -114,10 +142,25 @@ _COMPILED: List[Tuple[str, str, "re.Pattern[str]"]] = [
 ]
 
 
+# Lower-case Latin letter -> Cyrillic look-alike (a c e o p x y), as code points.
+_LAT_TO_CYR = {0x61: 0x430, 0x63: 0x441, 0x65: 0x435, 0x6F: 0x43E, 0x70: 0x440, 0x78: 0x445, 0x79: 0x443}
+_CYR_TO_LAT = {cyr: lat for lat, cyr in _LAT_TO_CYR.items()}
+_WORDS = re.compile(r"\w+")
+
+
+def _script_fold(m: "re.Match[str]") -> str:
+    w = m.group(0)
+    cyr = sum(1 for ch in w if "\u0400" <= ch <= "\u04ff")
+    lat = sum(1 for ch in w if "a" <= ch <= "z")
+    if not cyr or not lat:
+        return w
+    return w.translate(_LAT_TO_CYR if cyr >= lat else _CYR_TO_LAT)
+
+
 def _base(text: str) -> str:
     t = unicodedata.normalize("NFKC", text or "")
     t = "".join(ch for ch in t if unicodedata.category(ch) != "Cf")
-    return t.casefold()
+    return _WORDS.sub(_script_fold, t.casefold())
 
 
 def plain_view(text: str) -> str:

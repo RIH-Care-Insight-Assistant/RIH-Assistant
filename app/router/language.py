@@ -13,7 +13,8 @@ purpose and errs towards showing the notice:
 - at least two common non-English function words outweighing the English ones.
 Short messages (one word) never get the notice, and neither do English noun phrases with
 no function words ("dining hall menu"). Languages written in plain ASCII whose function
-words are not listed are missed. A false positive only adds one notice.
+words are not listed are missed (B10 added several; see FOREIGN). A false positive only
+adds one notice.
 """
 
 from __future__ import annotations
@@ -70,7 +71,18 @@ bir ve bu icin degil istiyorum var yok cok merhaba
 nie jest sie chce mam jestem dla czy dziekuje tak
 nataka sana mimi wewe kwa ni hapana ndiyo asante habari
 toi khong cua muon nhung
+ce une au il gli di posso perche questo questa hai
+aku saya ingin mau tidak yang itu ini dengan untuk dari sudah belum bisa kamu anda kita mereka tolong
+ik wil het een niet mijn naar voor zijn geen graag waar wat
+vull vols tinc amb aixo perque meva meu estic
+mwen vle ou li ki pou kijan kote
+vreau nu este sunt pentru
+hoon hai nahi mujhe kya kaise mera meri aap kyun
 """.split())
+# B10 (Devika's held-out check): the last seven lines add frequent function words of Italian,
+# French, Indonesian/Malay, Dutch, Catalan, Haitian Creole, Romanian and romanized Hindi, so
+# that plain-ASCII messages in those languages get the notice. Words that are also common in
+# English ("van", "un", "non", "dove", "son", "pa", "dan") are deliberately left out.
 
 # Words that are common in English and in other languages ("me", "no", "in", German
 # "will"); they count as neither English nor foreign.

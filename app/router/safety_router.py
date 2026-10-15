@@ -7,12 +7,15 @@
 from __future__ import annotations
 # Backwards-compatible router that uses Rules
 
+import logging
 import re
 from dataclasses import dataclass
 from typing import Optional, Set
 from .implicit_risk import implicit_risk
 from .multilingual import crisis_language
 from .rules import Rules
+
+_log = logging.getLogger(__name__)
 
 # Lanes whose deterministic template must never be pre-empted or rewritten by any
 # downstream component (decline handling, planners, LLM/Strands enhancers).
@@ -108,6 +111,17 @@ def route(message: str) -> RouteResult | None:
         escalated = _escalation(message)
         if escalated is not None:
             rr = escalated
-    if rr.level != "urgent_safety" and crisis_extension(message):
+    if rr.level != "urgent_safety" and _crisis_extension_or_fail_safe(message):
         return RouteResult(_CRISIS.level, _CRISIS.response_key, _CRISIS.auto_reply_key)
     return rr if rr.level else None
+
+
+def _crisis_extension_or_fail_safe(message: str) -> str | None:
+    # B10 (Devika's review): the escalate-only checks fail toward the crisis lane. If one of
+    # them raises, the student gets the crisis template rather than an error or an ordinary
+    # answer. Only the exception type is logged, never the message.
+    try:
+        return crisis_extension(message)
+    except Exception as exc:  # noqa: BLE001 - any failure must fail safe
+        _log.error("crisis_extension_failed", extra={"error_type": type(exc).__name__})
+        return "fail_safe"
