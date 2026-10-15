@@ -15,7 +15,7 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 
 | Field | Value |
 |---|---|
-| Current phase | **Final completion stage (2026-10-15): Phases A (L-D13), B (L-D14) and C (validation on candidate `c22b360`) done; next D (publication audit), E (joint push authorization), F (final records)** |
+| Current phase | **Final completion stage (2026-10-15): Phases A (L-D13), B (L-D14), C (validation on `c22b360`) and D (audit, L-D15 authorization) done; branch pushed and PR #15 open; next: Devika's GitHub review, CI, merge, then F (final records)** |
 | Current task | Done: SB-07/SB-08/RP-06 mitigations, final audit, final batteries, [final report](FINAL_REPORT.md), [publication plan](PUBLICATION_PLAN.md), [review plan](FINALIZATION_REVIEW_PLAN.md); Devika's final review B10 ([report](audits/devika-final-review-2026-10-15.md)) and her decisions at `e380883` ([record](audits/devika-final-acceptance-2026-10-15.md)); Abhinav's decisions, records at `84c55bf` ([record](audits/abhinav-final-acceptance-2026-10-15.md)); joint showcase decision and image review L-D10 ([record](showcase/image-review-checklist.md)); showcase content approved and published by both, L-D11 ([record](showcase/deployment-2026-10-15.md)), live at <https://rih-care-insight-showcase.pages.dev/>; the application is not published |
 | Last local commit | see `git log -1` (this file is updated with each milestone) |
 
@@ -434,6 +434,25 @@ committed (`55ffba2`). Windows 11, Python 3.13.2, Node 24.14.0, Docker 29.8.1, k
 **Exact next action:** Phase D, the publication audit. Update the README, final report and
 publication plan, prepare the publication summary, and ask both humans for source-publication
 authorization, separately.
+
+## Final completion stage, Phases D and E: audit, authorization and PR (2026-10-15)
+
+- **Audit:** recorded in [`PUBLICATION_PLAN.md`](PUBLICATION_PLAN.md#current-plan-final-completion-stage)
+  (attribution, secrets, personal data, licensing, disclaimers, exposure, branch protection,
+  issue #7). The README, limitations and final report were updated (`9310dcd`).
+- **Authorization (L-D15):** Abhinav and Devika each authorized source publication. Interactive
+  deployment is **not** authorized.
+- **Backup:** `%USERPROFILE%\RIH-backups\rih-final-completion-2026-10-15-fc7b4c4.bundle`
+  (branch and `main`), verified.
+- **Push:** `feature/rih-local-enhancement-phases-2-9` pushed without force as a new branch, from
+  WSL with the `gh` account `AbhinavVarma02`; `origin/main` is still `6ab77a8`.
+- **PR:** <https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/15>. Review is
+  required and CI started (13 jobs).
+
+**Exact next action:** Devika reviews and approves PR #15 from her own GitHub account. CI must be
+green; fix any CI-only failure with new commits. Then merge with a merge commit, verify `main`,
+and decide on issue #7 jointly. The Phase F records go in a small follow-up docs PR, because
+`main` is protected.
 
 ## Phase status
 
