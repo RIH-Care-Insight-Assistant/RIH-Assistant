@@ -105,7 +105,9 @@ them; once added, a gate is never removed or weakened to get a pass.
 
 | Containers (Phase 8) | `python scripts/release_readiness.py --e2e --containers` (adds `container_security`, `container_integration`, `container_resilience`) | Any fixable HIGH/CRITICAL image vulnerability, HIGH/CRITICAL misconfiguration or secret; any failed integration or resilience check |
 
-Kubernetes checks are added in Phase 9. Evidence of the latest run:
+| Kubernetes (Phase 9) | `python scripts/k8s.py verify`, `rollout`, `recovery` (kind cluster) | Any failed workload, security-context, workflow, NetworkPolicy, red-team, rollout/rollback or recovery check |
+
+Evidence of the latest run:
 [`evidence/release/latest.json`](evidence/release/latest.json); details in
 [`architecture/observability.md`](architecture/observability.md).
 

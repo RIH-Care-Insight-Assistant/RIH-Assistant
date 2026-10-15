@@ -15,8 +15,8 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 
 | Field | Value |
 |---|---|
-| Current phase | Phase 9 — local Kubernetes (kind) |
-| Current task | Phase 8 committed; starting Phase 9 (kind cluster, Kustomize manifests, NetworkPolicies, rollout/rollback) |
+| Current phase | Final validation and publication plan |
+| Current task | Phase 9 committed; final battery, completion report and publication plan |
 | Last local commit | see `git log -1` (this file is updated with each milestone) |
 
 ## Phase status
@@ -31,7 +31,7 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 | 6 | **Complete (local)** | Register, controls, readiness, governance API and dashboard ([alignment](governance/nist-ai-rmf-alignment.md)) |
 | 7 | **Complete (local)** | Telemetry, incidents, 18-gate battery, negative verification ([details](architecture/observability.md)) |
 | 8 | **Complete (local)** | Hardened images, Compose, scans, integration 7/7, resilience 7/7, portfolio docs |
-| 9 | Not started | – |
+| 9 | **Complete (local)** | kind + Kustomize; verify 7/7, rollout 5/5, recovery 4/4 ([guide](deployment/kubernetes.md)) |
 
 ## Validation log (executed runs only)
 
@@ -61,6 +61,19 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 | 2026-10-15 | `8975840` | same | `scripts/negative_verification.py --write` | 3/3 deliberate regressions blocked (`not_ready`) in disposable worktrees; working tree untouched |
 
 | 2026-10-15 | `25612ae` (images built from it) | Windows 11, Docker Desktop 29.8.1, Trivy 0.74.0, gitleaks 8.30.1 | `container_security.py --write`; `container_checks.py integration --write`; `container_checks.py resilience --write` | Images 0 fixable HIGH/CRITICAL; config 0; secrets 0; integration **7/7** (red team over HTTP 2/35, only SB-07/SB-08); resilience **7/7** ([evidence](evidence/containers/)) |
+
+| 2026-10-15 | `7226667` (images built from it) | kind v0.33.0 on Docker Desktop, kubectl 1.36.1 | `k8s.py up`; `verify --write`; `rollout --write`; `recovery --write` | verify **7/7** (NetworkPolicy enforcement shown with a control namespace; red team over the cluster 2/35, only SB-07/SB-08); rollout **5/5** with 0 failed requests; recovery **4/4** ([evidence](evidence/k8s/)) |
+
+### Phase 9 deliverables
+
+- `deploy/kind/cluster.yaml` (loopback NodePort mapping), `deploy/k8s/base` and
+  `overlays/local` (Kustomize): restricted Pod Security namespace, Deployments with probes,
+  limits, restricted security contexts and preStop drains, Services, ConfigMap, generated
+  bootstrap Secret, PVC, PDB, default-deny NetworkPolicies.
+- `scripts/k8s.py`: up/down/status/verify/rollout/recovery with evidence.
+- First-admin bootstrap from deployment secrets (`app/api/staff_store.py`).
+- Finding fixed: 2 of 15 requests failed during one rollout before the preStop drain delay.
+- Static manifest tests (`tests/test_k8s_manifests.py`); guide [deployment/kubernetes.md](deployment/kubernetes.md).
 
 ### Phase 8 deliverables
 
@@ -186,7 +199,6 @@ benchmark. Citations carry no governance status until Phase 3.
 
 ## Next executable action
 
-Phase 9: install kind (user-local binary), create a cluster with a NetworkPolicy-enforcing CNI,
-load the images, deploy with Kustomize (Deployments, Services, ConfigMap, Secret, probes,
-limits, restricted security contexts, NetworkPolicies, PVC), verify workflows and policy
-enforcement, rollout and rollback, restart/recovery, teardown scripts and docs.
+Final: run `scripts/release_readiness.py --e2e --containers` on a clean commit, demonstrate
+teardown (`k8s.py down`), write the completion report and the publication plan, and stop
+before any push for the humans' decision.

@@ -12,8 +12,8 @@ conduct), then answers ordinary questions only from reviewed knowledge-base sour
 citations. When a student declines a service it offers verified campus alternatives. A staff
 area lets authorized reviewers govern sources, risks and releases.
 
-**Status (2026-10-15):** Phases 0–8 of the upgrade are complete on the local branch
-`feature/rih-local-enhancement-phases-2-9`; Phase 9 (local Kubernetes) is in progress. See
+**Status (2026-10-15):** Phases 0–9 of the upgrade are implemented and validated locally on
+the branch `feature/rih-local-enhancement-phases-2-9` (not yet published to GitHub). See
 [`docs/LOCAL_FIRST_PROGRESS.md`](docs/LOCAL_FIRST_PROGRESS.md) for executed evidence and
 [`docs/limitations.md`](docs/limitations.md) for what it does not do.
 
@@ -31,6 +31,7 @@ area lets authorized reviewers govern sources, risks and releases.
 | Observability | OpenTelemetry traces/metrics, JSON logs with trace IDs, privacy allowlists, incident simulation | [`docs/architecture/observability.md`](docs/architecture/observability.md) |
 | Release gates | 18-gate local battery with readiness verdict; negative verification | `scripts/release_readiness.py` |
 | Containers | Hardened images, Compose stack, container scans, integration and resilience checks | `deploy/`, `compose.yaml`, [`docs/evidence/containers/`](docs/evidence/containers/) |
+| Kubernetes | kind + Kustomize: restricted Pod Security, probes, limits, Secrets, default-deny NetworkPolicies (verified), rollout/rollback and recovery checks | `deploy/k8s/`, [`docs/deployment/kubernetes.md`](docs/deployment/kubernetes.md) |
 
 Architecture: [`docs/architecture/system-overview.md`](docs/architecture/system-overview.md).
 
@@ -54,6 +55,17 @@ docker compose exec backend python scripts/manage_users.py create --username you
 Stop with `docker compose down`; reset all local demo data with `docker compose down -v`.
 The demo runs over loopback HTTP, so it sets `RIH_COOKIE_SECURE=false`; anywhere else, put it
 behind HTTPS and set it to `true`.
+
+## Local Kubernetes (kind)
+
+```bash
+docker compose build
+python scripts/k8s.py up        # cluster "rih"; UI on http://127.0.0.1:8090
+python scripts/k8s.py verify    # workflows, security contexts, NetworkPolicy enforcement, red team
+python scripts/k8s.py down
+```
+
+Details, rollout/rollback procedure and recorded results: [`docs/deployment/kubernetes.md`](docs/deployment/kubernetes.md).
 
 ## Local development
 
@@ -110,8 +122,9 @@ python scripts/container_security.py                 # Trivy + gitleaks through 
 Latest recorded results (Windows 11, Python 3.13, Node 24): pytest 5187 passed and 1 skipped
 (a symlink test); safety evaluation 172/172; frontend 24/24; end-to-end 5/5; red team 2 of 70
 attacks succeeded (both known high findings, no critical); container integration 7/7 and
-resilience 7/7; scans clean. Release readiness is **blocked pending human decisions** on the two
-open high findings, as designed. Details: [`docs/evidence/`](docs/evidence/).
+resilience 7/7; scans clean; Kubernetes verify 7/7, rollout/rollback 5/5 (no failed requests),
+recovery 4/4. Release readiness is **blocked pending human decisions** on the two open high
+findings, as designed. Details: [`docs/evidence/`](docs/evidence/).
 
 ## Documentation
 
@@ -122,6 +135,7 @@ open high findings, as designed. Details: [`docs/evidence/`](docs/evidence/).
 | Security evaluation | [`docs/security/security-evaluation.md`](docs/security/security-evaluation.md), [`redteam-report.md`](docs/security/redteam-report.md), [`docs/THREAT_MODEL.md`](docs/THREAT_MODEL.md) |
 | Governance | [`docs/governance/nist-ai-rmf-alignment.md`](docs/governance/nist-ai-rmf-alignment.md) |
 | Contracts | [`docs/INTERFACE_CONTRACTS.md`](docs/INTERFACE_CONTRACTS.md) |
+| Kubernetes deployment | [`docs/deployment/kubernetes.md`](docs/deployment/kubernetes.md) |
 | Known limitations | [`docs/limitations.md`](docs/limitations.md) |
 | Troubleshooting | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
 | Project process and state | [`AGENTS.md`](AGENTS.md), [`docs/PROJECT_STATE.md`](docs/PROJECT_STATE.md), [`docs/LOCAL_FIRST_PROGRESS.md`](docs/LOCAL_FIRST_PROGRESS.md) |
