@@ -4,8 +4,9 @@ Status:
 - `not_ready`: a required check failed or is missing, a critical red-team finding is open,
   an open finding is not tracked by any risk, the register is inconsistent, or a human
   required more mitigation.
-- `blocked_pending_human_decision`: nothing failed, but an open high finding or a high
-  residual risk has no recorded human residual-risk decision.
+- `blocked_pending_human_decision`: nothing failed, but an open high finding, a high
+  residual risk, or a risk listing `pending_human_review` items (agent-drafted mitigations)
+  has no recorded human residual-risk decision.
 - `ready`: no blocker and no pending decision. Only an admin's recorded approval makes a
   candidate approved; readiness alone approves nothing.
 """
@@ -72,6 +73,11 @@ def assess(
         if d is not None and d["decision"] == "require_mitigation":
             blockers.append(f"{r['id']}: a reviewer required further mitigation")
             continue
+        # An agent-drafted mitigation is not a human acceptance: until a reviewer records a
+        # decision for this register version, each listed item keeps the release blocked.
+        if d is None or d["decision"] != "accept_residual":
+            for item in r.get("pending_human_review", []):
+                pending.append({"risk": r["id"], "reason": f"awaiting human review: {item}"})
         residual = score(r["residual_likelihood"], r["residual_severity"])
         if band(residual) == "high" and r["mitigation_status"] != "mitigated":
             if d is None or d["decision"] != "accept_residual":

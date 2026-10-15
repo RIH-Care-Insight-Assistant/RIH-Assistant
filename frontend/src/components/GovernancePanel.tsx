@@ -85,7 +85,14 @@ export function GovernancePanel({ isAdmin }: { isAdmin: boolean }) {
           <tbody>
             {risks.map((r) => (
               <tr key={r.id}>
-                <td><strong>{r.id}</strong> {r.title}<div className="muted">{r.category} · {r.nist.join(", ")} · {r.proposed_owner}</div></td>
+                <td>
+                  <strong>{r.id}</strong> {r.title}<div className="muted">{r.category} · {r.nist.join(", ")} · {r.proposed_owner}</div>
+                  {(r.pending_human_review ?? []).length > 0 && (
+                    <ul className="muted" aria-label={`Awaiting human review for ${r.id}`}>
+                      {(r.pending_human_review ?? []).map((item) => <li key={item}>Awaiting human review: {item}</li>)}
+                    </ul>
+                  )}
+                </td>
                 <td>{r.inherent_score} ({r.inherent_band})</td>
                 <td>{r.residual_score} ({r.residual_band})</td>
                 <td>{r.mitigation_status}</td>

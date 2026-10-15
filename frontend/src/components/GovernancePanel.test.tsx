@@ -33,6 +33,14 @@ describe("GovernancePanel", () => {
       body: { decision: "accept_residual", rationale: "Synthetic rationale for the test." } });
   });
 
+  it("lists agent-drafted mitigations that await human review", async () => {
+    const pending = { ...RISK, pending_human_review: ["synthetic agent-drafted term list"] };
+    installFakeApi({ staff: { username: "rita.reviewer", roles: ["reviewer"] }, risks: [pending] });
+    render(<GovernancePanel isAdmin={false} />);
+    const list = await screen.findByRole("list", { name: "Awaiting human review for R-01" });
+    expect(list).toHaveTextContent("Awaiting human review: synthetic agent-drafted term list");
+  });
+
   it("offers approval to admins only when the assessment is ready", async () => {
     installFakeApi({ staff: { username: "adam.admin", roles: ["admin"] }, risks: [RISK] });
     render(<GovernancePanel isAdmin />);

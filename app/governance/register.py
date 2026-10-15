@@ -127,6 +127,9 @@ def load_governance(register_path: Path = REGISTER_PATH, controls_path: Path = C
                 problems.append(f"{rid}: evidence missing: {ev}")
         if not r.get("proposed_owner"):
             problems.append(f"{rid}: no proposed owner")
+        review = r.get("pending_human_review", [])
+        if not isinstance(review, list) or not all(isinstance(x, str) and x.strip() for x in review):
+            problems.append(f"{rid}: pending_human_review must be a list of descriptions")
     return Governance(reg, cat, problems)
 
 
@@ -139,5 +142,6 @@ def risk_view(r: Dict[str, Any], decision: Dict[str, Any] | None) -> Dict[str, A
                              "mitigation_status", "mitigation_plan", "evidence")},
         "inherent_score": inherent, "inherent_band": band(inherent),
         "residual_score": residual, "residual_band": band(residual),
+        "pending_human_review": list(r.get("pending_human_review", [])),
         "human_decision": decision,
     }

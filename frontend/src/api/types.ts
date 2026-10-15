@@ -189,6 +189,7 @@ export interface RiskItem {
   mitigation_status: string;
   mitigation_plan: string;
   evidence: string[];
+  pending_human_review?: string[];
   human_decision: HumanDecision | null;
 }
 

@@ -57,8 +57,8 @@ CLEAN_REDTEAM = {"label": "x", "git_commit": "abc1234", "summary": {
 
 
 def _no_high_residuals():
-    # Make every risk mitigated so only the inputs under test decide the result.
-    return _gov(**{r["id"]: {"mitigation_status": "mitigated"} for r in GOV.risks})
+    # Make every risk mitigated and reviewed so only the inputs under test decide the result.
+    return _gov(**{r["id"]: {"mitigation_status": "mitigated", "pending_human_review": []} for r in GOV.risks})
 
 
 def test_ready_only_when_everything_passes():
@@ -107,14 +107,39 @@ def test_reviewer_requiring_mitigation_blocks():
 
 
 def test_high_residual_risk_not_mitigated_needs_decision():
-    g = _gov(**{r["id"]: {"mitigation_status": "mitigated"} for r in GOV.risks})
+    g = _gov(**{r["id"]: {"mitigation_status": "mitigated", "pending_human_review": []} for r in GOV.risks})
     g.risks[0].update({"residual_likelihood": 3, "residual_severity": 5, "mitigation_status": "partially_mitigated"})
     a = assess(g, {}, PASSING_RELEASE, CLEAN_REDTEAM)
     assert a["status"] == "blocked_pending_human_decision"
     assert a["pending_human_decisions"][0]["risk"] == g.risks[0]["id"]
 
 
+def test_unreviewed_agent_mitigation_blocks_until_a_human_decides():
+    g = _no_high_residuals()
+    g.risks[0]["pending_human_review"] = ["agent-drafted term list"]
+    a = assess(g, {}, PASSING_RELEASE, CLEAN_REDTEAM)
+    assert a["status"] == "blocked_pending_human_decision"
+    assert a["pending_human_decisions"] == [{"risk": g.risks[0]["id"], "reason": "awaiting human review: agent-drafted term list"}]
+    version = g.register["register_version"]
+    accepted = {g.risks[0]["id"]: {"decision": "accept_residual", "register_version": version}}
+    assert assess(g, accepted, PASSING_RELEASE, CLEAN_REDTEAM)["status"] == "ready"
+    stale = {g.risks[0]["id"]: {"decision": "accept_residual", "register_version": "risks-1"}}
+    assert assess(g, stale, PASSING_RELEASE, CLEAN_REDTEAM)["status"] == "blocked_pending_human_decision"
+    required = {g.risks[0]["id"]: {"decision": "require_mitigation", "register_version": version}}
+    assert assess(g, required, PASSING_RELEASE, CLEAN_REDTEAM)["status"] == "not_ready"
+
+
+def test_current_register_stays_blocked_with_a_clean_red_team():
+    # The finalization mitigations close the SB-07/SB-08/RP-06 scenarios, but they are
+    # agent-drafted: a clean adversarial run alone must not make the release ready.
+    a = assess(GOV, {}, PASSING_RELEASE, CLEAN_REDTEAM)
+    assert a["status"] == "blocked_pending_human_decision"
+    assert {p["risk"] for p in a["pending_human_decisions"]} >= {"R-01", "R-04"}
+
+
 @pytest.mark.parametrize("mutate", [
+    lambda r: r.update({"pending_human_review": "not a list"}),
+    lambda r: r.update({"pending_human_review": [""]}),
     lambda r: r.update({"controls": ["C-NOPE"]}),
     lambda r: r.update({"findings": ["XX-01"]}),
     lambda r: r.update({"likelihood": 9}),
