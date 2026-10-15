@@ -27,6 +27,10 @@ def main() -> None:
     os.environ.setdefault("RIH_ENV", "test")
     os.environ.setdefault("RIH_FIXED_TODAY", "2026-10-14")  # keeps KB freshness stable for E2E runs
     staff_pw = os.environ.get("RIH_E2E_STAFF_PASSWORD")
+    # Username prefix for the synthetic staff accounts ("e2e" for tests, "demo" for screenshots).
+    prefix = os.environ.get("RIH_E2E_STAFF_PREFIX", "e2e")
+    if prefix not in {"e2e", "demo"}:
+        raise SystemExit("RIH_E2E_STAFF_PREFIX must be 'e2e' or 'demo'")
     if staff_pw:  # synthetic demo staff for end-to-end tests; password comes from the test runner
         from app.api.db import Database
         from app.api.staff_store import StaffStore
@@ -34,8 +38,8 @@ def main() -> None:
         db = Database(os.environ["RIH_DB_PATH"])
         db.migrate()
         store = StaffStore(db)
-        store.create_user("e2e.reviewer", staff_pw, ["reviewer"], "e2e")
-        store.create_user("e2e.admin", staff_pw, ["admin"], "e2e")
+        store.create_user(f"{prefix}.reviewer", staff_pw, ["reviewer"], prefix)
+        store.create_user(f"{prefix}.admin", staff_pw, ["admin"], prefix)
     import uvicorn
 
     uvicorn.run("app.api.main:app", host="127.0.0.1", port=args.port, log_level="warning")
