@@ -187,3 +187,9 @@ decides. Still open:
 - the battery on the final head;
 - Abhinav's showcase decision;
 - publication authorization.
+
+**Update 2026-10-15 (L-D10, [record](showcase/image-review-checklist.md)):** Abhinav made the
+matching showcase decision. Both humans approved 12 of the 16 images, with the required captions
+(S3 deferred; S7, S8 and S12 excluded), and a static, non-interactive page is prepared in
+`showcase/`. It is not posted. The page text and the hosting choice are still to be reviewed.
+Readiness is unchanged, and the other items above stay open.

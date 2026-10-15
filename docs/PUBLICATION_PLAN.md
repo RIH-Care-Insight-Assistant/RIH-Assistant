@@ -148,6 +148,16 @@ local demonstration. Readiness is still `blocked_pending_human_decision`.
    no live endpoint and no public chatbot. Abhinav's L-D8 scope is local only. **Nothing is
    posted until he decides.** Both humans review each image first. Interactive public deployment
    stays blocked.
+   **Update 2026-10-15 (L-D10, [record](showcase/image-review-checklist.md)):** Abhinav made the
+   matching decision. Both reviewed the 16 images:
+   - **Approved:** 12, with captions where required.
+   - **Excluded:** S7, S8 and S12.
+   - **Deferred:** S3, until the contact numbers are re-verified.
+
+   The static page is in `showcase/`. `python scripts/build_showcase.py` assembles it into
+   `var/showcase/` and checks image hashes, captions and the absence of interactive markup.
+   **Still open before posting:** both humans review the page text, choose a $0 static host and
+   give the go-ahead. Posting the showcase does not publish this branch or open the PR.
 
 ## 3. Proposed PR strategy
 

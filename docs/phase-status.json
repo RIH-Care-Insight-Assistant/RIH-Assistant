@@ -68,13 +68,13 @@
     "Staff-UI entries of the R-01 and R-04 decisions under each reviewer's own account, and of the pending_human_review items; both humans' prototype-scope positions are recorded (L-D7, L-D8); neither has entered a staff-UI decision",
     "Readiness rules: accepted by Abhinav (L-D8), DEFERRED by Devika (L-D9) until code enforces joint decisions and release evidence matching the release commit (a change to application logic that needs separate authorization); 'ready' from the current code is not trusted. The e685260 content binding is accepted by both",
     "Register risks-3, catalog controls-3 and contracts C2/C3/C4-local-v1: accepted by Abhinav (L-D8) and with qualifications by Devika (L-D9); her conditions include a corrected register version (R-08/R-10 plan text, R-08/R-11 evidence) with fresh decisions before any release; C4 items 2 and 3 not jointly accepted",
-    "Abhinav's decision on a separate public showcase that viewers cannot interact with (Devika authorized it on her side, with conditions, L-D9; L-D8 scope is local only); both review each image; nothing posted",
     "Native-speaker review of the multilingual lexicon and the notice's Spanish sentence; clinical input on the warning-sign lists",
     "Re-verify the template contact numbers (crisis-routing.md section 6)",
     "Rerun release_readiness.py --e2e --containers on the final head (last battery on 9c8c7d2, before e380883)",
     "Optional review of the C1 baseline sources (R-05)",
     "Authorization to publish (push, one integration PR, review, merge) per docs/PUBLICATION_PLAN.md",
-    "Close issue #7 on GitHub"
+    "Close issue #7 on GitHub",
+    "Showcase (L-D10): both humans review the agent-drafted page text in showcase/index.html, choose a $0 static host and authorize posting; S3 only after the contact numbers are re-verified and a fresh decision by both"
   ],
   "head": "see git log -1 (finalization documentation commit)",
   "final_readiness": "blocked_pending_human_decision",
@@ -279,5 +279,51 @@
     ],
     "staff_ui_decisions_entered": false,
     "readiness_unchanged": "blocked_pending_human_decision"
+  },
+  "joint_showcase_decision": {
+    "date": "2026-10-15",
+    "decision_log": "L-D10",
+    "directed_by": "Abhinav Varma Vathadi (at the keyboard); Devika Rani Sanaboyina present and answered her own image questions, as Abhinav stated; an AI coding agent pre-screened the images, asked the questions, drafted the accepted captions and built the page",
+    "records_at": "85004b6",
+    "code_at": "e380883092f1d3ef600ee60b1b7e8ad52eb1e3d8",
+    "record": "docs/showcase/image-review-checklist.md",
+    "authorization": "Abhinav matched L-D9 G5: public static showcase that viewers cannot interact with, Devika's conditions (a)-(c); posting needs a separate go-ahead from both",
+    "images": {
+      "approved_by_both": [
+        "S1",
+        "S2",
+        "S4 (caption)",
+        "S5",
+        "S6",
+        "S9",
+        "S10",
+        "S11 (caption)",
+        "S13",
+        "S14",
+        "D1 (disclaimer, caption)",
+        "D2 (disclaimer)"
+      ],
+      "excluded": [
+        "S7",
+        "S8",
+        "S12"
+      ],
+      "deferred": [
+        "S3 (contact numbers to be re-verified)"
+      ]
+    },
+    "prepared": [
+      "showcase/index.html",
+      "showcase/showcase.css",
+      "showcase/manifest.json",
+      "scripts/build_showcase.py",
+      "tests/test_showcase.py"
+    ],
+    "checks": "ruff clean; full pytest 5423 passed, 1 skipped (Windows); check_routes passed; safety_eval no misses, 0/44 false positives; build assembled 14 files; page viewed on 127.0.0.1: 12/12 images, no console errors, no overflow at phone width; release battery not rerun (no application code changed)",
+    "not_yet_reviewed": [
+      "showcase page text",
+      "hosting choice"
+    ],
+    "posted": false
   }
 }

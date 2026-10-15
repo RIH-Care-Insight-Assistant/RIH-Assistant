@@ -16,7 +16,7 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 | Field | Value |
 |---|---|
 | Current phase | **All phases and the finalization complete locally; awaiting human reviews, decisions and publication authorization** |
-| Current task | Done: SB-07/SB-08/RP-06 mitigations, final audit, final batteries, [final report](FINAL_REPORT.md), [publication plan](PUBLICATION_PLAN.md), [review plan](FINALIZATION_REVIEW_PLAN.md); Devika's final review B10 ([report](audits/devika-final-review-2026-10-15.md)) and her decisions at `e380883` ([record](audits/devika-final-acceptance-2026-10-15.md)); Abhinav's decisions, records at `84c55bf` ([record](audits/abhinav-final-acceptance-2026-10-15.md)) |
+| Current task | Done: SB-07/SB-08/RP-06 mitigations, final audit, final batteries, [final report](FINAL_REPORT.md), [publication plan](PUBLICATION_PLAN.md), [review plan](FINALIZATION_REVIEW_PLAN.md); Devika's final review B10 ([report](audits/devika-final-review-2026-10-15.md)) and her decisions at `e380883` ([record](audits/devika-final-acceptance-2026-10-15.md)); Abhinav's decisions, records at `84c55bf` ([record](audits/abhinav-final-acceptance-2026-10-15.md)); joint showcase decision and image review L-D10 ([record](showcase/image-review-checklist.md)), static page prepared, not posted |
 | Last local commit | see `git log -1` (this file is updated with each milestone) |
 
 ## Repository cleanup (2026-10-15, complete locally)
@@ -250,6 +250,56 @@ readiness code or gate changed. Record:
 6. `python scripts/release_readiness.py --e2e --containers` runs on the final head.
 7. Both decide on publication.
 
+## Joint showcase decision and image review (2026-10-15, L-D10)
+
+Abhinav directed the session at the keyboard. Devika was present and answered her own image
+questions, as Abhinav stated. An AI coding agent inventoried and pre-screened the images, asked
+each person for their decisions, drafted the captions they then accepted, and built the page.
+Records at `85004b6`, code at `e380883`. No application code, safety routing, register,
+catalog, readiness code, evidence or gate changed. Record:
+[`showcase/image-review-checklist.md`](showcase/image-review-checklist.md).
+
+- **Authorization:** Abhinav matched L-D9 G5. A public static showcase that viewers cannot
+  interact with is authorized, under Devika's conditions (a)–(c). For this showcase it replaces
+  his L-D8 E2 local-only scope. Posting needs a separate go-ahead from both.
+- **Images (16 inventoried):**
+  - 12 approved by both: S1, S2, S5, S6, S9, S10, S13, S14; S4 and S11 with captions; D1 and D2
+    with the disclaimer, and D1 also with a lexicon caption.
+  - S7, S8 and S12 excluded (no banner or disclaimer).
+  - S3 deferred until the contact numbers are re-verified.
+- **Prepared, not posted:**
+  - `showcase/index.html`, `showcase/showcase.css` and `showcase/manifest.json`, where the
+    approved images are pinned by SHA-256.
+  - `scripts/build_showcase.py`, which assembles `var/showcase/` (gitignored). It refuses to
+    build if a file changed, an unapproved image is used, a caption or the disclaimer is
+    missing, or the page has scripts, forms, inputs, frames, external URLs or API paths.
+  - `tests/test_showcase.py`.
+
+  The page has no JavaScript, no web fonts and no third-party requests. A strict CSP is set and
+  `robots` is `noindex`.
+- **Checks run** (Windows 11, Python 3.13.2):
+  - Ruff clean on the new files.
+  - `tests/test_showcase.py`, `tests/test_readme_assets.py`, `tests/test_repo_assumptions.py`:
+    **75 passed**.
+  - `build_showcase.py` assembled 14 files.
+  - The assembled page was served on 127.0.0.1 only and viewed in the in-app browser: 12 of 12
+    images loaded, no console errors, no horizontal overflow at phone width, light and dark themes.
+  - Full pytest: **5423 passed, 1 skipped**. `check_routes.py`: all routing checks passed.
+    `safety_eval.py --fail-on-miss`: no misses, 0/44 false positives.
+  - The release battery was not rerun, because no application code changed.
+- **Readiness unchanged:** `blocked_pending_human_decision`. Nothing was pushed, deployed or
+  posted.
+
+**Exact next action (for a public static URL):**
+1. Both humans review the page text: run `python scripts/build_showcase.py`, then
+   `python -m http.server 8095 --bind 127.0.0.1 --directory var/showcase`, and read the page.
+2. They choose a $0 static host. One option is a new public GitHub repository holding only the
+   contents of `var/showcase/`, with GitHub Pages turned on.
+3. They give an explicit go-ahead to post. That step needs the humans' authorization. It
+   publishes only the showcase, not this branch.
+
+The other items at the end of "Devika's joint-governance decisions" stay open.
+
 ## Phase status
 
 | Phase | Status | Evidence |
@@ -476,8 +526,9 @@ do the reviews and decide the items in [`PUBLICATION_PLAN.md`](PUBLICATION_PLAN.
   changes application logic and needs separate authorization. Both humans then accept the
   fixed rules.
 - A corrected register version (R-08/R-10 plan text, R-08/R-11 evidence), with fresh decisions.
-- Abhinav's decision on the public showcase that viewers cannot interact with (Devika
-  authorized it on her side, L-D9). Both review each image before anything is posted.
+- Done 2026-10-15 (L-D10): Abhinav's matching showcase decision; both reviewed the 16 images
+  (12 approved, S3 deferred, S7/S8/S12 excluded). Still open: both review the showcase page
+  text, choose a $0 host and authorize posting; S3 after the contact numbers are re-verified.
 - Native-speaker and clinical review; staff-UI entries of the R-01 and R-04 decisions
   (both humans, each under their own account; neither has entered one) and of the pending-review items.
 - Release battery with containers rerun on the final head (last run on `9c8c7d2`, before
@@ -507,3 +558,7 @@ end of the "Abhinav's final acceptance" section above.
 Update 2026-10-15: Devika has now recorded her joint-governance decisions
 ([record](audits/devika-final-acceptance-2026-10-15.md#addendum-joint-governance-decisions-l-d9-2026-10-15), L-D9). The next action is the one at the end of the "Devika's joint-governance
 decisions" section above.
+
+Update 2026-10-15: the joint showcase decision and image review are recorded
+([record](showcase/image-review-checklist.md), L-D10). The next action is the one at the end of
+the "Joint showcase decision and image review" section above.

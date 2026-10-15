@@ -2,6 +2,14 @@
 
 Maintained only by Abhinav (or his coding agent) on his own feature branches. Repository and GitHub state are authoritative over this file.
 
+## Showcase decision (2026-10-15, L-D10) — latest
+
+- Local-first branch `feature/rih-local-enhancement-phases-2-9`, records at `85004b6`. I matched
+  Devika's L-D9 showcase authorization. Devika and I each reviewed the 16 images: 12 approved,
+  S3 deferred, S7, S8 and S12 excluded. The static page is in `showcase/`; nothing is posted.
+  Record: [`../showcase/image-review-checklist.md`](../showcase/image-review-checklist.md).
+- Next: we review the page text, choose a $0 host and decide on posting.
+
 ## Current
 
 - **Checkpoint:** C1 (Phases 0–1), close-out. **C1 is not accepted yet**; see `docs/PROJECT_STATE.md` → C1 acceptance.

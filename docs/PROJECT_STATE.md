@@ -36,6 +36,10 @@ C1 is complete and accepted. Under the local-first workflow (`AGENTS.md`; shared
     evidence can produce `ready`, so `ready` is not trusted until that is fixed.
   - A public showcase that viewers cannot interact with is authorized by her only. It needs
     Abhinav's decision.
+- **Showcase decision (2026-10-15, L-D10):** Abhinav matched Devika's showcase authorization.
+  Both approved 12 of 16 images (S3 deferred; S7, S8 and S12 excluded), and a static page is
+  prepared in `showcase/`. Not posted: both still review the page text and choose a host.
+  Readiness is unchanged.
 - **Next:** the humans do the reviews and make the decisions in the publication plan §2, then
   authorize (or not) the push and the single integration PR.
 

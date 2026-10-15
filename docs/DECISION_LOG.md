@@ -230,3 +230,20 @@ awaiting human acceptance; nothing here records an approval that was not given.
   chatbot. Readiness stays `blocked_pending_human_decision`. No staff-UI entry, code, register or
   gate change. Not native-speaker, clinical or independent evaluation. Record:
   [`audits/devika-final-acceptance-2026-10-15.md`](audits/devika-final-acceptance-2026-10-15.md#addendum-joint-governance-decisions-l-d9-2026-10-15).
+- **L-D10 (2026-10-15, joint showcase decision; Abhinav directing at the keyboard, Devika
+  present and answering her own questions as Abhinav stated; records at `85004b6`, code at
+  `e380883`; drafted into text by the coding agent at their direction):** Abhinav made a
+  decision matching L-D9 G5. A public static showcase that viewers cannot interact with is
+  authorized, under Devika's conditions (a)–(c), for images both approve. For this showcase it
+  replaces his L-D8 E2 local-only scope. Posting still needs a separate go-ahead from both.
+  Both reviewed the 16 candidate images and gave the same decisions:
+  - **12 approved:** S1, S2, S5, S6, S9, S10, S13 and S14 as they are; S4 and S11 with required
+    captions; D1 and D2 with the non-official disclaimer, and D1 also with a lexicon caption.
+  - **Excluded:** S7, S8 and S12 (no banner or disclaimer).
+  - **Deferred:** S3, until the template contact numbers are re-verified.
+
+  Both accepted the caption texts as written. The approved files are pinned by SHA-256 in
+  `showcase/manifest.json`. **Not yet reviewed:** the agent-drafted page text and the hosting
+  choice. Nothing is posted, deployed or pushed. Interactive public deployment stays blocked.
+  Readiness is unchanged (`blocked_pending_human_decision`), and no readiness rule changed.
+  Record: [`showcase/image-review-checklist.md`](showcase/image-review-checklist.md).

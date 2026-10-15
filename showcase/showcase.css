@@ -1,0 +1,113 @@
+/* Static showcase styles. Colors follow the app's tokens (frontend/src/styles.css); no web fonts,
+   no scripts and no third-party requests. */
+
+:root {
+  --gold: #fdb515;
+  --bg: #f4f4f1;
+  --surface: #ffffff;
+  --text: #111111;
+  --text-soft: #2c2c2e;
+  --muted: #58595b;
+  --border: #dddcd6;
+  --header-bg: #000000;
+  --header-text: #ffffff;
+  --header-muted: #c7c8ca;
+  --gold-tint: #fff5d9;
+  --brown-tint: #f8f0da;
+  --brown-text: #684c02;
+  --brown-line: #a67a05;
+  --shadow: 0 1px 2px rgba(17, 17, 17, 0.05), 0 8px 24px -12px rgba(17, 17, 17, 0.16);
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0b0b0c;
+    --surface: #161618;
+    --text: #f2f2f0;
+    --text-soft: #dcdcd8;
+    --muted: #a9a9a6;
+    --border: #2c2c2f;
+    --gold-tint: #2a2208;
+    --brown-tint: #251d07;
+    --brown-text: #f3d37a;
+    --brown-line: #c9970f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px -12px rgba(0, 0, 0, 0.6);
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 17px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+
+.masthead { background: var(--header-bg); color: var(--header-text); border-bottom: 4px solid var(--gold); }
+.masthead__inner { display: flex; align-items: center; gap: 14px; padding-top: 18px; padding-bottom: 18px; }
+.masthead__title { margin: 0; font-weight: 700; font-size: 1.15rem; letter-spacing: -0.01em; }
+.masthead__sub { margin: 0; color: var(--header-muted); font-size: 0.9rem; }
+.mark {
+  flex: none; width: 40px; height: 40px; border-radius: 10px; background: var(--gold);
+  box-shadow: inset 0 0 0 9px var(--gold), inset 0 0 0 12px #000000;
+}
+
+.notice {
+  margin: 28px 0 0; padding: 16px 20px; background: var(--surface); border: 1px solid var(--border);
+  border-left: 5px solid var(--gold); border-radius: 12px; box-shadow: var(--shadow);
+}
+.notice p { margin: 0; }
+.notice__static { margin-top: 8px !important; color: var(--muted); font-size: 0.95rem; }
+
+section { padding: 56px 0 0; }
+
+.eyebrow {
+  margin: 0 0 6px; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--muted);
+}
+.eyebrow::before {
+  content: ""; display: inline-block; width: 20px; height: 3px; margin: 0 8px 3px 0;
+  background: var(--gold); vertical-align: middle;
+}
+
+h1, h2 { letter-spacing: -0.02em; line-height: 1.15; margin: 0 0 14px; }
+h1 { font-size: clamp(2rem, 4.6vw, 3.1rem); max-width: 20ch; }
+h2 { font-size: clamp(1.5rem, 3vw, 2rem); }
+
+.lede { font-size: 1.15rem; color: var(--text-soft); max-width: 68ch; margin: 0; }
+.section-lede { color: var(--text-soft); max-width: 72ch; margin: 0 0 24px; }
+
+.facts {
+  list-style: none; padding: 0; margin: 28px 0 0; display: grid; gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+.facts li {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px;
+  font-weight: 600;
+}
+.facts span { display: block; font-size: 0.8rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+
+.grid { display: grid; gap: 24px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr)); margin-top: 24px; }
+
+.shot { margin: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; box-shadow: var(--shadow); }
+.shot img { display: block; width: 100%; height: auto; border-bottom: 1px solid var(--border); background: #ffffff; }
+.shot figcaption { padding: 12px 16px 14px; font-size: 0.92rem; color: var(--text-soft); }
+.shot--diagram img { background: #f4f4f1; }
+
+.caveat {
+  display: block; margin-top: 8px; padding: 8px 10px; border-left: 3px solid var(--brown-line);
+  background: var(--brown-tint); color: var(--brown-text); border-radius: 6px; font-size: 0.88rem;
+}
+
+.limits ul { margin: 0; padding-left: 1.2em; max-width: 78ch; color: var(--text-soft); }
+.limits li { margin-bottom: 8px; }
+
+.foot { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 0.9rem; }
+.foot__inner { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; padding-top: 20px; padding-bottom: 28px; }
+.foot p { margin: 0; }

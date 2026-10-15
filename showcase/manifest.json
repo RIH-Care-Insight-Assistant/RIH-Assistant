@@ -1,0 +1,28 @@
+{
+  "purpose": "Static, non-interactive portfolio showcase. Only images approved by both Abhinav and Devika are listed; each is pinned by SHA-256 so a re-captured or changed file cannot be published without a new review.",
+  "decision": "L-D10 (docs/showcase/image-review-checklist.md)",
+  "approved": [
+    {"id": "S1", "source": "docs/assets/screenshots/chat-welcome.png", "sha256": "91180fcbf36b302b6a3626d58de478bed038196959c3060f7a46afac5a468c81"},
+    {"id": "S2", "source": "docs/assets/screenshots/chat-answer-citations.png", "sha256": "cb825d220cff5cbcc79a34072082b7ffc7f030ba53f7ef5e62db932802ac8f53"},
+    {"id": "S4", "source": "docs/assets/screenshots/conversation-history.png", "sha256": "5ab7ba5dd1ed3ac521455765ceef805c9270f16939098e75b1c87e8712bcd269",
+     "required_caption": "Captured at commit 24a35bc, before fix e380883 changed the answer to the 'Medical appointment' option. Answers come from unreviewed baseline records."},
+    {"id": "S5", "source": "docs/assets/screenshots/chat-dark.png", "sha256": "5a5c4bc3927dcb268344458597c14d3f2284b1d561e5d8bbdc0660ec7ef59a72"},
+    {"id": "S6", "source": "docs/assets/screenshots/resources.png", "sha256": "973faea7ec134ca506c96425821553fd1bf7b20b0a80dfa8ea41dcb73ec93ab6"},
+    {"id": "S9", "source": "docs/assets/screenshots/staff-signin.png", "sha256": "566995668481e6044e9d1e62e7016f9d21a18954c7b07aa300af9239cea7ace5"},
+    {"id": "S10", "source": "docs/assets/screenshots/staff-source-review.png", "sha256": "1af359f34f0f2d1cf4e2f0d7b1c6ed6b71001660ed58cf3661ab9f1ece05175d"},
+    {"id": "S11", "source": "docs/assets/screenshots/governance-dashboard.png", "sha256": "2e4ca0d5ad5699785610fff7424e0a056f0412af480abf3a63fc01c6a3d1df55",
+     "required_caption": "Evidence from candidate 9c8c7d2 (2026-10-15), not the latest commit. The red-team scenarios are AI-drafted. The readiness rules are not jointly accepted, so a 'ready' status is not trusted."},
+    {"id": "S13", "source": "docs/assets/screenshots/observability-dashboard.png", "sha256": "fcf4b180c3c4ef95b3d32c2134c6db61a8581835e84b30b32f130cea9c2a2e11"},
+    {"id": "S14", "source": "docs/assets/screenshots/audit-log.png", "sha256": "8cbf28f60036c2084aaab7872faeb707afa771527b18deb14d2e9372760e2d16"},
+    {"id": "D1", "source": "docs/assets/architecture/system-architecture.png", "sha256": "6b91dafba4cb8547601f451c333270344ca60a0150346a0eeafb793d6676ce26",
+     "required_caption": "The 12-language crisis lexicon is AI-drafted and has not been reviewed by native speakers."},
+    {"id": "D2", "source": "docs/assets/architecture/request-flow.png", "sha256": "4340db7fe1f94536d411cd886c07305250b8e3504c0adf8380bd9f86aa51d040"}
+  ],
+  "excluded": {
+    "S3": "docs/assets/screenshots/chat-safety-guidance.png: deferred until the template contact numbers are re-verified (crisis-routing.md section 6), then a dated caption and a fresh decision by both",
+    "S7": "docs/assets/screenshots/mobile-chat.png: banner and disclaimer not visible",
+    "S8": "docs/assets/screenshots/mobile-resources.png: banner and disclaimer not visible",
+    "S12": "docs/assets/screenshots/governance-risk-register.png: banner and disclaimer not visible"
+  },
+  "required_disclaimer": "Independent student prototype, not an official UMBC or Retriever Integrated Health service. Synthetic data only."
+}
