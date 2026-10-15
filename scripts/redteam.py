@@ -56,7 +56,9 @@ def main() -> int:
     elif args.target == "legacy":
         results = redteam.run_legacy(scenarios, label)
     else:
-        results = redteam.run_http(scenarios, label, args.base_url, os.environ.get("RIH_RT_STAFF_PASSWORD", ""))
+        results = redteam.run_http(scenarios, label, args.base_url, os.environ.get("RIH_RT_STAFF_PASSWORD", ""),
+                                   os.environ.get("RIH_RT_REVIEWER", "rt.reviewer"),
+                                   os.environ.get("RIH_RT_ADMIN", "rt.admin"))
     doc = redteam.report(results, fixture=fixture, target=args.target, label=label, commit=git_commit())
     s = doc["summary"]
     print(f"target={args.target} attempted={s['attempted']} defended={s['defended']} "

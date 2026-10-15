@@ -73,7 +73,13 @@ def _test_ref_exists(ref: str) -> bool:
     return f'it("{name}"' in text  # Vitest test titles
 
 
-def load_governance(register_path: Path = REGISTER_PATH, controls_path: Path = CONTROLS_PATH) -> Governance:
+def load_governance(register_path: Path = REGISTER_PATH, controls_path: Path = CONTROLS_PATH,
+                    check_paths: bool | None = None) -> Governance:
+    """`check_paths` verifies that implementation, test and evidence paths exist. It defaults to
+    on in a source checkout and off in the runtime image, which ships without tests and docs
+    (the checks run in CI and in the release battery instead)."""
+    if check_paths is None:
+        check_paths = (ROOT / "tests").is_dir()
     reg, cat = _load(register_path), _load(controls_path)
     problems: List[str] = []
     control_ids = set()
@@ -83,14 +89,15 @@ def load_governance(register_path: Path = REGISTER_PATH, controls_path: Path = C
         if c["id"] in control_ids:
             problems.append(f"{c['id']}: duplicate control")
         control_ids.add(c["id"])
-        for impl in c.get("implementation", []):
-            if not (ROOT / impl.rstrip("/")).exists():
-                problems.append(f"{c['id']}: implementation path missing: {impl}")
         if not c.get("tests"):
             problems.append(f"{c['id']}: no tests mapped")
-        for t in c.get("tests", []):
-            if not _test_ref_exists(t):
-                problems.append(f"{c['id']}: test reference not found: {t}")
+        if check_paths:
+            for impl in c.get("implementation", []):
+                if not (ROOT / impl.rstrip("/")).exists():
+                    problems.append(f"{c['id']}: implementation path missing: {impl}")
+            for t in c.get("tests", []):
+                if not _test_ref_exists(t):
+                    problems.append(f"{c['id']}: test reference not found: {t}")
     fixture_ids = {s["id"] for s in json.loads(REDTEAM_FIXTURE.read_text(encoding="utf-8"))["scenarios"]}
     risk_ids = set()
     for r in reg.get("risks", []):
@@ -115,7 +122,7 @@ def load_governance(register_path: Path = REGISTER_PATH, controls_path: Path = C
         for fid in r.get("findings", []):
             if fid not in fixture_ids:
                 problems.append(f"{rid}: unknown red-team scenario {fid}")
-        for ev in r.get("evidence", []):
+        for ev in r.get("evidence", []) if check_paths else []:
             if not (ROOT / ev).exists():
                 problems.append(f"{rid}: evidence missing: {ev}")
         if not r.get("proposed_owner"):

@@ -69,12 +69,16 @@ def load_fixture(path: Path = FIXTURE) -> Dict[str, Any]:
 class Actor:
     """An httpx-compatible client with a CSRF token, like a browser tab of the real frontend."""
 
-    def __init__(self, client, *, csrf: bool = True):
+    def __init__(self, client, *, csrf: bool = True, origin: str = ORIGIN, pacer=None):
         self.c = client
+        self.origin = origin
+        self.pacer = pacer
         self.csrf = client.get("/api/v1/csrf").json()["csrf_token"] if csrf else None
 
     def request(self, method: str, path: str, *, json_body=None, raw_body=None, headers=None):
-        h = {"origin": ORIGIN}
+        if self.pacer is not None and method == "POST" and path.endswith("/api/v1/chat"):
+            self.pacer()
+        h = {"origin": self.origin}
         if self.csrf:
             h["x-csrf-token"] = self.csrf
         h.update(headers or {})
@@ -268,6 +272,13 @@ def _run_kb_inject_local(target: LocalTarget, s, ctx, failures) -> Dict[str, Any
 def _run_http(target, s, ctx, failures) -> Dict[str, Any]:
     observed = []
     actors = dict(ctx["actors"])
+
+    def a_history():
+        items = ctx["actors"]["student_a"].request(
+            "GET", f"/api/v1/sessions/{ctx['vars']['A_SESSION']}/messages?limit=50").json().get("items", [])
+        return [(m["role"], m["text"]) for m in items]
+
+    history_before = a_history() if s.get("check") == "a_history_unchanged" else None
     for step in s["steps"]:
         step = _subst(step, ctx["vars"])
         actor = actors[step["actor"]]
@@ -276,7 +287,7 @@ def _run_http(target, s, ctx, failures) -> Dict[str, Any]:
             replay_client = target.client()
             if token:
                 replay_client.cookies.set(step["replay_cookie"], token)
-            actors["replay"] = Actor(replay_client)
+            actors["replay"] = Actor(replay_client, origin=getattr(actor, "origin", ORIGIN))
         r = actor.request(step["method"], step["path"], json_body=step.get("json"), raw_body=step.get("raw_body"),
                           headers=step.get("headers"))
         template_path = s["steps"][len(observed)]["path"]
@@ -293,11 +304,8 @@ def _run_http(target, s, ctx, failures) -> Dict[str, Any]:
         for k, v in step.get("expect_headers", {}).items():
             if r.headers.get(k) != v:
                 failures.append(f"header {k}={r.headers.get(k)!r}")
-    if s.get("check") == "a_history_unchanged":
-        items = ctx["actors"]["student_a"].request(
-            "GET", f"/api/v1/sessions/{ctx['vars']['A_SESSION']}/messages").json().get("items", [])
-        if [m["text"] for m in items if m["role"] == "user"] != [A_TEXT]:
-            failures.append("student A's history changed")
+    if history_before is not None and a_history() != history_before:
+        failures.append("student A's history changed")
     return {"steps": observed}
 
 
@@ -567,29 +575,54 @@ def _http_applicable(s: Dict[str, Any]) -> bool:
     return not s.get("expect", {}).get("no_admin_effect")
 
 
-def run_http(scenarios: List[Dict[str, Any]], label: str, base_url: str, password: str) -> List[ScenarioResult]:
+def run_http(scenarios: List[Dict[str, Any]], label: str, base_url: str, password: str,
+             reviewer_name: str = "rt.reviewer", admin_name: str = "rt.admin",
+             chat_interval_s: float = 3.2) -> List[ScenarioResult]:
+    """Run HTTP-observable scenarios against a running loopback deployment.
+
+    The deployment keeps its production limits: actors log in once and are reused, and chat
+    turns are paced (`chat_interval_s`, below the 20-per-minute limit) instead of loosening
+    the rate limiter of the system under test.
+    """
     target = _HttpTarget(base_url, password)
+    last_chat = [0.0]
+
+    def pace():
+        wait = chat_interval_s - (time.monotonic() - last_chat[0])
+        if wait > 0:
+            time.sleep(wait)
+        last_chat[0] = time.monotonic()
+
+    def actor(csrf=True):
+        return Actor(target.client(), csrf=csrf, origin=base_url.rstrip("/"), pacer=pace)
+
+    a, b = actor(), actor()
+    a_session = a.request("POST", "/api/v1/sessions", json_body={}).json()["id"]
+    turn = a.request("POST", "/api/v1/chat", json_body={"session_id": a_session, "message": A_TEXT}).json()
+    b_session = b.request("POST", "/api/v1/sessions", json_body={}).json()["id"]
+    staff = {"reviewer": (actor(), reviewer_name), "admin": (actor(), admin_name)}
+    for st_actor, name in staff.values():
+        _login(st_actor, name, password)
+    admin = staff["admin"][0]
+    listed = admin.request("GET", "/api/v1/admin/sources")
+    src = (listed.json().get("items") or [{}])[0].get("chunk_id", "chk_unavailable") if listed.status_code == 200 else "x"
+    variables = {"A_SESSION": a_session, "B_SESSION": b_session, "A_MESSAGE": turn["message"]["id"], "A_TEXT": A_TEXT,
+                 "A_TITLE": A_TEXT[:40], "FIRST_SOURCE": src, "STAFF_PASSWORD": password}
+
     results = []
     for s in scenarios:
         t0 = time.perf_counter()
         if not _http_applicable(s):
             results.append(_result(s, "http", {}, [], label, t0, applicable=False))
             continue
+        s = json.loads(json.dumps(s).replace("rt.reviewer", reviewer_name).replace("rt.admin", admin_name))
+        for st_actor, name in staff.values():  # re-establish staff sessions ended by an earlier scenario
+            if not st_actor.request("GET", "/api/v1/auth/me").json().get("authenticated"):
+                _login(st_actor, name, password)
+        ctx = {"actors": {"student_a": a, "student_b": b, "reviewer": staff["reviewer"][0], "admin": admin,
+                          "anon": actor(), "nocsrf": actor(csrf=False)}, "vars": variables}
         failures: List[str] = []
         try:
-            a, b = Actor(target.client()), Actor(target.client())
-            a_session = a.request("POST", "/api/v1/sessions", json_body={}).json()["id"]
-            turn = a.request("POST", "/api/v1/chat", json_body={"session_id": a_session, "message": A_TEXT}).json()
-            b_session = b.request("POST", "/api/v1/sessions", json_body={}).json()["id"]
-            reviewer, admin = Actor(target.client()), Actor(target.client())
-            _login(reviewer, "rt.reviewer", password)
-            _login(admin, "rt.admin", password)
-            src = admin.request("GET", "/api/v1/admin/sources").json().get("items", [{}])[0].get("chunk_id", "x")
-            ctx = {"actors": {"student_a": a, "student_b": b, "reviewer": reviewer, "admin": admin,
-                              "anon": Actor(target.client()), "nocsrf": Actor(target.client(), csrf=False)},
-                   "vars": {"A_SESSION": a_session, "B_SESSION": b_session, "A_MESSAGE": turn["message"]["id"],
-                            "A_TEXT": A_TEXT, "A_TITLE": A_TEXT[:40], "FIRST_SOURCE": src,
-                            "STAFF_PASSWORD": password}}
             if s["kind"] == "http":
                 observed = _run_http(target, s, ctx, failures)
             elif s["kind"] == "bruteforce":
@@ -598,7 +631,7 @@ def run_http(scenarios: List[Dict[str, Any]], label: str, base_url: str, passwor
                 messages = s["messages"] if s["kind"] == "chat_sequence" else [_message_of(s)]
                 for m in messages:
                     r = a.request("POST", "/api/v1/chat", json_body={"session_id": a_session, "message": m})
-                _check_chat(r.json(), r.status_code, s["expect"], ctx["vars"], failures)
+                _check_chat(r.json(), r.status_code, s["expect"], variables, failures)
                 observed = _observed_chat(r.json(), r.status_code)
         except Exception as exc:
             failures.append(f"runner error: {type(exc).__name__}: {exc}")

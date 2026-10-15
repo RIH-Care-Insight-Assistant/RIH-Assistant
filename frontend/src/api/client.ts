@@ -42,7 +42,24 @@ async function ensureCsrf(): Promise<string> {
   return csrfToken;
 }
 
+const RETRYABLE = new Set([0, 502, 503, 504]);
+const RETRY_DELAY_MS = 400;
+
 async function request<T>(method: string, path: string, body?: unknown, signal?: AbortSignal): Promise<T> {
+  try {
+    return await attempt<T>(method, path, body, signal);
+  } catch (err) {
+    // Reads are idempotent: retry once after a short pause on a network error or a gateway/
+    // availability status. Writes (chat turns, feedback, reviews) are never retried automatically.
+    if (method === "GET" && err instanceof ApiError && RETRYABLE.has(err.status) && !signal?.aborted) {
+      await new Promise((r) => setTimeout(r, RETRY_DELAY_MS));
+      return attempt<T>(method, path, body, signal);
+    }
+    throw err;
+  }
+}
+
+async function attempt<T>(method: string, path: string, body?: unknown, signal?: AbortSignal): Promise<T> {
   const headers: Record<string, string> = { Accept: "application/json" };
   if (method !== "GET") {
     headers["Content-Type"] = "application/json";
