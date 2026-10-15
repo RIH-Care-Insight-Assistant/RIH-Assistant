@@ -66,7 +66,7 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 
 | 2026-10-15 | `ce05056` | Windows 11, Docker, Node 24 | `release_readiness.py --e2e --containers` | 20/21: **Bandit B108** (hard-coded `/tmp` in `container_checks.py`) blocked readiness; fixed in `fb72ab6` (run kept as `release-20261015T040445Z-bandit-b108.json`) |
 | 2026-10-15 | `fb72ab6` | Windows 11, Python 3.13.2, Node 24.14.0, Docker 29.8.1 | `release_readiness.py --e2e --containers` | **21/21 gates pass** (pytest 5201 passed, 1 skipped; safety 172/172; audits, Bandit, Trivy, gitleaks clean; frontend 24/24; E2E 5/5; red team 2/70, no critical; container integration 7/7 and resilience 7/7); readiness **blocked_pending_human_decision** ([evidence](evidence/release/latest.json)) |
-| 2026-10-15 | `fb72ab6` | WSL2 Ubuntu 26.04.1, Python 3.14.4 | battery script (ruff ×2, pytest, routes, safety eval, smoke, OpenAPI, inventory, pip-audit, Bandit) | Started at session end; the result was not captured before the session stopped (the earlier run on `ce05056` gave 5202 passed, all checks clean except the Bandit B108 since fixed) |
+| 2026-10-15 | `fb72ab6` | WSL2 Ubuntu 26.04.1, Python 3.14.4 | battery script (ruff ×2, pytest, routes, safety eval, smoke, OpenAPI, inventory, pip-audit, Bandit) | Ruff clean ×2; **5202 passed**; routes passed; safety 172/172, no misses or false positives; smoke OK; OpenAPI and inventory match; pip-audit no known vulnerabilities; Bandit clean |
 | 2026-10-15 | `fb72ab6` | kind v0.33.0 | `k8s.py down`; `kind get clusters` | Cluster deleted; no kind clusters remain (teardown verified). Compose stack left running for demos |
 
 ### Phase 9 deliverables
