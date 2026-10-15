@@ -13,6 +13,7 @@ the unsupported-language notice. Runs offline; writes nothing unless --write is 
 Usage (repo root):
   python scripts/safety_probes.py
   python scripts/safety_probes.py --write docs/evidence/safety/probes-after.json --label after
+  python scripts/safety_probes.py --dataset docs/audits/<held-out>.json   # same schema, any groups
 """
 from __future__ import annotations
 
@@ -90,8 +91,10 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[1])
     ap.add_argument("--write", type=pathlib.Path, help="write the JSON report to this path")
     ap.add_argument("--label", default="run")
+    ap.add_argument("--dataset", type=pathlib.Path, default=DATASET,
+                    help="a probe file with the same case fields (id, group, lang, text, expect_lane)")
     args = ap.parse_args(argv)
-    report = evaluate()
+    report = evaluate(args.dataset)
     report.update({"label": args.label, "code": _commit()})
     for name, g in report["groups"].items():
         notice = f", language notice {g['notice_ok']}/{g['notice_n']}" if g["notice_n"] else ""

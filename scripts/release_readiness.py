@@ -174,13 +174,18 @@ def main() -> int:
         gates = {k: v for k, v in {**GATES, **E2E, **CONTAINERS}.items() if k in args.checks}
     state: dict = {}
     checks = []
+    # The candidate is the tree as it was before any gate ran: some gates write tracked evidence
+    # (container_integration refreshes docs/evidence/redteam/containers-http.json), which used to
+    # make every full run report "-dirty". The end state is recorded separately.
+    candidate = git_commit()
     for name, fn in gates.items():
         res = fn(state)
         checks.append(res)
         print(f"{res['status'].upper():5s} {res['id']:22s} {res['duration_s']:7.1f}s  {res['detail']}")
     evidence = {
         "report": "rih-release-readiness",
-        "git_commit": git_commit(),
+        "git_commit": candidate,
+        "git_commit_after_gates": git_commit(),
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "environment": {"python": platform.python_version(), "platform": platform.platform(),
                         "node": (run([shutil.which("node") or "node", "--version"])[1].strip() if shutil.which("node") else None)},
