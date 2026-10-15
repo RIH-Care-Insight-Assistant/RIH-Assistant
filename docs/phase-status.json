@@ -3,7 +3,7 @@
   "branch": "feature/rih-local-enhancement-phases-2-9",
   "base_commit": "6ab77a862379a16d6d63d81e9d4ea709a55f2496",
   "updated": "2026-10-15",
-  "current_phase": "final_completion_phase_B_done",
+  "current_phase": "final_completion_phase_C_done",
   "published": false,
   "phases": {
     "2": {
@@ -70,14 +70,14 @@
     "Register risks-4 and catalog controls-4 approved by both (L-D14); every risk decision must still be entered by both in the staff UI under bound accounts",
     "Specialist reviews SR-01 native-speaker, SR-02 clinical (R-01), SR-03 source review (R-05), SR-04 independent security (R-07): required, none performed; they block interactive deployment",
     "Contact numbers re-checked 2026-10-15 (all match the displayed numbers); the ECR page's link targets (410-455-2735, 410-455-3230) differ from its displayed numbers: confirm with the office before any real use",
-    "Rerun release_readiness.py --e2e --containers on the final candidate (evidence schema 2; the committed evidence from 9c8c7d2 is schema 1 and is rejected)",
+    "Release battery rerun on the final candidate: done (c22b360, 21/21, schema 2)",
     "R-05 source review is now mandatory specialist review SR-03 (blocks interactive deployment)",
     "Authorization to publish (push, one integration PR, review, merge) per docs/PUBLICATION_PLAN.md",
     "Close issue #7 on GitHub",
     "Showcase follow-ups (L-D11): S3 only after the contact numbers are re-verified and a fresh decision by both; any change to the deployed page needs a new review by both and a new build hash"
   ],
   "head": "see git log -1 (finalization documentation commit)",
-  "final_readiness": "not_ready (L-D13 rules: evidence must match the candidate; see readiness_correction)",
+  "final_readiness": "not_ready (only blocker: joint reviewers not bound to staff accounts; 39 pending human items)",
   "finalization": {
     "status": "complete_local",
     "resumed_from": "bdf7659",
@@ -409,5 +409,19 @@
     "privacy_fix": "58a2417 (uvicorn access log disabled; evidence docs/evidence/privacy/log-probe.json at 58a2417, passed)",
     "contact_numbers": "re-checked 2026-10-15; matches; ECR link-target discrepancy unresolved",
     "commit": "see git log (docs(governance): register risks-4 ...)"
+  },
+  "final_validation": {
+    "candidate": "c22b360",
+    "candidate_digest": "78849fae1d87a06c7dd325e168aadc3e98e5ab57efae9df39e36e11e32fc7340",
+    "battery": "21/21 (docs/evidence/release/release-20261015T220005Z.json); two earlier failed runs kept",
+    "readiness": "not_ready: joint reviewers not bound; pending 30 joint decisions, 5 review items, 4 specialist reviews",
+    "containers": "security clean, integration 7/7, resilience 7/7 (backend 8ed5a00b83ca, frontend e4579c45594a)",
+    "kind": "verify 7/7, rollout 5/5, recovery 4/4; cluster deleted",
+    "negative_verification": "3/3 blocked",
+    "wsl2": "pytest 5495 passed",
+    "legacy_redteam": "0/17",
+    "heldout_b10": "179/208 (not held out)",
+    "flaky_test": "found and fixed in f42db4c (per-call timestamp in a test helper)",
+    "showcase": "live, 14/14 files match the approved build"
   }
 }

@@ -15,7 +15,7 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 
 | Field | Value |
 |---|---|
-| Current phase | **Final completion stage (2026-10-15): Phase A (readiness correction, L-D13) and Phase B (governance cleanup, L-D14) done; next Phase C (validation), D (publication audit), E (joint push authorization), F (final records)** |
+| Current phase | **Final completion stage (2026-10-15): Phases A (L-D13), B (L-D14) and C (validation on candidate `c22b360`) done; next D (publication audit), E (joint push authorization), F (final records)** |
 | Current task | Done: SB-07/SB-08/RP-06 mitigations, final audit, final batteries, [final report](FINAL_REPORT.md), [publication plan](PUBLICATION_PLAN.md), [review plan](FINALIZATION_REVIEW_PLAN.md); Devika's final review B10 ([report](audits/devika-final-review-2026-10-15.md)) and her decisions at `e380883` ([record](audits/devika-final-acceptance-2026-10-15.md)); Abhinav's decisions, records at `84c55bf` ([record](audits/abhinav-final-acceptance-2026-10-15.md)); joint showcase decision and image review L-D10 ([record](showcase/image-review-checklist.md)); showcase content approved and published by both, L-D11 ([record](showcase/deployment-2026-10-15.md)), live at <https://rih-care-insight-showcase.pages.dev/>; the application is not published |
 | Last local commit | see `git log -1` (this file is updated with each milestone) |
 
@@ -392,6 +392,48 @@ Both at the keyboard; each approved separately. Record: [`DECISION_LOG.md`](DECI
 candidate, run `release_readiness.py --e2e --containers` (evidence schema 2), the container
 scans, and kind verify, rollout and recovery. Then run the negative verification, the README
 asset checks and the readiness assessment.
+
+## Final completion stage, Phase C: integrated validation (2026-10-15)
+
+Run by the AI coding agent at both humans' direction. Release candidate `c22b360`, digest
+`78849fae…` (`governance/release_candidate.json`). The digest did not change when the evidence was
+committed (`55ffba2`). Windows 11, Python 3.13.2, Node 24.14.0, Docker 29.8.1, kind v0.33.0.
+
+- **Release battery, 3 runs.** All three are kept in `docs/evidence/release/`.
+  1. `f42db4c`, failed: pytest had 220 errors, because the battery's POSIX `shlex` dropped the
+     backslashes from the `--basetemp` path; pip-audit found CVE-2026-59951 in `mcp` 2.1.1;
+     Bandit B608 flagged string-built SQL in the new battery code. Fixed in `c22b360`: `mcp`
+     pinned to 1.30.0, the SQL made literal, and the basetemp passed with forward slashes.
+  2. `c22b360`, failed: pip-audit could not upgrade pip inside its temporary environment. This
+     was transient; standalone reruns passed twice.
+  3. `c22b360`, **21/21 gates pass**. pytest 5494 passed, 1 skipped; safety 172/172; pip-audit,
+     npm audit, Bandit, Trivy and gitleaks clean; frontend 70/70; E2E 8/8; red team 0/70;
+     container integration 7/7 (HTTP red team 0/35); resilience 7/7.
+- **Readiness:** `not_ready`. The only blocker is that no staff accounts are bound to the
+  joint-reviewer slots. Pending: 30 joint decisions, 5 agent-drafted items, 4 specialist reviews.
+- **Containers** (images built from `c22b360`: backend `8ed5a00b83ca`, frontend `e4579c45594a`):
+  security scan with 0 fixable HIGH/CRITICAL findings, 0 config findings and 0 secrets;
+  integration 7/7; resilience 7/7.
+- **kind:** verify 7/7 (red team over the cluster 0/35); rollout 5/5 with 0 failed requests;
+  recovery 4/4. The cluster was deleted and none remain. The Compose stack is left running.
+- **Negative verification:** all 3 regressions blocked, each by its own failing gate; the working
+  tree was untouched.
+- **Other checks:** legacy CLI red team 0/17; frozen B10 set 179/208, unchanged (no longer held
+  out); privacy probe passed (`58a2417`).
+- **WSL2 Ubuntu, Python 3.14.4:** ruff ×2 clean; pytest **5495 passed**; routes passed; safety
+  172/172.
+- **Intermittent failure, investigated:** 1 failure in 12 full runs, in
+  `test_release_is_approved_only_when_both_slots_approve_the_same_snapshot`. The test helper read
+  the clock on every call, and the snapshot hash covers the evidence time, so the server
+  correctly refused a stale snapshot (422). Mechanism confirmed and fixed in `f42db4c`. The
+  earlier unnamed failure (medical-appointment section) predates this test and stays unexplained.
+- **Showcase:** the live site serves the approved build. All 14 files match; `/index.html`
+  redirects (308) to `/`, whose page matches the L-D12 hash. Pinned images are unchanged and
+  no screenshot was regenerated.
+
+**Exact next action:** Phase D, the publication audit. Update the README, final report and
+publication plan, prepare the publication summary, and ask both humans for source-publication
+authorization, separately.
 
 ## Phase status
 
