@@ -153,3 +153,12 @@ ruff check . && python -m pytest -q && python scripts/safety_eval.py --fail-on-m
   CONTRIBUTION_MATRIX.md, INTERFACE_CONTRACTS.md, RELEASE_GATES.md, PROJECT_STATE.md,
   DECISION_LOG.md L-D1/L-D2).
 - From here on, per-phase progress is recorded in `docs/LOCAL_FIRST_PROGRESS.md`.
+
+## 2026-10-15 — Phases 2–9 complete locally (session operated from Abhinav's account)
+
+- 17 local commits `6582f97`…`fb72ab6` on `feature/rih-local-enhancement-phases-2-9`, all authored
+  as Abhinav's noreply identity, no trailers; nothing pushed.
+- Final battery on `fb72ab6`: 21/21 gates (Windows); Linux (WSL2) battery recorded in
+  `docs/LOCAL_FIRST_PROGRESS.md`. Readiness `blocked_pending_human_decision` (SB-07, SB-08).
+- Kubernetes: kind v0.33.0 cluster created, verified, rolled out/back, recovered and deleted.
+- Next: the decisions in `docs/PUBLICATION_PLAN.md` §2, then publication only if both authorize.

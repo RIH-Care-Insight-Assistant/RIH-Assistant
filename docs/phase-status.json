@@ -3,7 +3,7 @@
   "branch": "feature/rih-local-enhancement-phases-2-9",
   "base_commit": "6ab77a862379a16d6d63d81e9d4ea709a55f2496",
   "updated": "2026-10-15",
-  "current_phase": "final",
+  "current_phase": "complete_local",
   "published": false,
   "phases": {
     "2": {
@@ -66,10 +66,13 @@
   },
   "awaiting_humans": [
     "Devika's recorded confirmation of the local-first workflow (L-D1)",
-    "Acceptance of C2-local-v1 contracts (L-D2)",
-    "Close issue #7 on GitHub",
-    "Acceptance of C3-local-v1 (roles, authorization matrix, lockout, rate limits)",
-    "Decisions on open high red-team findings SB-07, SB-08, RP-06 (CLI)",
-    "Review of the agent-proposed risk register, control catalog and readiness rules (C4-local-v1)"
-  ]
+    "Acceptance of contracts C2-local-v1, C3-local-v1, C4-local-v1",
+    "Review of the agent-proposed risk register, control catalog and readiness rules",
+    "Residual-risk decisions on SB-07, SB-08 (R-01) and RP-06 (R-04)",
+    "Optional review of the C1 baseline sources (R-05)",
+    "Authorization to publish (push, one integration PR, review, merge) per docs/PUBLICATION_PLAN.md",
+    "Close issue #7 on GitHub"
+  ],
+  "head": "fb72ab6ea3bc50ff71ee8acde9218e7c35276405",
+  "final_readiness": "blocked_pending_human_decision"
 }

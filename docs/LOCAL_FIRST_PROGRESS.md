@@ -15,8 +15,8 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 
 | Field | Value |
 |---|---|
-| Current phase | Final validation and publication plan |
-| Current task | Phase 9 committed; final battery, completion report and publication plan |
+| Current phase | **All phases complete locally; awaiting human decisions and publication authorization** |
+| Current task | Done: final battery, teardown check, [final report](FINAL_REPORT.md) and [publication plan](PUBLICATION_PLAN.md) |
 | Last local commit | see `git log -1` (this file is updated with each milestone) |
 
 ## Phase status
@@ -63,6 +63,11 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 | 2026-10-15 | `25612ae` (images built from it) | Windows 11, Docker Desktop 29.8.1, Trivy 0.74.0, gitleaks 8.30.1 | `container_security.py --write`; `container_checks.py integration --write`; `container_checks.py resilience --write` | Images 0 fixable HIGH/CRITICAL; config 0; secrets 0; integration **7/7** (red team over HTTP 2/35, only SB-07/SB-08); resilience **7/7** ([evidence](evidence/containers/)) |
 
 | 2026-10-15 | `7226667` (images built from it) | kind v0.33.0 on Docker Desktop, kubectl 1.36.1 | `k8s.py up`; `verify --write`; `rollout --write`; `recovery --write` | verify **7/7** (NetworkPolicy enforcement shown with a control namespace; red team over the cluster 2/35, only SB-07/SB-08); rollout **5/5** with 0 failed requests; recovery **4/4** ([evidence](evidence/k8s/)) |
+
+| 2026-10-15 | `ce05056` | Windows 11, Docker, Node 24 | `release_readiness.py --e2e --containers` | 20/21: **Bandit B108** (hard-coded `/tmp` in `container_checks.py`) blocked readiness; fixed in `fb72ab6` (run kept as `release-20261015T040445Z-bandit-b108.json`) |
+| 2026-10-15 | `fb72ab6` | Windows 11, Python 3.13.2, Node 24.14.0, Docker 29.8.1 | `release_readiness.py --e2e --containers` | **21/21 gates pass** (pytest 5201 passed, 1 skipped; safety 172/172; audits, Bandit, Trivy, gitleaks clean; frontend 24/24; E2E 5/5; red team 2/70, no critical; container integration 7/7 and resilience 7/7); readiness **blocked_pending_human_decision** ([evidence](evidence/release/latest.json)) |
+| 2026-10-15 | `fb72ab6` | WSL2 Ubuntu 26.04.1, Python 3.14.4 | battery script (ruff ×2, pytest, routes, safety eval, smoke, OpenAPI, inventory, pip-audit, Bandit) | Started at session end; the result was not captured before the session stopped (the earlier run on `ce05056` gave 5202 passed, all checks clean except the Bandit B108 since fixed) |
+| 2026-10-15 | `fb72ab6` | kind v0.33.0 | `k8s.py down`; `kind get clusters` | Cluster deleted; no kind clusters remain (teardown verified). Compose stack left running for demos |
 
 ### Phase 9 deliverables
 
@@ -191,14 +196,21 @@ benchmark. Citations carry no governance status until Phase 3.
 - Devika: no Phase 2–9 contribution has been recorded in this session yet. Her C2-v0.1
   candidate (C1 era) is the basis of the C2-local-v1 contracts and is credited there.
 
+## Final state (2026-10-15)
+
+All phases 2–9 are complete locally with executed evidence. Nothing was pushed. The humans now
+decide the items in [`PUBLICATION_PLAN.md`](PUBLICATION_PLAN.md) §2 and whether to publish.
+
 ## Blockers and items awaiting humans
 
-- Devika's recorded confirmation of the local-first workflow (L-D1) and acceptance of
-  C2-local-v1 (L-D2), before publication.
+- Devika's recorded confirmation of the local-first workflow (L-D1); acceptance of
+  C2-local-v1, C3-local-v1 and C4-local-v1; review of the agent-proposed risk register,
+  control catalog and readiness rules.
+- Residual-risk decisions on open high findings SB-07, SB-08 (R-01) and RP-06 (R-04).
+- Authorization to publish (push, one integration PR, Devika's review, merge).
 - Issue #7 is still open on GitHub (human action).
 
-## Next executable action
+## Next executable action (humans)
 
-Final: run `scripts/release_readiness.py --e2e --containers` on a clean commit, demonstrate
-teardown (`k8s.py down`), write the completion report and the publication plan, and stop
-before any push for the humans' decision.
+Read [`FINAL_REPORT.md`](FINAL_REPORT.md) and [`PUBLICATION_PLAN.md`](PUBLICATION_PLAN.md); make
+the §2 decisions; then authorize or decline publication. No agent action is pending.

@@ -4,8 +4,8 @@
   "target": "http",
   "fixture_version": "1.0.1",
   "fixture_sha256": "ae4a4d3983515b3037c0ced7e4c45d4a512a45f93bc8ec881622042f31446ba1",
-  "git_commit": "25612ae",
-  "generated_at": "2026-10-15T03:39:35Z",
+  "git_commit": "fb72ab6-dirty",
+  "generated_at": "2026-10-15T04:08:25Z",
   "summary": {
     "scenarios_total": 70,
     "attempted": 35,
@@ -193,7 +193,7 @@
       "passed": true,
       "evidence_ref": "containers-http#PI-05",
       "mitigation_status": "mitigated",
-      "duration_ms": 2764,
+      "duration_ms": 2710,
       "failures": []
     },
     {
@@ -218,7 +218,7 @@
       "passed": true,
       "evidence_ref": "containers-http#PI-06",
       "mitigation_status": "mitigated",
-      "duration_ms": 3188,
+      "duration_ms": 3201,
       "failures": []
     },
     {
@@ -435,7 +435,7 @@
       "passed": true,
       "evidence_ref": "containers-http#SB-01",
       "mitigation_status": "mitigated",
-      "duration_ms": 3196,
+      "duration_ms": 3199,
       "failures": []
     },
     {
@@ -460,7 +460,7 @@
       "passed": true,
       "evidence_ref": "containers-http#SB-02",
       "mitigation_status": "mitigated",
-      "duration_ms": 3203,
+      "duration_ms": 3202,
       "failures": []
     },
     {
@@ -485,7 +485,7 @@
       "passed": true,
       "evidence_ref": "containers-http#SB-03",
       "mitigation_status": "mitigated",
-      "duration_ms": 3196,
+      "duration_ms": 3197,
       "failures": []
     },
     {
@@ -510,7 +510,7 @@
       "passed": true,
       "evidence_ref": "containers-http#SB-04",
       "mitigation_status": "mitigated",
-      "duration_ms": 3200,
+      "duration_ms": 3201,
       "failures": []
     },
     {
@@ -535,7 +535,7 @@
       "passed": true,
       "evidence_ref": "containers-http#SB-05",
       "mitigation_status": "mitigated",
-      "duration_ms": 3202,
+      "duration_ms": 3201,
       "failures": []
     },
     {
@@ -560,7 +560,7 @@
       "passed": true,
       "evidence_ref": "containers-http#SB-06",
       "mitigation_status": "mitigated",
-      "duration_ms": 3198,
+      "duration_ms": 3201,
       "failures": []
     },
     {
@@ -587,7 +587,7 @@
       "passed": false,
       "evidence_ref": "containers-http#SB-07",
       "mitigation_status": "open",
-      "duration_ms": 3221,
+      "duration_ms": 3204,
       "failures": [
         "safety_lane None != urgent_safety"
       ]
@@ -616,7 +616,7 @@
       "passed": false,
       "evidence_ref": "containers-http#SB-08",
       "mitigation_status": "open",
-      "duration_ms": 3196,
+      "duration_ms": 3199,
       "failures": [
         "safety_lane None != urgent_safety"
       ]
@@ -643,7 +643,7 @@
       "passed": true,
       "evidence_ref": "containers-http#SB-09",
       "mitigation_status": "mitigated",
-      "duration_ms": 3203,
+      "duration_ms": 3192,
       "failures": []
     },
     {
@@ -668,7 +668,7 @@
       "passed": true,
       "evidence_ref": "containers-http#SB-10",
       "mitigation_status": "mitigated",
-      "duration_ms": 3205,
+      "duration_ms": 3200,
       "failures": []
     },
     {
@@ -693,7 +693,7 @@
       "passed": true,
       "evidence_ref": "containers-http#SB-11",
       "mitigation_status": "mitigated",
-      "duration_ms": 3176,
+      "duration_ms": 3201,
       "failures": []
     },
     {
@@ -755,7 +755,7 @@
       "passed": true,
       "evidence_ref": "containers-http#SB-14",
       "mitigation_status": "mitigated",
-      "duration_ms": 6415,
+      "duration_ms": 6398,
       "failures": []
     },
     {
@@ -965,7 +965,7 @@
       "passed": true,
       "evidence_ref": "containers-http#PE-01",
       "mitigation_status": "mitigated",
-      "duration_ms": 350,
+      "duration_ms": 405,
       "failures": []
     },
     {
@@ -1000,7 +1000,7 @@
       "passed": true,
       "evidence_ref": "containers-http#PE-02",
       "mitigation_status": "mitigated",
-      "duration_ms": 342,
+      "duration_ms": 367,
       "failures": []
     },
     {
@@ -1035,7 +1035,7 @@
       "passed": true,
       "evidence_ref": "containers-http#PE-03",
       "mitigation_status": "mitigated",
-      "duration_ms": 369,
+      "duration_ms": 358,
       "failures": []
     },
     {
@@ -1070,7 +1070,7 @@
       "passed": true,
       "evidence_ref": "containers-http#PE-04",
       "mitigation_status": "mitigated",
-      "duration_ms": 342,
+      "duration_ms": 346,
       "failures": []
     },
     {
@@ -1105,7 +1105,7 @@
       "passed": true,
       "evidence_ref": "containers-http#PE-05",
       "mitigation_status": "mitigated",
-      "duration_ms": 315,
+      "duration_ms": 338,
       "failures": []
     },
     {
@@ -1171,7 +1171,7 @@
       "passed": true,
       "evidence_ref": "containers-http#PE-07",
       "mitigation_status": "mitigated",
-      "duration_ms": 535,
+      "duration_ms": 515,
       "failures": []
     },
     {
@@ -1206,7 +1206,7 @@
       "passed": true,
       "evidence_ref": "containers-http#PE-08",
       "mitigation_status": "mitigated",
-      "duration_ms": 368,
+      "duration_ms": 375,
       "failures": []
     },
     {
@@ -1241,7 +1241,7 @@
       "passed": true,
       "evidence_ref": "containers-http#PE-09",
       "mitigation_status": "mitigated",
-      "duration_ms": 354,
+      "duration_ms": 361,
       "failures": []
     },
     {
@@ -1276,7 +1276,7 @@
       "passed": true,
       "evidence_ref": "containers-http#CS-01",
       "mitigation_status": "mitigated",
-      "duration_ms": 340,
+      "duration_ms": 350,
       "failures": []
     },
     {
@@ -1311,7 +1311,7 @@
       "passed": true,
       "evidence_ref": "containers-http#CS-02",
       "mitigation_status": "mitigated",
-      "duration_ms": 316,
+      "duration_ms": 357,
       "failures": []
     },
     {
@@ -1346,7 +1346,7 @@
       "passed": true,
       "evidence_ref": "containers-http#CS-03",
       "mitigation_status": "mitigated",
-      "duration_ms": 346,
+      "duration_ms": 355,
       "failures": []
     },
     {
@@ -1381,7 +1381,7 @@
       "passed": true,
       "evidence_ref": "containers-http#CS-04",
       "mitigation_status": "mitigated",
-      "duration_ms": 325,
+      "duration_ms": 335,
       "failures": []
     },
     {
@@ -1416,7 +1416,7 @@
       "passed": true,
       "evidence_ref": "containers-http#CS-05",
       "mitigation_status": "mitigated",
-      "duration_ms": 324,
+      "duration_ms": 349,
       "failures": []
     },
     {
@@ -1455,7 +1455,7 @@
       "passed": true,
       "evidence_ref": "containers-http#CS-06",
       "mitigation_status": "mitigated",
-      "duration_ms": 2550,
+      "duration_ms": 2515,
       "failures": []
     },
     {
@@ -1490,7 +1490,7 @@
       "passed": true,
       "evidence_ref": "containers-http#CS-07",
       "mitigation_status": "mitigated",
-      "duration_ms": 336,
+      "duration_ms": 394,
       "failures": []
     },
     {
@@ -1526,7 +1526,7 @@
       "passed": true,
       "evidence_ref": "containers-http#CS-08",
       "mitigation_status": "mitigated",
-      "duration_ms": 338,
+      "duration_ms": 332,
       "failures": []
     },
     {
@@ -1561,7 +1561,7 @@
       "passed": true,
       "evidence_ref": "containers-http#ID-01",
       "mitigation_status": "mitigated",
-      "duration_ms": 2520,
+      "duration_ms": 2467,
       "failures": []
     },
     {
@@ -1596,7 +1596,7 @@
       "passed": true,
       "evidence_ref": "containers-http#ID-02",
       "mitigation_status": "mitigated",
-      "duration_ms": 341,
+      "duration_ms": 427,
       "failures": []
     },
     {
@@ -1631,7 +1631,7 @@
       "passed": true,
       "evidence_ref": "containers-http#ID-03",
       "mitigation_status": "mitigated",
-      "duration_ms": 387,
+      "duration_ms": 414,
       "failures": []
     },
     {
@@ -1670,7 +1670,7 @@
       "passed": true,
       "evidence_ref": "containers-http#ID-04",
       "mitigation_status": "mitigated",
-      "duration_ms": 318,
+      "duration_ms": 425,
       "failures": []
     },
     {
@@ -1692,7 +1692,7 @@
       "passed": true,
       "evidence_ref": "containers-http#ID-05",
       "mitigation_status": "mitigated",
-      "duration_ms": 450,
+      "duration_ms": 506,
       "failures": []
     },
     {

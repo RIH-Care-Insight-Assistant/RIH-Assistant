@@ -147,3 +147,14 @@ awaiting human acceptance; nothing here records an approval that was not given.
 - **L-D2 (2026-10-14):** C2-local-v1 contracts adopted for local implementation, derived
   from Devika's C2-v0.1 candidate; additions and open items are listed in
   [`contracts/C2-local-v1.md`](contracts/C2-local-v1.md). Awaiting human acceptance.
+- **L-D3 (2026-10-15, engineering decisions made in the operator's session; awaiting human
+  acceptance):** governed retrieval uses the `hybrid` ranker because it beat the C1 lexical
+  baseline on the frozen benchmark (24/26 vs 22/26 hit@1, 0/6 vs 2/6 false hits); C1 KB records
+  enter the source inventory as `baseline` (never as approved); Policy-as-Code with separate http
+  and agent channels and explicit denies for agent access to admin resources and staff access to
+  conversations; escalate-only de-obfuscation variants added to `route()` after red-team findings
+  SB-04/05/06 (safety dataset still 172/172, 0/44 FP); readiness blocks on critical findings and
+  waits for human residual-risk decisions on high ones; one API replica (SQLite, in-memory limits).
+- **L-D4 (2026-10-15):** Phases 2–9 complete locally at `fb72ab6`; final battery 21/21 gates pass;
+  readiness `blocked_pending_human_decision`. Publication plan prepared; nothing pushed. No
+  decision by Devika is recorded for Phases 2–9 and none is implied.

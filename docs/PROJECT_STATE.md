@@ -5,16 +5,20 @@ Shared checkpoint state. Contributor detail lives in
 the live local implementation record for Phases 2–9 is
 [`LOCAL_FIRST_PROGRESS.md`](LOCAL_FIRST_PROGRESS.md).
 
-Last updated: 2026-10-14, on local branch `feature/rih-local-enhancement-phases-2-9`
+Last updated: 2026-10-15, on local branch `feature/rih-local-enhancement-phases-2-9`
 (local-first workflow; not yet published).
 
 ## Current checkpoint
 
-**C2 (Phases 2–3), local implementation milestone, in progress.** C1 is complete and
-accepted. From 2026-10-14 the humans work together on one Windows PC under the
-local-first workflow (`AGENTS.md`; shared instructions §6.1): one integrated branch, no
-intermediate pushes or PRs, publication only after the whole enhancement validates
-locally and the humans authorize it.
+**C2–C5 (Phases 2–9) are implemented and validated locally; publication awaits the humans.**
+C1 is complete and accepted. Under the local-first workflow (`AGENTS.md`; shared instructions
+§6.1) all remaining phases were built on one integrated branch with no pushes or PRs.
+
+- **Local head:** `fb72ab6` (17 commits on top of `6ab77a8`). Final battery on that commit: 21/21
+  gates pass; release readiness **blocked pending human residual-risk decisions** (SB-07, SB-08).
+  Report: [`FINAL_REPORT.md`](FINAL_REPORT.md); plan: [`PUBLICATION_PLAN.md`](PUBLICATION_PLAN.md).
+- **Next:** the humans make the decisions listed in the publication plan, then authorize (or not)
+  the push and the single integration PR.
 
 - **C1 accepted:** Devika approved PR #10 on 2026-10-12 at 17:04:56 UTC; Abhinav merged it
   at 17:05:25 UTC as `6ab77a8`. CI run 38281894574 on `6ab77a8` succeeded (verified
@@ -300,9 +304,8 @@ Phase exit criteria (`MASTER_PLAN.md`):
 
 ## Exact safe next step
 
-Follow [`LOCAL_FIRST_PROGRESS.md`](LOCAL_FIRST_PROGRESS.md) → *Next executable action*.
-Publication (push, PR, merge) waits for explicit human authorization after the final
-local validation and publication plan.
+Both humans read [`PUBLICATION_PLAN.md`](PUBLICATION_PLAN.md) §2 and make the listed decisions;
+publication (push, PR, merge) happens only with their explicit authorization.
 
 ## Resume testing
 

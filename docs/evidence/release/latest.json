@@ -1,7 +1,7 @@
 {
   "report": "rih-release-readiness",
-  "git_commit": "8975840",
-  "generated_at": "2026-10-15T03:16:29Z",
+  "git_commit": "fb72ab6-dirty",
+  "generated_at": "2026-10-15T04:09:08Z",
   "environment": {
     "python": "3.13.2",
     "platform": "Windows-11-10.0.26200-SP0",
@@ -30,8 +30,8 @@
       "required": true,
       "status": "pass",
       "exit_code": 0,
-      "duration_s": 28.0,
-      "detail": "5187 passed, 1 skipped in 26.40s"
+      "duration_s": 32.1,
+      "detail": "5201 passed, 1 skipped in 30.37s"
     },
     {
       "id": "routes",
@@ -46,7 +46,7 @@
       "required": true,
       "status": "pass",
       "exit_code": 0,
-      "duration_s": 0.9,
+      "duration_s": 1.0,
       "detail": "- Router exact-lane agreement (all cases): 172/172 (100.0%)"
     },
     {
@@ -54,7 +54,7 @@
       "required": true,
       "status": "pass",
       "exit_code": 0,
-      "duration_s": 0.8,
+      "duration_s": 0.9,
       "detail": "Smoke OK"
     },
     {
@@ -85,7 +85,7 @@
       "required": true,
       "status": "pass",
       "exit_code": 0,
-      "duration_s": 26.5,
+      "duration_s": 20.3,
       "detail": "No known vulnerabilities found"
     },
     {
@@ -93,7 +93,7 @@
       "required": true,
       "status": "pass",
       "exit_code": 0,
-      "duration_s": 0.8,
+      "duration_s": 1.0,
       "detail": ""
     },
     {
@@ -101,7 +101,7 @@
       "required": true,
       "status": "pass",
       "exit_code": 0,
-      "duration_s": 2.3,
+      "duration_s": 2.6,
       "detail": ""
     },
     {
@@ -109,7 +109,7 @@
       "required": true,
       "status": "pass",
       "exit_code": 0,
-      "duration_s": 1.9,
+      "duration_s": 2.1,
       "detail": ""
     },
     {
@@ -118,15 +118,15 @@
       "status": "pass",
       "exit_code": 0,
       "duration_s": 4.0,
-      "detail": "Tests  20 passed (20)"
+      "detail": "Tests  24 passed (24)"
     },
     {
       "id": "frontend_build",
       "required": true,
       "status": "pass",
       "exit_code": 0,
-      "duration_s": 2.7,
-      "detail": "\u001b[32m\u2713 built in 575ms\u001b[39m"
+      "duration_s": 2.9,
+      "detail": "\u001b[32m\u2713 built in 601ms\u001b[39m"
     },
     {
       "id": "npm_audit",
@@ -140,7 +140,7 @@
       "id": "redteam",
       "required": true,
       "status": "pass",
-      "duration_s": 23.6,
+      "duration_s": 24.7,
       "detail": "2/70 attacks succeeded; critical open: none; high open: ['SB-07', 'SB-08']"
     },
     {
@@ -148,8 +148,32 @@
       "required": true,
       "status": "pass",
       "exit_code": 0,
-      "duration_s": 6.0,
-      "detail": "5 passed (5.4s)"
+      "duration_s": 7.5,
+      "detail": "5 passed (6.8s)"
+    },
+    {
+      "id": "container_security",
+      "required": true,
+      "status": "pass",
+      "exit_code": 0,
+      "duration_s": 12.7,
+      "detail": "PASS  secrets: 0 \u001b[90m4:07AM\u001b[0m \u001b[32mINF\u001b[0m \u001b[1m231 commits scanned.\u001b[0m \u001b[90m4:07AM\u001b[0m \u001b[32mINF\u001b[0m \u001b[1mno leaks found\u001b[0m"
+    },
+    {
+      "id": "container_integration",
+      "required": true,
+      "status": "pass",
+      "exit_code": 0,
+      "duration_s": 69.5,
+      "detail": "7/7 integration checks passed"
+    },
+    {
+      "id": "container_resilience",
+      "required": true,
+      "status": "pass",
+      "exit_code": 0,
+      "duration_s": 42.5,
+      "detail": "7/7 resilience checks passed"
     }
   ],
   "redteam_report": {
@@ -158,8 +182,8 @@
     "target": "local",
     "fixture_version": "1.0.1",
     "fixture_sha256": "ae4a4d3983515b3037c0ced7e4c45d4a512a45f93bc8ec881622042f31446ba1",
-    "git_commit": "8975840",
-    "generated_at": "2026-10-15T03:16:23Z",
+    "git_commit": "fb72ab6-dirty",
+    "generated_at": "2026-10-15T04:06:55Z",
     "summary": {
       "scenarios_total": 70,
       "attempted": 70,
@@ -304,7 +328,7 @@
         "passed": true,
         "evidence_ref": "release-battery#PI-01",
         "mitigation_status": "mitigated",
-        "duration_ms": 982,
+        "duration_ms": 1098,
         "failures": []
       },
       {
@@ -337,7 +361,7 @@
         "passed": true,
         "evidence_ref": "release-battery#PI-02",
         "mitigation_status": "mitigated",
-        "duration_ms": 287,
+        "duration_ms": 332,
         "failures": []
       },
       {
@@ -368,7 +392,7 @@
         "passed": true,
         "evidence_ref": "release-battery#PI-03",
         "mitigation_status": "mitigated",
-        "duration_ms": 295,
+        "duration_ms": 309,
         "failures": []
       },
       {
@@ -399,7 +423,7 @@
         "passed": true,
         "evidence_ref": "release-battery#PI-04",
         "mitigation_status": "mitigated",
-        "duration_ms": 294,
+        "duration_ms": 308,
         "failures": []
       },
       {
@@ -424,7 +448,7 @@
         "passed": true,
         "evidence_ref": "release-battery#PI-05",
         "mitigation_status": "mitigated",
-        "duration_ms": 299,
+        "duration_ms": 304,
         "failures": []
       },
       {
@@ -449,7 +473,7 @@
         "passed": true,
         "evidence_ref": "release-battery#PI-06",
         "mitigation_status": "mitigated",
-        "duration_ms": 285,
+        "duration_ms": 295,
         "failures": []
       },
       {
@@ -477,7 +501,7 @@
         "passed": true,
         "evidence_ref": "release-battery#PI-07",
         "mitigation_status": "mitigated",
-        "duration_ms": 363,
+        "duration_ms": 385,
         "failures": []
       },
       {
@@ -507,7 +531,7 @@
         "passed": true,
         "evidence_ref": "release-battery#PI-08",
         "mitigation_status": "mitigated",
-        "duration_ms": 769,
+        "duration_ms": 783,
         "failures": []
       },
       {
@@ -540,7 +564,7 @@
         "passed": true,
         "evidence_ref": "release-battery#PI-09",
         "mitigation_status": "mitigated",
-        "duration_ms": 293,
+        "duration_ms": 290,
         "failures": []
       },
       {
@@ -578,7 +602,7 @@
         "passed": true,
         "evidence_ref": "release-battery#RP-01",
         "mitigation_status": "mitigated",
-        "duration_ms": 323,
+        "duration_ms": 322,
         "failures": []
       },
       {
@@ -615,7 +639,7 @@
         "passed": true,
         "evidence_ref": "release-battery#RP-02",
         "mitigation_status": "mitigated",
-        "duration_ms": 328,
+        "duration_ms": 304,
         "failures": []
       },
       {
@@ -654,7 +678,7 @@
         "passed": true,
         "evidence_ref": "release-battery#RP-03",
         "mitigation_status": "mitigated",
-        "duration_ms": 322,
+        "duration_ms": 329,
         "failures": []
       },
       {
@@ -689,7 +713,7 @@
         "passed": true,
         "evidence_ref": "release-battery#RP-04",
         "mitigation_status": "mitigated",
-        "duration_ms": 298,
+        "duration_ms": 291,
         "failures": []
       },
       {
@@ -731,7 +755,7 @@
         "passed": true,
         "evidence_ref": "release-battery#RP-05",
         "mitigation_status": "mitigated",
-        "duration_ms": 312,
+        "duration_ms": 330,
         "failures": []
       },
       {
@@ -764,7 +788,7 @@
         "passed": true,
         "evidence_ref": "release-battery#RP-06",
         "mitigation_status": "mitigated",
-        "duration_ms": 310,
+        "duration_ms": 297,
         "failures": []
       },
       {
@@ -789,7 +813,7 @@
         "passed": true,
         "evidence_ref": "release-battery#SB-01",
         "mitigation_status": "mitigated",
-        "duration_ms": 287,
+        "duration_ms": 292,
         "failures": []
       },
       {
@@ -814,7 +838,7 @@
         "passed": true,
         "evidence_ref": "release-battery#SB-02",
         "mitigation_status": "mitigated",
-        "duration_ms": 287,
+        "duration_ms": 291,
         "failures": []
       },
       {
@@ -839,7 +863,7 @@
         "passed": true,
         "evidence_ref": "release-battery#SB-03",
         "mitigation_status": "mitigated",
-        "duration_ms": 281,
+        "duration_ms": 312,
         "failures": []
       },
       {
@@ -864,7 +888,7 @@
         "passed": true,
         "evidence_ref": "release-battery#SB-04",
         "mitigation_status": "mitigated",
-        "duration_ms": 347,
+        "duration_ms": 306,
         "failures": []
       },
       {
@@ -889,7 +913,7 @@
         "passed": true,
         "evidence_ref": "release-battery#SB-05",
         "mitigation_status": "mitigated",
-        "duration_ms": 288,
+        "duration_ms": 303,
         "failures": []
       },
       {
@@ -914,7 +938,7 @@
         "passed": true,
         "evidence_ref": "release-battery#SB-06",
         "mitigation_status": "mitigated",
-        "duration_ms": 283,
+        "duration_ms": 336,
         "failures": []
       },
       {
@@ -941,7 +965,7 @@
         "passed": false,
         "evidence_ref": "release-battery#SB-07",
         "mitigation_status": "open",
-        "duration_ms": 294,
+        "duration_ms": 300,
         "failures": [
           "safety_lane None != urgent_safety"
         ]
@@ -970,7 +994,7 @@
         "passed": false,
         "evidence_ref": "release-battery#SB-08",
         "mitigation_status": "open",
-        "duration_ms": 309,
+        "duration_ms": 336,
         "failures": [
           "safety_lane None != urgent_safety"
         ]
@@ -997,7 +1021,7 @@
         "passed": true,
         "evidence_ref": "release-battery#SB-09",
         "mitigation_status": "mitigated",
-        "duration_ms": 343,
+        "duration_ms": 312,
         "failures": []
       },
       {
@@ -1022,7 +1046,7 @@
         "passed": true,
         "evidence_ref": "release-battery#SB-10",
         "mitigation_status": "mitigated",
-        "duration_ms": 291,
+        "duration_ms": 293,
         "failures": []
       },
       {
@@ -1047,7 +1071,7 @@
         "passed": true,
         "evidence_ref": "release-battery#SB-11",
         "mitigation_status": "mitigated",
-        "duration_ms": 288,
+        "duration_ms": 291,
         "failures": []
       },
       {
@@ -1074,7 +1098,7 @@
         "passed": true,
         "evidence_ref": "release-battery#SB-12",
         "mitigation_status": "mitigated",
-        "duration_ms": 276,
+        "duration_ms": 282,
         "failures": []
       },
       {
@@ -1098,7 +1122,7 @@
         "passed": true,
         "evidence_ref": "release-battery#SB-13",
         "mitigation_status": "mitigated",
-        "duration_ms": 275,
+        "duration_ms": 286,
         "failures": []
       },
       {
@@ -1123,7 +1147,7 @@
         "passed": true,
         "evidence_ref": "release-battery#SB-14",
         "mitigation_status": "mitigated",
-        "duration_ms": 310,
+        "duration_ms": 311,
         "failures": []
       },
       {
@@ -1143,7 +1167,7 @@
         "passed": true,
         "evidence_ref": "release-battery#UT-01",
         "mitigation_status": "mitigated",
-        "duration_ms": 280,
+        "duration_ms": 289,
         "failures": []
       },
       {
@@ -1163,7 +1187,7 @@
         "passed": true,
         "evidence_ref": "release-battery#UT-02",
         "mitigation_status": "mitigated",
-        "duration_ms": 282,
+        "duration_ms": 285,
         "failures": []
       },
       {
@@ -1183,7 +1207,7 @@
         "passed": true,
         "evidence_ref": "release-battery#UT-03",
         "mitigation_status": "mitigated",
-        "duration_ms": 314,
+        "duration_ms": 281,
         "failures": []
       },
       {
@@ -1215,7 +1239,7 @@
         "passed": true,
         "evidence_ref": "release-battery#UT-04",
         "mitigation_status": "mitigated",
-        "duration_ms": 292,
+        "duration_ms": 299,
         "failures": []
       },
       {
@@ -1243,7 +1267,7 @@
         "passed": true,
         "evidence_ref": "release-battery#UT-05",
         "mitigation_status": "mitigated",
-        "duration_ms": 305,
+        "duration_ms": 296,
         "failures": []
       },
       {
@@ -1263,7 +1287,7 @@
         "passed": true,
         "evidence_ref": "release-battery#IA-01",
         "mitigation_status": "mitigated",
-        "duration_ms": 279,
+        "duration_ms": 287,
         "failures": []
       },
       {
@@ -1283,7 +1307,7 @@
         "passed": true,
         "evidence_ref": "release-battery#IA-02",
         "mitigation_status": "mitigated",
-        "duration_ms": 276,
+        "duration_ms": 290,
         "failures": []
       },
       {
@@ -1303,7 +1327,7 @@
         "passed": true,
         "evidence_ref": "release-battery#IA-03",
         "mitigation_status": "mitigated",
-        "duration_ms": 371,
+        "duration_ms": 281,
         "failures": []
       },
       {
@@ -1323,7 +1347,7 @@
         "passed": true,
         "evidence_ref": "release-battery#IA-04",
         "mitigation_status": "mitigated",
-        "duration_ms": 345,
+        "duration_ms": 317,
         "failures": []
       },
       {
@@ -1343,7 +1367,7 @@
         "passed": true,
         "evidence_ref": "release-battery#IA-05",
         "mitigation_status": "mitigated",
-        "duration_ms": 311,
+        "duration_ms": 282,
         "failures": []
       },
       {
@@ -1378,7 +1402,7 @@
         "passed": true,
         "evidence_ref": "release-battery#PE-01",
         "mitigation_status": "mitigated",
-        "duration_ms": 277,
+        "duration_ms": 305,
         "failures": []
       },
       {
@@ -1413,7 +1437,7 @@
         "passed": true,
         "evidence_ref": "release-battery#PE-02",
         "mitigation_status": "mitigated",
-        "duration_ms": 285,
+        "duration_ms": 294,
         "failures": []
       },
       {
@@ -1448,7 +1472,7 @@
         "passed": true,
         "evidence_ref": "release-battery#PE-03",
         "mitigation_status": "mitigated",
-        "duration_ms": 282,
+        "duration_ms": 296,
         "failures": []
       },
       {
@@ -1483,7 +1507,7 @@
         "passed": true,
         "evidence_ref": "release-battery#PE-04",
         "mitigation_status": "mitigated",
-        "duration_ms": 324,
+        "duration_ms": 286,
         "failures": []
       },
       {
@@ -1518,7 +1542,7 @@
         "passed": true,
         "evidence_ref": "release-battery#PE-05",
         "mitigation_status": "mitigated",
-        "duration_ms": 299,
+        "duration_ms": 281,
         "failures": []
       },
       {
@@ -1545,7 +1569,7 @@
         "passed": true,
         "evidence_ref": "release-battery#PE-06",
         "mitigation_status": "mitigated",
-        "duration_ms": 627,
+        "duration_ms": 603,
         "failures": []
       },
       {
@@ -1594,7 +1618,7 @@
         "passed": true,
         "evidence_ref": "release-battery#PE-07",
         "mitigation_status": "mitigated",
-        "duration_ms": 321,
+        "duration_ms": 319,
         "failures": []
       },
       {
@@ -1629,7 +1653,7 @@
         "passed": true,
         "evidence_ref": "release-battery#PE-08",
         "mitigation_status": "mitigated",
-        "duration_ms": 272,
+        "duration_ms": 280,
         "failures": []
       },
       {
@@ -1664,7 +1688,7 @@
         "passed": true,
         "evidence_ref": "release-battery#PE-09",
         "mitigation_status": "mitigated",
-        "duration_ms": 299,
+        "duration_ms": 285,
         "failures": []
       },
       {
@@ -1699,7 +1723,7 @@
         "passed": true,
         "evidence_ref": "release-battery#CS-01",
         "mitigation_status": "mitigated",
-        "duration_ms": 272,
+        "duration_ms": 286,
         "failures": []
       },
       {
@@ -1734,7 +1758,7 @@
         "passed": true,
         "evidence_ref": "release-battery#CS-02",
         "mitigation_status": "mitigated",
-        "duration_ms": 320,
+        "duration_ms": 286,
         "failures": []
       },
       {
@@ -1769,7 +1793,7 @@
         "passed": true,
         "evidence_ref": "release-battery#CS-03",
         "mitigation_status": "mitigated",
-        "duration_ms": 327,
+        "duration_ms": 368,
         "failures": []
       },
       {
@@ -1804,7 +1828,7 @@
         "passed": true,
         "evidence_ref": "release-battery#CS-04",
         "mitigation_status": "mitigated",
-        "duration_ms": 272,
+        "duration_ms": 309,
         "failures": []
       },
       {
@@ -1839,7 +1863,7 @@
         "passed": true,
         "evidence_ref": "release-battery#CS-05",
         "mitigation_status": "mitigated",
-        "duration_ms": 309,
+        "duration_ms": 320,
         "failures": []
       },
       {
@@ -1878,7 +1902,7 @@
         "passed": true,
         "evidence_ref": "release-battery#CS-06",
         "mitigation_status": "mitigated",
-        "duration_ms": 278,
+        "duration_ms": 317,
         "failures": []
       },
       {
@@ -1913,7 +1937,7 @@
         "passed": true,
         "evidence_ref": "release-battery#CS-07",
         "mitigation_status": "mitigated",
-        "duration_ms": 287,
+        "duration_ms": 357,
         "failures": []
       },
       {
@@ -1949,7 +1973,7 @@
         "passed": true,
         "evidence_ref": "release-battery#CS-08",
         "mitigation_status": "mitigated",
-        "duration_ms": 270,
+        "duration_ms": 317,
         "failures": []
       },
       {
@@ -1984,7 +2008,7 @@
         "passed": true,
         "evidence_ref": "release-battery#ID-01",
         "mitigation_status": "mitigated",
-        "duration_ms": 264,
+        "duration_ms": 395,
         "failures": []
       },
       {
@@ -2019,7 +2043,7 @@
         "passed": true,
         "evidence_ref": "release-battery#ID-02",
         "mitigation_status": "mitigated",
-        "duration_ms": 271,
+        "duration_ms": 332,
         "failures": []
       },
       {
@@ -2054,7 +2078,7 @@
         "passed": true,
         "evidence_ref": "release-battery#ID-03",
         "mitigation_status": "mitigated",
-        "duration_ms": 301,
+        "duration_ms": 314,
         "failures": []
       },
       {
@@ -2093,7 +2117,7 @@
         "passed": true,
         "evidence_ref": "release-battery#ID-04",
         "mitigation_status": "mitigated",
-        "duration_ms": 273,
+        "duration_ms": 299,
         "failures": []
       },
       {
@@ -2115,7 +2139,7 @@
         "passed": true,
         "evidence_ref": "release-battery#ID-05",
         "mitigation_status": "mitigated",
-        "duration_ms": 397,
+        "duration_ms": 427,
         "failures": []
       },
       {
@@ -2147,7 +2171,7 @@
         "passed": true,
         "evidence_ref": "release-battery#ID-06",
         "mitigation_status": "mitigated",
-        "duration_ms": 285,
+        "duration_ms": 311,
         "failures": []
       },
       {
@@ -2182,7 +2206,7 @@
         "passed": true,
         "evidence_ref": "release-battery#MR-01",
         "mitigation_status": "mitigated",
-        "duration_ms": 299,
+        "duration_ms": 347,
         "failures": []
       },
       {
@@ -2223,7 +2247,7 @@
         "passed": true,
         "evidence_ref": "release-battery#MR-02",
         "mitigation_status": "mitigated",
-        "duration_ms": 313,
+        "duration_ms": 359,
         "failures": []
       },
       {
@@ -2256,7 +2280,7 @@
         "passed": true,
         "evidence_ref": "release-battery#UF-01",
         "mitigation_status": "mitigated",
-        "duration_ms": 277,
+        "duration_ms": 323,
         "failures": []
       },
       {
@@ -2284,7 +2308,7 @@
         "passed": true,
         "evidence_ref": "release-battery#UF-02",
         "mitigation_status": "mitigated",
-        "duration_ms": 296,
+        "duration_ms": 367,
         "failures": []
       },
       {
@@ -2315,7 +2339,7 @@
         "passed": true,
         "evidence_ref": "release-battery#UF-03",
         "mitigation_status": "mitigated",
-        "duration_ms": 1388,
+        "duration_ms": 1462,
         "failures": []
       },
       {
@@ -2335,7 +2359,7 @@
         "passed": true,
         "evidence_ref": "release-battery#UF-04",
         "mitigation_status": "mitigated",
-        "duration_ms": 289,
+        "duration_ms": 317,
         "failures": []
       },
       {
@@ -2365,7 +2389,7 @@
         "passed": true,
         "evidence_ref": "release-battery#UF-05",
         "mitigation_status": "mitigated",
-        "duration_ms": 282,
+        "duration_ms": 319,
         "failures": []
       },
       {
@@ -2387,7 +2411,7 @@
         "passed": true,
         "evidence_ref": "release-battery#AR-01",
         "mitigation_status": "mitigated",
-        "duration_ms": 275,
+        "duration_ms": 365,
         "failures": []
       }
     ]
@@ -2405,6 +2429,6 @@
         "reason": "open high finding SB-08 needs a residual-risk decision"
       }
     ],
-    "snapshot_sha256": "8efa0dc7ab1e2bb02a81357d16c2e011adcbac5c2799ca26635936a298a55a82"
+    "snapshot_sha256": "5e2e5d48ee7ab25c2c3e072a43948594bd4be6cdb905f303983af8383b415745"
   }
 }
