@@ -15,8 +15,8 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 
 | Field | Value |
 |---|---|
-| Current phase | Phase 4 — cybersecurity and agent Policy-as-Code |
-| Current task | Phase 3 committed; starting Phase 4 (authentication, RBAC, policy engine) |
+| Current phase | Phase 5 — red team, blue team and attack-to-release |
+| Current task | Phase 4 committed; starting Phase 5 (adversarial runner and fixtures) |
 | Last local commit | see `git log -1` (this file is updated with each milestone) |
 
 ## Phase status
@@ -26,7 +26,7 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 | 0–1 (C1) | Complete, accepted on GitHub (`6ab77a8`) | `PROJECT_STATE.md` |
 | 2 | **Complete (local)** | Backend, frontend, contract, E2E checks below |
 | 3 | **Complete (local)** | Governed toolkit, RAG, benchmark, live Strands run below |
-| 4 | Not started | – |
+| 4 | **Complete (local)** | Auth, RBAC, Policy-as-Code, audit, ingestion, scans below |
 | 5 | Not started | – |
 | 6 | Not started | – |
 | 7 | Not started | – |
@@ -47,6 +47,29 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 | 2026-10-15 | same | Windows, Node 24.14.0 | `playwright test` against the governed API | **E2E 2/2** (now also asserts the baseline-source badge) |
 | 2026-10-15 | same | Windows, Ollama 0.40.3, qwen2.5:1.5b (loopback) | `scripts/dev/strands_live_smoke.py --write` | 10 synthetic questions: 4 model tool calls used, 4 fell back to the rule planner, decline and crisis never reached the model ([evidence](evidence/strands-live-smoke-2026-10-15.json)) |
 | 2026-10-15 | same | Windows, Python 3.13.2 | `scripts/rag_benchmark.py --write` (first run, no tuning after) | legacy 22/26 hit@1, 2/6 false hits; bm25 23/26, 0/6; hybrid 24/26, 26/26 recall@3, 0/6 ([evidence](evidence/rag-benchmark-v1.json)) |
+
+| 2026-10-15 | Phase 4 working tree | WSL2 Python 3.14.4 | ruff ×2; `pytest -q`; routes; safety eval; smoke; OpenAPI; inventory; `pip_audit`; `bandit -ll` | Ruff clean; **5088 passed**; routes passed; 172/172, no misses/FP; smoke OK; snapshot and inventory match; **no known vulnerabilities**; Bandit no medium/high |
+| 2026-10-15 | same | Windows 11, Python 3.13.2 | `pytest -q` | **5087 passed, 1 skipped**, no warnings |
+| 2026-10-15 | same | Windows, Node 24.14.0 | eslint; tsc; vitest; `npm audit`; playwright | Clean; clean; **18/18**; 0 vulnerabilities; **E2E 4/4** (student ×2, staff ×2) |
+
+### Phase 4 deliverables
+
+- `policy/authorization.json` + `app/security/policy_engine.py`: versioned default-deny
+  Policy-as-Code with deny-overrides, channel separation (`http`/`agent`), strict validation,
+  digest; replaces the Phase 3 static authorizer for agent tools; deny-all fallback.
+- Staff authentication (`app/api/staff_store.py`, `app/api/admin_routes.py`,
+  `app/security/passwords.py`): scrypt, lockout, hardened session cookies, idle/absolute expiry;
+  `scripts/manage_users.py` for the first admin.
+- Admin API: status, source review (bound to content hash), feedback summary, users, audit,
+  ingestion; all role-checked server-side and audited (salted principal hashes).
+- `app/security/ratelimit.py`: chat, login, write and read limits with `Retry-After`.
+- `app/rag/ingest.py`: SSRF-hardened ingestion into a pending staging area.
+- Frontend `StaffView`: sign-in, role-based tabs (sources review, feedback, users, audit,
+  ingest); the server decides access.
+- Security fixes found while building: nested write transaction in audit (5 s lock wait and a
+  lost audit row) fixed; integrity errors no longer reported as outages; vulnerable pins
+  upgraded (requests, pytest, pytest-cov, python-dotenv).
+- Contract [C3-local-v1](contracts/C3-local-v1.md); threat model updated.
 
 ### Phase 3 deliverables
 
@@ -99,7 +122,8 @@ benchmark. Citations carry no governance status until Phase 3.
 
 ## Next executable action
 
-Phase 4: local authentication (reviewer/admin accounts, scrypt hashes, server sessions),
-RBAC, Policy-as-Code engine replacing `StaticAgentAuthorizer`, policy decision audit,
-rate limits, admin APIs (source review, users) and staff UI, secure ingestion with SSRF
-protection, prompt-injection misuse and session-isolation tests, dependency/static scans.
+Phase 5: versioned adversarial fixtures (`security/redteam/scenarios-v1.json`) covering
+prompt injection, retrieval poisoning, safety-routing bypass, unauthorized/invalid tools,
+privilege escalation, cross-session access, disclosure, misleading retrieved instructions,
+unsafe fallback and authorization regression; a runner against an in-process local app;
+pre-mitigation baseline against the legacy CLI path; measured attack success rates.

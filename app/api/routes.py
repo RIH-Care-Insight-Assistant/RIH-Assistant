@@ -4,11 +4,12 @@ from __future__ import annotations
 
 from typing import Optional
 
-from fastapi import APIRouter, Query, Request, Response
+from fastapi import APIRouter, Depends, Query, Request, Response
 
 from . import schemas
+from .admin_routes import rate_limit
 from .catalog import resource_of
-from .db import DatabaseUnavailable
+from .db import ConstraintViolation, DatabaseUnavailable
 from .errors import ApiError
 from .security import (
     OWNER_COOKIE,
@@ -20,6 +21,7 @@ from .security import (
 )
 
 ERRORS = {
+    429: {"model": schemas.ErrorEnvelope},
     401: {"model": schemas.ErrorEnvelope}, 403: {"model": schemas.ErrorEnvelope},
     404: {"model": schemas.ErrorEnvelope}, 422: {"model": schemas.ErrorEnvelope},
     503: {"model": schemas.ErrorEnvelope},
@@ -35,6 +37,8 @@ def _db(request: Request):
 def _storage(fn, *args, **kwargs):
     try:
         return fn(*args, **kwargs)
+    except ConstraintViolation:
+        raise ApiError("invalid_request") from None  # e.g. a concurrent duplicate write
     except DatabaseUnavailable:
         raise ApiError("dependency_unavailable") from None
 
@@ -62,7 +66,8 @@ def csrf(request: Request, response: Response) -> dict:
     return {"csrf_token": token}
 
 
-@router.post("/sessions", response_model=schemas.Session, status_code=201, tags=["sessions"])
+@router.post("/sessions", response_model=schemas.Session, status_code=201, tags=["sessions"],
+             dependencies=[Depends(rate_limit("write"))])
 def create_session(request: Request, response: Response, body: schemas.CreateSession | None = None):
     guard_mutation(request)
     settings = request.app.state.settings
@@ -115,7 +120,7 @@ def delete_session(session_id: str, request: Request):
     return Response(status_code=204)
 
 
-@router.post("/chat", response_model=schemas.ChatResponse, tags=["chat"])
+@router.post("/chat", response_model=schemas.ChatResponse, tags=["chat"], dependencies=[Depends(rate_limit("chat"))])
 def chat(body: schemas.ChatRequest, request: Request):
     guard_mutation(request)
     return request.app.state.chat.turn(
@@ -124,7 +129,8 @@ def chat(body: schemas.ChatRequest, request: Request):
     )
 
 
-@router.get("/resources", response_model=schemas.ResourceList, tags=["resources"])
+@router.get("/resources", response_model=schemas.ResourceList, tags=["resources"],
+            dependencies=[Depends(rate_limit("read"))])
 def resources(
     request: Request,
     q: Optional[str] = Query(default=None, max_length=512),
@@ -138,7 +144,7 @@ def resources(
 
 
 @router.post("/feedback", response_model=schemas.Feedback, status_code=201, tags=["feedback"],
-             responses={200: {"model": schemas.Feedback}})
+             responses={200: {"model": schemas.Feedback}}, dependencies=[Depends(rate_limit("write"))])
 def feedback(body: schemas.FeedbackRequest, request: Request, response: Response):
     guard_mutation(request)
     owner = _storage(require_owner, request)
@@ -148,13 +154,6 @@ def feedback(body: schemas.FeedbackRequest, request: Request, response: Response
     fb, created = out
     response.status_code = 201 if created else 200
     return fb
-
-
-@router.api_route("/admin/{path:path}", methods=["GET", "POST", "PUT", "PATCH", "DELETE"], tags=["admin"],
-                  include_in_schema=False)
-def admin_disabled(path: str):
-    # Administrative capability is disabled server-side until authentication exists.
-    raise ApiError("forbidden")
 
 
 __all__ = ["router", "OWNER_COOKIE"]

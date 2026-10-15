@@ -149,12 +149,28 @@ class SourceGovernance:
         inventory_version: str = "",
         reviews: Optional[Callable[[], Dict[str, ReviewDecision]]] = None,
         today: Optional[Callable[[], date]] = None,
+        extra_inventory: Optional[Callable[[], Dict[str, InventoryEntry]]] = None,
     ):
         self.policy = policy
         self.inventory = inventory
         self.inventory_version = inventory_version
         self._reviews = reviews or (lambda: {})
         self._today = today or (lambda: datetime.now(timezone.utc).date())
+        self._extra = extra_inventory or (lambda: {})
+
+    def attach(self, *, reviews=None, extra_inventory=None) -> None:
+        """Connect runtime review decisions and ingested (pending) entries from the API's store."""
+        if reviews is not None:
+            self._reviews = reviews
+        if extra_inventory is not None:
+            self._extra = extra_inventory
+
+    def entries(self) -> Dict[str, InventoryEntry]:
+        """Committed inventory plus ingested entries (committed entries win on a clash)."""
+        return {**self._extra(), **self.inventory}
+
+    def reviews(self) -> Dict[str, ReviewDecision]:
+        return self._reviews()
 
     @classmethod
     def load(cls, governance_dir: Path, **kw) -> "SourceGovernance":
@@ -185,7 +201,7 @@ class SourceGovernance:
     def assess(self, ev: Evidence) -> Assessment:
         p = self.policy
         reasons: List[str] = []
-        entry = self.inventory.get(ev.chunk_id)
+        entry = self.inventory.get(ev.chunk_id) or self._extra().get(ev.chunk_id)
         if entry is None:
             return Assessment(False, ["not_in_inventory"])
         status, approved_by, approved_at = entry.approval_status, entry.approved_by, entry.approved_at

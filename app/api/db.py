@@ -24,6 +24,10 @@ class DatabaseUnavailable(Exception):
     """Raised when the database cannot be opened or a statement fails at the storage layer."""
 
 
+class ConstraintViolation(ValueError):
+    """A write broke a uniqueness or integrity constraint (a client error, not an outage)."""
+
+
 def utcnow() -> datetime:
     return datetime.now(timezone.utc).replace(microsecond=0)
 
@@ -65,6 +69,8 @@ class Database:
             conn.execute("PRAGMA foreign_keys = ON")
             conn.execute("PRAGMA busy_timeout = 5000")
             yield conn
+        except sqlite3.IntegrityError as exc:
+            raise ConstraintViolation(type(exc).__name__) from exc
         except sqlite3.DatabaseError as exc:
             raise DatabaseUnavailable(type(exc).__name__) from exc
         finally:

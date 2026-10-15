@@ -58,12 +58,16 @@ class GovernedRetriever:
         self.ranker_name = name
         self._rank = RANKERS[name]
         self._fault: Optional[str] = None  # resilience tests can simulate an outage
+        self._extra_corpus: Callable[[], List[Dict]] = lambda: []
+        self._attached: Dict = {}
         if self._governance is None:
             self.reload()
 
     def reload(self) -> None:
         try:
             self._governance = SourceGovernance.load(self._dir, today=_test_clock())
+            if self._attached:
+                self._governance.attach(**self._attached)
             self._error = None
         except GovernanceError as exc:
             self._governance = None
@@ -73,6 +77,16 @@ class GovernedRetriever:
     @property
     def governance(self) -> Optional[SourceGovernance]:
         return self._governance
+
+    def attach_store(self, *, reviews, extra_inventory, extra_corpus) -> None:
+        """Phase 4: reviewer decisions and ingested pending records from the API's database."""
+        self._extra_corpus = extra_corpus
+        self._attached = {"reviews": reviews, "extra_inventory": extra_inventory}
+        if self._governance is not None:
+            self._governance.attach(reviews=reviews, extra_inventory=extra_inventory)
+
+    def all_records(self) -> List[Dict]:
+        return list(self._corpus()) + list(self._extra_corpus())
 
     def simulate_outage(self, reason: Optional[str]) -> None:
         self._fault = reason
@@ -88,7 +102,7 @@ class GovernedRetriever:
         if gov is None:
             raise RetrievalUnavailable(self._error or "governance not loaded")
         out = []
-        for rec in self._corpus():
+        for rec in self.all_records():
             a = gov.assess(evidence_from_record(rec))
             if a.eligible and a.evidence is not None:
                 out.append(a.evidence)

@@ -105,3 +105,55 @@ export interface Feedback {
   rating: Rating;
   created_at: string;
 }
+
+// ---- Staff (Phase 4). Admin routes are role-checked on the server; these are display types.
+
+export interface StaffUser {
+  username: string;
+  roles: string[];
+}
+
+export interface Me {
+  authenticated: boolean;
+  user: StaffUser | null;
+}
+
+export interface SourceRow {
+  chunk_id: string;
+  title: string;
+  url: string;
+  category: string;
+  version: string;
+  updated_on: string | null;
+  ingested: boolean;
+  inventory_status: string | null;
+  effective_status: string | null;
+  freshness: string | null;
+  eligible: boolean;
+  reasons: string[];
+  signals: string[];
+  approved_by: string | null;
+  approved_at: string | null;
+}
+
+export interface AuditEvent {
+  seq: number;
+  ts: string;
+  category: string;
+  principal_hash: string | null;
+  roles: string;
+  action: string | null;
+  resource: string | null;
+  via: string | null;
+  allowed: boolean | null;
+  rule_id: string | null;
+  detail: string | null;
+}
+
+export interface UserRow {
+  id: string;
+  username: string;
+  roles: string[];
+  disabled: boolean;
+  created_at: string;
+}

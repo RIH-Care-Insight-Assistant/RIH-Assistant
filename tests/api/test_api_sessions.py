@@ -132,10 +132,14 @@ def test_session_title_comes_from_first_message(api):
     assert api.get(f"/api/v1/sessions/{sid}").json()["title"] == "What are the RIH hours?"
 
 
-def test_admin_api_is_disabled_without_authentication(api):
-    for method in ("get", "post", "delete"):
-        r = getattr(api, method)("/api/v1/admin/users")
-        assert r.status_code == 403 and r.json()["error"]["code"] == "forbidden"
+def test_admin_api_requires_staff_authentication(api):
+    api.new_session()  # a student owner credential grants nothing administrative
+    for method, url in (("get", "/api/v1/admin/users"), ("post", "/api/v1/admin/users"),
+                        ("get", "/api/v1/admin/status"), ("get", "/api/v1/admin/audit")):
+        r = getattr(api, method)(url, **({"json": {}} if method == "post" else {}))
+        assert r.status_code in (401, 422), (method, url, r.status_code)
+        if r.status_code == 401:
+            assert r.json()["error"]["code"] == "unauthenticated"
 
 
 def test_unknown_route_is_not_found_envelope(api):

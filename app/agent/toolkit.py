@@ -226,7 +226,8 @@ class ToolExecutor:
             self._emit(ctx, tool, "invalid_arguments", source=source)
             return ToolOutcome(tool, "invalid_arguments")
         decision = self.authorizer.authorize(
-            ctx.principal, "invoke", spec.permission, {"tool": spec.name, "side_effect": spec.side_effect}
+            ctx.principal, "invoke", spec.permission,
+            {"via": "agent", "tool": spec.name, "side_effect": spec.side_effect, "request_id": ctx.request_id},
         )
         if not decision.allowed:
             self._emit(ctx, tool, "denied", decision.rule_id, source=source)

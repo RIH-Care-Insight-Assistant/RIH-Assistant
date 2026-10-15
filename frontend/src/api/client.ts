@@ -1,7 +1,19 @@
 // Typed API client. Centralizes credentials (same-origin cookies), the CSRF header and
 // error handling; components never call fetch directly.
 
-import type { ChatResponse, ErrorBody, Feedback, MessagePage, Rating, Resource, Session } from "./types";
+import type {
+  AuditEvent,
+  ChatResponse,
+  ErrorBody,
+  Feedback,
+  Me,
+  MessagePage,
+  Rating,
+  Resource,
+  Session,
+  SourceRow,
+  UserRow,
+} from "./types";
 
 const BASE = "/api/v1";
 
@@ -79,6 +91,24 @@ export const api = {
     request<Feedback>("POST", "/feedback", { session_id: sessionId, message_id: messageId, rating }),
   resources: (q: string, signal?: AbortSignal) =>
     request<{ items: Resource[] }>("GET", `/resources?limit=20${q ? `&q=${encodeURIComponent(q)}` : ""}`, undefined, signal),
+};
+
+export const staffApi = {
+  me: () => request<Me>("GET", "/auth/me"),
+  login: (username: string, password: string) => request<Me>("POST", "/auth/login", { username, password }),
+  logout: () => request<void>("POST", "/auth/logout", {}),
+  status: () => request<{ policy_version: string; policy_sha256: string }>("GET", "/admin/status"),
+  sources: () => request<{ items: SourceRow[] }>("GET", "/admin/sources"),
+  review: (chunkId: string, status: string, note: string) =>
+    request<{ status: string }>("POST", `/admin/sources/${encodeURIComponent(chunkId)}/review`, { status, note }),
+  feedbackSummary: () => request<{ helpful: number; not_helpful: number }>("GET", "/admin/feedback/summary"),
+  users: () => request<{ items: UserRow[] }>("GET", "/admin/users"),
+  createUser: (username: string, password: string, roles: string[]) =>
+    request<UserRow>("POST", "/admin/users", { username, password, roles }),
+  disableUser: (id: string) => request<{ disabled: boolean }>("POST", `/admin/users/${encodeURIComponent(id)}/disable`, {}),
+  audit: (limit = 100) => request<{ items: AuditEvent[] }>("GET", `/admin/audit?limit=${limit}`),
+  ingest: (url: string, category: string) =>
+    request<{ chunk_id: string; status: string; signals: string[] }>("POST", "/admin/ingest", { url, category }),
 };
 
 /** Only absolute HTTPS URLs become links; anything else is shown as plain text. */

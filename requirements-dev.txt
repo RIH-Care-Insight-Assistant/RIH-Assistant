@@ -1,2 +1,5 @@
 # Development / CI tooling only (runtime deps stay in requirements.txt).
 ruff==0.16.10
+# Security scanning (Phase 4): static analysis and dependency vulnerability audit.
+bandit==1.9.4
+pip-audit==2.10.1

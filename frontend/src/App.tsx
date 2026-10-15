@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { AdminView } from "./components/AdminView";
 import { ChatView } from "./components/ChatView";
 import { ResourcesView } from "./components/ResourcesView";
+import { StaffView } from "./components/StaffView";
 
 type View = "chat" | "resources" | "staff";
 const VIEWS: { id: View; label: string }[] = [
@@ -53,7 +53,7 @@ export function App() {
       <main id="main" tabIndex={-1}>
         {view === "chat" && <ChatView />}
         {view === "resources" && <ResourcesView />}
-        {view === "staff" && <AdminView />}
+        {view === "staff" && <StaffView />}
       </main>
     </div>
   );

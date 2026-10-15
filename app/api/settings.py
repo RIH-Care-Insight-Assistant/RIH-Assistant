@@ -40,6 +40,7 @@ class Settings:
     owner_ttl_hours: int = 24
     max_body_bytes: int = 64 * 1024
     environment: str = "development"
+    trust_proxy: bool = False  # honour X-Forwarded-For only behind our own reverse proxy
 
     @classmethod
     def from_env(cls) -> "Settings":
@@ -55,4 +56,5 @@ class Settings:
             owner_ttl_hours=_int("RIH_OWNER_TTL_HOURS", 24, 1, 24 * 30),
             max_body_bytes=_int("RIH_MAX_BODY_BYTES", 64 * 1024, 1024, 1024 * 1024),
             environment=(os.getenv("RIH_ENV") or "development").strip().lower(),
+            trust_proxy=_bool("RIH_TRUST_PROXY", False),
         )

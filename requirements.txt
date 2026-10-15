@@ -2,7 +2,7 @@
 # strands-agents pinned). Development-only tools live in requirements-dev.txt.
 
 # Web & HTTP (scripts/crawl_site.py)
-requests==2.31.0
+requests==2.34.2
 beautifulsoup4==4.12.2
 
 # Backend API (Phase 2)
@@ -16,9 +16,9 @@ opentelemetry-api==1.45.1
 opentelemetry-sdk==1.45.1
 
 # Testing
-pytest==7.4.0
-pytest-cov==4.1.0
-python-dotenv==1.0.1
+pytest==9.1.1
+pytest-cov==7.1.0
+python-dotenv==1.2.4
 
 # Agents (optional at runtime; model features stay off by default)
 strands-agents==1.59.0

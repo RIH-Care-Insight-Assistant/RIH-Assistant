@@ -1,12 +1,15 @@
 // In-memory fake of the /api/v1 contract for component tests (no network, synthetic data).
 import { vi } from "vitest";
-import type { ChatResponse, Message, Session } from "../api/types";
+import type { ChatResponse, Message, Session, SourceRow } from "../api/types";
 
 export interface FakeState {
   sessions: Session[];
   messages: Record<string, Message[]>;
   calls: { method: string; path: string; body: unknown; headers: Record<string, string> }[];
   nextChat?: (body: Record<string, unknown>) => Partial<ChatResponse> | { status: number; error: string };
+  staff?: { username: string; roles: string[] };
+  sources?: SourceRow[];
+  reviews: { path: string; body: unknown }[];
 }
 
 let counter = 0;
@@ -34,7 +37,7 @@ function json(status: number, body: unknown): Response {
 }
 
 export function installFakeApi(state: Partial<FakeState> = {}): FakeState {
-  const s: FakeState = { sessions: [], messages: {}, calls: [], ...state };
+  const s: FakeState = { sessions: [], messages: {}, calls: [], reviews: [], ...state };
   const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
     const url = new URL(String(input), "http://localhost");
     const method = (init?.method ?? "GET").toUpperCase();
@@ -107,7 +110,30 @@ export function installFakeApi(state: Partial<FakeState> = {}): FakeState {
         ],
       });
     }
-    if (p.startsWith("/admin")) return json(403, { error: { code: "forbidden", message: "x", request_id: "r" } });
+    if (p === "/auth/me") return json(200, s.staff ? { authenticated: true, user: s.staff } : { authenticated: false, user: null });
+    if (p === "/auth/login") {
+      const b = body as { username: string; password: string };
+      if (b.password !== "synthetic-Test-pass-0001") {
+        return json(401, { error: { code: "unauthenticated", message: "x", request_id: "r" } });
+      }
+      s.staff = { username: b.username, roles: b.username.startsWith("adam") ? ["admin"] : ["reviewer"] };
+      return json(200, { authenticated: true, user: s.staff });
+    }
+    if (p === "/auth/logout") {
+      s.staff = undefined;
+      return new Response(null, { status: 204 });
+    }
+    if (p === "/admin/sources" && s.staff) return json(200, { items: s.sources ?? [] });
+    if (p.startsWith("/admin/sources/") && s.staff) {
+      s.reviews.push({ path: p, body });
+      return json(200, { status: (body as { status: string }).status });
+    }
+    if (p === "/admin/users" && s.staff?.roles.includes("admin")) return json(200, { items: [] });
+    if (p.startsWith("/admin")) {
+      return s.staff
+        ? json(403, { error: { code: "forbidden", message: "x", request_id: "r" } })
+        : json(401, { error: { code: "unauthenticated", message: "x", request_id: "r" } });
+    }
     return json(404, { error: { code: "not_found", message: "Not found.", request_id: "r" } });
   });
   vi.stubGlobal("fetch", fetchMock);

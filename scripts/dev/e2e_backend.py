@@ -26,6 +26,16 @@ def main() -> None:
     os.environ["RIH_COOKIE_SECURE"] = "false"
     os.environ.setdefault("RIH_ENV", "test")
     os.environ.setdefault("RIH_FIXED_TODAY", "2026-10-14")  # keeps KB freshness stable for E2E runs
+    staff_pw = os.environ.get("RIH_E2E_STAFF_PASSWORD")
+    if staff_pw:  # synthetic demo staff for end-to-end tests; password comes from the test runner
+        from app.api.db import Database
+        from app.api.staff_store import StaffStore
+
+        db = Database(os.environ["RIH_DB_PATH"])
+        db.migrate()
+        store = StaffStore(db)
+        store.create_user("e2e.reviewer", staff_pw, ["reviewer"], "e2e")
+        store.create_user("e2e.admin", staff_pw, ["admin"], "e2e")
     import uvicorn
 
     uvicorn.run("app.api.main:app", host="127.0.0.1", port=args.port, log_level="warning")

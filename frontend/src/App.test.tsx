@@ -29,5 +29,6 @@ describe("App", () => {
     render(<App />);
     await user.click(screen.getByRole("link", { name: "Staff" }));
     expect(await screen.findByText(/requires a signed-in reviewer or administrator/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Staff sign-in" })).toBeInTheDocument();
   });
 });

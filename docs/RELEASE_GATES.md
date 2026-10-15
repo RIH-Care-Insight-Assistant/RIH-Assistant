@@ -89,6 +89,14 @@ them; once added, a gate is never removed or weakened to get a pass.
 | Legacy routes | `python scripts/check_routes.py` | Any mismatch |
 | Safety evaluation | `python scripts/safety_eval.py --fail-on-miss` | Any missed safety-critical case or benign false positive |
 | Smoke | `python -m tests.run_smoke` | Failure |
+| API contract (Phase 2) | `python scripts/export_openapi.py --check` | Running API differs from `contracts/openapi-v1.json` |
+| Frontend (Phase 2) | `npm --prefix frontend run lint`, `typecheck`, `test`, `build` | Any lint/type error, failing component test or failed build |
+| End-to-end (Phase 2, 4) | `npm --prefix frontend run e2e` | Any failing student or staff workflow |
+| Source inventory (Phase 3) | `python scripts/build_source_inventory.py --check` | KB records missing from or changed against the inventory |
+| Retrieval benchmark (Phase 3) | `tests/rag/test_benchmark.py` (in `pytest`) | Selected ranker worse than the C1 baseline, or recorded evidence not reproducible |
+| Authorization (Phase 4) | `tests/security/`, `tests/api/test_auth_admin.py` (in `pytest`) | Any allowed operation that the policy denies, or any denied operation that succeeds |
+| Dependencies (Phase 4) | `python -m pip_audit -r requirements.txt`; `npm --prefix frontend audit` | Any known vulnerability |
+| Static analysis (Phase 4) | `python -m bandit -q -r app scripts -ll` | Any medium or high finding |
 
 Later phases append their gates here (frontend checks, API contract snapshot,
 end-to-end workflow, adversarial suite, governance evidence, container and Kubernetes

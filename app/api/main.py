@@ -19,11 +19,17 @@ from starlette.types import ASGIApp, Message, Receive, Scope, Send
 from ..agent.orchestrator import Orchestrator
 from ..rag.governed_retriever import GovernedRetriever
 from .catalog import GovernedCatalog
+from ..agent.toolkit import Decision, ToolExecutor, build_registry
+from ..agent.orchestrator import clarification_payload
+from ..security.policy_engine import PolicyEngine, PolicyError
+from ..security.ratelimit import RateLimiter
+from .admin_routes import router as admin_router
 from .chat_service import ChatService
 from .db import Database
 from .errors import MESSAGES, install_error_handlers
 from .routes import router
 from .settings import Settings
+from .staff_store import StaffStore
 
 logger = logging.getLogger("rih.api")
 
@@ -124,12 +130,25 @@ def create_app(
     orchestrator: Orchestrator | None = None,
     catalog=None,
     retriever: GovernedRetriever | None = None,
+    policy: PolicyEngine | None = None,
+    limiter: RateLimiter | None = None,
 ) -> FastAPI:
     settings = settings or Settings.from_env()
     db = db or Database(settings.db_path)
+    staff = StaffStore(db)
     retriever = retriever or GovernedRetriever()
+    retriever.attach_store(reviews=staff.latest_reviews, extra_inventory=staff.staged_inventory,
+                           extra_corpus=staff.staged_records)
     catalog = catalog or GovernedCatalog(retriever)
-    orchestrator = orchestrator or Orchestrator(retriever=retriever, llm_planner=llm_planner_from_env())
+    try:
+        policy = policy or PolicyEngine.load()
+        policy.set_audit(lambda event: staff.record_audit("authz", event))
+    except PolicyError as exc:
+        logger.error("policy_unavailable", extra={"reason": str(exc)})
+        policy = DenyAll()
+    if orchestrator is None:
+        executor = ToolExecutor(build_registry(retriever, clarification_payload), policy)
+        orchestrator = Orchestrator(executor=executor, retriever=retriever, llm_planner=llm_planner_from_env())
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
@@ -159,10 +178,15 @@ def create_app(
     app.state.orchestrator = orchestrator
     app.state.chat = ChatService(db, orchestrator)
     app.state.retriever = retriever
-    app.state.policy_ok = retriever.healthy
+    app.state.staff = staff
+    app.state.policy = policy
+    app.state.limiter = limiter or RateLimiter()
+    app.state.fetch_source = None  # tests inject a fake fetcher; production uses app.rag.ingest
+    app.state.policy_ok = lambda: retriever.healthy() and not isinstance(policy, DenyAll)
 
     install_error_handlers(app)
     app.include_router(router)
+    app.include_router(admin_router)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=list(settings.allowed_origins),
@@ -173,6 +197,16 @@ def create_app(
     )
     app.add_middleware(RequestContextMiddleware, max_body_bytes=settings.max_body_bytes)
     return app
+
+
+class DenyAll:
+    """Used when the authorization policy cannot be loaded: every decision is a denial."""
+
+    version = "unavailable"
+    digest = ""
+
+    def authorize(self, principal, action, resource, context) -> Decision:
+        return Decision(False, "policy-unavailable", "policy failed to load")
 
 
 def llm_planner_from_env():

@@ -45,12 +45,12 @@ test("resources show provenance and the staff area is server-gated", async ({ pa
   await page.goto("/#/resources");
   await expect(page.getByRole("heading", { name: "Campus resources" })).toBeVisible();
   await expect(page.locator(".resource").first()).toBeVisible();
-  await page.getByLabel("Search resources").fill("billing");
+  await page.getByLabel("Search resources").fill("immunizations");
   await page.getByRole("button", { name: "Search" }).click();
-  await expect(page.getByRole("link", { name: "RIH Billing" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Immunizations & Requirements" })).toBeVisible();
 
   await page.getByRole("link", { name: "Staff" }).click();
   await expect(page.getByText(/requires a signed-in reviewer or administrator/)).toBeVisible();
   const direct = await page.request.get("/api/v1/admin/status");
-  expect(direct.status()).toBe(403);
+  expect(direct.status()).toBe(401); // no staff session: the server refuses before any role check
 });

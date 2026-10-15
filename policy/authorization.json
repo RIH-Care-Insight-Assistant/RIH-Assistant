@@ -1,0 +1,76 @@
+{
+  "policy_version": "authz-1",
+  "status": "Local default (2026-10-15), awaiting human acceptance.",
+  "description": "Default-deny authorization for HTTP routes and agent tools. Deny rules override allow rules. Loaded once at startup; there is no API to change it at runtime.",
+  "roles": {
+    "student": "Anonymous session owner using the chat. Implicit for every chat turn.",
+    "reviewer": "Staff member who reviews sources, feedback and governance records.",
+    "admin": "Staff member who also manages accounts, ingestion, audit and release decisions."
+  },
+  "rules": [
+    {
+      "id": "student-chat-tools",
+      "effect": "allow",
+      "roles": ["student"],
+      "actions": ["invoke"],
+      "resources": ["tool:retrieve_resources", "tool:clarify_appointment", "tool:guidance_template", "tool:safe_alternatives"],
+      "via": ["agent"]
+    },
+    {
+      "id": "staff-status",
+      "effect": "allow",
+      "roles": ["reviewer", "admin"],
+      "actions": ["read"],
+      "resources": ["admin:status"],
+      "via": ["http"]
+    },
+    {
+      "id": "reviewer-sources",
+      "effect": "allow",
+      "roles": ["reviewer", "admin"],
+      "actions": ["read", "review"],
+      "resources": ["admin:sources"],
+      "via": ["http"]
+    },
+    {
+      "id": "reviewer-feedback-summary",
+      "effect": "allow",
+      "roles": ["reviewer", "admin"],
+      "actions": ["read"],
+      "resources": ["admin:feedback_summary"],
+      "via": ["http"]
+    },
+    {
+      "id": "reviewer-governance",
+      "effect": "allow",
+      "roles": ["reviewer", "admin"],
+      "actions": ["read", "review"],
+      "resources": ["admin:governance", "admin:security_evaluations", "admin:observability"],
+      "via": ["http"]
+    },
+    {
+      "id": "admin-only",
+      "effect": "allow",
+      "roles": ["admin"],
+      "actions": ["read", "create", "update", "decide", "ingest"],
+      "resources": ["admin:users", "admin:audit", "admin:ingest", "admin:release_decisions", "admin:incidents"],
+      "via": ["http"]
+    },
+    {
+      "id": "deny-agent-administration",
+      "effect": "deny",
+      "roles": ["*"],
+      "actions": ["*"],
+      "resources": ["admin:*"],
+      "via": ["agent"]
+    },
+    {
+      "id": "deny-conversation-content-to-staff",
+      "effect": "deny",
+      "roles": ["reviewer", "admin"],
+      "actions": ["*"],
+      "resources": ["student:conversations"],
+      "via": ["*"]
+    }
+  ]
+}

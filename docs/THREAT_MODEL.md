@@ -83,3 +83,22 @@ CSRF, rate-limit, and admin exposure controls remain unimplemented, not passed.
 Each accepted risk needs human owner, control, executable test, evidence reference,
 and residual-risk decision in later governance. No real health data, billable
 provider calls, cloud deployment, or live attack activity was used for this audit.
+
+## Phase 2–4 update (local-first, 2026-10-15)
+
+Appended under the local-first workflow; the C1 analysis above is unchanged. Status
+values describe what is implemented and tested locally, not production assurance.
+
+| Risk | Control now in place | Executable evidence | Residual |
+|---|---|---|---|
+| C1-R06 model changes tool use | Governed executor: registry, strict arguments, Policy-as-Code (default deny, agent channel cannot reach `admin:*`), budgets, output validation; model prose discarded | `tests/agent/`, `tests/security/test_prompt_injection_misuse.py`, `tests/security/test_policy_engine.py` | Model choice quality (the local 1.5B model often skips tools; rule fallback covers it) |
+| C1-R07 timeout without cancellation | Planner slot is held until the model call truly ends; circuit breaker; at most 2 in-flight model calls; late tool calls after a timeout are refused | `tests/agent/test_strands_planner.py` | Python cannot kill a hung thread; bounded, not eliminated |
+| C1-R08 crawler SSRF | `app/rag/ingest.py`: HTTPS allowlist, public-address check for every resolved IP, per-hop redirect validation, peer-address pinning check, size/type/time bounds; admin-only | `tests/security/test_ingest_ssrf.py` | DNS rebinding detection depends on the HTTP stack exposing the peer address |
+| C1-R09 disclosure in logs/errors | Error envelope with fixed copy; tool events and audit rows carry no arguments or message text; principals hashed with a server salt | `tests/api/test_api_sessions.py`, `tests/api/test_auth_admin.py::test_audit_log_records_decisions_without_identities_or_text` | Structured application logging is Phase 7 |
+| Cross-session access | Every query binds server-derived owner and session; foreign sessions return the same 404 as missing ones | `tests/api/test_api_sessions.py::test_foreign_session_is_indistinguishable_from_missing` | Anonymous credential is per browser; no account recovery by design |
+| CSRF / XSS | Double-submit token + Origin allowlist on every mutation; CSP and `nosniff` on API responses; React renders text only (ESLint rule bans `dangerouslySetInnerHTML`); only HTTPS citation links | API and component tests | Frontend CSP for the static server is configured in Phase 8 |
+| Staff account abuse | scrypt hashes, lockout, rate limits, idle/absolute session expiry, hardened cookies, role checks server-side | `tests/api/test_auth_admin.py` | No MFA (local prototype) |
+| Poisoned or unreviewed content | Inventory + approval + hash binding + freshness + quarantine; eligibility before ranking | `tests/rag/test_governance.py`, `tests/api/test_governed_api.py` | Pattern-based detector can miss paraphrased instructions |
+| Vulnerable dependencies | Pinned versions; `pip-audit` and `npm audit` clean on 2026-10-15; Bandit no medium/high | Recorded in `LOCAL_FIRST_PROGRESS.md` | New advisories appear over time; rerun before publication |
+
+Phase 5 measures these controls adversarially with versioned fixtures.

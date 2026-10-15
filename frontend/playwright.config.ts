@@ -1,9 +1,12 @@
+import { randomBytes } from "node:crypto";
 import { defineConfig, devices } from "@playwright/test";
 
 // End-to-end tests run the real FastAPI backend (throwaway SQLite, model features off)
 // and the Vite frontend, both on loopback only.
 const python = process.env.RIH_PYTHON ?? "python";
 const apiPort = Number(process.env.RIH_E2E_API_PORT ?? 8765);
+// Synthetic staff accounts get a fresh random password per run (inherited by test workers).
+process.env.RIH_E2E_STAFF_PASSWORD ??= `e2e-${randomBytes(12).toString("hex")}`;
 
 export default defineConfig({
   testDir: "./e2e",
@@ -21,6 +24,7 @@ export default defineConfig({
     {
       command: `"${python}" ../scripts/dev/e2e_backend.py --port ${apiPort}`,
       url: `http://127.0.0.1:${apiPort}/api/v1/health`,
+      env: { RIH_E2E_STAFF_PASSWORD: process.env.RIH_E2E_STAFF_PASSWORD },
       reuseExistingServer: false,
       timeout: 60_000,
     },

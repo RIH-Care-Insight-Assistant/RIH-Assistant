@@ -101,3 +101,23 @@ def make_api(app):
     yield _make
     for c in clients:
         c.__exit__(None, None, None)
+
+
+SYNTHETIC_PASSWORD = "synthetic-Test-pass-0001"  # test-only, never a real credential
+
+
+@pytest.fixture
+def staff_users(app):
+    """Synthetic staff accounts created directly in the store."""
+    from app.api.staff_store import StaffStore
+
+    store = StaffStore(app.state.db)
+    app.state.db.migrate()
+    return {
+        "reviewer": store.create_user("rita.reviewer", SYNTHETIC_PASSWORD, ["reviewer"], None),
+        "admin": store.create_user("adam.admin", SYNTHETIC_PASSWORD, ["admin"], None),
+    }
+
+
+def login(client: "ApiClient", username: str, password: str = SYNTHETIC_PASSWORD):
+    return client.post("/api/v1/auth/login", json={"username": username, "password": password})
