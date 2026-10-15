@@ -1,9 +1,10 @@
 # Runtime and test dependencies, pinned (C1 deferral O4: unused numpy/pandas removed,
 # strands-agents pinned). Development-only tools live in requirements-dev.txt.
 
-# Web & HTTP (scripts/crawl_site.py)
-requests==2.34.2
+# HTML parsing for governed ingestion (app/rag/ingest.py)
 beautifulsoup4==4.12.2
+# Not imported directly; pinned to a patched release because strands-agents-tools needs it
+requests==2.34.2
 
 # Backend API (Phase 2)
 fastapi==0.143.1
@@ -17,7 +18,6 @@ opentelemetry-sdk==1.45.1
 
 # Testing
 pytest==9.1.1
-pytest-cov==7.1.0
 python-dotenv==1.2.4
 PyYAML==6.0.3
 

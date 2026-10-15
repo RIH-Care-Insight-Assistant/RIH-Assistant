@@ -13,13 +13,12 @@ Author: Abhinav Varma Vathadi · Status: describes `main` after PR #4 (merged 20
 | | `planner.py`, `planner_llm.py` | Rule planner; whitelisted single-step LLM planner with rule fallback. | shared |
 | | `strands_safety.py` | `SafeStrandsAgent`: opt-in, fail-closed model wrapper with timeout. | Abhinav (C1 fixes) |
 | | `response_enhancer.py`, `misspelling_corrector.py` | Optional model polish and typo correction. Off by default. | shared |
-| `app/tools/` | `decline_detector.py`, `clarify_detector.py`, `*_tool.py`, `base.py` | Decline/clarify detection; tool classes (the dispatcher currently uses functions, not these classes). | Devika (decline/clarify) |
+| `app/tools/` | `decline_detector.py`, `clarify_detector.py`, `retrieve_tool.py`, `base.py` | Decline/clarify detection; `RetrieveTool` (the dispatcher uses functions; the unused clarify and policy tool classes were removed in the repository cleanup). | Devika (decline/clarify) |
 | `app/retriever/` | `retriever.py` | IDF-weighted lexical retrieval over `kb/*.jsonl`. | Devika |
 | `app/answer/` | `compose.py`, `alternatives.py` | Fixed templates, grounded answer composition, campus alternatives. | templates: shared; alternatives: Devika |
 | `app/ui/` | `cli.py`, `audit.py` | CLI entry point (kept as a dev/test entry point); legacy route-only fallback. | shared |
-| `app/dev/` | demo scripts | Manual Strands comparisons. Not part of the runtime. | — |
 | `safety/` | `routing_matrix.csv`, playbook | CSV triggers merged into the default rules (augment only). | Abhinav (matrix) |
-| `scripts/` | `check_routes.py`, `safety_eval.py`, crawl/EDA helpers | Sanity checks and evaluation. | mixed |
+| `scripts/` | `check_routes.py`, `safety_eval.py`, audits and release checks | Sanity checks and evaluation. The C1 crawl/keyword helpers were removed in the repository cleanup; governed ingestion replaces them. | mixed |
 
 ## 2. One turn (`Dispatcher.respond(user_text)`)
 
