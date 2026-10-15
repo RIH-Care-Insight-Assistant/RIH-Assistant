@@ -15,8 +15,8 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 
 | Field | Value |
 |---|---|
-| Current phase | Phase 5 — red team, blue team and attack-to-release |
-| Current task | Phase 4 committed; starting Phase 5 (adversarial runner and fixtures) |
+| Current phase | Phase 6 — governance and risk management |
+| Current task | Phase 5 committed; starting Phase 6 (risk register, controls, evidence links, dashboard) |
 | Last local commit | see `git log -1` (this file is updated with each milestone) |
 
 ## Phase status
@@ -27,7 +27,7 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 | 2 | **Complete (local)** | Backend, frontend, contract, E2E checks below |
 | 3 | **Complete (local)** | Governed toolkit, RAG, benchmark, live Strands run below |
 | 4 | **Complete (local)** | Auth, RBAC, Policy-as-Code, audit, ingestion, scans below |
-| 5 | Not started | – |
+| 5 | **Complete (local)** | 70-scenario suite; ASR 7.1% → 2.9% after mitigation ([report](security/redteam-report.md)) |
 | 6 | Not started | – |
 | 7 | Not started | – |
 | 8 | Not started | – |
@@ -51,6 +51,21 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 | 2026-10-15 | Phase 4 working tree | WSL2 Python 3.14.4 | ruff ×2; `pytest -q`; routes; safety eval; smoke; OpenAPI; inventory; `pip_audit`; `bandit -ll` | Ruff clean; **5088 passed**; routes passed; 172/172, no misses/FP; smoke OK; snapshot and inventory match; **no known vulnerabilities**; Bandit no medium/high |
 | 2026-10-15 | same | Windows 11, Python 3.13.2 | `pytest -q` | **5087 passed, 1 skipped**, no warnings |
 | 2026-10-15 | same | Windows, Node 24.14.0 | eslint; tsc; vitest; `npm audit`; playwright | Clean; clean; **18/18**; 0 vulnerabilities; **E2E 4/4** (student ×2, staff ×2) |
+
+| 2026-10-15 | `e23843b` (pre) / `a92c358` (post) | Windows 11, Python 3.13.2 | `scripts/redteam.py` local and legacy targets | Governed API 5/70 → **2/70** attack successes; C1 CLI 6/17 → 3/17; critical 0/27 throughout ([report](security/redteam-report.md)) |
+| 2026-10-15 | `a92c358` + docs | Windows 11, Python 3.13.2 | `pytest -q`; safety eval; routes; smoke | **5139 passed, 2 skipped**; 172/172, 0 FP; routes passed; smoke OK |
+
+### Phase 5 deliverables
+
+- `security/redteam/scenarios-v1.json` (v1.0.1, 70 scenarios, 11 classes, severity rubric,
+  changelog) and `app/evaluation/redteam.py` + `scripts/redteam.py` (local, legacy-CLI and
+  loopback-HTTP targets; per-scenario expected/observed/pass/evidence/mitigation; ASR by class
+  and severity; exit 1 on an open critical finding).
+- Purple loop: SB-04/05/06 mitigated with escalate-only de-obfuscation variants in `route()`
+  (`a92c358`), validated against the full safety dataset and B9 benign cases.
+- Evidence under `docs/evidence/redteam/` (initial, pre-, post-mitigation; legacy baseline).
+- Open high findings SB-07 (non-English), SB-08 (implicit risk), RP-06 (CLI reads KB directly)
+  need human decisions; listed in the report.
 
 ### Phase 4 deliverables
 
@@ -122,8 +137,7 @@ benchmark. Citations carry no governance status until Phase 3.
 
 ## Next executable action
 
-Phase 5: versioned adversarial fixtures (`security/redteam/scenarios-v1.json`) covering
-prompt injection, retrieval poisoning, safety-routing bypass, unauthorized/invalid tools,
-privilege escalation, cross-session access, disclosure, misleading retrieved instructions,
-unsafe fallback and authorization regression; a runner against an in-process local app;
-pre-mitigation baseline against the legacy CLI path; measured attack success rates.
+Phase 6: versioned risk register (`governance/risk_register.json`) with owners, categories,
+likelihood/severity, risk→control→test mapping, mitigation tracking, evidence references and
+links to Phase 5 findings; human review records and residual-risk decisions stored by
+authorized staff (never pre-filled); release-readiness assessment; governance API and dashboard.
