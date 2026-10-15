@@ -11,5 +11,6 @@ def log(event: str, level: str | None):
         "level": level,
         "version": "mvp1"
     }
-    with LOG.open("a", encoding="utf-8") as f:
+    # LF on every platform: the repository's line-ending check also scans this ignored file.
+    with LOG.open("a", encoding="utf-8", newline="\n") as f:
         f.write(json.dumps(entry) + "\n")

@@ -10,6 +10,8 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from typing import Optional, Set
+from .implicit_risk import implicit_risk
+from .multilingual import crisis_language
 from .rules import Rules
 
 # Lanes whose deterministic template must never be pre-empted or rewritten by any
@@ -80,10 +82,32 @@ def _escalation(message: str) -> RouteResult | None:
     return None
 
 
+# Finalization mitigations (red-team findings SB-07, SB-08): explicit crisis wording in
+# other languages (app/router/multilingual.py) and narrow implicit-risk warning signs
+# (app/router/implicit_risk.py). Both are escalate-only: they can raise any result to
+# urgent_safety, the highest-priority lane, and never lower or replace a lane otherwise.
+# Both are agent-drafted and await Devika's routing review and clinical review.
+def crisis_extension(message: str) -> str | None:
+    """Which escalate-only crisis check matched: "multilingual:<lang>", "implicit_risk" or None."""
+    lang = crisis_language(message)
+    if lang:
+        return f"multilingual:{lang}"
+    rules = _default_router.rules
+    views = [rules.normalize(message), rules.skeleton(message)]
+    if implicit_risk(views):
+        return "implicit_risk"
+    return None
+
+
+_CRISIS = RouteResult(level="urgent_safety", response_key="crisis", auto_reply_key="crisis")
+
+
 def route(message: str) -> RouteResult | None:
     rr = _default_router.route(message)
     if rr.level not in SAFETY_CRITICAL_LANES:
         escalated = _escalation(message)
         if escalated is not None:
-            return escalated
+            rr = escalated
+    if rr.level != "urgent_safety" and crisis_extension(message):
+        return RouteResult(_CRISIS.level, _CRISIS.response_key, _CRISIS.auto_reply_key)
     return rr if rr.level else None

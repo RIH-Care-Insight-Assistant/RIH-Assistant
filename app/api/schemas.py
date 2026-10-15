@@ -71,7 +71,7 @@ class Clarification(BaseModel):
 
 
 class Notice(BaseModel):
-    kind: Literal["stale_source", "baseline_source", "no_eligible_source", "degraded"]
+    kind: Literal["stale_source", "baseline_source", "no_eligible_source", "degraded", "language_support"]
     message: str
 
 

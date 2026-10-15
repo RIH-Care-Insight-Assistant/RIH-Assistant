@@ -29,7 +29,18 @@ from app.retriever.retriever import retrieve
 from app.answer.compose import (
     from_chunks, crisis_message, template_for, disclaimer,
 )
+from app.router.language import NOTICE_TEXT as LANGUAGE_NOTICE_TEXT, unsupported_language
 from app.ui.audit import log
+
+# Exact safety templates are never extended (see docs/safety/crisis-routing.md invariant 1).
+_SAFETY_TEXTS = frozenset({crisis_message(), template_for("title_ix"), template_for("conduct")})
+
+
+def _with_language_notice(msg: str, text: str) -> str:
+    """SB-07 compensating control: say so when an ordinary reply answers a non-English message."""
+    if text in _SAFETY_TEXTS or not unsupported_language(msg):
+        return text
+    return text + "\n\n" + LANGUAGE_NOTICE_TEXT
 
 
 def _respond_legacy(msg: str) -> str:
@@ -75,10 +86,8 @@ def respond(msg: str) -> str:
     debug_trace = os.getenv("RIH_DEBUG_TRACE") == "1"
 
     if mode == "LEGACY":
-        return _respond_legacy(msg)
-    if mode == "AGENT":
-        return _respond_agentic(msg, debug_trace=debug_trace)
-    return _respond_agentic(msg, debug_trace=debug_trace)
+        return _with_language_notice(msg, _respond_legacy(msg))
+    return _with_language_notice(msg, _respond_agentic(msg, debug_trace=debug_trace))
 
 
 def main() -> None:

@@ -25,6 +25,7 @@ from typing import Any, Dict, List, Optional
 from ..answer.compose import crisis_message, template_for
 from ..rag.citations import validate_citations
 from ..rag.evidence import Evidence
+from ..router.language import NOTICE_KIND as LANGUAGE_NOTICE_KIND, NOTICE_TEXT as LANGUAGE_NOTICE_TEXT, unsupported_language
 from ..router.safety_router import DECLINE_PROTECTED_LANES, SAFETY_CRITICAL_LANES, route as safety_route
 from ..tools.decline_detector import DeclineDetector
 from .toolkit import (
@@ -175,6 +176,15 @@ class Orchestrator:
         return gov.policy if gov is not None else None
 
     def run(self, user_text: str, *, clarified: bool = False, ctx: Optional[TurnContext] = None) -> AgentResult:
+        result = self._run(user_text, clarified=clarified, ctx=ctx)
+        # SB-07 compensating control: an ordinary answer to a message that does not look like
+        # English says so and repeats the emergency numbers. Safety templates stay exact.
+        if not result.is_terminal_safety and unsupported_language(user_text):
+            result.notices.append({"kind": LANGUAGE_NOTICE_KIND, "message": LANGUAGE_NOTICE_TEXT})
+            result.trace.append({"event": "notice", "kind": LANGUAGE_NOTICE_KIND})
+        return result
+
+    def _run(self, user_text: str, *, clarified: bool = False, ctx: Optional[TurnContext] = None) -> AgentResult:
         ctx = ctx or TurnContext()
         # 1) Safety gate: original text, before everything else.
         safe = safety_result(user_text)

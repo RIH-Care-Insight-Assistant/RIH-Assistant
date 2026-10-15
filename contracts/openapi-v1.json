@@ -642,7 +642,8 @@
               "stale_source",
               "baseline_source",
               "no_eligible_source",
-              "degraded"
+              "degraded",
+              "language_support"
             ],
             "title": "Kind",
             "type": "string"

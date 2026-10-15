@@ -43,7 +43,7 @@ export interface Clarification {
 }
 
 export interface Notice {
-  kind: "stale_source" | "baseline_source" | "no_eligible_source" | "degraded";
+  kind: "stale_source" | "baseline_source" | "no_eligible_source" | "degraded" | "language_support";
   message: string;
 }
 
