@@ -144,3 +144,16 @@ def test_chat_corpus_is_not_gated(kb):
     # Governed retrieval starts from chat_corpus() and applies its own, stricter checks.
     kb([GOOD, POISON], listed=[GOOD])
     assert {r["title"] for r in retriever.chat_corpus()} == {GOOD["title"], POISON["title"]}
+
+
+def test_inventory_change_takes_effect_without_a_restart(kb):
+    # B10 (Devika's review): rejecting a record in the inventory removes it from the legacy
+    # ranking in a running process; before, the gated list was cached until restart.
+    kb([GOOD])
+    assert retriever.retrieve("billing insurance", k=3)
+    sources = Path(retriever.KB_DIR) / "governance" / "sources.json"
+    inv = json.loads(sources.read_text(encoding="utf-8"))
+    for entry in inv["sources"]:
+        entry["approval_status"] = "rejected"
+    sources.write_text(json.dumps(inv), encoding="utf-8")
+    assert retriever.retrieve("billing insurance", k=3) == []

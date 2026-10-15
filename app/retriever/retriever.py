@@ -73,8 +73,9 @@ def _load_kb() -> List[Dict]:
     _cached_kb = items
     return items
 
-# (KB_DIR, the _load_kb() list it was built from, gated records); rebuilt when either changes.
-_cached_legacy: Tuple[str, List[Dict], List[Dict]] | None = None
+# (KB_DIR, the _load_kb() list it was built from, governance file stamps, gated records);
+# rebuilt when any of them changes.
+_cached_legacy: Tuple[str, List[Dict], Tuple, List[Dict]] | None = None
 
 # Red-team finding RP-06: the C1 path ranked every KB file record, so a poisoned record
 # committed to kb/ reached CLI answers. Ranking now starts from the records that pass the
@@ -89,12 +90,27 @@ def _blocked(reasons: List[str]) -> bool:
     return any(r in _LEGACY_BLOCKING or r.startswith("status_") for r in reasons)
 
 
+def _governance_stamp() -> Tuple:
+    # B10 (Devika's review): a record rejected or quarantined in the inventory must leave the
+    # legacy ranking without a process restart, so the cache follows the governance files.
+    stamps = []
+    for name in ("policy.json", "sources.json"):
+        try:
+            st = os.stat(Path(KB_DIR) / "governance" / name)
+            stamps.append((name, st.st_mtime_ns, st.st_size))
+        except OSError:
+            stamps.append((name, None, None))
+    return tuple(stamps)
+
+
 def _legacy_corpus() -> List[Dict]:
     """The ordinary-chat records the legacy ranking may use (see RP-06 above)."""
-    global _cached_legacy
+    global _cached_legacy, _idf
     items = _load_kb()
-    if _cached_legacy is not None and _cached_legacy[0] == str(KB_DIR) and _cached_legacy[1] is items:
-        return _cached_legacy[2]
+    stamp = _governance_stamp()
+    if (_cached_legacy is not None and _cached_legacy[0] == str(KB_DIR) and _cached_legacy[1] is items
+            and _cached_legacy[2] == stamp):
+        return _cached_legacy[3]
     from ..rag.evidence import evidence_from_record
     from ..rag.governance import GovernanceError, SourceGovernance
 
@@ -103,7 +119,9 @@ def _legacy_corpus() -> List[Dict]:
         gated = [c for c in items if not _blocked(gov.assess(evidence_from_record(c)).reasons)]
     except GovernanceError:
         gated = []
-    _cached_legacy = (str(KB_DIR), items, gated)
+    if _cached_legacy is not None:
+        _idf = None  # rebuilt lazily from the new gated corpus
+    _cached_legacy = (str(KB_DIR), items, stamp, gated)
     return gated
 
 
