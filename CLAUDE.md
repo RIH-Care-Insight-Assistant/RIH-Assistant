@@ -1,11 +1,13 @@
 # CLAUDE.md
 
 Claude Code reads this file automatically. It adds no rules of its own: every
-coding agent follows the same standards in [`AGENTS.md`](AGENTS.md), imported below.
+coding agent follows the same standards in [`AGENTS.md`](AGENTS.md), imported below,
+including the local-first workflow for Phases 2–9.
 
 @AGENTS.md
 
-Shared documents (same list as `AGENTS.md`): [`docs/PROJECT_STATE.md`](docs/PROJECT_STATE.md),
+Shared documents (same list as `AGENTS.md`): [`docs/LOCAL_FIRST_PROGRESS.md`](docs/LOCAL_FIRST_PROGRESS.md),
+[`docs/PROJECT_STATE.md`](docs/PROJECT_STATE.md),
 [`docs/MASTER_PLAN.md`](docs/MASTER_PLAN.md),
 [`docs/INTERFACE_CONTRACTS.md`](docs/INTERFACE_CONTRACTS.md),
 [`docs/CONTRIBUTION_MATRIX.md`](docs/CONTRIBUTION_MATRIX.md),

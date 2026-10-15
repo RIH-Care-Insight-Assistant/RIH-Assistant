@@ -6,9 +6,12 @@ Contributor and reviewer: **Devika**. Every change goes through a PR reviewed by
 the other contributor. Adding, removing or weakening a gate needs both humans'
 explicit agreement.
 
-This is the C1 version. The first table lists only gates that exist and run today.
-Later gates are listed as planned and are **not** enforced until their phase
-delivers them. Current pass/fail status is in [`PROJECT_STATE.md`](PROJECT_STATE.md).
+The first table lists the GitHub merge gates that exist and run today; the
+jointly approved simplified B7 policy remains the **remote repository policy**. For
+Phases 2–9 the **local release-readiness procedure** below is the primary engineering
+acceptance mechanism. A check that is not required by GitHub branch protection is still
+mandatory locally. Current status is in [`LOCAL_FIRST_PROGRESS.md`](LOCAL_FIRST_PROGRESS.md)
+and [`PROJECT_STATE.md`](PROJECT_STATE.md).
 
 ## Merge gates for `main` (run on every PR and push)
 
@@ -71,6 +74,32 @@ Devika approves PR #10.
 - Report real numbers with their numerators and denominators. No target values are
   written into a gate as if they were results.
 - A PR that renames a CI job updates this file and the required-check list together.
+
+## Local release-readiness (Phases 2–9, local-first workflow)
+
+Each local milestone (C2–C5) and the final publication candidate must pass the
+cumulative battery on the enhancement branch, run on the shared machine, with the real
+counts recorded in `LOCAL_FIRST_PROGRESS.md`. Gates are added as their phases deliver
+them; once added, a gate is never removed or weakened to get a pass.
+
+| Gate | Command (from the repository root) | Blocks readiness when |
+|---|---|---|
+| Lint | `ruff check .` | Any finding |
+| Python tests | `python -m pytest -q` | Any failure |
+| Legacy routes | `python scripts/check_routes.py` | Any mismatch |
+| Safety evaluation | `python scripts/safety_eval.py --fail-on-miss` | Any missed safety-critical case or benign false positive |
+| Smoke | `python -m tests.run_smoke` | Failure |
+
+Later phases append their gates here (frontend checks, API contract snapshot,
+end-to-end workflow, adversarial suite, governance evidence, container and Kubernetes
+checks) together with the aggregated release-readiness command.
+
+Rules for the local procedure:
+- A critical safety or authorization failure means **not release-ready**, whatever else passes.
+- Negative verification of a gate (a deliberate regression) runs only in a disposable
+  worktree or branch, never on the enhancement branch itself; the safe state is restored
+  and the battery rerun afterwards.
+- Numbers come from executed runs, with numerators and denominators.
 
 ## Planned gates (not enforced yet)
 

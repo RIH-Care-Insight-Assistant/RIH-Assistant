@@ -1,5 +1,17 @@
 # RIH Care Insight Assistant — Devika Development Launcher
 
+
+> **Status for Phases 2–9 (local-first amendment, 2026-10-14).** This launcher is kept as the
+> intended responsibility reference: it records what Devika leads and is accountable for in
+> each phase. It is no longer an instruction to run a separate development session, computer,
+> branch or PR. Both contributors now work on one shared Windows/WSL2 PC, on the single branch
+> `feature/rih-local-enhancement-phases-2-9`, under the workflow in
+> [`SHARED_DEVELOPMENT_INSTRUCTIONS.md`](SHARED_DEVELOPMENT_INSTRUCTIONS.md) §6.1 and the
+> root `AGENTS.md`. Where the operational steps below (machine setup, branch names, pushes,
+> PRs, waiting for the partner's merge) conflict with that workflow, the workflow wins; the
+> safety, privacy, security, cost and attribution rules below still apply in full. C1 was
+> carried out under the original text.
+
 ## IDENTITY
 
 I am **Devika Rani Sanaboyina**, one of the two equal contributors to the RIH Care Insight Assistant.

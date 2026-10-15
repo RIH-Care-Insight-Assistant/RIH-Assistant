@@ -1,17 +1,35 @@
 # Project state
 
-Shared checkpoint state. Maintained by Abhinav (C1 ownership); every change goes
-through a PR reviewed by Devika. Contributor detail lives in
-[`progress/abhinav.md`](progress/abhinav.md) and [`progress/devika.md`](progress/devika.md).
-This file is a snapshot: confirm PRs, reviews and CI on GitHub before acting on it.
+Shared checkpoint state. Contributor detail lives in
+[`progress/abhinav.md`](progress/abhinav.md) and [`progress/devika.md`](progress/devika.md);
+the live local implementation record for Phases 2–9 is
+[`LOCAL_FIRST_PROGRESS.md`](LOCAL_FIRST_PROGRESS.md).
 
-Last updated: 2026-10-12, after both humans approved the revised B7 branch-protection policy
-on PR #10, on branch `feature/abhinav-c1-acceptance`.
+Last updated: 2026-10-14, on local branch `feature/rih-local-enhancement-phases-2-9`
+(local-first workflow; not yet published).
 
 ## Current checkpoint
 
-**C1 (Phases 0–1), close-out. All six acceptance requirements are met under the revised B7
-policy; acceptance is recorded by Devika's formal approval of PR #10.**
+**C2 (Phases 2–3), local implementation milestone, in progress.** C1 is complete and
+accepted. From 2026-10-14 the humans work together on one Windows PC under the
+local-first workflow (`AGENTS.md`; shared instructions §6.1): one integrated branch, no
+intermediate pushes or PRs, publication only after the whole enhancement validates
+locally and the humans authorize it.
+
+- **C1 accepted:** Devika approved PR #10 on 2026-10-12 at 17:04:56 UTC; Abhinav merged it
+  at 17:05:25 UTC as `6ab77a8`. CI run 38281894574 on `6ab77a8` succeeded (verified
+  read-only with `gh` on 2026-10-14).
+- **Enhancement branch:** `feature/rih-local-enhancement-phases-2-9`, created from `6ab77a8`.
+  Baseline rerun on that commit (WSL2 Ubuntu 26.04.1, Python 3.14.4, 2026-10-14): Ruff clean
+  (both configs), `pytest -q` **4628 passed**, routes passed, safety evaluation 172/172
+  exact lanes with no misses or false positives, smoke OK.
+- **Still open from C1:** issue #7 (C1 coordination record) is open; closing it is a
+  human GitHub action.
+
+## C1 close-out record (historical, as recorded on 2026-10-12)
+
+**C1 (Phases 0–1), close-out. All six acceptance requirements were met under the revised B7
+policy; acceptance was recorded by Devika's formal approval of PR #10 (since given).**
 
 - **Merged:** all eight C1 PRs (#4, #5, #8, #9, #11, #12, #13, #14), each approved by the other human.
 - **Final `main`:** `8be85c6`, with CI 8/8. It differs from `bbc07de` only in three of Devika's documentation files.
@@ -26,9 +44,6 @@ policy; acceptance is recorded by Devika's formal approval of PR #10.**
   PR #10 (Abhinav: [comment](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/10#issuecomment-6128683842); Devika: [comment](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/10#issuecomment-6128687578)). The live
   settings match it. **This reduces enforcement:** CI checks run but are not required to merge.
   See [GitHub settings](#github-settings-for-main).
-
-C1 is **not yet formally accepted**; that happens when Devika approves PR #10. C2 has not
-started; no C2 branches exist.
 
 ## Last validated `main`
 
@@ -192,18 +207,20 @@ Eight items were proposed for deferral; **all are resolved**.
 | Deferrals (table above) | Approved with conditions (2026-10-11) | Accepted with conditions (2026-10-12, C1-D32, PR #14) |
 | Revised B7 branch-protection policy (reduced enforcement) | Approved 2026-10-12 16:50 UTC ([comment](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/10#issuecomment-6128683842)) | Approved 2026-10-12 16:50 UTC ([comment](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/10#issuecomment-6128687578)) |
 | `RELEASE_GATES.md` ownership | Decided | Approved PR #8, which records it |
-| C2 stack: FastAPI, React + TypeScript, Vite, SQLite | Approved 2026-10-11 | Pending |
-| Node.js version and lockfile | Open | Open |
-| Revised collaboration model (continuous component ownership; three waves) and C2-v0.1 contracts | Proposal follows C1 acceptance | Her [C2-v0.1 candidate](audits/devika-c2-v0.1-candidate.md) is a proposal, not an approval |
+| C2 stack: FastAPI, React + TypeScript, Vite, SQLite | Approved 2026-10-11 | Pending (adopted for local development) |
+| Node.js version and lockfile | Adopted locally (Node 24, npm lockfile); awaiting acceptance | Awaiting acceptance |
+| Three-wave continuous-ownership proposal (2026-10-11) | Superseded by the local-first workflow | Not adopted |
+| Local-first workflow for Phases 2–9 (2026-10-14) | Directed in the operator's master prompt, which states both humans now work together on one PC | Not separately recorded by Devika; confirm before publication |
+| C2-local-v1 contracts ([contracts/C2-local-v1.md](contracts/C2-local-v1.md)), derived from her [C2-v0.1 candidate](audits/devika-c2-v0.1-candidate.md) | Adopted for local development; awaiting acceptance | Awaiting acceptance |
 
 **Jointly confirmed contracts:** C1-v0.2 (`INTERFACE_CONTRACTS.md`, `CONTRIBUTION_MATRIX.md`),
 architecture §4 items 1–4, and the three C1 routing policies above.
 
 ## Open PRs and issues
 
-- [Issue #7](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/7): canonical C1 contract approval and coordination record. Close it once C1 is accepted.
-- [PR #10](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/10) (`feature/abhinav-c1-acceptance`, this change, **ready for review**): the C1 acceptance record. Devika's formal approval records C1 acceptance.
-- No other open PRs.
+- No open PRs (checked read-only 2026-10-14). Under the local-first workflow no PRs are
+  opened until publication is authorized.
+- [Issue #7](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/7): canonical C1 contract approval and coordination record, still open. Closing it is a human action.
 
 ## Known defects and risks
 
@@ -283,11 +300,9 @@ Phase exit criteria (`MASTER_PLAN.md`):
 
 ## Exact safe next step
 
-1. **Devika:** formally approve PR #10 if the record is correct. That approval records C1
-   acceptance.
-2. **Then:** merge PR #10 (by either human, after her approval) and close issue #7.
-3. **After C1 acceptance:** propose the revised collaboration model and the C2-v0.1 contracts
-   (docs only) for joint approval. No C2 implementation before both approve them.
+Follow [`LOCAL_FIRST_PROGRESS.md`](LOCAL_FIRST_PROGRESS.md) → *Next executable action*.
+Publication (push, PR, merge) waits for explicit human authorization after the final
+local validation and publication plan.
 
 ## Resume testing
 

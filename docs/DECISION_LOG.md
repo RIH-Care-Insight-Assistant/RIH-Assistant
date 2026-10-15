@@ -128,3 +128,22 @@ ownership remains to be coordinated with his foundational documentation.
   PR #10 needs its final updated completion record before acceptance review.
   No Abhinav-owned file, application/test/CI/dependency/contract change, new
   adversarial exercise, C2 work, PR approval or merge is made by this record.
+
+## Local-first enhancement (Phases 2–9)
+
+Entries below are appended under the local-first workflow. Historical C1 entries above
+are unchanged. Each entry names who made or directed the decision and what is still
+awaiting human acceptance; nothing here records an approval that was not given.
+
+- **L-D1 (2026-10-14, directed by the operator in Abhinav's session):** Adopt the
+  local-first workflow for Phases 2–9: one shared Windows/WSL2 PC, one integrated branch
+  `feature/rih-local-enhancement-phases-2-9` from accepted C1 `main` `6ab77a8`, one
+  primary coding agent, local commits, no intermediate pushes/PRs/merges, a single
+  human-authorized publication at the end. Supersedes the 2026-10-11 three-wave proposal
+  (C1-D30) and the per-checkpoint branch/PR procedure for C2–C5. The operator's
+  instruction states that Abhinav and Devika are now collaborating physically on the same
+  computer; Devika's own recorded confirmation is to be captured before publication.
+  Safety, privacy, $0, honest-evidence and attribution rules are unchanged.
+- **L-D2 (2026-10-14):** C2-local-v1 contracts adopted for local implementation, derived
+  from Devika's C2-v0.1 candidate; additions and open items are listed in
+  [`contracts/C2-local-v1.md`](contracts/C2-local-v1.md). Awaiting human acceptance.

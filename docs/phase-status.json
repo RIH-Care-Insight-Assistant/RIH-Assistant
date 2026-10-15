@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "branch": "feature/rih-local-enhancement-phases-2-9",
+  "base_commit": "6ab77a862379a16d6d63d81e9d4ea709a55f2496",
+  "updated": "2026-10-14",
+  "current_phase": 2,
+  "published": false,
+  "phases": {
+    "2": {"status": "in_progress", "evidence": []},
+    "3": {"status": "not_started", "evidence": []},
+    "4": {"status": "not_started", "evidence": []},
+    "5": {"status": "not_started", "evidence": []},
+    "6": {"status": "not_started", "evidence": []},
+    "7": {"status": "not_started", "evidence": []},
+    "8": {"status": "not_started", "evidence": []},
+    "9": {"status": "not_started", "evidence": []}
+  },
+  "awaiting_humans": [
+    "Devika's recorded confirmation of the local-first workflow (L-D1)",
+    "Acceptance of C2-local-v1 contracts (L-D2)",
+    "Close issue #7 on GitHub"
+  ]
+}

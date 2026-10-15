@@ -1,11 +1,11 @@
 # Master plan — RIH Care Insight Assistant upgrade
 
-Maintained by Abhinav (C1 ownership); changes go through a PR reviewed by Devika.
 This is a summary for orientation. The full text is authoritative where they differ:
-[`instructions/SHARED_DEVELOPMENT_INSTRUCTIONS.md`](instructions/SHARED_DEVELOPMENT_INSTRUCTIONS.md),
-[`instructions/ABHINAV_LAUNCHER.md`](instructions/ABHINAV_LAUNCHER.md),
-[`instructions/DEVIKA_LAUNCHER.md`](instructions/DEVIKA_LAUNCHER.md).
-Current status lives in [`PROJECT_STATE.md`](PROJECT_STATE.md), not here.
+[`instructions/SHARED_DEVELOPMENT_INSTRUCTIONS.md`](instructions/SHARED_DEVELOPMENT_INSTRUCTIONS.md).
+The launchers ([`instructions/ABHINAV_LAUNCHER.md`](instructions/ABHINAV_LAUNCHER.md),
+[`instructions/DEVIKA_LAUNCHER.md`](instructions/DEVIKA_LAUNCHER.md)) are responsibility
+references. Current status lives in [`PROJECT_STATE.md`](PROJECT_STATE.md) and
+[`LOCAL_FIRST_PROGRESS.md`](LOCAL_FIRST_PROGRESS.md), not here.
 
 ## Goal and constraints
 
@@ -18,23 +18,32 @@ governance, observability, CI release gates, Docker, and a local Kubernetes exte
 - Keep the original CLI working, and keep existing tests and history.
 - $0 additional service spend; CI and tests run without a model provider.
 - Synthetic data only. Safety decisions stay deterministic and outside the model.
-- Windows/WSL2, macOS, Linux containers and GitHub Actions must all work.
-- About equal implementation effort per contributor in every phase.
+- Windows/WSL2, Linux containers and GitHub Actions must work; macOS where practical.
+- Both humans contribute substantively; attribution records what each actually did.
 
 ## Checkpoints
 
-| Checkpoint | Phases | Abhinav branch | Devika branch |
-|---|---|---|---|
-| C1 | 0–1 Foundation and safety | `feature/abhinav-c1-foundation-safety` | `feature/devika-c1-foundation-safety` |
-| C2 | 2–3 Full stack, agents, governed RAG | `feature/abhinav-c2-fullstack-agents` | `feature/devika-c2-fullstack-agents` |
-| C3 | 4–5 Security, policy-as-code, red team | `feature/abhinav-c3-security-redteam` | `feature/devika-c3-security-redteam` |
-| C4 | 6–7 Governance, observability, release gates | `feature/abhinav-c4-governance-devsecops` | `feature/devika-c4-governance-devsecops` |
-| C5 | 8–9 Docker, resilience, Kubernetes | `feature/abhinav-c5-resilience-k8s` | `feature/devika-c5-resilience-k8s` |
+| Checkpoint | Phases | How it is completed |
+|---|---|---|
+| C1 | 0–1 Foundation and safety | **Complete and accepted** under the original workflow: eight PRs, each approved by the other human; PR #10 approved by Devika and merged as `6ab77a8` (2026-10-12) |
+| C2 | 2–3 Full stack, agents, governed RAG | Local milestone on `feature/rih-local-enhancement-phases-2-9` |
+| C3 | 4–5 Security, policy-as-code, red team | Local milestone, same branch |
+| C4 | 6–7 Governance, observability, release gates | Local milestone, same branch |
+| C5 | 8–9 Docker, resilience, Kubernetes | Local milestone, same branch |
 
-Small follow-up branches within a checkpoint (for example C1 close-out work) use the
-same prefix, such as `feature/abhinav-c1-closeout-docs`.
+A local milestone (C2–C5) is complete when its phases' exit criteria below are met
+**and demonstrated by executed checks**: the code is integrated into the working
+application, the relevant tests and the cumulative regression battery pass, the
+results (commit SHA, environment, commands, pass/fail counts, limitations) are recorded
+in [`LOCAL_FIRST_PROGRESS.md`](LOCAL_FIRST_PROGRESS.md), and the work is committed
+locally. No GitHub PR, review or merge is part of a local milestone.
 
-## Who does what (summary of the launchers)
+## Who does what (responsibility reference from the launchers)
+
+The original allocation is kept as the intended responsibility matrix. On the shared
+machine it describes who leads, reviews and is accountable for each area; it is not a
+reason for separate branches or competing sessions. Actual contributions are recorded
+in [`CONTRIBUTION_MATRIX.md`](CONTRIBUTION_MATRIX.md).
 
 | Phase | Abhinav | Devika |
 |---|---|---|
@@ -49,48 +58,41 @@ same prefix, such as `feature/abhinav-c1-closeout-docs`.
 | 8 Docker | Backend container, health checks, LLM timeout and retrieval outage tests, retry and circuit breaking | Frontend container, Compose integration, database and tool failure tests, corrupt/stale KB tests, frontend failure UX |
 | 9 Kubernetes | Backend workloads, probes, limits, security contexts, rollout/rollback and restart tests | Frontend workloads, NetworkPolicies, Kustomize/Helm integration, deployment validation scripts |
 
-Each contributor reviews the other's work in every phase.
-
 ## Exit criteria
 
 | Phase | Done when |
 |---|---|
 | 0 | Baseline understood with executed evidence; CI operational; architecture documented; both can develop locally |
 | 1 | Baseline and new safety regression tests pass; safety-critical behavior stays deterministic |
-| 2 | End-to-end student workflow works locally; automated tests; backend/frontend compatibility verified |
-| 3 | Governed agent execution and retrieval work, with explicit tool contracts and traceable evidence |
-| 4 | Unauthorized operations are blocked even if the model or a retrieved document asks for them |
-| 5 | Repeatable attack suite; findings link to governance and CI release decisions |
-| 6 | Risks, controls, test evidence and release decisions are traceable and inspectable |
-| 7 | Critical safety/security regressions block release; observability supports diagnosis |
-| 8 | Full app runs in Docker and passes integration, security and resilience checks |
-| 9 | Reproducible local Kubernetes deploy that survives tested failures, with rollout and rollback |
+| 2 | A student can open the app locally, chat, receive safety-first guidance, see supported citations and continue a session; automated backend, frontend, contract and end-to-end tests pass |
+| 3 | Governed agent execution and retrieval work, with explicit tool contracts, tools cannot bypass permissions, and retrieved facts are traceable to approved sources |
+| 4 | Unauthorized operations are blocked even if the model, a user prompt or a retrieved document asks for them |
+| 5 | Repeatable attack suite with versioned fixtures and measured results; findings link to governance and release decisions |
+| 6 | Risks, controls, test evidence and release decisions are traceable and inspectable by authorized users |
+| 7 | Critical safety/security regressions produce a failed release-readiness result; observability supports diagnosis |
+| 8 | Full app runs in Docker Compose and passes integration, security and resilience checks |
+| 9 | Reproducible local kind deploy that performs core workflows, survives tested failures, with rollout and rollback |
 
-A checkpoint is complete only when both PRs are reviewed and merged, CI on `main` is
-green, both humans have run the integrated `main` themselves, and the completion
-report is recorded in `PROJECT_STATE.md`. Merging PRs alone does not complete it.
-The merge and acceptance gates are defined in [`RELEASE_GATES.md`](RELEASE_GATES.md).
+## Local-first integration procedure (C2–C5)
 
-## Integration procedure (each checkpoint)
+1. Start each phase from the last locally validated commit on the enhancement branch.
+2. Record the phase's contracts in [`INTERFACE_CONTRACTS.md`](INTERFACE_CONTRACTS.md),
+   labeling anything that still needs genuine human acceptance.
+3. Implement code and tests together; integrate into the running application.
+4. Run the phase's checks and the cumulative regression battery; fix failures first.
+5. Commit locally under the correct human identity; update the progress record and
+   make a non-destructive backup (git bundle outside the working tree).
+6. After Phase 9, run the final battery, write the completion report and the
+   publication plan, and stop before the first push.
 
-1. Agree the checkpoint's contracts first (both humans, same version, recorded).
-2. Each contributor branches from validated `main` and stays within their slice.
-3. Tests ship with the code; run locally before pushing.
-4. PR to `main`, reviewed by the other human; CI must pass.
-5. Merge the first PR; the second branch updates from the new `main`, reruns
-   tests, and gets renewed approval before it merges.
-6. Both run the integrated `main`; record the checkpoint report.
+## Technical direction (Phases 2–9)
 
-Alternate who merges first. C1: Devika's PR #5 merged first. Proposal for C2:
-Abhinav's PR merges first (needs Devika's agreement).
-
-## C2 technical direction (proposed)
-
-| Item | Proposal | Status |
+| Item | Decision | Status |
 |---|---|---|
-| Backend | FastAPI + Pydantic, reusing `app/` modules so the CLI keeps working | Abhinav approved 2026-10-11; Devika pending |
-| Frontend | React + TypeScript built with Vite | Abhinav approved 2026-10-11; Devika pending |
-| Database | SQLite | Abhinav approved 2026-10-11; Devika pending |
-| Node.js version and lockfile | To agree before any frontend code | Open |
-| Admin endpoints | Protected or disabled until real authentication exists (Phase 4). No insecure placeholder authentication used as a production control | Abhinav's requirement; Devika pending |
-| API and tool contracts | C2-v0.1: OpenAPI (chat, resources, sessions, feedback, health), error format, citation and clarification objects, tool registry and permission contract, provenance schema | To draft jointly. Drafting (docs only) may overlap C1 close-out; no C2 implementation until C1 is accepted |
+| Backend | FastAPI + Pydantic, reusing `app/` modules so the CLI keeps working | Abhinav approved 2026-10-11; adopted for local development; Devika's recorded acceptance pending |
+| Frontend | React + TypeScript built with Vite; Vitest + Testing Library; Playwright for end-to-end | Adopted locally; awaiting human acceptance |
+| Database | SQLite with numbered SQL migrations | Abhinav approved 2026-10-11; adopted locally; Devika's recorded acceptance pending |
+| Node.js and lockfile | Node 24 LTS line, npm with committed `package-lock.json` | Adopted locally; awaiting human acceptance |
+| Admin endpoints | Disabled server-side until Phase 4 authentication exists; afterwards role-checked in the backend | Abhinav's requirement; matches Devika's C2-v0.1 candidate |
+| Contracts | C2-local-v1, derived from Devika's [C2-v0.1 candidate](audits/devika-c2-v0.1-candidate.md) | See [`INTERFACE_CONTRACTS.md`](INTERFACE_CONTRACTS.md) |
+| Kubernetes | kind + Kustomize | Adopted locally; awaiting human acceptance |

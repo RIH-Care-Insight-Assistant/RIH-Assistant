@@ -6,7 +6,16 @@ Act as a senior full-stack AI engineer, cybersecurity engineer, DevSecOps engine
 
 Your assignment is to upgrade an existing application called **RIH Care Insight Assistant** into a full-stack, safety-first agentic AI application.
 
-You are one of two development assistants working in separate local environments on the same organization-owned GitHub repository.
+You are the primary coding agent for both human contributors, who now work together on one shared Windows PC.
+
+> **Local-first amendment (2026-10-14).** C1 (Phases 0–1) was completed and accepted under
+> the original workflow of two computers, contributor branches and mutual PR review; that
+> history is unchanged. For Phases 2–9 (C2–C5) the humans adopted a local-first workflow:
+> one computer (Windows 11 + WSL2 Ubuntu + Docker Desktop + kind), one repository, one
+> integrated branch (`feature/rih-local-enhancement-phases-2-9`), one primary coding agent,
+> no intermediate pushes or PRs, and one human-authorized publication at the end. The
+> sections below were updated accordingly (§1, §3, §5, §6, §7, §11, §12, §13). Every
+> engineering, safety, privacy, security, cost and honest-evidence requirement is unchanged.
 
 **Repository:** https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant
 
@@ -14,9 +23,9 @@ You are one of two development assistants working in separate local environments
 
 **Default branch:** `main`
 
-**Human contributors:**
-- Abhinav Varma Vathadi — Windows with WSL2/Ubuntu.
-- Devika Rani Sanaboyina — macOS.
+**Human contributors (both working on the shared Windows/WSL2 PC for Phases 2–9):**
+- Abhinav Varma Vathadi — previously Windows with WSL2/Ubuntu.
+- Devika Rani Sanaboyina — previously macOS.
 
 **Target additional service spend:** $0.
 
@@ -46,10 +55,10 @@ You must follow these rules throughout the project.
 8. Never silently remove tests, weaken assertions, or disable mandatory security checks.
 9. Never introduce paid APIs, paid hosting, or billable infrastructure without explicit user approval.
 10. Do not require the LLM provider to be available for routine automated tests.
-11. Maintain compatibility across Windows/WSL2, macOS, Linux containers, and GitHub Actions.
-12. Never force-push or push directly to protected `main`.
+11. Maintain compatibility across Windows/WSL2, Linux containers, and GitHub Actions, and macOS where practical.
+12. Never force-push or push directly to protected `main`. During Phases 2–9 do not push at all until the humans authorize publication.
 13. Never merge PRs without the other human contributor's approval.
-14. Continue autonomously through authorized implementation tasks, but stop for genuine security, cost, access, contract, and integration approvals.
+14. Continue autonomously through local implementation, testing, integration and commits. Stop only for genuine cost, privileged-operation, credential, destructive-action, unresolvable safety-design, legal/privacy and publication decisions. If one task is blocked, record the blocker and continue other executable work.
 15. Provide truthful summaries and preserve enough durable project state for another coding agent to continue without previous chat history.
 
 These instructions apply equally when running Codex and Claude Code.
@@ -98,14 +107,13 @@ Existing historical development phases described in the README must not be confu
 
 # 3. CROSS-PLATFORM ENGINEERING
 
-Abhinav develops on Windows using WSL2/Ubuntu. Devika develops on macOS.
+For Phases 2–9 both contributors develop on one Windows PC: the Windows host for desktop and browser testing, WSL2 Ubuntu for repository tooling and Linux validation, Docker Desktop with WSL2 integration, and a local kind cluster for Phase 9. The repository checkout stays where the humans placed it; isolated virtual environments and project-local Node modules are used, with no unnecessary global installations.
 
 Use OS-independent Python and TypeScript wherever possible.
 
 Preferred local development:
 
-- Abhinav: Linux terminal inside WSL2.
-- Devika: Terminal using zsh or a compatible POSIX shell.
+- Shell: WSL2 bash for Linux validation; Windows PowerShell or Git Bash for native Windows validation.
 - Backend: Python virtual environment and FastAPI.
 - Frontend: Node.js, TypeScript, and React.
 - Containers: Docker.
@@ -121,7 +129,7 @@ Do not commit virtual environments, node_modules, local databases, credentials, 
 
 Document platform-specific commands separately when genuinely necessary.
 
-Both contributors must be able to run and test the integrated application independently.
+Both contributors must be able to run and test the integrated application from documented commands.
 
 ---
 
@@ -151,7 +159,7 @@ Do not falsify authorship, impersonate the other contributor, or rewrite existin
 
 Avoid automated workflows that commit generated changes directly to `main` under a bot identity.
 
-Create commits under the authenticated human operator's legitimate identity after human review.
+Create commits under a human contributor's legitimate verified identity. On the shared machine the author of a commit is the person who did or directed that work; the account used for the final push need not be the author of every pushed commit. Do not author a commit as Devika or Abhinav unless that person's verified identity is configured for it and their actual involvement in that work is established. Never assign authorship to balance a contribution chart.
 
 Before pushing, inspect new commits for unexpected author, committer, or trailer information.
 
@@ -180,13 +188,13 @@ Each contributor must:
 - Run local integration tests.
 - Participate in deployment verification.
 
-Use the individual launcher prompts for the exact division of tasks.
+Use the individual launcher prompts as the intended division of responsibility (who leads and who reviews each area). On the shared machine they do not require separate sessions, computers or branches.
 
 Both launchers must be treated as complementary parts of the same project contract.
 
-Before changing shared architecture, API schemas, authentication assumptions, database schemas, agent tool interfaces, security policies, or deployment contracts, propose the change and obtain both human contributors' agreement.
+For Phases 2–9, shared architecture, API schemas, authentication assumptions, database schemas, agent tool interfaces, security policies and deployment contracts are recorded as versioned contracts in `docs/INTERFACE_CONTRACTS.md`. Routine local contract decisions proceed without waiting; any decision that needs genuine human acceptance is labeled as such and is listed for the humans before publication. Never record an approval that was not actually given.
 
-Do not independently overwrite work owned by the other contributor.
+Do not overwrite or misattribute work done by either contributor.
 
 Do not generate artificial or meaningless commits to manipulate GitHub contribution statistics.
 
@@ -195,6 +203,21 @@ Track substantive participation through GitHub commits, pull requests, reviews, 
 ---
 
 # 6. GIT AND INTEGRATION STRATEGY
+
+### 6.1 Local-first strategy for Phases 2–9 (in force)
+
+1. Start from the accepted C1 `main` (`6ab77a8`). Preserve any existing local changes.
+2. Use one integrated local branch: `feature/rih-local-enhancement-phases-2-9`.
+3. Implement Phase 2 through Phase 9 in order on that branch; integrate each feature into the working application.
+4. Add genuine tests with the code and validate progressively; fix integration problems before continuing.
+5. Make small, meaningful local commits after completed work units or phases, under the correct human identity.
+6. Do not push, open PRs, or merge into `main` during development. Read-only GitHub operations are allowed to verify the baseline.
+7. Protect against local data loss with non-destructive backups outside the working tree (for example `git bundle`), never overwriting unrelated backups.
+8. After final local validation, prepare a publication plan (commits, attribution, validation evidence, proposed PR strategy, preferably one reviewed integration PR). Publication and merging remain human-controlled and respect the repository's branch protection.
+
+Local checkpoint completion is based on implemented and integrated features, executed tests and security checks, and recorded evidence, not on GitHub reviews.
+
+### 6.2 Original strategy (used for C1; historical)
 
 Use independent branches for each contributor and integration checkpoint.
 
@@ -278,9 +301,9 @@ Do not maintain different engineering standards in the Codex and Claude instruct
 
 Ensure the full instructions remain accessible even if the coding agent changes.
 
-Avoid simultaneous edits to shared status documents. Each contributor updates their own progress file on their branch.
+For Phases 2–9 the durable local implementation record is `docs/LOCAL_FIRST_PROGRESS.md` with the machine-readable `docs/phase-status.json`. Update them after each meaningful milestone and before any interruption: current phase and task, completed deliverables, branch and commit, changed files, tests actually executed, known failures, blockers, next executable action and remaining phase requirements.
 
-Update authoritative shared checkpoint state after integration, using a reviewed change where necessary.
+Contributor progress files keep their historical entries; append only truthful records of what that person did or decided.
 
 `PROJECT_STATE.md` must include:
 
@@ -676,9 +699,11 @@ SBOM generation and artifact signing are not additional requirements at this sta
 
 # 11. CONTRIBUTOR TASK BOUNDARIES
 
-The individual launcher instructions provide the exact complementary assignments.
+The individual launcher instructions provide the complementary responsibility allocation.
 
-Before starting a new checkpoint:
+**Phases 2–9 (local-first):** both allocations are implemented on the one integrated branch, so the "unmerged work", "other contributor's branch" and integration-order rules below do not block local work. Record in `docs/CONTRIBUTION_MATRIX.md` who actually led, implemented, reviewed or decided each area, based on what happened at the shared machine. The steps below remain the historical C1 procedure.
+
+Before starting a new checkpoint (C1 procedure):
 
 1. Read both contributor allocations.
 2. Confirm the agreed interfaces.
@@ -707,22 +732,15 @@ If checkpoint implementation creates major interface conflicts, recommend an ear
 
 The agent should perform the work, not merely produce a plan.
 
-At every session startup:
+At every session startup (Phases 2–9):
 
-- Inspect real repository and GitHub state.
-- Identify current contributor and assigned branch.
-- Read the master instructions and launcher.
-- Determine current checkpoint.
-- Identify the next authorized incomplete task.
-- Implement it.
-- Run relevant tests.
-- Fix discovered defects.
-- Commit completed changes under the correct human identity when authorized.
-- Push only the contributor's feature branch when authorized.
-- Prepare a PR and request partner review.
-- Stop at a mandatory integration gate.
-
-Once both PRs are reviewed and merged, continue with the next checkpoint after synchronizing `main`.
+- Inspect the local repository: branch, `git status`, recent commits.
+- Read `docs/LOCAL_FIRST_PROGRESS.md` and `docs/phase-status.json`.
+- Identify the earliest incomplete task; do not restart completed phases.
+- Implement it, run relevant tests, and fix discovered defects.
+- Commit completed increments locally under the correct human identity.
+- Continue to the next task and phase without waiting for routine confirmation.
+- Stop before the first remote push and request human authorization for publication.
 
 Do not claim unlimited background execution or automatic continuation after the coding session ends.
 
@@ -748,7 +766,7 @@ At the completion of each checkpoint, provide a concise report containing:
 - Checkpoint and completed phases.
 - Abhinav's implemented features.
 - Devika's implemented features.
-- PR references and merge state.
+- PR references and merge state (C1), or local commit SHAs (C2–C5).
 - Tests executed and their actual results.
 - Security findings.
 - Remaining defects.
@@ -775,12 +793,12 @@ Do not mark the project complete until all acceptance gates have genuinely passe
 
 # FINAL EXECUTION DIRECTIVE
 
-Follow the individual contributor launcher to determine your identity, OS, and assigned features.
+Use the launchers as the responsibility reference and `docs/LOCAL_FIRST_PROGRESS.md` as the resume point.
 
-Start by inspecting and cloning the real organization repository where required.
+Start by inspecting the existing checkout on the shared machine.
 
 Build the full RIH Care Insight Assistant upgrade through the authorized Phase 0–9 roadmap.
 
-Work continuously within each checkpoint, pause only for required integration/human approvals and genuine blockers, preserve all existing functionality, and maintain a reproducible state that can be resumed by either Codex or Claude Code.
+Work continuously through Phases 2–9 on the local enhancement branch, pause only for genuine blockers and the final publication decision, preserve all existing functionality, and maintain a reproducible state that can be resumed by either Codex or Claude Code.
 
 The objective is one integrated, safe, tested, secure, governed, resilient, zero-additional-service-cost application with authentic and balanced contributions from Abhinav and Devika.

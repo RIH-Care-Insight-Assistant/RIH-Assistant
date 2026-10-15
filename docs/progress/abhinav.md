@@ -138,3 +138,18 @@ ruff check . && python -m pytest -q && python scripts/safety_eval.py --fail-on-m
 1. Devika formally approves PR #10. Her approval records C1 acceptance.
 2. Merge PR #10 after her approval, and close issue #7.
 3. Only then: propose the revised collaboration model and C2-v0.1 contracts for joint approval. No C2 implementation before that.
+
+## 2026-10-14 — Local-first enhancement started (Phases 2–9)
+
+- Verified read-only: PR #10 approved by Devika (2026-10-12 17:04:56 UTC) and merged as
+  `6ab77a8`; CI run 38281894574 on `6ab77a8` succeeded; no open PRs; issue #7 still open.
+- Fast-forwarded local `main` to `6ab77a8` and created
+  `feature/rih-local-enhancement-phases-2-9` from it.
+- Baseline on `6ab77a8`, WSL2 Ubuntu 26.04.1, Python 3.14.4, ruff 0.16.10: Ruff clean
+  (both configs), `pytest -q` 4628 passed, `check_routes.py` passed, safety evaluation
+  172/172 exact lanes with no misses or false positives, smoke OK.
+- Reconciled the instructions with the local-first workflow (AGENTS.md, CLAUDE.md,
+  MASTER_PLAN.md, SHARED_DEVELOPMENT_INSTRUCTIONS.md, both launchers,
+  CONTRIBUTION_MATRIX.md, INTERFACE_CONTRACTS.md, RELEASE_GATES.md, PROJECT_STATE.md,
+  DECISION_LOG.md L-D1/L-D2).
+- From here on, per-phase progress is recorded in `docs/LOCAL_FIRST_PROGRESS.md`.
