@@ -52,6 +52,45 @@ copy was restored. Not rerun: E2E (frontend and API code unchanged), resilience,
 **Exact next action:** none for the cleanup. Publication still waits on the human decisions in
 [`FINAL_REPORT.md`](FINAL_REPORT.md) §9 and [`PUBLICATION_PLAN.md`](PUBLICATION_PLAN.md).
 
+## Final UI polish, screenshots and architecture visuals (2026-10-15, complete locally)
+
+Directed jointly by Abhinav and Devika (both present); an AI coding agent drafted the changes
+at their direction. Commits alternate author with a `Co-authored-by` trailer for the other
+person. Presentation only: no safety, routing, retrieval, policy or API behaviour changed, and
+readiness stays `blocked_pending_human_decision`.
+
+- **Design system:** UMBC-inspired black-and-gold tokens in `frontend/src/styles.css`
+  (gold `#FDB515`, black, white; dark and light gray, AOK teal, red, Retriever brown as
+  accents), light and dark themes (system setting or header toggle, remembered per device),
+  black text on gold, red only for warnings and safety alerts. `frontend/src/theme.test.ts`
+  checks every text and control pairing against WCAG AA in both themes. No university logos;
+  the footer states the design is not endorsed by UMBC.
+- **Screens:** header and navigation, disclaimer, chat (welcome, suggestions, message bubbles,
+  red safety panel, notices, numbered citations, typing and loading states, composer), history
+  sidebar, resource directory (search, skeletons, empty state), staff sign-in, tables with
+  status pills, governance KPIs and checks, observability KPIs with SVG bars (strict CSP: no
+  inline styles), audit log. On phones the conversation now comes before the history list.
+- **Screenshots:** `npm --prefix frontend run screenshots` starts a throwaway backend (synthetic
+  `demo.reviewer`/`demo.admin` accounts with a random per-run password) and the production
+  build, drives the real UI with Playwright and writes 14 PNGs to `docs/assets/screenshots/`.
+- **Diagrams:** editable HTML sources in `docs/architecture/diagrams/`, rendered by the same
+  run to `docs/assets/architecture/`. README now has an interface tour, a design-system note and
+  both diagrams; `tests/test_readme_assets.py` checks every README image exists and is used.
+
+Validation (Windows 11, Python 3.13.2, Node 24.14.0): ruff ×2 clean; pytest **5417 passed,
+1 skipped** (4 new); routes passed; safety eval no misses, no false positives; frontend lint and
+typecheck clean; vitest **69/69** (26 existing + 43 contrast); build OK; E2E **8/8** against the
+real API (3 new accessibility tests); screenshot and diagram run **11/11**. Not rerun:
+containers, kind, red team and the release battery (no backend, deployment or safety code
+changed; the nginx CSP is unchanged).
+
+Observed while capturing (not changed here, backend behaviour): choosing "Medical appointment"
+after "I need to make an appointment" returns the counseling guidance template. Worth a look in
+the routing review.
+
+**Exact next action:** the humans review the screenshots and README; publication still waits
+on the decisions in [`FINAL_REPORT.md`](FINAL_REPORT.md) §9 and [`PUBLICATION_PLAN.md`](PUBLICATION_PLAN.md).
+
 ## Phase status
 
 | Phase | Status | Evidence |

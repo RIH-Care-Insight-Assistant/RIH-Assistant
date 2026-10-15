@@ -7,6 +7,10 @@ _A safety-first assistant that helps university students find campus health and 
 > to emergencies. In an emergency call 911, or call or text 988. All conversations, accounts
 > and test data in this repository are synthetic.
 
+<p align="center">
+  <img src="docs/assets/screenshots/chat-answer-citations.png" alt="Student chat: an answer about RIH hours with a numbered, review-labelled source citation, freshness notices and feedback buttons" width="900">
+</p>
+
 ## Overview
 
 Students often do not know which campus office handles their question, and a chatbot that
@@ -24,6 +28,52 @@ separate area to govern sources, risks and release decisions.
 branch `feature/rih-local-enhancement-phases-2-9`. Release readiness is deliberately
 **blocked pending human decisions** (see [Known limitations](#known-limitations)); nothing here
 is production-ready.
+
+## A tour of the interface
+
+Every image below was captured automatically from the running application (FastAPI backend
+and production frontend build, synthetic data, throwaway demo accounts) by our Playwright
+script, `npm --prefix frontend run screenshots`. Nothing is mocked up.
+
+### Student experience
+
+| | |
+|---|---|
+| <img src="docs/assets/screenshots/chat-welcome.png" alt="Welcome screen with example questions and the safety-first note"> | <img src="docs/assets/screenshots/chat-safety-guidance.png" alt="A synthetic crisis message answered with the red urgent safety guidance panel"> |
+| **Welcome.** Example questions, the non-official disclaimer and emergency numbers are always visible. | **Safety first.** A crisis message gets fixed guidance in a distinct alert, with no sources and no model involved. |
+| <img src="docs/assets/screenshots/conversation-history.png" alt="Conversation history with three saved conversations and a clarification flow"> | <img src="docs/assets/screenshots/resources.png" alt="Resource directory cards showing category, freshness, review status and version"> |
+| **History and clarification.** Conversations are kept for 24 hours; ambiguous requests get server-defined options. | **Resource directory.** Every page the assistant may cite, with its review status, freshness and content version. |
+
+<p align="center">
+  <img src="docs/assets/screenshots/chat-dark.png" alt="Chat answer in the dark theme" width="62%">
+  &nbsp;
+  <img src="docs/assets/screenshots/mobile-chat.png" alt="Chat answer with citations on a phone-sized screen" width="17%">
+  <img src="docs/assets/screenshots/mobile-resources.png" alt="Resource directory on a phone-sized screen" width="17%">
+</p>
+<p align="center"><em>Dark theme (follows the system setting, or the header toggle) and phone-sized layouts.</em></p>
+
+### Staff, governance and observability
+
+| | |
+|---|---|
+| <img src="docs/assets/screenshots/staff-source-review.png" alt="Reviewer source queue with status, freshness and approve, reject and retire actions"> | <img src="docs/assets/screenshots/governance-dashboard.png" alt="Governance dashboard showing release readiness blocked pending human decisions, red-team results and battery checks"> |
+| **Source review.** Reviewers approve, reject or retire the exact content version shown. | **Governance.** Release readiness, red-team results and the decisions still waiting for a person. |
+| <img src="docs/assets/screenshots/observability-dashboard.png" alt="Observability dashboard with request, chat-turn, tool-call and security-event counts and route latency"> | <img src="docs/assets/screenshots/audit-log.png" alt="Admin audit log listing allowed and denied policy decisions"> |
+| **Observability.** Aggregate traffic, safety lanes, tool calls, security events and latency, with no message text. | **Audit log.** Every policy decision, including the denied request a reviewer made for admin-only data. |
+
+The risk register ([image](docs/assets/screenshots/governance-risk-register.png)) and the
+server-gated staff sign-in ([image](docs/assets/screenshots/staff-signin.png)) are captured too.
+
+### Design system
+
+We designed a black-and-gold visual identity inspired by the UMBC palette (gold `#FDB515`,
+black and white, with dark gray, light gray, AOK teal, red and Retriever brown as accents). All
+colors are CSS design tokens in [`frontend/src/styles.css`](frontend/src/styles.css), with a
+light and a dark theme. Gold buttons always carry black text, red is reserved for warnings and
+safety alerts, and teal marks approved or passing states. A unit test
+([`theme.test.ts`](frontend/src/theme.test.ts)) checks every text and control pairing against
+WCAG AA contrast in both themes. Every control shows a visible focus ring, and the layout works
+from phone width up. The project uses no university logos and is not endorsed by UMBC.
 
 ## Main features
 
@@ -46,22 +96,27 @@ is production-ready.
 
 ## Architecture
 
-```mermaid
-flowchart LR
-    U["Student or staff browser"] --> FE["React frontend<br/>(nginx in containers)"]
-    FE -->|"/api"| API["FastAPI backend"]
-    API --> SR{"Deterministic<br/>safety router"}
-    SR -->|"crisis / Title IX / conduct"| T["Fixed safety guidance"]
-    SR -->|"everything else"| PL["Planner<br/>(rules, or optional local model)"]
-    PL --> TK["Governed tools<br/>validation, policy, budgets"]
-    TK --> RAG["Governed retrieval<br/>approved sources only"]
-    RAG --> ANS["Answer with citations"]
-    API --> DB[("SQLite<br/>sessions, staff, audit")]
-    CLI["Original command-line interface"] --> SR
-```
+![System architecture: clients, the nginx frontend container, the FastAPI backend with the safety-first chat pipeline and staff operations, data, observability, assurance and deployment targets](docs/assets/architecture/system-architecture.png)
 
-More detail, including the request path and governed retrieval, is in
-[`docs/architecture/system-overview.md`](docs/architecture/system-overview.md).
+**How a request flows.** The browser talks only to the nginx container, which serves the React
+app and forwards `/api` to the backend on an internal network with no internet route. In the
+backend, request guards (CSRF and Origin checks, rate and size limits) run first. A chat
+message then goes to the **deterministic safety router** before anything else: crisis, Title IX
+and conduct messages get fixed guidance and the turn ends there. Other messages go through
+decline handling, then a planner (rules by default, or an optional local model that can only
+propose tool calls). Every tool call passes the **governed executor** (strict arguments,
+Policy-as-Code authorization with default deny, budgets, timeouts), and retrieval uses only
+approved, unexpired, hash-matched sources. The answer is composed from tool outputs, and its
+citations are checked against the evidence used in that turn. Staff requests take a separate
+path: password login, role-based policy, then review, governance and audit features. Traces,
+metrics and logs record status and policy rules, never message text.
+
+![One chat turn: request guards, safety router, decline or guidance, planner, governed executor, governed retrieval and answer, with the terminal safety branch and fail-closed denials](docs/assets/architecture/request-flow.png)
+
+The diagrams are rendered from editable HTML sources in
+[`docs/architecture/diagrams/`](docs/architecture/diagrams/) by the same Playwright script.
+Text versions (Mermaid) of the deployment, request path, retrieval and authorization views are
+in [`docs/architecture/system-overview.md`](docs/architecture/system-overview.md).
 
 ## Technology stack
 
@@ -87,7 +142,8 @@ app/            Python application
   governance/   risk register checks and release readiness
   observability/ telemetry and incident simulation
   ui/           original command-line interface
-frontend/       React + TypeScript UI, component tests (src/) and end-to-end tests (e2e/)
+frontend/       React + TypeScript UI, component tests (src/), end-to-end tests (e2e/),
+                screenshot and diagram automation (screenshots/)
 tests/          pytest suites (safety, API, RAG, security, governance, C1 regression)
 scripts/        evaluation, red team, release battery, container and Kubernetes checks
 deploy/         Dockerfiles, nginx config, Kubernetes manifests, kind cluster config
@@ -98,6 +154,7 @@ governance/     risk register and controls
 security/       versioned red-team scenarios
 contracts/      OpenAPI snapshot of the API
 docs/           architecture, safety, security, deployment, evidence and project records
+  assets/       screenshots and rendered architecture diagrams used in this README
 compose.yaml    local Docker Compose stack
 ```
 
@@ -189,7 +246,12 @@ npm --prefix frontend run lint && npm --prefix frontend run typecheck && npm --p
 npm --prefix frontend run e2e                 # Playwright against the real API
 python scripts/redteam.py                     # adversarial suite
 python scripts/release_readiness.py --e2e     # full battery and readiness verdict
+npm --prefix frontend run screenshots         # regenerate README screenshots and diagrams
 ```
+
+`npm run screenshots` starts its own throwaway backend and a production frontend build on
+loopback ports, so it needs the Python environment from [Local setup](#local-setup) (set
+`RIH_PYTHON` to the venv's Python if `python` is not on your path).
 
 The complete list of release gates is in [`docs/RELEASE_GATES.md`](docs/RELEASE_GATES.md).
 Recorded results from our last full validation (2026-10-15, Windows 11 and WSL2 Ubuntu; raw

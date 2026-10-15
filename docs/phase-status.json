@@ -168,5 +168,21 @@
     "deployment_revalidation": "compose rebuilt and integration 7/7; resilience, Trivy and kind not rerun (manifests unchanged)",
     "readiness_unchanged": "blocked_pending_human_decision",
     "final_validation": "at 0024835: ruff x2 clean; pytest 5413 passed, 1 skipped; routes; safety 172/172, 0/44 FP; smoke; OpenAPI and inventory match; C1 audit 15/15; probes unchanged; red team 0/70, CLI 0/17; Bandit clean; frontend lint, typecheck, 26/26, build; container integration 7/7 (HTTP red team 0/35) on rebuilt images"
+  },
+  "ui_polish": {
+    "date": "2026-10-15",
+    "directed_by": "Abhinav Varma Vathadi and Devika Rani Sanaboyina (joint; an AI coding agent drafted the changes at their direction; commits alternate author and Co-authored-by)",
+    "baseline_commit": "6031d35",
+    "scope": "presentation only: UMBC-inspired design tokens with light and dark themes, polished student and staff screens, automated Playwright screenshots, rendered architecture diagrams, README tour; no safety, routing, retrieval, policy or API behaviour changed",
+    "assets": [
+      "docs/assets/screenshots/ (14 PNG, captured from the running app with synthetic data)",
+      "docs/assets/architecture/ (2 PNG rendered from docs/architecture/diagrams/*.html)"
+    ],
+    "regenerate": "npm --prefix frontend run screenshots",
+    "validation": "Windows 11, Python 3.13.2, Node 24.14.0: ruff x2 clean; pytest 5417 passed, 1 skipped (4 new README asset tests); routes passed; safety eval no misses, no false positives; frontend lint and typecheck clean; vitest 69/69 (26 existing + 43 WCAG contrast checks); build OK; E2E 8/8 against the real API (3 new: keyboard and focus, theme toggle, no horizontal scroll at 360 px); screenshot and diagram run 11/11",
+    "not_rerun": "containers, kind, red team, release battery (no backend, deployment or safety code changed; the nginx CSP is unchanged and the UI uses no inline styles or external assets)",
+    "status": "complete_local",
+    "readiness_unchanged": "blocked_pending_human_decision",
+    "next_action": "humans review the new screenshots and README; publication still waits on the recorded human decisions"
   }
 }
