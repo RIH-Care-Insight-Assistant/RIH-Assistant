@@ -14,11 +14,18 @@ Last updated: 2026-10-15, on local branch `feature/rih-local-enhancement-phases-
 C1 is complete and accepted. Under the local-first workflow (`AGENTS.md`; shared instructions
 §6.1) all remaining phases were built on one integrated branch with no pushes or PRs.
 
-- **Local head:** `fb72ab6` (17 commits on top of `6ab77a8`). Final battery on that commit: 21/21
-  gates pass; release readiness **blocked pending human residual-risk decisions** (SB-07, SB-08).
-  Report: [`FINAL_REPORT.md`](FINAL_REPORT.md); plan: [`PUBLICATION_PLAN.md`](PUBLICATION_PLAN.md).
-- **Next:** the humans make the decisions listed in the publication plan, then authorize (or not)
-  the push and the single integration PR.
+- **Local head:** the finalization documentation commit (26 commits on top of `6ab77a8`; check
+  with `git log -1`). Phases 2–9 ended at `fb72ab6`. The finalization session then mitigated the
+  three open high findings in code: RP-06 in `9e4f52d`, SB-07 and SB-08 in `ed3cb33`. Each
+  mitigation is escalate-only or fail-closed, and each is agent-drafted.
+- **Final battery on `b87f572`:** 21/21 gates pass; red team 0/70. Linux 12/12 on `c875a3f`;
+  kind verify 7/7.
+- **Readiness:** release readiness is **blocked pending human decisions**. Four agent-drafted
+  mitigations await review, and R-01 stays partially mitigated (other languages and wording).
+  Report: [`FINAL_REPORT.md`](FINAL_REPORT.md); plan: [`PUBLICATION_PLAN.md`](PUBLICATION_PLAN.md);
+  review tasks: [`FINALIZATION_REVIEW_PLAN.md`](FINALIZATION_REVIEW_PLAN.md).
+- **Next:** the humans do the reviews and make the decisions in the publication plan §2, then
+  authorize (or not) the push and the single integration PR.
 
 - **C1 accepted:** Devika approved PR #10 on 2026-10-12 at 17:04:56 UTC; Abhinav merged it
   at 17:05:25 UTC as `6ab77a8`. CI run 38281894574 on `6ab77a8` succeeded (verified

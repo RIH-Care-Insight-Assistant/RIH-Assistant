@@ -15,8 +15,8 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 
 | Field | Value |
 |---|---|
-| Current phase | **All phases complete locally; awaiting human decisions and publication authorization** |
-| Current task | Done: final battery, teardown check, [final report](FINAL_REPORT.md) and [publication plan](PUBLICATION_PLAN.md) |
+| Current phase | **All phases and the finalization complete locally; awaiting human reviews, decisions and publication authorization** |
+| Current task | Done: SB-07/SB-08/RP-06 mitigations, final audit, final batteries, [final report](FINAL_REPORT.md), [publication plan](PUBLICATION_PLAN.md), [review plan](FINALIZATION_REVIEW_PLAN.md) |
 | Last local commit | see `git log -1` (this file is updated with each milestone) |
 
 ## Phase status
@@ -68,6 +68,13 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 | 2026-10-15 | `fb72ab6` | Windows 11, Python 3.13.2, Node 24.14.0, Docker 29.8.1 | `release_readiness.py --e2e --containers` | **21/21 gates pass** (pytest 5201 passed, 1 skipped; safety 172/172; audits, Bandit, Trivy, gitleaks clean; frontend 24/24; E2E 5/5; red team 2/70, no critical; container integration 7/7 and resilience 7/7); readiness **blocked_pending_human_decision** ([evidence](evidence/release/latest.json)) |
 | 2026-10-15 | `fb72ab6` | WSL2 Ubuntu 26.04.1, Python 3.14.4 | battery script (ruff ×2, pytest, routes, safety eval, smoke, OpenAPI, inventory, pip-audit, Bandit) | Ruff clean ×2; **5202 passed**; routes passed; safety 172/172, no misses or false positives; smoke OK; OpenAPI and inventory match; pip-audit no known vulnerabilities; Bandit clean |
 | 2026-10-15 | `fb72ab6` | kind v0.33.0 | `k8s.py down`; `kind get clusters` | Cluster deleted; no kind clusters remain (teardown verified). Compose stack left running for demos |
+| 2026-10-15 | `bdf7659` | Windows 11, Python 3.13.2 | reproduction script; `safety_probes.py --write` (pre-registered probes, `07f0be4`) | RP-06 reproduced (poisoned record in both CLI modes); SB-07 0/34, SB-08 0/15, uncovered 0/4; benign 16/16, 14/14 |
+| 2026-10-15 | `9e4f52d` | Windows 11 | RP-06 tests; C1 tests; C1 audit; `redteam.py --target legacy` | 16/16 gate tests (12 fail without the fix); C1 215 passed, 1 skipped; audit 15/15; legacy red team 3/17 → 2/17 |
+| 2026-10-15 | `ed3cb33` | Windows 11, Python 3.13.2, Node 24.14.0 | `pytest -q`; frontend lint/tsc/vitest; probes; safety eval; repo-message scan; `redteam.py` local and legacy | **5349 passed, 1 skipped**; frontend 24/24; probes 34/34, 15/15, benign 16/16 and 14/14, uncovered 0/4 (notice 4/4); 172/172, 0/44 FP; 2/2,856 repo strings escalate (the two scenario messages); red team **0/70**, CLI **0/17** |
+| 2026-10-15 | `57d82f6` | Windows, Ollama 0.40.3 qwen2.5:1.5b | live model check; `rag_benchmark.py` | 6/6 (crisis never reached the model; notice survives the planner); benchmark identical to committed evidence |
+| 2026-10-15 | `b87f572` (images rebuilt from it) | Windows 11, Python 3.13.2, Node 24.14.0, Docker 29.8.1 | `release_readiness.py --e2e --containers` | **21/21 gates pass** (pytest 5353 passed, 1 skipped; frontend 25/25; E2E 5/5; red team 0/70; integration 7/7, HTTP red team 0/35; resilience 7/7; scans clean); readiness **blocked_pending_human_decision** (4 review items). Evidence says `-dirty` only because a gate rewrote `containers-http.json`; fixed in `c875a3f` |
+| 2026-10-15 | `c875a3f` | WSL2 Ubuntu 26.04.1, Python 3.14.4 | Python gates of the battery (12) + probes | **12/12**; pytest **5354 passed**; red team 0/70; probes identical to Windows ([evidence](evidence/release/wsl2-linux-c875a3f.json)) |
+| 2026-10-15 | `c875a3f` images | kind v0.33.0 | `k8s.py up`, `verify --write`, `down` | verify **7/7** (red team over the cluster 0/35); cluster deleted, none remain. Rollout/recovery not rerun (manifests unchanged). Compose stack left running with the rebuilt images |
 
 ### Phase 9 deliverables
 
@@ -190,27 +197,47 @@ Known Phase 2 limitations: legacy lexical ranking is weak for some phrasings ("h
 stopword, so "What are the RIH hours?" ranks Billing first); to be measured in the Phase 3
 benchmark. Citations carry no governance status until Phase 3.
 
+### Finalization deliverables (2026-10-15)
+
+- RP-06: `app/retriever/retriever.py` integrity gate; `app/evaluation/kb_fixture.py`;
+  `tests/security/test_legacy_retrieval_gate.py`; `LegacyCatalog` removed.
+- SB-07/SB-08: `app/router/multilingual.py`, `implicit_risk.py`, `language.py`; `route()`
+  escalation; `language_support` notice (API, CLI, OpenAPI, TS type); probe set and
+  `scripts/safety_probes.py`; tests for each.
+- Governance: `pending_human_review` readiness rule, register `risks-2`, catalog `controls-2`,
+  Governance panel list.
+- Fixes: LF audit log; battery candidate commit recorded before gates.
+- Docs: crisis-routing §9, red-team report, security evaluation, limitations, walkthrough,
+  decision L-D5, release gates, final report, publication plan, review plan.
+
 ## Contributions recorded this phase
 
 - Abhinav (operator): directed the local-first workflow and the Phase 2–9 enhancement.
-- Devika: no Phase 2–9 contribution has been recorded in this session yet. Her C2-v0.1
-  candidate (C1 era) is the basis of the C2-local-v1 contracts and is credited there.
+- Devika: no Phase 2–9 or finalization contribution has been recorded. Her C2-v0.1
+  candidate (C1 era) is the basis of the C2-local-v1 contracts and is credited there. Her
+  remaining review work is in [`FINALIZATION_REVIEW_PLAN.md`](FINALIZATION_REVIEW_PLAN.md).
 
-## Final state (2026-10-15)
+## Final state (2026-10-15, after finalization)
 
-All phases 2–9 are complete locally with executed evidence. Nothing was pushed. The humans now
-decide the items in [`PUBLICATION_PLAN.md`](PUBLICATION_PLAN.md) §2 and whether to publish.
+All phases 2–9 and the finalization are complete locally with executed evidence. Nothing was
+pushed. No red-team scenario is open, but the SB-07/SB-08/RP-06 mitigations are agent-drafted and
+R-01 remains partially mitigated, so readiness is `blocked_pending_human_decision`. The humans now
+do the reviews and decide the items in [`PUBLICATION_PLAN.md`](PUBLICATION_PLAN.md) §2.
 
 ## Blockers and items awaiting humans
 
 - Devika's recorded confirmation of the local-first workflow (L-D1); acceptance of
   C2-local-v1, C3-local-v1 and C4-local-v1; review of the agent-proposed risk register,
   control catalog and readiness rules.
-- Residual-risk decisions on open high findings SB-07, SB-08 (R-01) and RP-06 (R-04).
+- Review of the four agent-drafted finalization mitigations (Devika's routing review,
+  native-speaker and clinical review) and residual-risk decisions on R-01 and R-04.
 - Authorization to publish (push, one integration PR, Devika's review, merge).
 - Issue #7 is still open on GitHub (human action).
 
 ## Next executable action (humans)
 
-Read [`FINAL_REPORT.md`](FINAL_REPORT.md) and [`PUBLICATION_PLAN.md`](PUBLICATION_PLAN.md); make
-the §2 decisions; then authorize or decline publication. No agent action is pending.
+Devika starts with task 2 of [`FINALIZATION_REVIEW_PLAN.md`](FINALIZATION_REVIEW_PLAN.md): an
+independent held-out SB-07/SB-08 check, done before she reads the new patterns. Then both
+humans make the [`PUBLICATION_PLAN.md`](PUBLICATION_PLAN.md) §2 decisions and authorize or
+decline publication. No agent action is pending; any fix found in review goes on this branch
+as a new commit.

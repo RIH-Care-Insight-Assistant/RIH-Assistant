@@ -99,6 +99,8 @@ them; once added, a gate is never removed or weakened to get a pass.
 | Static analysis (Phase 4) | `python -m bandit -q -r app scripts -ll` | Any medium or high finding |
 
 | Red team (Phase 5, 7) | `python scripts/redteam.py` | Any open **critical** scenario (high findings need a recorded human decision via governance) |
+| SB-07/SB-08 probes (finalization) | `tests/test_safety_probes_sb07_sb08.py` (in `pytest`); `python scripts/safety_probes.py` | Any covered-language or implicit-risk probe not routed, any benign probe escalated, or a missing language notice |
+| Human review of agent-drafted mitigations (finalization; **awaiting both humans' agreement**, as a new gate) | readiness rule on `pending_human_review` in `governance/risk_register.json` | Exit 2 (blocked) while any listed item has no recorded reviewer decision for the current register version |
 | Governance integrity (Phase 6) | register/catalog checks (in `pytest` and the battery) | Missing controls, tests, evidence or untracked open findings |
 | **Aggregated battery (Phase 7)** | `python scripts/release_readiness.py --e2e` | Exit 1 (not ready) on any failed required gate or open critical finding; exit 2 while human residual-risk decisions are pending |
 | Negative verification (Phase 7) | `python scripts/negative_verification.py --write` | Any deliberate regression that the battery does not block |

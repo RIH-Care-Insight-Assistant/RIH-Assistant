@@ -113,18 +113,22 @@ python scripts/safety_eval.py --fail-on-miss         # safety routing dataset
 npm --prefix frontend run lint && npm --prefix frontend run typecheck && npm --prefix frontend test
 npm --prefix frontend run e2e                        # Playwright workflows against the real API
 python scripts/redteam.py                            # adversarial suite (exit 1 on a critical failure)
-python scripts/release_readiness.py --e2e            # all 18 gates + readiness verdict
+python scripts/release_readiness.py --e2e            # 18 gates + readiness verdict (--containers: 21)
 python scripts/container_checks.py integration       # after `docker compose up -d --build`
 python scripts/container_checks.py resilience
 python scripts/container_security.py                 # Trivy + gitleaks through Docker
 ```
 
-Latest recorded results (Windows 11, Python 3.13, Node 24): pytest 5187 passed and 1 skipped
-(a symlink test); safety evaluation 172/172; frontend 24/24; end-to-end 5/5; red team 2 of 70
-attacks succeeded (both known high findings, no critical); container integration 7/7 and
-resilience 7/7; scans clean; Kubernetes verify 7/7, rollout/rollback 5/5 (no failed requests),
-recovery 4/4. Release readiness is **blocked pending human decisions** on the two open high
-findings, as designed. Details: [`docs/evidence/`](docs/evidence/).
+Latest recorded results (finalization, 2026-10-15; Windows 11, Python 3.13, Node 24): the full
+battery passes 21/21 gates. That covers pytest 5353 passed and 1 skipped (a symlink test; WSL2
+Linux: 5354 passed), safety evaluation 172/172, frontend 25/25, end-to-end 5/5, red team 0 of 70
+attacks (0 of 35 over HTTP in Compose and kind), container integration 7/7 and resilience 7/7,
+and clean scans. Kubernetes verify is 7/7 with the final images; rollout/rollback 5/5 and
+recovery 4/4 come from Phase 9. Release readiness is **blocked pending human decisions**, as
+designed: the mitigations for the former high findings (non-English and implicit crisis
+wording, CLI retrieval) are agent-drafted and await review. Crisis wording in languages outside
+the 12-language lexicon is still not routed. See [`docs/FINAL_REPORT.md`](docs/FINAL_REPORT.md).
+Details: [`docs/evidence/`](docs/evidence/).
 
 ## Documentation
 

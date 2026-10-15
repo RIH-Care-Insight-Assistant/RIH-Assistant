@@ -6,9 +6,11 @@ required approval from the other contributor, resolved conversations, no force p
 
 ## 1. What would be published
 
-- Branch `feature/rih-local-enhancement-phases-2-9`, 17 commits on top of `main` `6ab77a8`,
-  head `fb72ab6ea3bc50ff71ee8acde9218e7c35276405`; 182 files changed (about 47k added lines, much
-  of it `frontend/package-lock.json`, the OpenAPI snapshot and evidence JSON).
+- Branch `feature/rih-local-enhancement-phases-2-9`, 26 commits on top of `main` `6ab77a8`: the 17
+  Phase 2–9 commits, 2 documentation commits (`512b945`, `bdf7659`) and 7 finalization commits.
+  The head is the finalization documentation commit (check with `git log -1`). About 215 files
+  changed, roughly 60k added lines; much of that is `frontend/package-lock.json`, the OpenAPI
+  snapshot and evidence JSON.
 - Attribution check (run `git log --format='%h %an <%ae> | %cn <%ce>%n%(trailers)' main..HEAD`):
   every commit is authored and committed by `Abhinav Varma Vathadi
   <97978338+AbhinavVarma02@users.noreply.github.com>`; no trailers of any kind.
@@ -35,23 +37,51 @@ required approval from the other contributor, resolved conversations, no force p
 | `7226667` | feat(phase9): local Kubernetes deployment on kind with Kustomize |
 | `ce05056` | docs(phase9): Kubernetes evidence and deployment guide |
 | `fb72ab6` | fix(phase9): remove hard-coded /tmp database path from container checks |
+| `512b945` | docs: final report, publication plan and final validation records |
+| `bdf7659` | docs: record the final Linux battery on fb72ab6 |
+| `07f0be4` | test(safety): pre-registered SB-07/SB-08 probe set and baseline run |
+| `9e4f52d` | fix(security): legacy CLI retrieval ranks only governed-intact records (RP-06) |
+| `ed3cb33` | fix(safety): escalate-only multilingual and implicit-risk crisis checks (SB-07, SB-08) |
+| `57d82f6` | feat(governance): agent-drafted mitigations stay blocked until a human reviews them |
+| `b87f572` | docs: SB-07/SB-08/RP-06 finalization mitigations, evidence and review needs |
+| `c875a3f` | chore(release): final battery evidence, review plan, battery commit marker |
+| (head) | docs: finalization report, progress record and publication plan |
 
 ## 2. Before publishing (human decisions)
 
-1. **Devika** confirms the local-first workflow (decision L-D1) in a recorded form (for example a
-   comment on the PR or issue #7) — the repository currently records it as directed by the
-   operator only.
-2. Both humans review and accept, change or reject: contracts C2-local-v1, C3-local-v1,
-   C4-local-v1; the agent-proposed risk register, control catalog and readiness rules; the
-   freshness thresholds and rate limits.
-3. Decide the open high findings: SB-07 (non-English crisis wording), SB-08 (implicit risk),
-   RP-06 (CLI reads the KB directly) — accept the residual risk with the banner, or request work.
-   Readiness stays `blocked_pending_human_decision` until a reviewer records these decisions in the
-   staff UI of the running instance.
-4. Optionally review the C1 baseline sources (R-05) in the staff UI.
-5. Decide whether the Phase 2–9 work should carry any `Co-authored-by` trailer for Devika. Under
-   the project rules this is only appropriate for work she actually co-authored; this session's
-   record shows none. History would not be rewritten; any shared credit would go in the PR text.
+Work item by item with [`FINALIZATION_REVIEW_PLAN.md`](FINALIZATION_REVIEW_PLAN.md).
+
+1. **Devika** confirms the local-first workflow (decision L-D1) in a recorded form, for example a
+   comment on the PR or issue #7. The repository currently records it as directed by the operator
+   only.
+2. **Review the finalization mitigations.** Readiness lists them as pending human review:
+   - (a) the SB-07 multilingual crisis lexicon;
+   - (b) the SB-08 implicit-risk lists;
+   - (c) the `language_support` notice, including its Spanish sentence;
+   - (d) the RP-06 CLI retrieval gate, a behaviour change for the C1 CLI.
+
+   Under the routing-pattern rule ([`safety/crisis-routing.md`](safety/crisis-routing.md) §1),
+   (a) and (b) need Devika's review. They also need native-speaker review and clinical input.
+   Recommended before (a)/(b) review: Devika's independent held-out check (plan task 2).
+3. **Residual-risk decisions**, recorded by a reviewer in the staff UI of the running instance:
+   - R-01: crisis wording in languages outside the lexicon (probes 0/4 routed), indirect wording,
+     implicit risk outside the lists. Accept with the compensating controls (the always-visible
+     banner and the per-reply notice), or request more work.
+   - R-04: the CLI gate.
+
+   Readiness stays `blocked_pending_human_decision` until then.
+4. Both humans review and accept, change or reject:
+   - contracts C2-local-v1 (now with `language_support`), C3-local-v1 and C4-local-v1;
+   - the agent-proposed risk register (`risks-2`), control catalog (`controls-2`) and readiness
+     rules, including the new `pending_human_review` rule. Under
+     [`RELEASE_GATES.md`](RELEASE_GATES.md), adding a gate needs both humans' agreement;
+   - the freshness thresholds and rate limits.
+5. Optionally review the C1 baseline sources (R-05) in the staff UI.
+6. Attribution: no Phase 2–9 or finalization work by Devika is recorded. If she does review or
+   engineering work before publication, it is recorded under her own identity as the plan
+   describes. A `Co-authored-by` trailer is used only for work she actually co-authored and only
+   if both agree. History is not rewritten.
+7. Re-verify the template contact numbers ([`safety/crisis-routing.md`](safety/crisis-routing.md) §6).
 
 ## 3. Proposed PR strategy
 
@@ -59,12 +89,15 @@ required approval from the other contributor, resolved conversations, no force p
 
 - Title: "Phases 2–9: full-stack, governed agents and RAG, security, red team, governance,
   observability, containers and Kubernetes (local-first)".
-- Body: link `docs/FINAL_REPORT.md`, `docs/LOCAL_FIRST_PROGRESS.md`, the evidence folders and
-  this plan; list the decisions in §2; state plainly that release readiness is blocked pending
-  human residual-risk decisions and that GitHub Actions jobs run for the first time on this PR.
+- Body: link `docs/FINAL_REPORT.md`, `docs/LOCAL_FIRST_PROGRESS.md`,
+  `docs/FINALIZATION_REVIEW_PLAN.md`, the evidence folders and this plan; list the decisions in
+  §2; state plainly that release readiness is blocked pending human review and residual-risk
+  decisions, that the SB-07/SB-08 terms are agent-drafted, and that GitHub Actions jobs run for
+  the first time on this PR.
 - No AI attribution footer, no session links.
-- Review: Devika reviews (her responsibility areas first: chat UI, sessions/feedback, governed
-  RAG, evidence and monitoring, frontend containers, NetworkPolicies). The commits are
+- Review: Devika reviews, starting with the routing changes (`ed3cb33`; required by the safety
+  policy) and her responsibility areas: chat UI, sessions/feedback, governed RAG and the RP-06
+  gate (`9e4f52d`), evidence and monitoring, frontend containers, NetworkPolicies. The commits are
   phase-sized, so reviewing commit by commit is practical.
 - CI: the existing 8 jobs plus the new API-contract, security-scan, red-team, frontend and E2E
   jobs run for the first time; fix any CI-only failure on the same branch with new commits
@@ -78,7 +111,7 @@ Smaller PRs are not needed: the branch is linear and each commit builds on the p
 
 ```bash
 git fetch origin
-git log --oneline origin/main..feature/rih-local-enhancement-phases-2-9    # expect the 17 commits
+git log --oneline origin/main..feature/rih-local-enhancement-phases-2-9    # expect the 26 commits
 git log --format='%h %an <%ae> | %cn <%ce>%n%(trailers)' origin/main..feature/rih-local-enhancement-phases-2-9
 git push -u origin feature/rih-local-enhancement-phases-2-9
 gh pr create --base main --head feature/rih-local-enhancement-phases-2-9 --title "<title above>" --body-file <prepared body>
@@ -89,5 +122,6 @@ If `origin/main` moved since `6ab77a8`, merge it into the branch locally, rerun
 
 ## 5. Local backups
 
-Git bundles of each phase are in `%USERPROFILE%\RIH-backups\` (outside the repository), the
-latest being `rih-local-2026-10-15-phase9.bundle`; a final bundle is made with this plan.
+Git bundles of each phase are in `%USERPROFILE%\RIH-backups\`, outside the repository. The
+finalization bundle `rih-local-2026-10-15-finalization.bundle` holds the final head and passed
+`git bundle verify`; the earlier `rih-local-2026-10-15-final.bundle` (`512b945`) also verified.

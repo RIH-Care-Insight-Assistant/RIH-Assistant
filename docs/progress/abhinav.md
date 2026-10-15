@@ -162,3 +162,13 @@ ruff check . && python -m pytest -q && python scripts/safety_eval.py --fail-on-m
   `docs/LOCAL_FIRST_PROGRESS.md`. Readiness `blocked_pending_human_decision` (SB-07, SB-08).
 - Kubernetes: kind v0.33.0 cluster created, verified, rolled out/back, recovered and deleted.
 - Next: the decisions in `docs/PUBLICATION_PLAN.md` §2, then publication only if both authorize.
+
+## 2026-10-15 — Finalization session (operated from Abhinav's account)
+
+- Resumed from `bdf7659`, with a clean tree. Reproduced, fixed and regression-tested RP-06
+  (`9e4f52d`), SB-07 and SB-08 (`ed3cb33`; probes pre-registered in `07f0be4`), and added the
+  human-review readiness rule (`57d82f6`). All new terms are agent-drafted and await review.
+- Final battery on `b87f572`: 21/21 (Windows). Linux 12/12 on `c875a3f`. kind verify 7/7.
+  Readiness `blocked_pending_human_decision` (4 review items).
+- No Devika work is recorded for this session. Her review tasks are in
+  `docs/FINALIZATION_REVIEW_PLAN.md`.

@@ -3,7 +3,7 @@
   "branch": "feature/rih-local-enhancement-phases-2-9",
   "base_commit": "6ab77a862379a16d6d63d81e9d4ea709a55f2496",
   "updated": "2026-10-15",
-  "current_phase": "complete_local",
+  "current_phase": "finalization_complete_local",
   "published": false,
   "phases": {
     "2": {
@@ -66,13 +66,45 @@
   },
   "awaiting_humans": [
     "Devika's recorded confirmation of the local-first workflow (L-D1)",
-    "Acceptance of contracts C2-local-v1, C3-local-v1, C4-local-v1",
-    "Review of the agent-proposed risk register, control catalog and readiness rules",
-    "Residual-risk decisions on SB-07, SB-08 (R-01) and RP-06 (R-04)",
+    "Devika's independent held-out check and routing-pattern review of the SB-07/SB-08 changes (docs/FINALIZATION_REVIEW_PLAN.md)",
+    "Native-speaker review of the multilingual lexicon and the notice's Spanish sentence; clinical input on the warning-sign lists",
+    "Acceptance of the RP-06 CLI behaviour change",
+    "Residual-risk decisions on R-01 and R-04 in the staff UI",
+    "Acceptance of contracts C2-local-v1 (with language_support), C3-local-v1, C4-local-v1",
+    "Review of the register (risks-2), control catalog (controls-2) and readiness rules, including pending_human_review",
     "Optional review of the C1 baseline sources (R-05)",
     "Authorization to publish (push, one integration PR, review, merge) per docs/PUBLICATION_PLAN.md",
     "Close issue #7 on GitHub"
   ],
-  "head": "fb72ab6ea3bc50ff71ee8acde9218e7c35276405",
-  "final_readiness": "blocked_pending_human_decision"
+  "head": "see git log -1 (finalization documentation commit)",
+  "final_readiness": "blocked_pending_human_decision",
+  "finalization": {
+    "status": "complete_local",
+    "resumed_from": "bdf7659",
+    "commits": [
+      "07f0be4",
+      "9e4f52d",
+      "ed3cb33",
+      "57d82f6",
+      "b87f572",
+      "c875a3f",
+      "final docs commit (git log -1)"
+    ],
+    "findings": {
+      "RP-06": "fixed in code (9e4f52d); CLI behaviour change awaits human acceptance",
+      "SB-07": "mitigated in code (ed3cb33, 12-language lexicon + language notice); agent-drafted, other languages still missed",
+      "SB-08": "mitigated in code (ed3cb33, warning-sign lists); agent-drafted, other wording still missed"
+    },
+    "evidence": [
+      "docs/evidence/release/latest.json",
+      "docs/evidence/release/wsl2-linux-c875a3f.json",
+      "docs/evidence/redteam/finalization-local.json",
+      "docs/evidence/redteam/finalization-legacy-cli.json",
+      "docs/evidence/safety/probes-sb07-sb08-baseline.json",
+      "docs/evidence/safety/probes-sb07-sb08-after.json",
+      "docs/evidence/k8s/verify.json",
+      "docs/evidence/strands-live-finalization-2026-10-15.json"
+    ]
+  },
+  "final_battery_commit": "b87f572"
 }
