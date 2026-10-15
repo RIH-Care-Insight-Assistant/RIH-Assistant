@@ -22,6 +22,28 @@ def test_openapi_snapshot_is_current():
     )
 
 
+# Python 3.13 renamed some HTTP status phrases (RFC 9110). FastAPI fills a response description
+# it is not given from `http.client.responses`, so the 3.11/3.12 CI jobs produced "Unprocessable
+# Entity" where the snapshot (made on 3.13) says "Unprocessable Content".
+PRE_313_PHRASES = {413: "Request Entity Too Large", 416: "Requested Range Not Satisfiable",
+                   422: "Unprocessable Entity"}
+
+
+def test_snapshot_does_not_depend_on_the_interpreters_status_phrases(monkeypatch):
+    import http.client
+
+    for code, phrase in PRE_313_PHRASES.items():
+        monkeypatch.setitem(http.client.responses, code, phrase)
+    assert SNAPSHOT.read_text(encoding="utf-8") == render(current_schema())
+
+
+def test_no_response_description_comes_from_the_interpreter(monkeypatch):
+    import http.client
+
+    monkeypatch.setattr(http.client, "responses", {code: f"stdlib-phrase-{code}" for code in http.client.responses})
+    assert "stdlib-phrase-" not in render(current_schema())
+
+
 def test_every_public_path_is_versioned():
     paths = json.loads(SNAPSHOT.read_text(encoding="utf-8"))["paths"]
     assert paths and all(p.startswith("/api/v1/") for p in paths)

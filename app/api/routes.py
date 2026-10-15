@@ -20,11 +20,17 @@ from .security import (
     set_owner_cookie,
 )
 
+# Response descriptions are explicit: FastAPI otherwise copies the running interpreter's status
+# phrase, and Python 3.13 renamed 422 (RFC 9110), so the OpenAPI contract differed by version.
+def _error(description: str) -> dict:
+    return {"model": schemas.ErrorEnvelope, "description": description}
+
+
 ERRORS = {
-    429: {"model": schemas.ErrorEnvelope},
-    401: {"model": schemas.ErrorEnvelope}, 403: {"model": schemas.ErrorEnvelope},
-    404: {"model": schemas.ErrorEnvelope}, 422: {"model": schemas.ErrorEnvelope},
-    503: {"model": schemas.ErrorEnvelope},
+    429: _error("Too Many Requests"),
+    401: _error("Unauthorized"), 403: _error("Forbidden"),
+    404: _error("Not Found"), 422: _error("Unprocessable Content"),
+    503: _error("Service Unavailable"),
 }
 
 router = APIRouter(prefix="/api/v1", responses=ERRORS)
@@ -48,7 +54,7 @@ def health():
     return {"status": "ok", "api_version": "v1"}
 
 
-@router.get("/ready", response_model=schemas.Ready, tags=["health"], responses={503: {"model": schemas.Ready}})
+@router.get("/ready", response_model=schemas.Ready, tags=["health"], responses={503: {"model": schemas.Ready, "description": "Service Unavailable"}})
 def ready(request: Request, response: Response):
     checks = {
         "database": "ok" if _db(request).ping() else "unavailable",
@@ -144,7 +150,7 @@ def resources(
 
 
 @router.post("/feedback", response_model=schemas.Feedback, status_code=201, tags=["feedback"],
-             responses={200: {"model": schemas.Feedback}}, dependencies=[Depends(rate_limit("write"))])
+             responses={200: {"model": schemas.Feedback, "description": "OK"}}, dependencies=[Depends(rate_limit("write"))])
 def feedback(body: schemas.FeedbackRequest, request: Request, response: Response):
     guard_mutation(request)
     owner = _storage(require_owner, request)
