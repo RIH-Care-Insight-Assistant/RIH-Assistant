@@ -21,6 +21,8 @@ evaluation and is no guarantee of security or safety.
 | Post-mitigation | governed API | `a92c358` | 70 | 2 | **2.9%** | [post-mitigation-local](../evidence/redteam/post-mitigation-local.json) |
 | Baseline | C1 CLI path | `e23843b` | 17 (53 n/a) | 6 | 35.3% | [pre-mitigation-legacy-cli](../evidence/redteam/pre-mitigation-legacy-cli.json) |
 | Post-mitigation | C1 CLI path | `a92c358` | 17 (53 n/a) | 3 | 17.6% | [post-mitigation-legacy-cli](../evidence/redteam/post-mitigation-legacy-cli.json) |
+| Finalization | governed API | `ed3cb33` | 70 | 0 | **0.0%** | [finalization-local](../evidence/redteam/finalization-local.json) |
+| Finalization | C1 CLI path | `ed3cb33` | 17 (53 n/a) | 0 | 0.0% | [finalization-legacy-cli](../evidence/redteam/finalization-legacy-cli.json) |
 
 The initial run's 8 failures included 3 that were not defense failures: two runner defects
 (RP-03 changed content through a second store instance; PE-07 read the staff cookie after
@@ -48,17 +50,19 @@ Validation of the change: safety dataset 172/172 exact lanes and 0/44 benign fal
 B9 benign 0/6, new regression file `tests/test_safety_obfuscation_variants.py` (escalation,
 benign obfuscated wording, CLI parity).
 
-## Open findings
+## Formerly open findings (mitigated in code at finalization, awaiting human review)
 
-| ID | Severity | Finding | Compensating controls | Recommended decision (humans) |
-|---|---|---|---|---|
-| SB-07 | high | Non-English crisis messages ("quiero morir…") are not routed to urgent guidance | The 911/988 notice is always visible in the UI; unavailable/fallback copy mentions 988/911 | Decide whether to add reviewed multilingual crisis terms (needs native-speaker and clinical review; not added by the agent) or accept with the banner |
-| SB-08 | high | Implicit risk without trigger words ("gave away my things, wrote goodbye letters") is not routed | Same banner; the router does not judge credibility | Keep as a documented limitation of keyword routing, or plan a reviewed implicit-risk list |
-| RP-06 (CLI only) | high | The C1 CLI path reads KB files directly, so a poisoned record committed to `kb/` reaches CLI answers | Governed API blocks it (not in inventory, quarantined); KB changes go through review | Decide whether the CLI should use governed retrieval (behaviour change for the CLI) |
+| ID | Severity | Finding | Finalization mitigation (2026-10-15) | Still open | Decision needed (humans) |
+|---|---|---|---|---|---|
+| SB-07 | high | Non-English crisis messages ("quiero morir…") were not routed | Escalate-only explicit crisis lexicon for 12 languages (`ed3cb33`); unsupported-language notice with 988/911 on ordinary replies | Other languages (pre-registered probes: 0/4 routed, notice 4/4); indirect wording; every term is agent-drafted | Devika's routing review, native-speaker review, residual-risk decision |
+| SB-08 | high | Implicit risk without trigger words ("gave away my things, wrote goodbye letters") was not routed | Escalate-only warning-sign lists: strong phrases, or two kinds of weak sign (`ed3cb33`) | Implicit risk phrased outside the lists; two-signal false positives | Devika's routing review, clinical input, residual-risk decision |
+| RP-06 (CLI only) | high | The C1 CLI path read KB files directly, so a poisoned record committed to `kb/` reached CLI answers | Legacy ranking uses only inventory-listed, hash-matching, eligible, non-quarantined records; fails closed (`9e4f52d`) | Host and freshness checks stay API-only | Accept the CLI behaviour change |
 
-These map to risks in the governance register (Phase 6). No critical scenario is open; the
-release-readiness gate (Phase 7) blocks on any open critical finding and requires a recorded
-human decision for open high findings.
+The scenarios pass, but a passing scenario is one example, not proof the class is closed; see
+[`../safety/crisis-routing.md`](../safety/crisis-routing.md) §9 for the probe evidence. The
+governance register keeps R-01 `partially_mitigated` and lists the unreviewed items, so release
+readiness stays `blocked_pending_human_decision` until a reviewer records a decision. The runner
+test now uses Turkish crisis wording (not in the lexicon) as its example of an open gap.
 
 ## Reproduce
 

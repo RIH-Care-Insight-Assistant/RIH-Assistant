@@ -141,7 +141,9 @@ The `main` column used the same dataset and script against an unmodified snapsho
 
 ## 5. Known limitations (open)
 
-- Purely implicit risk with no trigger phrase, e.g. "I gave away all my stuff and wrote goodbye letters".
+- Purely implicit risk with no trigger phrase. **Partly mitigated at finalization (SB-08, §9):**
+  narrow warning-sign lists now route "I gave away all my stuff and wrote goodbye letters" and
+  similar wording; implicit risk phrased any other way is still missed.
 - Spelling errors in crisis terms beyond the typo map, unless the optional corrector is enabled. Example: "kil myslf" without the corrector.
 - ~~Repeated-letter obfuscation ("kiiiill"), symbol substitution inside words ("k*ll"), and `1`→`l` substitution ("ki11").~~
   **Mitigated in Phase 5** (red-team findings SB-04, SB-05, SB-06): `route()` now also checks
@@ -151,7 +153,9 @@ The `main` column used the same dataset and script against an unmodified snapsho
   dataset still gives 172/172 exact lanes and 0/44 benign false positives, and the B9 benign
   cases stay 0/6. Other symbols, mixed obfuscations and repeated letters combined with other
   tricks are still not covered.
-- Non-English messages.
+- Non-English messages. **Partly mitigated at finalization (SB-07, §9):** explicit crisis wording
+  in 12 languages is routed; other languages, and indirect wording in the 12, are still missed.
+  Ordinary replies to non-English messages carry a notice with 988/911.
 - The router has no conversation memory. Each message is classified alone.
 - Someone else's "hurt/harm themselves" without intent wording ("my friend hurt herself again") is not routed. This is the cost of excluding accidental injuries.
 - Severe-threat routing needs a reported threat, an attempt or a person as subject. Unusual wording ("he's gonna end me tonight") is not routed, and threats against pets get conduct. Family or roommate subjects without a reporting verb ("my mom is going to kill me") count as idioms.
@@ -208,3 +212,51 @@ Devika's 24-case held-out set (frozen before her first run, not shown to the rou
 After her re-review of `8d73390`, the exemptions are bound to the benign event (`ebdf2d9`), and coordinated threats are routed (`4664534`). With the **original B9 labels** and no relabelling: 18/18 expected template, 0/6 false positives. Her 42 router review probes: 42/42. Her 9 re-review cases: 9/9.
 
 Full evidence, per-case table, tests and limitations: [`../audit/c1-b9-safety-repair.md`](../audit/c1-b9-safety-repair.md).
+
+## 9. Finalization mitigations, awaiting review (2026-10-15)
+
+Red-team findings SB-07 (non-English crisis wording) and SB-08 (implicit risk) were the two
+open high findings after Phase 5. The finalization session added three escalate-only or
+notice-only controls. **None of them has been reviewed by Devika, a native speaker or a
+clinician.** Under §1 ("routing patterns change only through PRs reviewed by Devika") they must
+be reviewed in the integration PR before they count as accepted; the release-readiness check
+keeps the release blocked until a reviewer records a decision (`pending_human_review` on R-01).
+
+| Control | Code | What it does | What it does not do |
+|---|---|---|---|
+| Multilingual crisis lexicon | `app/router/multilingual.py` | Explicit wanting-to-die, suicide and self-harm wording in Spanish, French, Portuguese, German, Italian, Chinese, Japanese, Korean, Vietnamese, Hindi (Devanagari and romanized), Arabic and Russian raises a message to `urgent_safety`. Accent-, apostrophe- and invisible-character-insensitive. Idioms using "die" for hunger, boredom or laughter are excluded. | Cover any other language, indirect wording, slang or misspellings in the 12 languages. |
+| Implicit-risk warning signs | `app/router/implicit_risk.py` | Strong phrases alone ("sleep and never wake up", "won't be a burden much longer", "nobody will miss me when I'm gone", "decided tonight is my last night", stockpiling pills, ...), or two different kinds of weak sign in one message (giving possessions away, goodbye letters, a will, affairs in order, a plan, no way out, buying a rope or gun, "ready to go"). | Recognise implicit risk in general. A benign message with two weak signs gets the crisis template (caution bias, as in §3). |
+| Unsupported-language notice | `app/router/language.py` | Ordinary (non-safety) replies to messages that do not look like English carry a `language_support` notice: the assistant reads English only; 988/911 (English, plus an unreviewed Spanish sentence). | Route anything. Messages in an uncovered language still go through the ordinary path, including the optional local model planner. |
+
+Both routing controls run in `route()` after the router and the Phase 5 variants, and can only
+raise a result to `urgent_safety` (the highest-priority lane), so they cannot lower or replace
+a lane. Every runtime path (API, CLI, Strands safety check) goes through `route()`.
+
+Evidence (all synthetic; the agent wrote the terms and the probes, so this is a regression and
+coverage measure, not an estimate of real-world recall):
+
+| Measure | Before (`bdf7659`) | After (`ed3cb33`) |
+|---|---|---|
+| Pre-registered probes (committed in `07f0be4` before the change): explicit crisis, 12 languages | 0/34 | **34/34** (router, CLI and API) |
+| Probes: crisis wording in 4 languages not in the lexicon (Tagalog, Turkish, Polish, Swahili) | 0/4 | **0/4** routed; notice 4/4 |
+| Probes: implicit risk | 0/15 | **15/15** |
+| Probes: benign idioms and requests in other languages / benign implicit look-alikes | 16/16, 14/14 | 16/16, 14/14 |
+| Safety dataset v1.7.0 | 172/172, 0/44 FP | 172/172, 0/44 FP |
+| Other repository messages newly escalated (2,856 strings: all test literals, B9 held-out, PR #12 probes, benchmark, red-team fixture, KB) | — | only the SB-07 and SB-08 scenario messages |
+| Language notice on 307 English corpus messages | — | fires on 1 ("feeling su1c1dal"), which routes to crisis, so the notice is not shown |
+| Red team, governed API / C1 CLI path | 2/70, 3/17 | **0/70, 0/17** |
+
+The first after-run met every probe expectation; nothing was tuned on the probes afterwards.
+The language-notice heuristic was adjusted once, on the English corpora above, to stop firing
+on noun-only queries ("dining hall menu"); it is not a safety decision. Files:
+[`../evidence/safety/`](../evidence/safety/), [`../evidence/redteam/finalization-local.json`](../evidence/redteam/finalization-local.json).
+Tests: `tests/test_multilingual_crisis.py`, `tests/test_implicit_risk.py`,
+`tests/test_language_notice.py`, `tests/test_safety_probes_sb07_sb08.py`.
+
+Review needed before these count as accepted:
+1. **Devika** (routing-pattern rule, §1): the patterns and their exclusions.
+2. **Native speakers** of each language: every lexicon entry and the idiom exclusions; the
+   Spanish sentence in the notice.
+3. **Clinical or counseling input**: whether the warning-sign lists and the two-signal rule are
+   appropriate, and whether the crisis template is the right response for them.
+4. **Both humans**: accept the residual risk (other languages, other wording) or request more work.

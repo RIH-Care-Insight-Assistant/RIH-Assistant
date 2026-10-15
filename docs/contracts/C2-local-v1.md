@@ -77,8 +77,10 @@ Writes are never retried automatically. Reads may be retried once by the client.
 - `Clarification = {prompt, options: {id, label}[]}`. Option IDs are server-defined
   (`counseling_appointment`, `medical_appointment`). A selected option becomes a new user
   turn with server-defined text and passes through safety routing again.
-- `Notice = {kind: "stale_source" | "baseline_source" | "no_eligible_source" | "degraded",
-  message}`: fixed copy shown with the answer.
+- `Notice = {kind: "stale_source" | "baseline_source" | "no_eligible_source" | "degraded" |
+  "language_support", message}`: fixed copy shown with the answer. `language_support`
+  (**finalization addition, 2026-10-15, awaiting acceptance**) marks an ordinary reply to a
+  message that does not look like English; it is never added to a safety response.
 - `Citation = {source_id, chunk_id, title, url, version, approval_status, approved_at,
   checked_at, freshness}`.
 - `Resource = {id, title, url, category, provenance: Provenance}`.

@@ -13,9 +13,15 @@ Honest scope of what this prototype does **not** do or guarantee. Linked risks a
 
 ## Safety routing (R-01)
 
-- Keyword and pattern routing misses crisis messages in other languages, implicit risk without
-  trigger words, unusual phrasing and some obfuscations (other symbols, mixed tricks). Open
-  red-team findings SB-07 and SB-08. The 911/988 notice is always visible as a compensating control.
+- Keyword and pattern routing misses unusual phrasing and some obfuscations (other symbols, mixed
+  tricks). Since the finalization (SB-07, SB-08) it also routes explicit crisis wording in 12
+  languages and a narrow list of implicit warning signs, but crisis messages in any other
+  language, indirect wording in those 12 and implicit risk phrased outside the lists are still
+  missed. All of these terms are agent-drafted and unreviewed by native speakers, clinicians or
+  Devika (the routing-pattern reviewer). Compensating controls: the always-visible 911/988 notice
+  and a per-reply notice when a message does not look like English.
+- Uncovered-language messages take the ordinary path; with the optional local model on, they
+  reach the loopback model like any other ordinary message.
 - The router has no conversation memory; each message is judged alone.
 - Caution bias: some idioms and game talk ("killing it", "paintball and shoot me") get crisis
   guidance. This follows the approved policy that the router does not judge credibility.
@@ -31,7 +37,9 @@ Honest scope of what this prototype does **not** do or guarantee. Linked risks a
   written by the agent; the "hybrid" choice is justified only on that set.
 - The injection detector is pattern-based; paraphrased instructions can evade it (defense in
   depth: retrieved text is never interpreted and never reaches the model planner).
-- The original CLI path reads KB files directly and is not governed (finding RP-06).
+- The original CLI path now ranks only inventory-listed, unchanged, eligible records (RP-06 fixed),
+  but it does not apply the host allow-list or freshness expiry and shows no notices; the
+  governed API does.
 - Ingestion is disabled in the Compose deployment (no internet route for the API).
 
 ## Agents and models

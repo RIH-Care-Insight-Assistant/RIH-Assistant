@@ -158,3 +158,15 @@ awaiting human acceptance; nothing here records an approval that was not given.
 - **L-D4 (2026-10-15):** Phases 2–9 complete locally at `fb72ab6`; final battery 21/21 gates pass;
   readiness `blocked_pending_human_decision`. Publication plan prepared; nothing pushed. No
   decision by Devika is recorded for Phases 2–9 and none is implied.
+- **L-D5 (2026-10-15, finalization session operated from Abhinav's account; engineering
+  decisions, awaiting human acceptance):** the open high findings were mitigated in code where
+  practical instead of waiting, each escalate-only or fail-closed and each labelled unreviewed:
+  (a) SB-07: explicit crisis lexicon for 12 languages in `route()`; (b) SB-08: narrow implicit
+  warning signs (strong phrases, or two kinds of weak sign); (c) a `language_support` notice on
+  ordinary replies to non-English messages (C2 contract addition); (d) RP-06: the C1 CLI retrieval
+  path ranks only inventory-listed, hash-matching, eligible, non-quarantined records and fails
+  closed. Not done on purpose: no blanket "route every non-English message to crisis" rule, and no
+  change to expected results in existing datasets. Because (a)–(d) are agent-drafted, a new
+  readiness rule keeps the release blocked while a risk lists `pending_human_review` items, until a
+  reviewer records a decision. Under the routing-pattern rule in `safety/crisis-routing.md` §1,
+  (a) and (b) require Devika's review before they count as accepted.

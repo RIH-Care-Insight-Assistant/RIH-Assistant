@@ -43,8 +43,9 @@ status is `ready`.
 
 - Accept, change or reject the agent-proposed register (owners, scores, statuses) and the
   control catalog.
-- Record residual-risk decisions for the open findings (SB-07 non-English crisis wording, SB-08
-  implicit risk, RP-06 CLI KB reads) or require further mitigation.
+- Review the finalization mitigations listed as `pending_human_review` (SB-07 multilingual
+  lexicon, SB-08 warning-sign lists, the language notice, the RP-06 CLI retrieval gate) and
+  record residual-risk decisions on R-01 and R-04, or require further mitigation.
 - Review every `baseline` source against the official page (R-05).
 - Record any release decision.
 
