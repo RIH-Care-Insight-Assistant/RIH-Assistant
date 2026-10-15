@@ -1,30 +1,42 @@
-"""Structured assistant orchestration for the API (Phase 2).
+"""Governed assistant orchestration for the API (Phases 2–3).
 
 Mirrors `Dispatcher.respond()` stage for stage, but returns typed fields (response type,
-safety lane, evidence, clarification) instead of one string, so the API never has to
-infer safety or citations from generated prose. The CLI keeps using the Dispatcher;
-`tests/api/test_orchestrator_parity.py` checks the two agree on every safety outcome.
+safety lane, evidence, clarification) instead of one string, and executes every
+non-safety step through the governed toolkit (`app/agent/toolkit.py`). The CLI keeps
+using the Dispatcher; `tests/api/test_orchestrator_parity.py` checks the two agree on
+every safety outcome.
 
 Stage order (unchanged from C1):
-  1. deterministic safety routing on the original text (terminal for safety lanes)
+  1. deterministic safety routing on the original text (terminal for safety lanes;
+     templates are produced here, never by a tool, planner or model)
   2. decline handling, except in decline-protected lanes
-  3. template short-circuit for the remaining routed lanes
+  3. guidance short-circuit for the remaining routed lanes
   4. optional spelling correction, with an escalate-only safety re-check
-  5. planning (rule planner by default) and at most two executed steps
+  5. planning: the optional Strands planner (model proposes governed tool calls) or the
+     rule planner; at most two steps; then composition from validated tool outputs only
 """
 
 from __future__ import annotations
 
 import os
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
-from ..answer.alternatives import safe_alternatives
 from ..answer.compose import crisis_message, template_for
-from ..rag.evidence import Evidence, evidence_from_record
-from ..retriever.retriever import retrieve_scored
+from ..rag.citations import validate_citations
+from ..rag.evidence import Evidence
 from ..router.safety_router import DECLINE_PROTECTED_LANES, SAFETY_CRITICAL_LANES, route as safety_route
 from ..tools.decline_detector import DeclineDetector
+from .toolkit import (
+    ClarifyOutput,
+    RetrieveOutput,
+    StaticAgentAuthorizer,
+    TextOutput,
+    ToolExecutor,
+    ToolOutcome,
+    TurnContext,
+    build_registry,
+)
 
 MAX_STEPS = 2
 
@@ -46,6 +58,11 @@ NO_RESULTS_TEXT = (
     "I couldn't find an approved page in the knowledge base for that yet. "
     "Try rephrasing, or ask about hours, appointments, billing, immunizations or counseling."
 )
+UNAVAILABLE_TEXT = (
+    "I can't search the approved campus pages right now. Please try again shortly. "
+    "If this is urgent or you might be in danger, call or text 988, or call 911."
+)
+NOT_AVAILABLE_TEXT = "I can't help with that request right now. What kind of campus support are you looking for?"
 
 _APPT_OR_GROUP_MARKERS = (
     "appointment", "appointments", "schedule", "scheduling", "reschedule", "cancel",
@@ -57,14 +74,12 @@ _CLARIFY_WORDS = (
     "counseling", "counselling", "therapy", "therapist",
 )
 
-RetrieveFn = Callable[[str, int], "RetrievalOutcome"]
 
-
-@dataclass
-class RetrievalOutcome:
-    status: str  # "ok" | "empty" | "unavailable"
-    evidence: List[Evidence] = field(default_factory=list)
-    notices: List[Dict[str, str]] = field(default_factory=list)
+def clarification_payload() -> Dict[str, Any]:
+    return {
+        "prompt": CLARIFY_PROMPT,
+        "options": [{"id": k, "label": v["label"]} for k, v in CLARIFY_OPTIONS.items()],
+    }
 
 
 @dataclass
@@ -80,18 +95,8 @@ class AgentResult:
     trace: List[Dict[str, Any]] = field(default_factory=list)
 
 
-def legacy_retrieve(query: str, limit: int) -> RetrievalOutcome:
-    """C1 lexical retrieval (same filters and ranking as `retrieve()`), as evidence."""
-    try:
-        hits = retrieve_scored(query, limit)
-    except Exception:
-        return RetrievalOutcome(status="unavailable")
-    ev = [evidence_from_record(rec, score) for score, rec in hits]
-    return RetrievalOutcome(status="ok" if ev else "empty", evidence=ev)
-
-
 def safety_result(text: str) -> Optional[AgentResult]:
-    """Stage 1 only: the deterministic safety decision, independent of storage and retrieval."""
+    """Stage 1 only: the deterministic safety decision, independent of storage, retrieval and models."""
     r = safety_route(text)
     level = getattr(r, "level", None) if r else None
     if not r or level not in SAFETY_CRITICAL_LANES:
@@ -99,8 +104,8 @@ def safety_result(text: str) -> Optional[AgentResult]:
     key = r.auto_reply_key
     body = crisis_message() if key == "crisis" else template_for(key)
     return AgentResult(
-        text=body, response_type="safety", route_level=level, safety_lane=level,
-        is_terminal_safety=True, trace=[{"event": "route", "level": level}, {"event": "safety_template", "lane": level}],
+        text=body, response_type="safety", route_level=level, safety_lane=level, is_terminal_safety=True,
+        trace=[{"event": "route", "level": level}, {"event": "safety_template", "lane": level}],
     )
 
 
@@ -119,15 +124,38 @@ def compose_grounded(evidence: List[Evidence]) -> str:
     return "\n".join(lines)
 
 
+def _step_to_call(step: Dict[str, Any], query: str, top_k: int):
+    tool = (step.get("tool") or "retrieve").lower()
+    if tool == "retrieve":
+        q = step.get("input", {}).get("query") if isinstance(step.get("input"), dict) else None
+        return "retrieve_resources", {"query": (q or query)[:512], "limit": top_k}
+    if tool == "clarify":
+        return "clarify_appointment", {}
+    if tool in {"counseling", "retention"}:
+        return "guidance_template", {"key": tool}
+    if tool in {"crisis", "title_ix", "conduct"}:
+        return tool, None  # deterministic safety templates, never tools
+    return "retrieve_resources", {"query": query[:512], "limit": top_k}
+
+
 class Orchestrator:
     def __init__(
         self,
         *,
-        retrieve_fn: RetrieveFn | None = None,
+        executor: Optional[ToolExecutor] = None,
+        retriever=None,
         planner=None,
+        llm_planner=None,
         top_k: int = 3,
     ):
-        self._retrieve = retrieve_fn or legacy_retrieve
+        if executor is None:
+            if retriever is None:
+                from ..rag.governed_retriever import GovernedRetriever
+
+                retriever = GovernedRetriever()
+            executor = ToolExecutor(build_registry(retriever, clarification_payload), StaticAgentAuthorizer())
+        self.executor = executor
+        self.retriever = retriever
         self._decline = DeclineDetector()
         self._top_k = top_k
         if planner is None:
@@ -135,19 +163,19 @@ class Orchestrator:
 
             planner = Planner()
         self._planner = planner
+        self.llm_planner = llm_planner
         self._spell = None
         if os.getenv("MISSPELLING_CORRECTOR", "false").lower().strip() == "true":
             from .misspelling_corrector import MisspellingCorrector
 
             self._spell = MisspellingCorrector()
 
-    # -- planning / execution hooks (Phase 3 replaces these with the governed toolkit) --
-    def plan(self, route_level: Optional[str], text: str, trace: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        steps = self._planner.plan(route_level=route_level, user_text=text)
-        trace.append({"event": "plan", "planner": "rule", "tools": [s.get("tool") for s in steps]})
-        return steps
+    def _policy(self):
+        gov = getattr(self.retriever, "governance", None)
+        return gov.policy if gov is not None else None
 
-    def run(self, user_text: str, *, clarified: bool = False) -> AgentResult:
+    def run(self, user_text: str, *, clarified: bool = False, ctx: Optional[TurnContext] = None) -> AgentResult:
+        ctx = ctx or TurnContext()
         # 1) Safety gate: original text, before everything else.
         safe = safety_result(user_text)
         if safe is not None:
@@ -159,14 +187,19 @@ class Orchestrator:
         # 2) Decline -> verified alternatives (never in protected lanes).
         if level not in DECLINE_PROTECTED_LANES and self._decline.is_decline(user_text):
             trace.append({"event": "decline", "handled_by": "alternatives"})
-            return AgentResult(text=safe_alternatives(), response_type="alternatives", route_level=level, trace=trace)
+            out = self.executor.call("safe_alternatives", {}, ctx)
+            return self._finish([out], ctx, trace, level)
 
-        # 3) Template short-circuit for routed, non-safety lanes.
+        # 3) Guidance short-circuit for routed, non-safety lanes.
         lower = (user_text or "").lower()
         needs_plan = level == "counseling" and any(m in lower for m in _APPT_OR_GROUP_MARKERS)
         if r and not needs_plan:
-            trace.append({"event": "guidance_template", "key": r.auto_reply_key})
-            return AgentResult(text=template_for(r.auto_reply_key), response_type="guidance", route_level=level, trace=trace)
+            key = r.auto_reply_key
+            trace.append({"event": "guidance_template", "key": key})
+            if key in {"counseling", "retention"}:
+                out = self.executor.call("guidance_template", {"key": key}, ctx)
+                return self._finish([out], ctx, trace, level)
+            return AgentResult(text=template_for(key), response_type="guidance", route_level=level, trace=trace)
 
         # 4) Optional spelling correction, then escalate-only safety re-check.
         query = user_text
@@ -184,68 +217,95 @@ class Orchestrator:
                 escalated.trace = trace + [{"event": "route", "level": escalated.safety_lane, "source": "corrected_text"}]
                 return escalated
 
-        # 5) Plan and execute at most two steps.
-        steps = self.plan(level, query, trace)
+        # 5a) Optional model planner: proposes governed tool calls only.
+        if self.llm_planner is not None and not clarified:
+            outcomes = self.llm_planner.run(query, self.executor, ctx)
+            if outcomes:
+                trace.append({"event": "plan", "planner": "strands", "tools": [o.tool for o in outcomes]})
+                return self._finish(outcomes[:MAX_STEPS], ctx, trace, level)
+            trace.append({"event": "plan", "planner": "strands_fallback"})
+
+        # 5b) Rule planner.
+        steps = self._planner.plan(route_level=level, user_text=query)
         if clarified:
             steps = [s for s in steps if s.get("tool") != "clarify"] or [{"tool": "retrieve", "input": {"query": query}}]
-        return self.execute(steps[:MAX_STEPS], query, user_text, level, trace)
+        trace.append({"event": "plan", "planner": "rule", "tools": [s.get("tool") for s in steps[:MAX_STEPS]]})
+        outcomes: List[ToolOutcome] = []
+        for idx, step in enumerate(steps[:MAX_STEPS]):
+            name, args = _step_to_call(step, query, self._top_k)
+            if args is None:  # defense in depth: the safety stage already returned for these lanes
+                text = crisis_message() if name == "crisis" else template_for(name)
+                lane = {"crisis": "urgent_safety", "title_ix": "title_ix", "conduct": "harassment_hate"}[name]
+                return AgentResult(text=text, response_type="safety", route_level=level, safety_lane=lane,
+                                   is_terminal_safety=True, trace=trace + [{"event": "safety_template", "source": "planner"}])
+            out = self.executor.call(name, args, ctx)
+            outcomes.append(out)
+            empty_retrieval = (
+                name == "retrieve_resources" and out.ok and isinstance(out.output, RetrieveOutput)
+                and out.output.status == "empty"
+            )
+            if idx == 0 and empty_retrieval and _wants_auto_clarify(user_text):
+                outcomes.append(self.executor.call("clarify_appointment", {}, ctx))
+                break
+        return self._finish(outcomes, ctx, trace, level)
 
-    def execute(self, steps, query, user_text, level, trace) -> AgentResult:
+    def _finish(self, outcomes: List[ToolOutcome], ctx: TurnContext, trace: List[Dict[str, Any]],
+                level: Optional[str]) -> AgentResult:
         texts: List[str] = []
         evidence: List[Evidence] = []
         notices: List[Dict[str, str]] = []
         clarification = None
-        response_type = "answer"
-        for idx, step in enumerate(steps):
-            tool = (step.get("tool") or "retrieve").lower()
-            if tool == "crisis":  # defense in depth; the safety stage already returned
-                trace.append({"event": "safety_template", "lane": "urgent_safety", "source": "planner"})
-                return AgentResult(
-                    text=crisis_message(), response_type="safety", route_level=level, safety_lane="urgent_safety",
-                    is_terminal_safety=True, trace=trace,
-                )
-            if tool == "clarify":
-                clarification = clarification_payload()
-                texts.append(CLARIFY_PROMPT)
-                response_type = "clarification"
-                trace.append({"event": "tool", "name": "clarify"})
+        kinds = set()
+        for out in outcomes:
+            if not out.ok or out.output is None:
                 continue
-            if tool in {"counseling", "retention"}:
-                texts.append(template_for(tool))
-                response_type = "guidance" if response_type == "answer" else response_type
-                trace.append({"event": "tool", "name": tool})
-                continue
-            if tool in {"title_ix", "conduct"}:  # planner never emits these for non-safety lanes
-                texts.append(template_for(tool))
-                trace.append({"event": "tool", "name": tool})
-                continue
-            outcome = self._retrieve(query, self._top_k)
-            trace.append({"event": "tool", "name": "retrieve", "status": outcome.status, "hits": len(outcome.evidence)})
-            notices.extend(n for n in outcome.notices if n not in notices)
-            if outcome.status == "unavailable":
-                notices.append({"kind": "degraded", "message": "Search is temporarily unavailable."})
-            if outcome.evidence:
-                evidence.extend(e for e in outcome.evidence if e.chunk_id not in {x.chunk_id for x in evidence})
-                texts.append(compose_grounded(outcome.evidence))
-            elif idx == 0 and clarification is None and _wants_auto_clarify(user_text):
-                clarification = clarification_payload()
-                texts.append(CLARIFY_PROMPT)
-                response_type = "clarification"
-                trace.append({"event": "tool", "name": "clarify", "auto": True})
-            elif clarification is None:
-                texts.append(NO_RESULTS_TEXT)
-                if response_type == "answer":
-                    response_type = "fallback"
-        if response_type == "answer" and not evidence:
+            o = out.output
+            if isinstance(o, RetrieveOutput):
+                if o.status == "unavailable":
+                    notices.append({"kind": "degraded", "message": "Search of approved pages is temporarily unavailable."})
+                    texts.append(UNAVAILABLE_TEXT)
+                    kinds.add("fallback")
+                    continue
+                valid, rejected = validate_citations(o.evidence, ctx.ledger, self._policy())
+                for chunk_id, reason in rejected:
+                    trace.append({"event": "citation_rejected", "chunk_id": chunk_id, "reason": reason})
+                for ev in valid:
+                    if ev.chunk_id not in {e.chunk_id for e in evidence}:
+                        evidence.append(ev)
+                for n in o.notices:
+                    if valid and n not in notices:
+                        notices.append(n)
+                if valid:
+                    texts.append(compose_grounded(valid))
+                    kinds.add("answer")
+                elif clarification is None and out.tool == "retrieve_resources":
+                    kinds.add("empty")
+            elif isinstance(o, ClarifyOutput):
+                clarification = o.clarification.model_dump()
+                texts.append(o.clarification.prompt)
+                kinds.add("clarification")
+            elif isinstance(o, TextOutput):
+                texts.append(o.text)
+                kinds.add("guidance" if out.tool == "guidance_template" else "alternatives")
+        if "empty" in kinds and clarification is None and "answer" not in kinds:
+            texts.append(NO_RESULTS_TEXT)
+            if not any(n["kind"] == "no_eligible_source" for n in notices):
+                notices.append({"kind": "no_eligible_source", "message": "No approved source matched this question."})
+        if clarification is not None:
+            response_type = "clarification"
+        elif "answer" in kinds:
+            response_type = "answer"
+        elif "guidance" in kinds:
+            response_type = "guidance"
+        elif "alternatives" in kinds:
+            response_type = "alternatives"
+        else:
             response_type = "fallback"
+        if not texts:
+            texts.append(NOT_AVAILABLE_TEXT)
+            response_type = "fallback"
+        trace.extend(ctx.events)
         return AgentResult(
-            text="\n\n".join(t for t in texts if t), response_type=response_type, route_level=level,
-            evidence=evidence, clarification=clarification, notices=notices, trace=trace,
+            text="\n\n".join(texts), response_type=response_type, route_level=level, evidence=evidence,
+            clarification=clarification, notices=notices, trace=trace,
         )
-
-
-def clarification_payload() -> Dict[str, Any]:
-    return {
-        "prompt": CLARIFY_PROMPT,
-        "options": [{"id": k, "label": v["label"]} for k, v in CLARIFY_OPTIONS.items()],
-    }

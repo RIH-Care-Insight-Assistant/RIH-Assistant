@@ -119,7 +119,8 @@ def delete_session(session_id: str, request: Request):
 def chat(body: schemas.ChatRequest, request: Request):
     guard_mutation(request)
     return request.app.state.chat.turn(
-        lambda: owner_from_request(request), body.session_id, body.message, body.clarification_option_id
+        lambda: owner_from_request(request), body.session_id, body.message, body.clarification_option_id,
+        request_id=getattr(request.state, "request_id", ""),
     )
 
 

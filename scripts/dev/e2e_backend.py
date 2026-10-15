@@ -25,6 +25,7 @@ def main() -> None:
     os.environ["RIH_DB_PATH"] = str(Path(tmp) / "e2e.sqlite3")
     os.environ["RIH_COOKIE_SECURE"] = "false"
     os.environ.setdefault("RIH_ENV", "test")
+    os.environ.setdefault("RIH_FIXED_TODAY", "2026-10-14")  # keeps KB freshness stable for E2E runs
     import uvicorn
 
     uvicorn.run("app.api.main:app", host="127.0.0.1", port=args.port, log_level="warning")

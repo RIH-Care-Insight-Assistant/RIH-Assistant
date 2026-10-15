@@ -23,3 +23,5 @@ python-dotenv==1.0.1
 # Agents (optional at runtime; model features stay off by default)
 strands-agents==1.59.0
 strands-agents-tools==0.8.9
+# Local model provider client for the optional Strands planner (loopback Ollama only)
+ollama==0.6.3

@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any, Dict, List, Optional
 
 from ..agent.orchestrator import CLARIFY_OPTIONS, AgentResult, safety_result
+from ..agent.toolkit import Principal, TurnContext
 from ..rag.evidence import Evidence
 from .db import Database, DatabaseUnavailable, iso, new_id, utcnow
 from .errors import ApiError
@@ -52,7 +53,8 @@ class ChatService:
             raise ApiError("invalid_request")
         return CLARIFY_OPTIONS[option_id]["text"], True
 
-    def turn(self, resolve_owner, session_id: str, message: Optional[str], option_id: Optional[str]) -> Dict:
+    def turn(self, resolve_owner, session_id: str, message: Optional[str], option_id: Optional[str],
+             request_id: str = "") -> Dict:
         """`resolve_owner()` returns the owner ID or None; it may raise DatabaseUnavailable."""
         # Safety decision first, on the original text, with no dependency on storage.
         safe = safety_result(message) if message is not None else None
@@ -63,7 +65,8 @@ class ChatService:
             if self.db.get_session(owner_id, session_id) is None:
                 raise ApiError("not_found")
             text, clarified = self._resolve_text(owner_id, session_id, message, option_id)
-            result = safe or self.orchestrator.run(text, clarified=clarified)
+            ctx = TurnContext(principal=Principal(subject=owner_id, roles=frozenset({"student"})), request_id=request_id)
+            result = safe or self.orchestrator.run(text, clarified=clarified, ctx=ctx)
             citations = [citation_of(e) for e in result.evidence]
             saved = self.db.add_turn(
                 owner_id, session_id,

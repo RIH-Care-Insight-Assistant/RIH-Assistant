@@ -1,0 +1,123 @@
+{
+  "inventory_version": "sources-1",
+  "description": "Governed-RAG source inventory. Status 'baseline' = present in the C1 KB, no governed review yet.",
+  "sources": [
+    {
+      "chunk_id": "chk_d4fe745448cf2bf7",
+      "source_id": "src_de3c726e8c15",
+      "url": "https://health.umbc.edu/health-services/appointments/",
+      "title": "RIH Appointments",
+      "content_sha256": "d8004294628a1389ece47478ce281dcb400c924ddfed421333677d82a9e449a9",
+      "approval_status": "baseline",
+      "approved_by": null,
+      "approved_at": null,
+      "checked_at": null,
+      "chat_eligible_in_kb": true,
+      "notes": "Carried over from the C1 knowledge base (chunks_sample.jsonl:1); not reviewed under governed RAG."
+    },
+    {
+      "chunk_id": "chk_decf3d12483b0b85",
+      "source_id": "src_fe83ff32b317",
+      "url": "https://health.umbc.edu/coverage-and-costs/payment-fees/",
+      "title": "RIH Billing",
+      "content_sha256": "297774471589bf2c7334e56e5d51bfe30c45a8e8623cb5be7a370e3dedeb872a",
+      "approval_status": "baseline",
+      "approved_by": null,
+      "approved_at": null,
+      "checked_at": null,
+      "chat_eligible_in_kb": true,
+      "notes": "Carried over from the C1 knowledge base (chunks_sample.jsonl:2); not reviewed under governed RAG."
+    },
+    {
+      "chunk_id": "chk_cf64e0d9d8366aa6",
+      "source_id": "src_da722224169c",
+      "url": "https://health.umbc.edu/health-services/emergency-and-after-hours-care/",
+      "title": "Crisis Support",
+      "content_sha256": "3d5dfec32fe04b0a18049ef29eb729032fc2b9003cdd20e22206616e9824e01c",
+      "approval_status": "baseline",
+      "approved_by": null,
+      "approved_at": null,
+      "checked_at": null,
+      "chat_eligible_in_kb": false,
+      "notes": "Carried over from the C1 knowledge base (chunks_sample.jsonl:3); not reviewed under governed RAG."
+    },
+    {
+      "chunk_id": "chk_505e9ee0152ed56f",
+      "source_id": "src_9023685f1b34",
+      "url": "https://health.umbc.edu/health-services/health-requirements/#immunizations",
+      "title": "Immunizations & Requirements",
+      "content_sha256": "6c84d4b4a8e2cc09b99c847207ba19af56d423aa1437e2bdc64e4db5710b822c",
+      "approval_status": "baseline",
+      "approved_by": null,
+      "approved_at": null,
+      "checked_at": null,
+      "chat_eligible_in_kb": true,
+      "notes": "Carried over from the C1 knowledge base (chunks_sample.jsonl:4); not reviewed under governed RAG."
+    },
+    {
+      "chunk_id": "chk_cde70de9010e1a78",
+      "source_id": "src_d00baaacd7b5",
+      "url": "https://health.umbc.edu/",
+      "title": "RIH Hours & Location",
+      "content_sha256": "bca9438d87440bd9aad67c92715e36fc418119bc13548e69ca28a0e3de06a2ed",
+      "approval_status": "baseline",
+      "approved_by": null,
+      "approved_at": null,
+      "checked_at": null,
+      "chat_eligible_in_kb": true,
+      "notes": "Carried over from the C1 knowledge base (chunks_sample.jsonl:5); not reviewed under governed RAG."
+    },
+    {
+      "chunk_id": "chk_46141295ee8417ba",
+      "source_id": "src_62027219fc60",
+      "url": "https://health.umbc.edu/counseling-services/counseling/",
+      "title": "Counseling \u2014 How to Schedule",
+      "content_sha256": "e25ba46798da4e65cb4215e820e32a4c4e625ae8936b2b1bd933137c223eebd2",
+      "approval_status": "baseline",
+      "approved_by": null,
+      "approved_at": null,
+      "checked_at": null,
+      "chat_eligible_in_kb": true,
+      "notes": "Carried over from the C1 knowledge base (chunks_sample.jsonl:6); not reviewed under governed RAG."
+    },
+    {
+      "chunk_id": "chk_a8e3eacae10a4edf",
+      "source_id": "src_62027219fc60",
+      "url": "https://health.umbc.edu/counseling-services/counseling/",
+      "title": "Counseling Workshops & Groups",
+      "content_sha256": "a721c5b51fc3f072a0ab436d81e4a02c727cd10d23207f8aa0551a550a02c16f",
+      "approval_status": "baseline",
+      "approved_by": null,
+      "approved_at": null,
+      "checked_at": null,
+      "chat_eligible_in_kb": true,
+      "notes": "Carried over from the C1 knowledge base (chunks_sample.jsonl:7); not reviewed under governed RAG."
+    },
+    {
+      "chunk_id": "chk_c48f19fa61e11d49",
+      "source_id": "src_da722224169c",
+      "url": "https://health.umbc.edu/health-services/emergency-and-after-hours-care/",
+      "title": "Counseling After-Hours Support",
+      "content_sha256": "6073e126bbe813f8085e22e881d1d483b7a1979337ec317869023a2a8394e207",
+      "approval_status": "baseline",
+      "approved_by": null,
+      "approved_at": null,
+      "checked_at": null,
+      "chat_eligible_in_kb": false,
+      "notes": "Carried over from the C1 knowledge base (chunks_sample.jsonl:8); not reviewed under governed RAG."
+    },
+    {
+      "chunk_id": "chk_0a9580e14ac55bbd",
+      "source_id": "src_bc85ef87bb3c",
+      "url": "https://health.umbc.edu/coverage-and-costs/insurance-waiver-and-mandate/",
+      "title": "Insurance & Coverage (Student Health)",
+      "content_sha256": "c0d81c3eaf909f78767f66b43a8303cb7ba5338ff09e257380af16a022ec1717",
+      "approval_status": "baseline",
+      "approved_by": null,
+      "approved_at": null,
+      "checked_at": null,
+      "chat_eligible_in_kb": true,
+      "notes": "Carried over from the C1 knowledge base (chunks_sample.jsonl:9); not reviewed under governed RAG."
+    }
+  ]
+}

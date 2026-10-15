@@ -42,3 +42,18 @@ class LegacyCatalog:
             return len(chat_corpus()) > 0
         except Exception:
             return False
+
+
+class GovernedCatalog:
+    """Phase 3: only governed-eligible records, with provenance, approval and freshness."""
+
+    def __init__(self, retriever):
+        self.retriever = retriever
+
+    def search(self, q: Optional[str], limit: int) -> List[Evidence]:
+        if q and q.strip():
+            return self.retriever.search(q, limit)
+        return self.retriever.eligible()[:limit]
+
+    def healthy(self) -> bool:
+        return self.retriever.healthy()

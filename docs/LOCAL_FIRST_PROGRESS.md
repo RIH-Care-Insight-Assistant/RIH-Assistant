@@ -15,8 +15,8 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 
 | Field | Value |
 |---|---|
-| Current phase | Phase 3 — governed agents and RAG |
-| Current task | Phase 2 committed; starting Phase 3 (tool registry, governed retrieval, Strands planner) |
+| Current phase | Phase 4 — cybersecurity and agent Policy-as-Code |
+| Current task | Phase 3 committed; starting Phase 4 (authentication, RBAC, policy engine) |
 | Last local commit | see `git log -1` (this file is updated with each milestone) |
 
 ## Phase status
@@ -25,7 +25,7 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 |---|---|---|
 | 0–1 (C1) | Complete, accepted on GitHub (`6ab77a8`) | `PROJECT_STATE.md` |
 | 2 | **Complete (local)** | Backend, frontend, contract, E2E checks below |
-| 3 | Not started | – |
+| 3 | **Complete (local)** | Governed toolkit, RAG, benchmark, live Strands run below |
 | 4 | Not started | – |
 | 5 | Not started | – |
 | 6 | Not started | – |
@@ -41,6 +41,29 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 | 2026-10-14 | Phase 2 working tree (committed as the Phase 2 commit) | WSL2 Python 3.14.4 venv `~/.venvs/rih-local` (requirements pinned) | `ruff check .` ×2; `pytest -q`; routes; safety eval; smoke; `export_openapi.py --check` | Ruff clean; **4849 passed** (4625 + 224 API/parity); routes passed; 172/172, no misses/FP; smoke OK; snapshot matches |
 | 2026-10-14 | same | Windows 11 native, Python 3.13.2 `.venv` | `pytest -q --basetemp=<scratch>` | **4848 passed, 1 skipped** (symlink test) |
 | 2026-10-14 | same | Windows, Node 24.14.0, npm 11.9.0 | `npm run lint`; `typecheck`; `vitest run`; `build`; `playwright test` (Chromium headless shell 156) | ESLint clean; tsc clean; **14/14** component tests; build OK (236 kB JS); **E2E 2/2** against the real API |
+
+| 2026-10-15 | Phase 3 working tree | WSL2 Python 3.14.4 | `ruff` ×2; `pytest -q`; routes; safety eval; smoke; OpenAPI check; inventory check | Ruff clean; **4945 passed**; routes passed; 172/172, no misses/FP; smoke OK; snapshot matches; inventory matches KB |
+| 2026-10-15 | same | Windows 11, Python 3.13.2 | `pytest -q` | **4944 passed, 1 skipped** |
+| 2026-10-15 | same | Windows, Node 24.14.0 | `playwright test` against the governed API | **E2E 2/2** (now also asserts the baseline-source badge) |
+| 2026-10-15 | same | Windows, Ollama 0.40.3, qwen2.5:1.5b (loopback) | `scripts/dev/strands_live_smoke.py --write` | 10 synthetic questions: 4 model tool calls used, 4 fell back to the rule planner, decline and crisis never reached the model ([evidence](evidence/strands-live-smoke-2026-10-15.json)) |
+| 2026-10-15 | same | Windows, Python 3.13.2 | `scripts/rag_benchmark.py --write` (first run, no tuning after) | legacy 22/26 hit@1, 2/6 false hits; bm25 23/26, 0/6; hybrid 24/26, 26/26 recall@3, 0/6 ([evidence](evidence/rag-benchmark-v1.json)) |
+
+### Phase 3 deliverables
+
+- `app/agent/toolkit.py`: typed tool contracts, registry, default-deny static authorizer
+  (interim until Phase 4), budgets, timeouts, output validation, privacy-safe events, evidence ledger.
+- `app/agent/orchestrator.py`: every non-safety step runs through the executor; citations
+  validated against the turn ledger; degraded/no-source notices.
+- `app/agent/strands_planner.py` + `resilience.py`: bounded Strands planner (loopback Ollama,
+  cloud models refused), circuit breaker, in-flight bound, minimal tool results to the model.
+- `app/rag/`: evidence identity/versioning, policy + inventory governance, freshness, reviewer
+  overrides, injection quarantine, rankers, governed retriever (filter before top-k), citation validation.
+- `kb/governance/policy.json` and `sources.json` (9 C1 records as `baseline`), with
+  `scripts/build_source_inventory.py` (never approves anything).
+- Benchmark `tests/data/retrieval_benchmark_v1.json` + `scripts/rag_benchmark.py`.
+- Tests: `tests/agent/` (toolkit, scripted-model Strands loop), `tests/rag/` (governance,
+  poisoning, benchmark relation), `tests/api/test_governed_api.py`.
+- Architecture: [`architecture/agents-and-rag.md`](architecture/agents-and-rag.md).
 
 ### Phase 2 deliverables
 
@@ -76,6 +99,7 @@ benchmark. Citations carry no governance status until Phase 3.
 
 ## Next executable action
 
-Phase 3: source inventory and governed retrieval (`app/rag/`), tool registry with typed
-contracts, budgets and fail-closed permission checks (`app/agent/toolkit.py`), optional
-Strands planner with deterministic fallback, retrieval benchmark, poisoned-document tests.
+Phase 4: local authentication (reviewer/admin accounts, scrypt hashes, server sessions),
+RBAC, Policy-as-Code engine replacing `StaticAgentAuthorizer`, policy decision audit,
+rate limits, admin APIs (source review, users) and staff UI, secure ingestion with SSRF
+protection, prompt-injection misuse and session-isolation tests, dependency/static scans.

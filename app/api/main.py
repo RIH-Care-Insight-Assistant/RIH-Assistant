@@ -7,6 +7,7 @@ OpenAPI:      /api/v1/openapi.json (docs at /api/v1/docs)
 from __future__ import annotations
 
 import logging
+import os
 import re
 import secrets
 from contextlib import asynccontextmanager
@@ -16,7 +17,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 from ..agent.orchestrator import Orchestrator
-from .catalog import LegacyCatalog
+from ..rag.governed_retriever import GovernedRetriever
+from .catalog import GovernedCatalog
 from .chat_service import ChatService
 from .db import Database
 from .errors import MESSAGES, install_error_handlers
@@ -121,11 +123,13 @@ def create_app(
     db: Database | None = None,
     orchestrator: Orchestrator | None = None,
     catalog=None,
+    retriever: GovernedRetriever | None = None,
 ) -> FastAPI:
     settings = settings or Settings.from_env()
     db = db or Database(settings.db_path)
-    catalog = catalog or LegacyCatalog()
-    orchestrator = orchestrator or Orchestrator()
+    retriever = retriever or GovernedRetriever()
+    catalog = catalog or GovernedCatalog(retriever)
+    orchestrator = orchestrator or Orchestrator(retriever=retriever, llm_planner=llm_planner_from_env())
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
@@ -154,7 +158,8 @@ def create_app(
     app.state.catalog = catalog
     app.state.orchestrator = orchestrator
     app.state.chat = ChatService(db, orchestrator)
-    app.state.policy_ok = lambda: True
+    app.state.retriever = retriever
+    app.state.policy_ok = retriever.healthy
 
     install_error_handlers(app)
     app.include_router(router)
@@ -168,6 +173,20 @@ def create_app(
     )
     app.add_middleware(RequestContextMiddleware, max_body_bytes=settings.max_body_bytes)
     return app
+
+
+def llm_planner_from_env():
+    """The optional Strands planner, only when explicitly enabled (model features are off by default)."""
+    if os.getenv("STRANDS_ENABLED", "false").lower() != "true" or os.getenv("RIH_PLANNER", "RULE").upper() != "LLM":
+        return None
+    from ..agent.resilience import CircuitBreaker
+    from ..agent.strands_planner import StrandsToolPlanner, ollama_model_from_env
+
+    try:
+        timeout = float(os.getenv("RIH_PLANNER_TIMEOUT_S", "5"))
+    except ValueError:
+        timeout = 5.0
+    return StrandsToolPlanner(ollama_model_from_env, timeout_s=min(max(timeout, 0.5), 30.0), breaker=CircuitBreaker())
 
 
 def __getattr__(name: str):

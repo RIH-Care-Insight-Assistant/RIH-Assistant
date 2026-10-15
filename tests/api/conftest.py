@@ -5,9 +5,17 @@ from __future__ import annotations
 import pytest
 from fastapi.testclient import TestClient
 
+from datetime import date
+from pathlib import Path
+
 from app.api.db import Database
 from app.api.main import create_app
 from app.api.settings import Settings
+from app.rag.governance import SourceGovernance
+from app.rag.governed_retriever import GovernedRetriever
+
+ROOT = Path(__file__).resolve().parents[2]
+TODAY = date(2026, 10, 14)  # fixed clock: KB freshness must not depend on when tests run
 
 ORIGIN = "http://localhost:5173"
 
@@ -58,8 +66,14 @@ def db(settings):
 
 
 @pytest.fixture
-def app(settings, db):
-    return create_app(settings, db=db)
+def retriever():
+    gov = SourceGovernance.load(ROOT / "kb" / "governance", today=lambda: TODAY)
+    return GovernedRetriever(governance=gov)
+
+
+@pytest.fixture
+def app(settings, db, retriever):
+    return create_app(settings, db=db, retriever=retriever)
 
 
 @pytest.fixture

@@ -11,6 +11,8 @@ test("student asks, gets cited answers and safety guidance, clarifies, rates and
   const sources = page.getByRole("region", { name: "Sources" }).first();
   await expect(sources).toBeVisible();
   await expect(sources.getByRole("link").first()).toHaveAttribute("href", /^https:\/\//);
+  // Governed provenance is visible: C1 records are baseline sources awaiting review.
+  await expect(sources.getByText("Baseline source, awaiting governed review").first()).toBeVisible();
 
   // Safety-first: deterministic guidance in a distinct alert, no sources.
   const input = page.getByLabel("Your message");

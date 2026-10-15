@@ -1,0 +1,17 @@
+{
+  "policy_version": "rag-policy-1",
+  "status": "Local default (2026-10-14), awaiting human acceptance. Not an official campus freshness policy.",
+  "require_https": true,
+  "allowed_hosts": ["umbc.edu"],
+  "allow_subdomains": true,
+  "eligible_statuses": ["approved", "baseline"],
+  "allow_baseline": true,
+  "freshness_days": {
+    "fresh": 180,
+    "aging": 365,
+    "stale": 730
+  },
+  "unknown_date_eligible": false,
+  "quarantine_on_injection_signal": true,
+  "max_results": 5
+}
