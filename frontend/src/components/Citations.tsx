@@ -1,5 +1,6 @@
 import type { Citation } from "../api/types";
 import { safeHttpsUrl } from "../api/client";
+import { Icon } from "./Icon";
 
 const APPROVAL_LABEL: Record<string, string> = {
   approved: "Approved source",
@@ -21,18 +22,21 @@ export function Citations({ citations }: { citations: Citation[] }) {
   if (citations.length === 0) return null;
   return (
     <section className="citations" aria-label="Sources">
-      <h3 className="citations__title">Sources</h3>
+      <h3 className="citations__title">
+        <Icon name="book" />
+        Sources
+      </h3>
       <ol className="citations__list">
         {citations.map((c) => {
           const href = safeHttpsUrl(c.url);
           return (
             <li key={c.chunk_id} className="citation">
               {href ? (
-                <a href={href} target="_blank" rel="noopener noreferrer">
+                <a className="citation__title" href={href} target="_blank" rel="noopener noreferrer">
                   {c.title}
                 </a>
               ) : (
-                <span>{c.title}</span>
+                <span className="citation__title">{c.title}</span>
               )}
               <span className="citation__meta">
                 {c.approval_status && (

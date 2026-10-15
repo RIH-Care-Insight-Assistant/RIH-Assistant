@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { ApiError, staffApi } from "../api/client";
 import type { Readiness, RiskItem } from "../api/types";
+import { Icon } from "./Icon";
+import { tone } from "./tone";
 
 const STATUS_LABEL: Record<Readiness["status"], string> = {
   ready: "Ready (an admin may record an approval)",
@@ -34,44 +36,74 @@ export function GovernancePanel({ isAdmin }: { isAdmin: boolean }) {
   }, []);
   useEffect(load, [load]);
 
-  if (error) return <p className="error-banner" role="alert">{error}</p>;
-  if (!risks || !ready || !meta) return <p role="status">Loading governance records…</p>;
+  if (error) return <p className="error-banner" role="alert"><Icon name="alert" /><span>{error}</span></p>;
+  if (!risks || !ready || !meta) {
+    return (
+      <p className="loading" role="status">
+        <span className="spinner" aria-hidden="true" />
+        Loading governance records…
+      </p>
+    );
+  }
+  const highResidual = risks.filter((r) => r.residual_band === "high").length;
 
   return (
     <div className="governance">
       <section aria-labelledby="readiness-title" className={`readiness readiness--${ready.status}`}>
-        <h3 id="readiness-title">Release readiness: {STATUS_LABEL[ready.status]}</h3>
+        <div className="readiness__head">
+          <div>
+            <p className="eyebrow">Release governance</p>
+            <h3 id="readiness-title">Release readiness: {STATUS_LABEL[ready.status]}</h3>
+          </div>
+          <span className={tone(ready.status)}>{ready.status.replace(/_/g, " ")}</span>
+        </div>
         {ready.candidate && <p className="muted">Candidate {ready.candidate} · evidence {ready.evidence_generated_at}</p>}
+        <dl className="stats">
+          <div className="stat"><dt>Risks in register</dt><dd>{risks.length}</dd></div>
+          <div className="stat"><dt>High residual risks</dt><dd>{highResidual}</dd></div>
+          <div className="stat">
+            <dt>Red-team attack successes</dt>
+            <dd>{ready.redteam ? `${ready.redteam.attack_successes}/${ready.redteam.attempted}` : "—"}</dd>
+          </div>
+          <div className="stat stat--accent"><dt>Pending human decisions</dt><dd>{ready.pending_human_decisions.length}</dd></div>
+        </dl>
         {ready.redteam && (
-          <p>
+          <p className="muted">
             Adversarial suite ({ready.redteam.label}): {ready.redteam.attack_successes}/{ready.redteam.attempted} attacks
             succeeded; critical open: {ready.redteam.critical_open.length || "none"}.
           </p>
         )}
-        {ready.blockers.length > 0 && (
-          <>
-            <h4>Blockers</h4>
-            <ul>{ready.blockers.map((b) => <li key={b}>{b}</li>)}</ul>
-          </>
-        )}
-        {ready.pending_human_decisions.length > 0 && (
-          <>
-            <h4>Decisions waiting for a person</h4>
-            <ul>{ready.pending_human_decisions.map((p) => <li key={p.risk + p.reason}>{p.risk}: {p.reason}</li>)}</ul>
-          </>
-        )}
+        <div className="readiness__lists">
+          {ready.blockers.length > 0 && (
+            <div>
+              <h4>Blockers</h4>
+              <ul>{ready.blockers.map((b) => <li key={b}>{b}</li>)}</ul>
+            </div>
+          )}
+          {ready.pending_human_decisions.length > 0 && (
+            <div>
+              <h4>Decisions waiting for a person</h4>
+              <ul>{ready.pending_human_decisions.map((p) => <li key={p.risk + p.reason}>{p.risk}: {p.reason}</li>)}</ul>
+            </div>
+          )}
+        </div>
         {ready.checks.length > 0 && (
-          <ul className="plain-list">
-            {ready.checks.map((c) => <li key={c.id}>{c.id}: <strong>{c.status}</strong>{c.detail ? ` · ${c.detail}` : ""}</li>)}
+          <ul className="check-list" aria-label="Release battery checks">
+            {ready.checks.map((c) => (
+              <li key={c.id}>
+                <span>{c.id}{c.detail ? <span className="muted"> · {c.detail}</span> : null}</span>
+                <span className={tone(c.status)}>{c.status}</span>
+              </li>
+            ))}
           </ul>
         )}
       </section>
 
-      <p className="muted">{meta.framework} {meta.status_note}</p>
+      <p className="muted framework-note"><Icon name="info" /><span>{meta.framework} {meta.status_note}</span></p>
       {meta.problems.length > 0 && (
         <p className="error-banner" role="alert">Register integrity problems: {meta.problems.join("; ")}</p>
       )}
-      {notice && <p role="status">{notice}</p>}
+      {notice && <p className="notice-banner" role="status">{notice}</p>}
 
       <div className="table-wrap">
         <table className="table">
@@ -93,9 +125,9 @@ export function GovernancePanel({ isAdmin }: { isAdmin: boolean }) {
                     </ul>
                   )}
                 </td>
-                <td>{r.inherent_score} ({r.inherent_band})</td>
-                <td>{r.residual_score} ({r.residual_band})</td>
-                <td>{r.mitigation_status}</td>
+                <td><span className="score"><strong>{r.inherent_score}</strong> <span className={tone(r.inherent_band)}>{r.inherent_band}</span></span></td>
+                <td><span className="score"><strong>{r.residual_score}</strong> <span className={tone(r.residual_band)}>{r.residual_band}</span></span></td>
+                <td><span className={tone(r.mitigation_status)}>{r.mitigation_status.replace(/_/g, " ")}</span></td>
                 <td className="muted">{r.controls.join(", ")}</td>
                 <td>{r.findings.join(", ") || "—"}</td>
                 <td>
@@ -110,6 +142,7 @@ export function GovernancePanel({ isAdmin }: { isAdmin: boolean }) {
         </table>
       </div>
 
+      <div className="form-grid">
       <form
         className="inline-form"
         onSubmit={async (e) => {
@@ -172,6 +205,7 @@ export function GovernancePanel({ isAdmin }: { isAdmin: boolean }) {
           <button type="submit" className="btn btn--primary">Record release decision</button>
         </form>
       )}
+      </div>
     </div>
   );
 }

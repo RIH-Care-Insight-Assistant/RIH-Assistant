@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { api, ApiError, safeHttpsUrl } from "../api/client";
 import type { Resource } from "../api/types";
+import { Icon } from "./Icon";
 
 export function ResourcesView() {
   const [query, setQuery] = useState("");
@@ -22,11 +23,14 @@ export function ResourcesView() {
   }, [submitted]);
 
   return (
-    <section className="resources" aria-labelledby="resources-title">
-      <h2 id="resources-title">Campus resources</h2>
-      <p className="resources__intro">
-        Pages the assistant may cite. Each entry shows where it came from and its review status.
-      </p>
+    <section className="resources card" aria-labelledby="resources-title">
+      <div className="page-header">
+        <div>
+          <p className="eyebrow">Directory</p>
+          <h2 id="resources-title">Campus resources</h2>
+          <p>Pages the assistant may cite. Each entry shows where it came from and its review status.</p>
+        </div>
+      </div>
       <form
         role="search"
         className="resources__search"
@@ -39,52 +43,83 @@ export function ResourcesView() {
           setSubmitted(next);
         }}
       >
-        <label htmlFor="resource-q">Search resources</label>
-        <input id="resource-q" type="search" value={query} maxLength={512} onChange={(e) => setQuery(e.target.value)} />
+        <label htmlFor="resource-q" className="visually-hidden">
+          Search resources
+        </label>
+        <div className="search-field">
+          <Icon name="search" />
+          <input id="resource-q" className="input" type="search" value={query} maxLength={512}
+            placeholder="Search by topic, for example immunizations" onChange={(e) => setQuery(e.target.value)} />
+        </div>
         <button type="submit" className="btn btn--primary">
           Search
         </button>
       </form>
       {error && (
         <div className="error-banner" role="alert">
-          {error}
+          <Icon name="alert" />
+          <span>{error}</span>
         </div>
       )}
       {items === null ? (
-        <p role="status">Loading resources…</p>
+        <>
+          <p className="loading" role="status">
+            <span className="spinner" aria-hidden="true" />
+            Loading resources…
+          </p>
+          <ul className="skeleton-grid" aria-hidden="true">
+            {[0, 1, 2].map((i) => <li key={i} className="skeleton" />)}
+          </ul>
+        </>
       ) : items.length === 0 ? (
-        <p className="empty">No matching approved resources.</p>
+        <div className="empty-state">
+          <span className="empty-state__icon" aria-hidden="true">
+            <Icon name="search" />
+          </span>
+          <strong>No matching approved resources.</strong>
+          <p>Try a broader word such as hours, billing or counseling.</p>
+        </div>
       ) : (
-        <ul className="resource-list">
-          {items.map((r) => {
-            const href = safeHttpsUrl(r.url);
-            return (
-              <li key={r.id} className="resource">
-                <h3 className="resource__title">
-                  {href ? (
-                    <a href={href} target="_blank" rel="noopener noreferrer">
-                      {r.title}
-                    </a>
-                  ) : (
-                    r.title
-                  )}
-                </h3>
-                <dl className="resource__meta">
-                  <dt>Category</dt>
-                  <dd>{r.category || "—"}</dd>
-                  <dt>Page updated</dt>
-                  <dd>{r.provenance.updated_on ?? "unknown"}</dd>
-                  <dt>Review status</dt>
-                  <dd>{r.provenance.approval_status ?? "not assessed"}</dd>
-                  <dt>Freshness</dt>
-                  <dd>{r.provenance.freshness ?? "not assessed"}</dd>
-                  <dt>Version</dt>
-                  <dd>{r.provenance.version}</dd>
-                </dl>
-              </li>
-            );
-          })}
-        </ul>
+        <>
+          <p className="resources__summary">
+            {items.length} {items.length === 1 ? "resource" : "resources"}
+            {submitted ? ` matching “${submitted}”` : ""}
+          </p>
+          <ul className="resource-list">
+            {items.map((r) => {
+              const href = safeHttpsUrl(r.url);
+              const status = r.provenance.approval_status;
+              const fresh = r.provenance.freshness;
+              return (
+                <li key={r.id} className="resource">
+                  <div className="resource__top">
+                    <span className="resource__category">{r.category || "General"}</span>
+                    {fresh && <span className={`badge badge--fresh-${fresh}`}>{fresh}</span>}
+                  </div>
+                  <h3 className="resource__title">
+                    {href ? (
+                      <a href={href} target="_blank" rel="noopener noreferrer">
+                        {r.title}
+                      </a>
+                    ) : (
+                      r.title
+                    )}
+                  </h3>
+                  <dl className="resource__meta">
+                    <dt>Page updated</dt>
+                    <dd>{r.provenance.updated_on ?? "unknown"}</dd>
+                    <dt>Review status</dt>
+                    <dd>
+                      {status ? <span className={`badge badge--${status}`}>{status}</span> : "not assessed"}
+                    </dd>
+                    <dt>Version</dt>
+                    <dd className="mono">{r.provenance.version}</dd>
+                  </dl>
+                </li>
+              );
+            })}
+          </ul>
+        </>
       )}
     </section>
   );

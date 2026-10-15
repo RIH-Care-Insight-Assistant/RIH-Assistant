@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { ApiError, staffApi } from "../api/client";
+import { Icon } from "./Icon";
 
 interface Summary {
   uptime_s: number;
@@ -22,16 +23,38 @@ interface Incident {
   synthetic_request_statuses: number[];
 }
 
+const sum = (data: Record<string, number>) => Object.values(data).reduce((a, b) => a + b, 0);
+
 function Counts({ title, data }: { title: string; data: Record<string, number> }) {
-  const entries = Object.entries(data);
+  const entries = Object.entries(data).sort((x, y) => y[1] - x[1]);
+  const max = Math.max(1, ...entries.map(([, v]) => v));
   return (
     <div className="count-card">
       <h4>{title}</h4>
       {entries.length === 0 ? <p className="muted">none yet</p> : (
-        <dl>{entries.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
+        <dl>
+          {entries.map(([k, v]) => (
+            <div key={k}>
+              <dt>{k}</dt>
+              <dd>{v}</dd>
+              {/* Proportional bar drawn with SVG attributes, so it works under the strict style CSP. */}
+              <svg className="bar" viewBox="0 0 100 6" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+                <rect className="bar__track" x="0" y="0" width="100" height="6" rx="3" />
+                <rect className="bar__fill" x="0" y="0" width={Math.max(2, (v / max) * 100)} height="6" rx="3" />
+              </svg>
+            </div>
+          ))}
+        </dl>
       )}
     </div>
   );
+}
+
+function uptime(seconds: number): string {
+  const s = Math.round(seconds);
+  if (s < 120) return `${s} s`;
+  const m = Math.round(s / 60);
+  return m < 120 ? `${m} min` : `${Math.round(m / 60)} h`;
 }
 
 export function ObservabilityPanel({ isAdmin }: { isAdmin: boolean }) {
@@ -47,12 +70,28 @@ export function ObservabilityPanel({ isAdmin }: { isAdmin: boolean }) {
   }, [isAdmin]);
   useEffect(load, [load]);
 
-  if (error) return <p className="error-banner" role="alert">{error}</p>;
-  if (!s) return <p role="status">Loading telemetry…</p>;
+  if (error) return <p className="error-banner" role="alert"><Icon name="alert" /><span>{error}</span></p>;
+  if (!s) {
+    return (
+      <p className="loading" role="status">
+        <span className="spinner" aria-hidden="true" />
+        Loading telemetry…
+      </p>
+    );
+  }
 
   return (
     <div className="observability">
-      <p className="muted">Uptime {Math.round(s.uptime_s)} s. Aggregates only: no message text, identities or raw paths are recorded.</p>
+      <p className="panel-intro">
+        Aggregates only: no message text, identities or raw paths are recorded.
+      </p>
+      <dl className="stats">
+        <div className="stat stat--accent"><dt>Requests</dt><dd>{sum(s.requests_by_class)}</dd></div>
+        <div className="stat"><dt>Chat turns</dt><dd>{sum(s.chat_turns_by_lane)}</dd></div>
+        <div className="stat"><dt>Governed tool calls</dt><dd>{sum(s.tool_calls_by_status)}</dd></div>
+        <div className="stat"><dt>Security events</dt><dd>{sum(s.security_events)}</dd></div>
+        <div className="stat"><dt>Process uptime</dt><dd>{uptime(s.uptime_s)}</dd></div>
+      </dl>
       <div className="count-grid">
         <Counts title="Requests by class" data={s.requests_by_class} />
         <Counts title="Chat turns by safety lane" data={s.chat_turns_by_lane} />
@@ -63,15 +102,23 @@ export function ObservabilityPanel({ isAdmin }: { isAdmin: boolean }) {
       <div className="table-wrap">
         <table className="table">
           <caption>Latency per route (nearest-rank percentiles over recent requests)</caption>
-          <thead><tr><th scope="col">Route</th><th scope="col">Count</th><th scope="col">p50 ms</th><th scope="col">p95 ms</th><th scope="col">Max ms</th></tr></thead>
+          <thead>
+            <tr>
+              <th scope="col">Route</th><th scope="col" className="num">Count</th><th scope="col" className="num">p50 ms</th>
+              <th scope="col" className="num">p95 ms</th><th scope="col" className="num">Max ms</th>
+            </tr>
+          </thead>
           <tbody>
             {Object.entries(s.latency_by_route).map(([route, l]) => (
-              <tr key={route}><td>{route}</td><td>{l.count}</td><td>{l.p50_ms}</td><td>{l.p95_ms}</td><td>{l.max_ms}</td></tr>
+              <tr key={route}>
+                <td className="mono">{route}</td><td className="num">{l.count}</td><td className="num">{l.p50_ms}</td>
+                <td className="num">{l.p95_ms}</td><td className="num">{l.max_ms}</td>
+              </tr>
             ))}
           </tbody>
         </table>
       </div>
-      <details>
+      <details className="spans">
         <summary>Recent spans ({s.recent_spans.length})</summary>
         <ul className="plain-list">
           {s.recent_spans.map((sp, i) => (
@@ -83,7 +130,7 @@ export function ObservabilityPanel({ isAdmin }: { isAdmin: boolean }) {
         </ul>
       </details>
       {isAdmin && incidents && (
-        <section aria-labelledby="incidents-title">
+        <section aria-labelledby="incidents-title" className="incidents">
           <h4 id="incidents-title">Incident simulations</h4>
           {incidents.simulation_enabled ? (
             <form className="inline-form" onSubmit={async (e) => {
@@ -106,7 +153,7 @@ export function ObservabilityPanel({ isAdmin }: { isAdmin: boolean }) {
               <button type="submit" className="btn btn--primary">Run simulation</button>
             </form>
           ) : <p className="muted">Simulation is disabled in this environment.</p>}
-          {notice && <p role="status">{notice}</p>}
+          {notice && <p className="notice-banner" role="status">{notice}</p>}
           <ul className="plain-list">
             {incidents.items.map((i) => (
               <li key={i.id}>{i.started_at} · {i.scenario} ({i.severity}) · {i.outcome} · statuses {i.synthetic_request_statuses.join(", ")} · detected by {i.detected_by.join("; ")}</li>
