@@ -193,3 +193,11 @@ matching showcase decision. Both humans approved 12 of the 16 images, with the r
 (S3 deferred; S7, S8 and S12 excluded), and a static, non-interactive page is prepared in
 `showcase/`. It is not posted. The page text and the hosting choice are still to be reviewed.
 Readiness is unchanged, and the other items above stay open.
+
+**Update 2026-10-15 (L-D11, [record](showcase/deployment-2026-10-15.md)):**
+- Both humans separately approved the exact page content and authorized its publication.
+- The static showcase is live at <https://rih-care-insight-showcase.pages.dev/> (Cloudflare
+  Pages Free, Direct Upload, build `bc01772e`).
+- The application branch and the integration PR are **not** published. Readiness is unchanged,
+  and the other items above, including publication authorization for the application, stay
+  open.

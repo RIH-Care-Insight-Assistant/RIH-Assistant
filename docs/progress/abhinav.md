@@ -2,7 +2,15 @@
 
 Maintained only by Abhinav (or his coding agent) on his own feature branches. Repository and GitHub state are authoritative over this file.
 
-## Showcase decision (2026-10-15, L-D10) — latest
+## Showcase published (2026-10-15, L-D11) — latest
+
+- Records at `8a551c5`. I approved the exact page content as shown and authorized publication.
+  Devika did the same, asked separately. The static showcase is live at
+  <https://rih-care-insight-showcase.pages.dev/> (Cloudflare Pages Free, Direct Upload, build
+  `bc01772e`). Record: [`../showcase/deployment-2026-10-15.md`](../showcase/deployment-2026-10-15.md).
+- The application branch is not pushed, there is no PR, and readiness is unchanged.
+
+## Showcase decision (2026-10-15, L-D10)
 
 - Local-first branch `feature/rih-local-enhancement-phases-2-9`, records at `85004b6`. I matched
   Devika's L-D9 showcase authorization. Devika and I each reviewed the 16 images: 12 approved,

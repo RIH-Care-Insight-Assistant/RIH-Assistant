@@ -158,6 +158,14 @@ local demonstration. Readiness is still `blocked_pending_human_decision`.
    `var/showcase/` and checks image hashes, captions and the absence of interactive markup.
    **Still open before posting:** both humans review the page text, choose a $0 static host and
    give the go-ahead. Posting the showcase does not publish this branch or open the PR.
+   **Update 2026-10-15 (L-D11, [record](showcase/deployment-2026-10-15.md)):** done for the
+   showcase only.
+   - Both approved the page text as shown, separately.
+   - Both chose Cloudflare Pages Free with Direct Upload and authorized posting, separately.
+   - The page is live at <https://rih-care-insight-showcase.pages.dev/> (build `bc01772e`).
+
+   Only the 14 static files were uploaded. Everything else in this plan, including the push,
+   the integration PR and the application's release, is unchanged and still open.
 
 ## 3. Proposed PR strategy
 

@@ -16,7 +16,7 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 | Field | Value |
 |---|---|
 | Current phase | **All phases and the finalization complete locally; awaiting human reviews, decisions and publication authorization** |
-| Current task | Done: SB-07/SB-08/RP-06 mitigations, final audit, final batteries, [final report](FINAL_REPORT.md), [publication plan](PUBLICATION_PLAN.md), [review plan](FINALIZATION_REVIEW_PLAN.md); Devika's final review B10 ([report](audits/devika-final-review-2026-10-15.md)) and her decisions at `e380883` ([record](audits/devika-final-acceptance-2026-10-15.md)); Abhinav's decisions, records at `84c55bf` ([record](audits/abhinav-final-acceptance-2026-10-15.md)); joint showcase decision and image review L-D10 ([record](showcase/image-review-checklist.md)), static page prepared, not posted |
+| Current task | Done: SB-07/SB-08/RP-06 mitigations, final audit, final batteries, [final report](FINAL_REPORT.md), [publication plan](PUBLICATION_PLAN.md), [review plan](FINALIZATION_REVIEW_PLAN.md); Devika's final review B10 ([report](audits/devika-final-review-2026-10-15.md)) and her decisions at `e380883` ([record](audits/devika-final-acceptance-2026-10-15.md)); Abhinav's decisions, records at `84c55bf` ([record](audits/abhinav-final-acceptance-2026-10-15.md)); joint showcase decision and image review L-D10 ([record](showcase/image-review-checklist.md)); showcase content approved and published by both, L-D11 ([record](showcase/deployment-2026-10-15.md)), live at <https://rih-care-insight-showcase.pages.dev/>; the application is not published |
 | Last local commit | see `git log -1` (this file is updated with each milestone) |
 
 ## Repository cleanup (2026-10-15, complete locally)
@@ -299,6 +299,43 @@ catalog, readiness code, evidence or gate changed. Record:
    publishes only the showcase, not this branch.
 
 The other items at the end of "Devika's joint-governance decisions" stay open.
+
+## Showcase approval and publication (2026-10-15, L-D11)
+
+Abhinav directed the session at the keyboard and Devika was present. Each answered their own
+questions, asked separately and by name; no approval was inferred. An AI coding agent built and
+previewed the page, presented the full public text, ran the deployment and checks, and drafted
+the record. Records at `8a551c5`, code at `e380883`. No application code, safety routing,
+register, catalog, readiness code, evidence or gate changed. Record:
+[`showcase/deployment-2026-10-15.md`](showcase/deployment-2026-10-15.md).
+
+- **Content:** build `bc01772e` (14 files; all 12 image pins match). The full text, captions,
+  caveats, disclaimers and layout were presented. Abhinav: **approve as shown**. Devika:
+  **approve as shown**. The L-D10 image restrictions are unchanged.
+- **Publication:** Abhinav and Devika each **authorized** publishing that exact build to
+  Cloudflare Pages Free by Direct Upload.
+- **Deployed:** <https://rih-care-insight-showcase.pages.dev/>.
+  - Project `rih-care-insight-showcase`, deployment `f2f20997`.
+  - Uploaded with wrangler 4.143.1, installed outside the repo, with telemetry off.
+  - The Cloudflare login was done by a human, with Pages-only scopes. Wrangler was logged out
+    afterwards.
+  - Only `var/showcase/` was uploaded, from a copy outside git.
+- **Smoke checks:**
+  - 14/14 files returned 200 and were byte-identical over HTTPS. The first pass, seconds after
+    the deploy, had transient 522s; it is recorded.
+  - HTTP redirects to HTTPS with a valid certificate. The page is public with no login.
+  - 12/12 images loaded on desktop and at 375 px, with no overflow.
+  - 0 scripts, 0 forms, 0 third-party requests and no console messages; `noindex` is set.
+  - Unknown paths return the static index.
+- **Local checks:** `tests/test_showcase.py` 4/4; build check passed. Full pytest and the release
+  battery were not rerun (no application code changed).
+- **Unchanged:** the application branch is not pushed (no upstream, absent on `origin`), no PR
+  exists, interactive public deployment stays blocked, and readiness stays
+  `blocked_pending_human_decision`.
+
+**Exact next action:** none for the showcase. Any page or image change needs a new review by
+both and a new build hash. S3 waits for the contact numbers. The application items at the end
+of "Devika's joint-governance decisions" stay open.
 
 ## Phase status
 

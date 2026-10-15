@@ -247,3 +247,17 @@ awaiting human acceptance; nothing here records an approval that was not given.
   choice. Nothing is posted, deployed or pushed. Interactive public deployment stays blocked.
   Readiness is unchanged (`blocked_pending_human_decision`), and no readiness rule changed.
   Record: [`showcase/image-review-checklist.md`](showcase/image-review-checklist.md).
+- **L-D11 (2026-10-15, showcase content approval and publication; Abhinav directing at the
+  keyboard, Devika present; each answered their own questions, asked separately; records at
+  `8a551c5`, code at `e380883`; drafted into text by the coding agent at their direction):**
+  - **Content:** the complete public text, captions, caveats, disclaimers and layout of build
+    `bc01772e` were presented. Abhinav and Devika each approved it **as shown**, with no changes.
+  - **Publication:** each separately authorized publishing that exact static build to
+    Cloudflare Pages Free by Direct Upload.
+  - **Deployed:** <https://rih-care-insight-showcase.pages.dev/>. 14 files, byte-identical to
+    the build, passed the HTTPS, image, caption, mobile and public-access checks.
+  - **Unchanged:** the L-D10 image restrictions (S3 deferred; S7, S8 and S12 excluded). The
+    application, its branch and the integration PR stay unpublished. Interactive public
+    deployment stays blocked. Readiness is unchanged (`blocked_pending_human_decision`).
+
+  Record: [`showcase/deployment-2026-10-15.md`](showcase/deployment-2026-10-15.md).

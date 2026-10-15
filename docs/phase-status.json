@@ -74,7 +74,7 @@
     "Optional review of the C1 baseline sources (R-05)",
     "Authorization to publish (push, one integration PR, review, merge) per docs/PUBLICATION_PLAN.md",
     "Close issue #7 on GitHub",
-    "Showcase (L-D10): both humans review the agent-drafted page text in showcase/index.html, choose a $0 static host and authorize posting; S3 only after the contact numbers are re-verified and a fresh decision by both"
+    "Showcase follow-ups (L-D11): S3 only after the contact numbers are re-verified and a fresh decision by both; any change to the deployed page needs a new review by both and a new build hash"
   ],
   "head": "see git log -1 (finalization documentation commit)",
   "final_readiness": "blocked_pending_human_decision",
@@ -320,10 +320,35 @@
       "tests/test_showcase.py"
     ],
     "checks": "ruff clean; full pytest 5423 passed, 1 skipped (Windows); check_routes passed; safety_eval no misses, 0/44 false positives; build assembled 14 files; page viewed on 127.0.0.1: 12/12 images, no console errors, no overflow at phone width; release battery not rerun (no application code changed)",
-    "not_yet_reviewed": [
-      "showcase page text",
-      "hosting choice"
-    ],
-    "posted": false
-  }
+    "not_yet_reviewed": [],
+    "posted": false,
+    "superseded_by": "showcase_publication (L-D11): page text reviewed and approved, host chosen, posted"
+  },
+  "showcase_publication": {
+    "date": "2026-10-15",
+    "decision_log": "L-D11",
+    "directed_by": "Abhinav Varma Vathadi (at the keyboard); Devika Rani Sanaboyina present; each answered their own approval and authorization questions, asked separately; an AI coding agent presented the content, ran the deployment and smoke checks and drafted the record",
+    "records_at": "8a551c5",
+    "code_at": "e380883092f1d3ef600ee60b1b7e8ad52eb1e3d8",
+    "record": "docs/showcase/deployment-2026-10-15.md",
+    "content_approval": {
+      "abhinav": "approve as shown",
+      "devika": "approve as shown"
+    },
+    "publication_authorization": {
+      "abhinav": "authorized",
+      "devika": "authorized"
+    },
+    "url": "https://rih-care-insight-showcase.pages.dev/",
+    "deployment_url": "https://f2f20997.rih-care-insight-showcase.pages.dev/",
+    "deployment_id": "f2f20997-4267-49b8-8aa5-185be0461a8c",
+    "host": "Cloudflare Pages Free (Abhinav's account), Direct Upload, project rih-care-insight-showcase, production branch main, no Git provider, no Functions, no custom domain",
+    "tool": "wrangler 4.143.1, login scopes account:read user:read pages:write, logged out afterwards",
+    "build_hash": "bc01772e9c268da7317b967025a5e3e6c7efb8ff4504ea435c5b48f6ca1150c5",
+    "files": 14,
+    "smoke_checks": "14/14 files HTTP 200 and byte-identical over HTTPS (second pass; first pass seconds after deploy had 4x 522 and 2 mismatches from edge propagation); http->https 301; valid certificate; public without login; 12/12 images desktop and 375px mobile, no overflow; 0 scripts, 0 forms, 0 third-party requests, no console messages; robots noindex; unknown paths return the static index",
+    "application_published": false,
+    "readiness_unchanged": "blocked_pending_human_decision"
+  },
+  "showcase_published": true
 }

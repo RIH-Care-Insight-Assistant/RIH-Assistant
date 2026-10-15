@@ -29,6 +29,10 @@ branch `feature/rih-local-enhancement-phases-2-9`. Release readiness is delibera
 **blocked pending human decisions** (see [Known limitations](#known-limitations)); nothing here
 is production-ready.
 
+**Static showcase:** <https://rih-care-insight-showcase.pages.dev/> is a page with reviewed
+screenshots and diagrams that viewers cannot interact with. It has no chatbot or API, and the
+application itself is not deployed.
+
 ## A tour of the interface
 
 Every image below was captured automatically from the running application (FastAPI backend

@@ -122,6 +122,11 @@ a required caption or the disclaimer is missing. A re-captured image needs a new
 
 ## Not yet reviewed
 
+> **Update 2026-10-15 (L-D11):** both items below are now done. Abhinav and Devika each approved
+> the page text as shown, chose Cloudflare Pages Free and authorized posting. See
+> [`deployment-2026-10-15.md`](deployment-2026-10-15.md). The image decisions above are
+> unchanged.
+
 - **The showcase page text** in [`../../showcase/index.html`](../../showcase/index.html) (headings,
   descriptions, the other captions, the limitations list and the footer credits). The agent
   drafted it from the README and `docs/limitations.md`. Neither person has reviewed it. Both must

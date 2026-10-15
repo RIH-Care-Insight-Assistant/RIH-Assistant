@@ -40,6 +40,11 @@ C1 is complete and accepted. Under the local-first workflow (`AGENTS.md`; shared
   Both approved 12 of 16 images (S3 deferred; S7, S8 and S12 excluded), and a static page is
   prepared in `showcase/`. Not posted: both still review the page text and choose a host.
   Readiness is unchanged.
+- **Showcase published (2026-10-15, L-D11):** both separately approved the page content and
+  authorized publication. The static showcase is live at
+  <https://rih-care-insight-showcase.pages.dev/> (Cloudflare Pages Free, Direct Upload, build
+  `bc01772e`; [record](showcase/deployment-2026-10-15.md)). The application branch is not
+  pushed, no PR is open, and readiness is unchanged.
 - **Next:** the humans do the reviews and make the decisions in the publication plan §2, then
   authorize (or not) the push and the single integration PR.
 

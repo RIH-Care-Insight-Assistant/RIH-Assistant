@@ -2,7 +2,17 @@
 
 Last updated: 2026-10-15 (America/New_York). Operator: Devika Rani Sanaboyina.
 
-## Joint-governance decisions (2026-10-15, L-D9) — latest status
+## Showcase published (2026-10-15, L-D11) — latest status
+
+- Records at `8a551c5`, on the shared PC; Abhinav at the keyboard, I was present and answered
+  my own questions. I approved the exact page content as shown and authorized publication;
+  Abhinav did the same, asked separately. The static showcase is live at
+  <https://rih-care-insight-showcase.pages.dev/> (Cloudflare Pages Free, build `bc01772e`).
+  My L-D9 conditions hold: images reviewed by both, no live endpoint, no public chatbot.
+  Record: [`../showcase/deployment-2026-10-15.md`](../showcase/deployment-2026-10-15.md).
+- The application branch is not pushed, there is no PR, and readiness is unchanged.
+
+## Joint-governance decisions (2026-10-15, L-D9)
 
 - Records at `c19c745`, on the shared PC, local only. I decided each item in the session; an AI
   coding agent drafted the record. Record:
