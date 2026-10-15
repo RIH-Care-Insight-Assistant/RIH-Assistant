@@ -67,11 +67,14 @@ def test_json_logs_are_allowlisted_and_correlated(api, app):
     handler.setFormatter(JsonLogFormatter())
     lg = logging.getLogger("rih.http")
     lg.addHandler(handler)
+    previous = lg.level
+    lg.setLevel(logging.INFO)  # independent of RIH_LOG_FORMAT in the environment
     try:
         sid = api.new_session()
         api.chat(sid, SECRET_TEXT, )
     finally:
         lg.removeHandler(handler)
+        lg.setLevel(previous)
     lines = [json.loads(x) for x in buf.getvalue().splitlines()]
     chat = next(x for x in lines if x.get("route") == "/api/v1/chat")
     assert chat["event"] == "http_request" and chat["status"] == 200 and chat["request_id"]

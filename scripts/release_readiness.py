@@ -29,7 +29,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 OUT_DIR = ROOT / "docs" / "evidence" / "release"
 PY = sys.executable
-ENV = {**os.environ, "STRANDS_ENABLED": "false", "RIH_PLANNER": "RULE", "PYTHONUTF8": "1", "RIH_LOG_FORMAT": "text"}
+ENV = {**os.environ, "STRANDS_ENABLED": "false", "RIH_PLANNER": "RULE", "PYTHONUTF8": "1"}
+os.environ.setdefault("RIH_LOG_FORMAT", "off")  # keep the in-process red-team run quiet
 
 
 def run(cmd, cwd=ROOT, timeout=1800):
