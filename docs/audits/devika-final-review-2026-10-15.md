@@ -131,7 +131,7 @@ human decision.
 | Repository-wide message scan (2,713 strings: test literals, fixtures, audits, red-team, KB) | Routing unchanged for every string. Language notice newly shown on 4, all non-English (romanized Hindi, Italian) |
 | `scripts/redteam.py --target local` / `legacy` | 0/70 and 0/17 attack successes |
 | `ruff check .`; Governance panel Vitest | Clean; 4/4 |
-| Aggregated battery | Recorded in [`../LOCAL_FIRST_PROGRESS.md`](../LOCAL_FIRST_PROGRESS.md) |
+| `scripts/release_readiness.py --e2e` on `31a9f39` | **18/18 gates pass** (pytest 5415 passed, 1 skipped; frontend 26/26; E2E 5/5; audits and Bandit clean; red team 0/70). Readiness `blocked_pending_human_decision`, 5 review items. Container and Kubernetes gates not rerun |
 
 ## Remaining risks
 

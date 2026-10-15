@@ -16,7 +16,7 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 | Field | Value |
 |---|---|
 | Current phase | **All phases and the finalization complete locally; awaiting human reviews, decisions and publication authorization** |
-| Current task | Done: SB-07/SB-08/RP-06 mitigations, final audit, final batteries, [final report](FINAL_REPORT.md), [publication plan](PUBLICATION_PLAN.md), [review plan](FINALIZATION_REVIEW_PLAN.md) |
+| Current task | Done: SB-07/SB-08/RP-06 mitigations, final audit, final batteries, [final report](FINAL_REPORT.md), [publication plan](PUBLICATION_PLAN.md), [review plan](FINALIZATION_REVIEW_PLAN.md); Devika's final review B10 ([report](audits/devika-final-review-2026-10-15.md)) |
 | Last local commit | see `git log -1` (this file is updated with each milestone) |
 
 ## Phase status
@@ -75,6 +75,9 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 | 2026-10-15 | `b87f572` (images rebuilt from it) | Windows 11, Python 3.13.2, Node 24.14.0, Docker 29.8.1 | `release_readiness.py --e2e --containers` | **21/21 gates pass** (pytest 5353 passed, 1 skipped; frontend 25/25; E2E 5/5; red team 0/70; integration 7/7, HTTP red team 0/35; resilience 7/7; scans clean); readiness **blocked_pending_human_decision** (4 review items). Evidence says `-dirty` only because a gate rewrote `containers-http.json`; fixed in `c875a3f` |
 | 2026-10-15 | `c875a3f` | WSL2 Ubuntu 26.04.1, Python 3.14.4 | Python gates of the battery (12) + probes | **12/12**; pytest **5354 passed**; red team 0/70; probes identical to Windows ([evidence](evidence/release/wsl2-linux-c875a3f.json)) |
 | 2026-10-15 | `c875a3f` images | kind v0.33.0 | `k8s.py up`, `verify --write`, `down` | verify **7/7** (red team over the cluster 0/35); cluster deleted, none remain. Rollout/recovery not rerun (manifests unchanged). Compose stack left running with the rebuilt images |
+| 2026-10-15 | `c36cd2c` → `ef3c83d` | Windows 11, Python 3.13.2 | Devika's B10 held-out set (208 cases, frozen and hash-pinned before the patterns were read); `scripts/heldout_eval.py` | First run, unfixed: **149/208**; explicit 32/36, variants 18/32, implicit English **2/14**, implicit other 0/6, negated 7/12, uncovered 0/17 (notice 14/17); 0/82 benign or ambiguous escalated ([report](audits/devika-final-review-2026-10-15.md)) |
+| 2026-10-15 | `666e253`, `e685260`, `9bd6689` | Windows 11, Python 3.13.2, Node 24.14.0 | `pytest -q`; held-out rerun; probes; safety eval; repo scan (2,713 strings); `redteam.py` local and legacy; RP-06 test without the fix | **5414 passed, 1 skipped**; held-out 179/208 (not held out after fixing), 0/82 escalated; probes unchanged; 172/172, 0/44 FP; routing unchanged on all 2,713 strings; red team **0/70**, CLI **0/17**; new RP-06 test fails without `9bd6689` |
+| 2026-10-15 | `31a9f39` | Windows 11, Python 3.13.2, Node 24.14.0 | `release_readiness.py --e2e` (containers not rerun) | **18/18 gates pass** (pytest 5415 passed, 1 skipped; safety 172/172; pip-audit and npm audit clean; Bandit clean; frontend 26/26; E2E 5/5; red team 0/70); readiness **blocked_pending_human_decision** (5 review items: SB-07, SB-08, B10 additions, notice wording, RP-06) ([evidence](evidence/release/latest.json)) |
 
 ### Phase 9 deliverables
 
@@ -229,15 +232,21 @@ do the reviews and decide the items in [`PUBLICATION_PLAN.md`](PUBLICATION_PLAN.
 - Devika's recorded confirmation of the local-first workflow (L-D1); acceptance of
   C2-local-v1, C3-local-v1 and C4-local-v1; review of the agent-proposed risk register,
   control catalog and readiness rules.
-- Review of the four agent-drafted finalization mitigations (Devika's routing review,
-  native-speaker and clinical review) and residual-risk decisions on R-01 and R-04.
+- Devika's sign-off on the agent-drafted finalization mitigations and the B10 additions (her
+  held-out check and pattern review are done; see the B10 report), native-speaker and clinical
+  review, and residual-risk decisions on R-01 and R-04.
+- Acceptance of the B10 change to the readiness rules (decisions bound to a risk's content;
+  register `risks-3`, catalog `controls-3`).
 - Authorization to publish (push, one integration PR, Devika's review, merge).
 - Issue #7 is still open on GitHub (human action).
 
 ## Next executable action (humans)
 
-Devika starts with task 2 of [`FINALIZATION_REVIEW_PLAN.md`](FINALIZATION_REVIEW_PLAN.md): an
-independent held-out SB-07/SB-08 check, done before she reads the new patterns. Then both
-humans make the [`PUBLICATION_PLAN.md`](PUBLICATION_PLAN.md) §2 decisions and authorize or
-decline publication. No agent action is pending; any fix found in review goes on this branch
+Devika's held-out check and pattern review (B10) are done: see
+[`audits/devika-final-review-2026-10-15.md`](audits/devika-final-review-2026-10-15.md), whose
+last section lists the decisions left. Next, both humans make the
+[`PUBLICATION_PLAN.md`](PUBLICATION_PLAN.md) §2 decisions, starting with R-01 in the staff UI
+with the held-out figures in view, and authorize or decline publication. Container and
+Kubernetes gates were not rerun after B10 (images predate it); rebuild and rerun them before
+publication. No agent action is pending; any fix found in review goes on this branch
 as a new commit.
