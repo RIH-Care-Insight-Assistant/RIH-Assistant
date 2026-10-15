@@ -3,7 +3,7 @@
   "branch": "feature/rih-local-enhancement-phases-2-9",
   "base_commit": "6ab77a862379a16d6d63d81e9d4ea709a55f2496",
   "updated": "2026-10-15",
-  "current_phase": "final_completion_phase_A_done",
+  "current_phase": "final_completion_phase_B_done",
   "published": false,
   "phases": {
     "2": {
@@ -67,11 +67,11 @@
   "awaiting_humans": [
     "Staff-UI entries of every risk's decision under each joint reviewer's own bound account (L-D13: all 15 risks, both slots); neither has entered a staff-UI decision",
     "Readiness rules L-D13: accepted by both (supersedes the L-D9 deferral). Operators must bind RIH_GOVERNANCE_REVIEWERS to two distinct staff accounts (admin role for release approval)",
-    "Register risks-3, catalog controls-3 and contracts C2/C3/C4-local-v1: accepted by Abhinav (L-D8) and with qualifications by Devika (L-D9); her conditions include a corrected register version (R-08/R-10 plan text, R-08/R-11 evidence) with fresh decisions before any release; C4 items 2 and 3 not jointly accepted",
-    "Native-speaker review of the multilingual lexicon and the notice's Spanish sentence; clinical input on the warning-sign lists",
-    "Re-verify the template contact numbers (crisis-routing.md section 6)",
+    "Register risks-4 and catalog controls-4 approved by both (L-D14); every risk decision must still be entered by both in the staff UI under bound accounts",
+    "Specialist reviews SR-01 native-speaker, SR-02 clinical (R-01), SR-03 source review (R-05), SR-04 independent security (R-07): required, none performed; they block interactive deployment",
+    "Contact numbers re-checked 2026-10-15 (all match the displayed numbers); the ECR page's link targets (410-455-2735, 410-455-3230) differ from its displayed numbers: confirm with the office before any real use",
     "Rerun release_readiness.py --e2e --containers on the final candidate (evidence schema 2; the committed evidence from 9c8c7d2 is schema 1 and is rejected)",
-    "Optional review of the C1 baseline sources (R-05)",
+    "R-05 source review is now mandatory specialist review SR-03 (blocks interactive deployment)",
     "Authorization to publish (push, one integration PR, review, merge) per docs/PUBLICATION_PLAN.md",
     "Close issue #7 on GitHub",
     "Showcase follow-ups (L-D11): S3 only after the contact numbers are re-verified and a fresh decision by both; any change to the deployed page needs a new review by both and a new build hash"
@@ -396,5 +396,18 @@
     "validation": "Windows 11, Python 3.13.2, Node 24.14.0: ruff x2 clean; pytest 5491 passed, 1 skipped; routes passed; safety eval no misses; OpenAPI snapshot matches; eslint and tsc clean; vitest 70/70; build OK; E2E 8/8",
     "readiness_now": "not_ready (schema-1 evidence from 9c8c7d2; no reviewer binding)",
     "commit": "see git log (feat(governance): enforce joint decisions ...)"
+  },
+  "governance_cleanup": {
+    "date": "2026-10-15",
+    "decision_log": "L-D14",
+    "approved_by": [
+      "Abhinav Varma Vathadi",
+      "Devika Rani Sanaboyina"
+    ],
+    "register": "risks-4 (history: governance/history/risk_register-risks-3.json)",
+    "catalog": "controls-4 (history: governance/history/controls-controls-3.json)",
+    "privacy_fix": "58a2417 (uvicorn access log disabled; evidence docs/evidence/privacy/log-probe.json at 58a2417, passed)",
+    "contact_numbers": "re-checked 2026-10-15; matches; ECR link-target discrepancy unresolved",
+    "commit": "see git log (docs(governance): register risks-4 ...)"
   }
 }

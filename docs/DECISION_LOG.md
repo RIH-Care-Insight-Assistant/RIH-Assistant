@@ -298,4 +298,24 @@ awaiting human acceptance; nothing here records an approval that was not given.
     (old-schema evidence, no reviewer binding). Interactive public deployment stays blocked.
 
   Rules: [`governance/nist-ai-rmf-alignment.md`](governance/nist-ai-rmf-alignment.md#readiness-rules).
+- **L-D14 (2026-10-15, governance cleanup; Abhinav and Devika both at the keyboard; each
+  answered separately by name; an AI coding agent drafted the content and records):**
+  - **Register `risks-4` approved by both, as presented.** It corrects the stale R-08 and R-10
+    plan text, adds evidence to R-08, R-10 and R-11, marks R-08 and R-10 `mitigated` and R-14
+    `partially_mitigated`, and records four mandatory specialist reviews: SR-01 native-speaker
+    and SR-02 clinical (R-01), SR-03 campus source review (R-05), SR-04 independent security
+    assessment (R-07, newly made mandatory). All four are `required`; none has been performed.
+  - **Catalog `controls-4` approved by both, as presented** (privacy control now covers logs,
+    traces and the access log; human-review control describes L-D13; review notes on the
+    multilingual, implicit-risk and notice controls).
+  - **R-08 finding and fix approved:** uvicorn's default access log recorded session ids and
+    client addresses; disabled in the app and the image (`58a2417`), with a failing-first test
+    and `docs/evidence/privacy/log-probe.json`.
+  - **Contact numbers:** re-checked against the official pages on 2026-10-15; all five template
+    numbers match the displayed numbers. The ECR page's link targets differ from its displayed
+    numbers; unresolved, no number changed (`safety/crisis-routing.md` section 6).
+  - **History:** `risks-3` and `controls-3` kept byte-identical in `governance/history/`.
+    Decisions bound to earlier content do not carry over. No human decision was entered.
+  - Owners and scores stay a working baseline (L-D9 G1 d). The static showcase is unchanged;
+    S3 stays deferred until both decide on it.
 

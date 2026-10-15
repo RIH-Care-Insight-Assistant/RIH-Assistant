@@ -163,7 +163,7 @@ The `main` column used the same dataset and script against an unmodified snapsho
 - Harassment by an ex or partner without stalking, violence or sexual wording routes to conduct, not Title IX.
 - **Timed-out model threads keep running.** Python cannot kill a thread, so each timed-out Strands call keeps one worker thread alive until the provider returns. Nothing caps how many pile up during an outage. Responses are unaffected (the caller has already returned), but resource use is. Bounded concurrency / circuit breaking is Phase 8 work (audit O9). Model paths are off by default and in CI.
 
-## 6. Contact details in templates (verified 2026-10-11)
+## 6. Contact details in templates (verified 2026-10-11; re-checked 2026-10-15)
 
 | Contact | Value | Source |
 |---|---|---|
@@ -174,6 +174,31 @@ The `main` column used the same dataset and script against an unmodified snapsho
 | Office of Equity and Civil Rights (Title IX) | 410-455-1717 | https://ecr.umbc.edu/ |
 
 The crisis template previously labelled 410-455-2542 as "RIH Urgent Care". The official page calls it UMBC's After-Hours Support Line via RIH, so the label is corrected; the number is unchanged. Re-verify all contacts before each release.
+
+### Re-verification 2026-10-15 (final completion stage, Phase B)
+
+Checked by the AI coding agent at Abhinav's and Devika's direction, against the live official
+pages (fetched 2026-10-15; the raw HTML was read for `tel:` links). This is a web check, not a
+call to any office. No template number was changed.
+
+| Contact | Template value | Official page (2026-10-15) | Result |
+|---|---|---|---|
+| UMBC Police | 410-455-5555 | police.umbc.edu ("Call (410) 455-5555 or 911 for emergencies"); health.umbc.edu ("On-Campus UMBC Police") | Matches |
+| Emergency | 911 | police.umbc.edu; health.umbc.edu ("Off-Campus Dial 911") | Matches |
+| 988 Suicide & Crisis Lifeline | call or text 988 | 988lifeline.org (call, text, or chat); health.umbc.edu ("Call 988", "Text 988") | Matches |
+| After-Hours Support Line via RIH | 410-455-2542 | health.umbc.edu ("Contact UMBC's After-Hours Support Line via RIH: 410-455-2542", 24/7 crisis support) | Matches |
+| Office of Equity and Civil Rights (Title IX) | 410-455-1717 | ecr.umbc.edu ("Phone: 410-455-1717") | Matches the displayed number |
+
+**Discrepancy on an official page (not resolved here):** on ecr.umbc.edu the link shown as
+"410-455-1717" dials `tel:410-455-2735`, and the link shown as "After-Hours Support Line ...
+410-455-2542" dials `tel:410-455-3230`. health.umbc.edu lists 410-455-3230 separately as an
+"after-hours support line" under sexual assault or relationship violence support. The
+templates use the displayed numbers, which agree across pages. Which number the ECR office
+intends is a question for that office; a human should confirm it before any use beyond the
+synthetic prototype.
+
+The pages also list resources the templates do not use (for example Crisis Text Line, 211
+Maryland, Trans Lifeline). Adding any of them is a content decision for the humans.
 
 ## 7. PR #4 review response (Devika, 2026-10-11)
 

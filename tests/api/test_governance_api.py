@@ -182,7 +182,6 @@ def test_committed_register_cannot_become_ready_while_specialist_reviews_are_ope
     _decide_all(staff("adam.admin"))
     _decide_all(staff("dana.admin"))
     snap = staff("adam.admin").get("/api/v1/admin/governance/readiness").json()
-    open_specialist = any(sr["status"] != "completed" for r in GOV.risks for sr in r.get("required_specialist_reviews", []))
-    if open_specialist:
-        assert snap["status"] == "blocked_pending_human_decision"
-        assert {p["kind"] for p in snap["pending_human_decisions"]} == {"specialist_review"}
+    assert any(sr["status"] != "completed" for r in GOV.risks for sr in r.get("required_specialist_reviews", []))
+    assert snap["status"] == "blocked_pending_human_decision"
+    assert {p["kind"] for p in snap["pending_human_decisions"]} == {"specialist_review"}

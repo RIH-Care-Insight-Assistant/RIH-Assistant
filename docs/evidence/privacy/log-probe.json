@@ -1,0 +1,25 @@
+{
+  "report": "rih-privacy-log-probe",
+  "git_commit": "58a2417",
+  "generated_at": "2026-10-15T21:30:48Z",
+  "environment": {
+    "python": "3.13.2",
+    "platform": "win32"
+  },
+  "server": "uvicorn app.api.main:app on 127.0.0.1, RIH_LOG_FORMAT=json, access log left at uvicorn's default",
+  "lines_captured": 11,
+  "json_lines": 7,
+  "non_json_lines": 4,
+  "non_json_lines_mention_a_path": 0,
+  "forbidden_value_occurrences": {
+    "message text": 0,
+    "session id": 0,
+    "csrf token": 0,
+    "staff username": 0,
+    "staff password": 0,
+    "cookie rih_csrf": 0,
+    "cookie rih_owner": 0,
+    "cookie rih_staff": 0
+  },
+  "passed": true
+}

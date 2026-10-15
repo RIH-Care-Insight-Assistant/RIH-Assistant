@@ -15,7 +15,7 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 
 | Field | Value |
 |---|---|
-| Current phase | **Final completion stage (2026-10-15): Phase A (readiness correction, L-D13) done; next Phase B (governance cleanup), then C (validation), D (publication audit), E (joint push authorization), F (final records)** |
+| Current phase | **Final completion stage (2026-10-15): Phase A (readiness correction, L-D13) and Phase B (governance cleanup, L-D14) done; next Phase C (validation), D (publication audit), E (joint push authorization), F (final records)** |
 | Current task | Done: SB-07/SB-08/RP-06 mitigations, final audit, final batteries, [final report](FINAL_REPORT.md), [publication plan](PUBLICATION_PLAN.md), [review plan](FINALIZATION_REVIEW_PLAN.md); Devika's final review B10 ([report](audits/devika-final-review-2026-10-15.md)) and her decisions at `e380883` ([record](audits/devika-final-acceptance-2026-10-15.md)); Abhinav's decisions, records at `84c55bf` ([record](audits/abhinav-final-acceptance-2026-10-15.md)); joint showcase decision and image review L-D10 ([record](showcase/image-review-checklist.md)); showcase content approved and published by both, L-D11 ([record](showcase/deployment-2026-10-15.md)), live at <https://rih-care-insight-showcase.pages.dev/>; the application is not published |
 | Last local commit | see `git log -1` (this file is updated with each milestone) |
 
@@ -373,6 +373,25 @@ direction. Record: [`DECISION_LOG.md`](DECISION_LOG.md) L-D13; rules:
 plan text, R-08/R-11 evidence, specialist reviews including R-05), keep `risks-3`/`controls-3`
 as history, re-verify the crisis contact numbers, then ask both humans to approve the new
 content.
+
+## Final completion stage, Phase B: governance cleanup (2026-10-15, L-D14)
+
+Both at the keyboard; each approved separately. Record: [`DECISION_LOG.md`](DECISION_LOG.md) L-D14.
+
+- **Register `risks-4` and catalog `controls-4`**, approved by both as presented. The earlier
+  versions are kept byte-identical in `governance/history/`.
+- **R-08 finding fixed** (`58a2417`): uvicorn's access log recorded session ids. A test fails
+  without the fix, and the probe evidence at `58a2417` passed.
+- **Specialist reviews SR-01 to SR-04** recorded as required. None has been performed.
+- **Contact numbers** re-checked on 2026-10-15 ([section 6](safety/crisis-routing.md)). The ECR
+  link-target discrepancy is unresolved.
+- **Checks:** the governance, API-governance and observability tests passed (115). The full
+  suite result is in the commit record below.
+
+**Exact next action:** Phase C. Start Docker Desktop, rebuild the images from the committed
+candidate, run `release_readiness.py --e2e --containers` (evidence schema 2), the container
+scans, and kind verify, rollout and recovery. Then run the negative verification, the README
+asset checks and the readiness assessment.
 
 ## Phase status
 

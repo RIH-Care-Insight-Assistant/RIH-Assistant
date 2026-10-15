@@ -93,3 +93,20 @@ def test_decision_is_bound_to_the_risk_content_not_only_the_register_label():
     for row in label_only.rows:
         row["register_version"] = label
     assert run(g, label_only)["status"] == "blocked_pending_human_decision"
+
+
+def test_previous_versions_are_kept_unchanged_and_recorded():
+    # Phase B: a new version never rewrites history; each file names the versions it replaced.
+    for doc, key in ((GOV.register, "register_version"), (GOV.controls, "catalog_version")):
+        assert doc["previous_versions"]
+        for rel in doc["previous_versions"]:
+            old = json.loads((ROOT / rel).read_text(encoding="utf-8"))
+            assert old[key] != doc[key] and old[key] in rel
+
+
+def test_mandatory_specialist_reviews_are_recorded_and_open():
+    # L-D9 G1 c and L-D13: native-speaker, clinical and source reviews stay blockers until performed.
+    reviews = {sr["id"]: (r["id"], sr["kind"], sr["status"]) for r in GOV.risks for sr in r.get("required_specialist_reviews", [])}
+    assert {k for _, k, _ in reviews.values()} >= {"native_speaker", "clinical", "source_review"}
+    assert reviews["SR-01"][0] == reviews["SR-02"][0] == "R-01" and reviews["SR-03"][0] == "R-05"
+    assert all(status == "required" for _, _, status in reviews.values())  # none has been performed
