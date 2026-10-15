@@ -58,7 +58,7 @@ C1 pattern additions:
 - **Retention:** inflections ("dropping out", "withdrawing", "leaving school"). `transfer` counts **only when it is not about** records, files, insurance, prescriptions, refills, care, money or payments.
 - **CSV:** `safety/routing_matrix.csv` no longer lists bare `hate` or `transfer`. CSV triggers cannot carry these exclusions, and the defaults already cover both words.
 
-B9 additions (phrasing families; details and evidence in [`../audit/c1-b9-safety-repair.md`](../audit/c1-b9-safety-repair.md)):
+B9 additions (phrasing families; details and evidence in [`../audits/c1-b9-safety-repair.md`](../audits/c1-b9-safety-repair.md)):
 - **Crisis:**
   - Someone else's suicide or self-harm ("my friend wants to kill herself"). `hurt`/`harm` + him/her/themselves needs intent wording ("going to", "might", "threatened to"), so accidents don't match.
   - "harm myself".
@@ -211,7 +211,7 @@ Devika's 24-case held-out set (frozen before her first run, not shown to the rou
 
 After her re-review of `8d73390`, the exemptions are bound to the benign event (`ebdf2d9`), and coordinated threats are routed (`4664534`). With the **original B9 labels** and no relabelling: 18/18 expected template, 0/6 false positives. Her 42 router review probes: 42/42. Her 9 re-review cases: 9/9.
 
-Full evidence, per-case table, tests and limitations: [`../audit/c1-b9-safety-repair.md`](../audit/c1-b9-safety-repair.md).
+Full evidence, per-case table, tests and limitations: [`../audits/c1-b9-safety-repair.md`](../audits/c1-b9-safety-repair.md).
 
 ## 9. Finalization mitigations, awaiting review (2026-10-15)
 

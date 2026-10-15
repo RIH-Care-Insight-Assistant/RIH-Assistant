@@ -143,5 +143,25 @@
     "findings_partly_fixed": [
       "F1 implicit-risk recall"
     ]
+  },
+  "repository_cleanup": {
+    "date": "2026-10-15",
+    "directed_by": "Abhinav Varma Vathadi and Devika Rani Sanaboyina (joint; commits alternate author and Co-authored-by)",
+    "baseline_commit": "5831764",
+    "baseline": "ruff clean x2; pytest 5415 passed, 1 skipped (Windows); routes passed; safety eval no misses or false positives",
+    "batches": [
+      {
+        "commit": "58346a3",
+        "summary": "removed unused app/dev scripts, unused clarify/policy tool classes, C1 crawl/keyword helpers, pytest-cov"
+      },
+      {
+        "commit": "see git log",
+        "summary": "merged docs/audit into docs/audits; README rewritten; progress records"
+      }
+    ],
+    "status": "in_progress",
+    "next_action": "run the final validation battery (Python, frontend, CLI, safety, red team) and record results",
+    "deployment_revalidation": "not yet decided; the backend image changes only by removed unimported modules and pytest-cov",
+    "readiness_unchanged": "blocked_pending_human_decision"
   }
 }

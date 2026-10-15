@@ -38,7 +38,7 @@ Maintained only by Abhinav (or his coding agent) on his own feature branches. Re
 
 | Item | Files |
 |---|---|
-| Baseline audit with executed evidence | `docs/audit/c1-phase0-baseline-audit.md` |
+| Baseline audit with executed evidence | `docs/audits/c1-phase0-baseline-audit.md` |
 | Python application architecture + proposed dispatcher contract | `docs/architecture/python-application.md` |
 | Crisis / Title IX / conduct pattern hardening; obfuscation-resistant skeleton views | `app/router/rules.py` |
 | `SAFETY_CRITICAL_LANES` | `app/router/safety_router.py` |
@@ -51,7 +51,7 @@ Maintained only by Abhinav (or his coding agent) on his own feature branches. Re
 | LF line-ending policy | `.gitattributes` |
 | Safety policy, evidence and limitations | `docs/safety/crisis-routing.md` |
 | **PR #4 review fixes:** `DECLINE_PROTECTED_LANES` (retention protected from decline); retention inflections; `transfer` excludes records/insurance; self-directed hate → counseling; counseling template names 988/911; Strands wrapper uses the router's safety check; thread-lifetime limitation documented; dataset v1.1.0 (89 cases) | `app/router/*`, `safety/routing_matrix.csv`, `app/agent/dispatcher.py`, `app/agent/strands_safety.py`, `app/answer/compose.py`, tests, docs (`docs/safety/crisis-routing.md` §7) |
-| **PR #12, B9 repair:** detection families (third-party self-harm, overdose without the word, unwanted sexual contact/messages, coerced sex, bias hostility, threats or attacks); approved policies (non-sexual harassment → conduct, O10 narrowing, severe threats → crisis); exemptions bound to the benign event; coordinated threats; dataset v1.7.0 (172 cases); reconciled pre-C1 harassment checks | `app/router/rules.py`, `safety/routing_matrix.csv`, `tests/test_safety_detection_families.py`, `tests/data/safety_routing_cases.json`, `tests/run_smoke.py`, `tests/test_phase6_demo_scenarios.py`, `scripts/check_routes.py`, `docs/audit/c1-b9-safety-repair.md`, `docs/safety/crisis-routing.md` |
+| **PR #12, B9 repair:** detection families (third-party self-harm, overdose without the word, unwanted sexual contact/messages, coerced sex, bias hostility, threats or attacks); approved policies (non-sexual harassment → conduct, O10 narrowing, severe threats → crisis); exemptions bound to the benign event; coordinated threats; dataset v1.7.0 (172 cases); reconciled pre-C1 harassment checks | `app/router/rules.py`, `safety/routing_matrix.csv`, `tests/test_safety_detection_families.py`, `tests/data/safety_routing_cases.json`, `tests/run_smoke.py`, `tests/test_phase6_demo_scenarios.py`, `scripts/check_routes.py`, `docs/audits/c1-b9-safety-repair.md`, `docs/safety/crisis-routing.md` |
 
 ## Tests actually run (2026-10-11 to 2026-10-12)
 

@@ -19,6 +19,27 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 | Current task | Done: SB-07/SB-08/RP-06 mitigations, final audit, final batteries, [final report](FINAL_REPORT.md), [publication plan](PUBLICATION_PLAN.md), [review plan](FINALIZATION_REVIEW_PLAN.md); Devika's final review B10 ([report](audits/devika-final-review-2026-10-15.md)) |
 | Last local commit | see `git log -1` (this file is updated with each milestone) |
 
+## Repository cleanup (2026-10-15, in progress)
+
+Directed jointly by Abhinav and Devika (both present); an AI coding agent drafted the changes
+at their direction. Commits alternate author: one person authors and commits, the other is a
+`Co-authored-by` trailer. No phase is reopened; readiness stays `blocked_pending_human_decision`.
+
+| Step | Status | Commit |
+|---|---|---|
+| Baseline at `5831764` (Windows, Python 3.13.2): ruff ×2 clean; pytest **5415 passed, 1 skipped**; routes passed; safety eval no misses, no false positives | Done | — |
+| Batch 1: removed `app/dev/` (2 manual demo scripts), unused `ClarifyTool`/`TitleIXTool`/`ConductTool` classes, C1 `crawl_site.py`/`extract_keywords.py`/`propose_routing.py`, unused `pytest-cov`; `requests` kept pinned (transitive, patched) | Done: pytest 5413 passed, 1 skipped (2 fewer module-import cases); ruff ×2; routes; smoke | `58346a3` |
+| Batch 2: merged `docs/audit/` into `docs/audits/` (links updated); README rewritten (overview, features, architecture, stack, structure, setup, usage, Docker, kind, testing, limitations, contributors) | Done | see `git log` |
+| Batch 3: final validation (Python, frontend, CLI, safety, red team) and records | **Next** | — |
+
+Deferred on purpose: consolidating the two LLM planners (`planner_llm.py` for the CLI,
+`strands_planner.py` for the API) and the legacy versus governed retrievers, because both paths
+are safety-relevant and covered by parity tests; moving single-file root folders (`contracts/`,
+`policy/`, `security/`), which images, manifests and tests reference.
+
+**Exact next action:** run the final battery listed in batch 3, record results here and in
+`phase-status.json`, and commit.
+
 ## Phase status
 
 | Phase | Status | Evidence |

@@ -85,7 +85,7 @@ is in the progress files and the audits.
 | [#9](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/9) | Devika | `a63ff43` → `835a6f0` | Abhinav | B1 retrieval restrictions; B2 decline semantics; B3 verified alternatives; B4 cross-tests; readiness audit; C1-v0.2 agreement record |
 | [#11](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/11) | Devika | `e41e665` → `f464f41` | Abhinav (2026-10-12 03:29 UTC) | Her `835a6f0` validation; the frozen B9 fixture, initial results and classifications; deferral review recommendations; PR #10 and PR #12 reviews with review probes; C2-v0.1 candidate (a proposal, not approved) |
 | [#13](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/13) | Devika | `89e8df0` → `9e8c16a` | Abhinav (03:44 UTC) | B9-N04: billing information requests after a service refusal are no longer treated as declines (`app/tools/decline_detector.py`; `tests/c1/test_decline_billing_requests.py`) |
-| [#12](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/12) | Abhinav | `d79f841` → `bbc07de` | Devika (04:22 UTC) | B9 router repair: detection families; the three jointly approved routing policies; fixes for both of Devika's reviews; coordinated severe threats. Dataset v1.7.0; `tests/test_safety_detection_families.py`. Evidence: [`audit/c1-b9-safety-repair.md`](audit/c1-b9-safety-repair.md) |
+| [#12](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/12) | Abhinav | `d79f841` → `bbc07de` | Devika (04:22 UTC) | B9 router repair: detection families; the three jointly approved routing policies; fixes for both of Devika's reviews; coordinated severe threats. Dataset v1.7.0; `tests/test_safety_detection_families.py`. Evidence: [`audits/c1-b9-safety-repair.md`](audits/c1-b9-safety-repair.md) |
 | [#14](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/14) | Devika | `846496e` → `8be85c6` | Abhinav (2026-10-12 16:11 UTC) | Her final macOS validation of `bbc07de` (B8); explicit acceptance, with conditions, of the seven deferrals (decision log C1-D32); documentation only |
 
 Final PR heads with all 8 checks passing: #8, #9, #11, #12, #13 and #14. CI on `main` after
@@ -138,7 +138,7 @@ Reading the table:
 - Devika's review rejected deferring O10 (B9-N01). It was repaired, not deferred.
 - B9-N04 is no longer treated as a decline since PR #13. It still gets an appointment
   clarification question, a separate planner item.
-- Per-run raw data: [`audit/c1-b9-rerun-results.json`](audit/c1-b9-rerun-results.json).
+- Per-run raw data: [`audits/c1-b9-rerun-results.json`](audits/c1-b9-rerun-results.json).
 
 ### Routing policies approved by both humans (PR #12)
 
@@ -160,7 +160,7 @@ the amended policy with exact-template assertions:
 
 Devika's PR #12 approval covers these changes.
 
-**Documented limitations** (full list in [`audit/c1-b9-safety-repair.md`](audit/c1-b9-safety-repair.md)):
+**Documented limitations** (full list in [`audits/c1-b9-safety-repair.md`](audits/c1-b9-safety-repair.md)):
 - **Threats:**
   - More than eight words between a threat frame and the severe verb are not routed.
   - Severe verbs outside the list ("find me and end me") are not routed.
