@@ -1,0 +1,180 @@
+"""FastAPI application factory.
+
+Run locally:  uvicorn app.api.main:app --host 127.0.0.1 --port 8000
+OpenAPI:      /api/v1/openapi.json (docs at /api/v1/docs)
+"""
+
+from __future__ import annotations
+
+import logging
+import re
+import secrets
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from starlette.types import ASGIApp, Message, Receive, Scope, Send
+
+from ..agent.orchestrator import Orchestrator
+from .catalog import LegacyCatalog
+from .chat_service import ChatService
+from .db import Database
+from .errors import MESSAGES, install_error_handlers
+from .routes import router
+from .settings import Settings
+
+logger = logging.getLogger("rih.api")
+
+API_TITLE = "RIH Care Insight Assistant API"
+API_VERSION = "1.0.0"
+_REQUEST_ID_RE = re.compile(r"^[A-Za-z0-9._-]{8,64}$")
+
+SECURITY_HEADERS = [
+    (b"x-content-type-options", b"nosniff"),
+    (b"referrer-policy", b"no-referrer"),
+    (b"x-frame-options", b"DENY"),
+    (b"cache-control", b"no-store"),
+    (b"content-security-policy", b"default-src 'none'; frame-ancestors 'none'"),
+]
+
+
+class RequestContextMiddleware:
+    """Assigns a request ID, enforces the body-size limit and adds security headers.
+
+    Pure ASGI so it also covers streaming bodies without a Content-Length.
+    """
+
+    def __init__(self, app: ASGIApp, max_body_bytes: int):
+        self.app = app
+        self.max_body = max_body_bytes
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+        headers = {k.decode("latin-1").lower(): v.decode("latin-1") for k, v in scope.get("headers", [])}
+        incoming = headers.get("x-request-id", "")
+        request_id = incoming if _REQUEST_ID_RE.match(incoming) else secrets.token_hex(8)
+        scope.setdefault("state", {})["request_id"] = request_id
+
+        is_docs = scope.get("path", "").startswith("/api/v1/docs")
+
+        async def send_with_headers(message: Message) -> None:
+            if message["type"] == "http.response.start":
+                hdrs = list(message.get("headers", []))
+                present = {k.lower() for k, _ in hdrs}
+                hdrs.append((b"x-request-id", request_id.encode()))
+                for k, v in SECURITY_HEADERS:
+                    if is_docs and k == b"content-security-policy":
+                        continue  # the interactive docs page loads its own scripts
+                    if k not in present:
+                        hdrs.append((k, v))
+                message["headers"] = hdrs
+            await send(message)
+
+        declared = headers.get("content-length")
+        if declared is not None and (not declared.isdigit() or int(declared) > self.max_body):
+            await _send_error(send_with_headers, 413, "invalid_request", request_id)
+            return
+
+        if scope.get("method") in {"GET", "HEAD", "OPTIONS"}:
+            await self.app(scope, receive, send_with_headers)
+            return
+
+        # Bodies are small (64 KiB default): buffer up to the limit, then replay once.
+        chunks, total, more = [], 0, True
+        while more:
+            message = await receive()
+            if message["type"] == "http.disconnect":
+                return
+            chunk = message.get("body", b"")
+            total += len(chunk)
+            if total > self.max_body:
+                await _send_error(send_with_headers, 413, "invalid_request", request_id)
+                return
+            chunks.append(chunk)
+            more = message.get("more_body", False)
+        replayed = False
+
+        async def replay() -> Message:
+            nonlocal replayed
+            if not replayed:
+                replayed = True
+                return {"type": "http.request", "body": b"".join(chunks), "more_body": False}
+            return await receive()
+
+        await self.app(scope, replay, send_with_headers)
+
+
+async def _send_error(send, status: int, code: str, request_id: str) -> None:
+    import json
+
+    body = json.dumps({"error": {"code": code, "message": MESSAGES[code], "request_id": request_id}}).encode()
+    await send({"type": "http.response.start", "status": status,
+                "headers": [(b"content-type", b"application/json"), (b"content-length", str(len(body)).encode())]})
+    await send({"type": "http.response.body", "body": body})
+
+
+def create_app(
+    settings: Settings | None = None,
+    *,
+    db: Database | None = None,
+    orchestrator: Orchestrator | None = None,
+    catalog=None,
+) -> FastAPI:
+    settings = settings or Settings.from_env()
+    db = db or Database(settings.db_path)
+    catalog = catalog or LegacyCatalog()
+    orchestrator = orchestrator or Orchestrator()
+
+    @asynccontextmanager
+    async def lifespan(app: FastAPI):
+        try:
+            applied = db.migrate()
+            purged = db.purge_expired()
+            logger.info("startup", extra={"migrations_applied": applied, "expired_owners_purged": purged})
+        except Exception as exc:  # the API still serves safety guidance without storage
+            logger.error("startup_storage_unavailable", extra={"error_type": type(exc).__name__})
+        yield
+
+    app = FastAPI(
+        title=API_TITLE,
+        version=API_VERSION,
+        description=(
+            "Independent student-resource assistance prototype. Not an official UMBC or RIH service; "
+            "it does not diagnose, counsel, treat or respond to emergencies. Synthetic data only."
+        ),
+        openapi_url="/api/v1/openapi.json",
+        docs_url="/api/v1/docs",
+        redoc_url=None,
+        lifespan=lifespan,
+    )
+    app.state.settings = settings
+    app.state.db = db
+    app.state.catalog = catalog
+    app.state.orchestrator = orchestrator
+    app.state.chat = ChatService(db, orchestrator)
+    app.state.policy_ok = lambda: True
+
+    install_error_handlers(app)
+    app.include_router(router)
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=list(settings.allowed_origins),
+        allow_credentials=True,
+        allow_methods=["GET", "POST", "DELETE"],
+        allow_headers=["content-type", "x-csrf-token", "x-request-id"],
+        expose_headers=["x-request-id"],
+    )
+    app.add_middleware(RequestContextMiddleware, max_body_bytes=settings.max_body_bytes)
+    return app
+
+
+def __getattr__(name: str):
+    # `uvicorn app.api.main:app` builds the app lazily, so importing this module (tests,
+    # OpenAPI export) never touches the default database path.
+    if name == "app":
+        global app
+        app = create_app()
+        return app
+    raise AttributeError(name)

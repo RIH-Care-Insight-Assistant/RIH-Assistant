@@ -45,6 +45,7 @@ Writes are never retried automatically. Reads may be retried once by the client.
 |---|---|---|
 | `GET /health` | – | 200 `{status: "ok", api_version: "v1"}` (liveness; no dependency detail) |
 | `GET /ready` | – | 200/503 `{status: "ready" \| "degraded", checks: {database, knowledge_base, policy}}`, each `"ok" \| "unavailable"` (**addition**) |
+| `GET /csrf` | – | 200 `{csrf_token}`; sets the `rih_csrf` double-submit cookie (**addition**) |
 | `POST /sessions` | `{}` | 201 `Session`; creates the anonymous owner credential if absent |
 | `GET /sessions` | owner | 200 `{items: Session[]}` newest first, at most 50 (**addition**, for history) |
 | `GET /sessions/{id}` | owner | 200 `Session`; foreign or unknown → identical 404 |
@@ -179,7 +180,7 @@ control is never treated as authorization.
 
 ## Open items for human acceptance
 
-1. The additions marked above (`/ready`, `GET /sessions`, `Session.title`,
+1. The additions marked above (`/ready`, `/csrf`, `GET /sessions`, `Session.title`,
    `ChatResponse.user_message/notices/persisted`, `guidance` response type, safety
    response without persistence when the database is down).
 2. Freshness thresholds (180/365/730 days) and treating C1 KB records as `baseline`.

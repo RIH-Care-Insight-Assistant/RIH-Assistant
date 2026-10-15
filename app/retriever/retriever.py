@@ -161,6 +161,23 @@ def retrieve(query: str, k: int = 3, top_k: int | None = None) -> List[Dict]:
     scored.sort(key=lambda x: x[0], reverse=True)
     return [c for _, c in scored[:limit]]
 
+def chat_corpus() -> List[Dict]:
+    """Read-only copy of the ordinary-chat corpus, after the C1 eligibility filters.
+
+    Additive (Phase 2): the API's resource listing and governed retrieval start from
+    exactly the records `retrieve()` may rank, so the C1 restrictions stay authoritative.
+    """
+    return [dict(c) for c in _load_kb()]
+
+
+def retrieve_scored(query: str, limit: int = 3) -> List[Tuple[float, Dict]]:
+    """Like `retrieve()`, but returns `(score, record)` pairs. Same ranking and filters."""
+    limit = max(1, int(limit))
+    scored = [(s, dict(c)) for c in _load_kb() if (s := _score(query, c)) > 0]
+    scored.sort(key=lambda x: x[0], reverse=True)
+    return scored[:limit]
+
+
 # Utility for tests to clear the cache when they swap KB_DIR
 def _reset_cache():
     global _cached_kb, _idf, _total_docs

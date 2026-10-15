@@ -28,6 +28,34 @@ This repository contains:
 
 ---
 
+> **Status (2026-10-14):** the project is being upgraded locally (Phases 2–9, see
+> [`docs/LOCAL_FIRST_PROGRESS.md`](docs/LOCAL_FIRST_PROGRESS.md)). It is an independent student
+> prototype, **not an official UMBC or RIH service**, and uses synthetic data only. The CLI
+> below still works; the full-stack app is described next.
+
+## Full-stack application (Phase 2)
+
+| Part | Technology | Location |
+|---|---|---|
+| Backend API | FastAPI + Pydantic, SQLite (numbered migrations) | `app/api/` |
+| Orchestration | Deterministic safety stage, decline handling, rule planner, structured evidence | `app/agent/orchestrator.py` |
+| Frontend | React 19 + TypeScript + Vite | `frontend/` |
+| API contract | OpenAPI snapshot, checked by tests | `contracts/openapi-v1.json`, `docs/contracts/C2-local-v1.md` |
+
+Run it locally (two terminals, from the repository root; Python venv active, Node 24):
+
+```bash
+STRANDS_ENABLED=false RIH_PLANNER=RULE RIH_COOKIE_SECURE=false uvicorn app.api.main:app --host 127.0.0.1 --port 8000
+npm --prefix frontend ci && npm --prefix frontend run dev    # http://127.0.0.1:5173
+```
+
+Checks: `python -m pytest -q` (backend and C1 suites), `npm --prefix frontend run lint`,
+`npm --prefix frontend run typecheck`, `npm --prefix frontend test`, `npm --prefix frontend run build`,
+and the Playwright workflow `npm --prefix frontend run e2e` (set `RIH_PYTHON` to your venv's
+Python if `python` is not it).
+
+---
+
 ## Architecture Summary
 
 ### System Flow
