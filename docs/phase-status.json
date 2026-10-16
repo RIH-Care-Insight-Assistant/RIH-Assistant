@@ -1,0 +1,438 @@
+{
+  "schema_version": 1,
+  "branch": "feature/rih-local-enhancement-phases-2-9",
+  "base_commit": "6ab77a862379a16d6d63d81e9d4ea709a55f2496",
+  "updated": "2026-10-15",
+  "current_phase": "final_completion_phase_E_pr_open",
+  "published": "branch pushed, not merged",
+  "phases": {
+    "2": {
+      "status": "complete_local",
+      "evidence": [
+        "docs/LOCAL_FIRST_PROGRESS.md#validation-log-executed-runs-only"
+      ]
+    },
+    "3": {
+      "status": "complete_local",
+      "evidence": [
+        "docs/evidence/rag-benchmark-v1.json",
+        "docs/evidence/strands-live-smoke-2026-10-15.json"
+      ]
+    },
+    "4": {
+      "status": "complete_local",
+      "evidence": [
+        "docs/LOCAL_FIRST_PROGRESS.md",
+        "docs/contracts/C3-local-v1.md"
+      ]
+    },
+    "5": {
+      "status": "complete_local",
+      "evidence": [
+        "docs/security/redteam-report.md",
+        "docs/evidence/redteam/post-mitigation-local.json"
+      ]
+    },
+    "6": {
+      "status": "complete_local",
+      "evidence": [
+        "docs/governance/nist-ai-rmf-alignment.md",
+        "governance/risk_register.json"
+      ]
+    },
+    "7": {
+      "status": "complete_local",
+      "evidence": [
+        "docs/evidence/release/latest.json",
+        "docs/evidence/release/negative-verification.json"
+      ]
+    },
+    "8": {
+      "status": "complete_local",
+      "evidence": [
+        "docs/evidence/containers/security-scan.json",
+        "docs/evidence/containers/integration.json",
+        "docs/evidence/containers/resilience.json"
+      ]
+    },
+    "9": {
+      "status": "complete_local",
+      "evidence": [
+        "docs/evidence/k8s/verify.json",
+        "docs/evidence/k8s/rollout.json",
+        "docs/evidence/k8s/recovery.json"
+      ]
+    }
+  },
+  "awaiting_humans": [
+    "Staff-UI entries of every risk's decision under each joint reviewer's own bound account (L-D13: all 15 risks, both slots); neither has entered a staff-UI decision",
+    "Readiness rules L-D13: accepted by both (supersedes the L-D9 deferral). Operators must bind RIH_GOVERNANCE_REVIEWERS to two distinct staff accounts (admin role for release approval)",
+    "Register risks-4 and catalog controls-4 approved by both (L-D14); every risk decision must still be entered by both in the staff UI under bound accounts",
+    "Specialist reviews SR-01 native-speaker, SR-02 clinical (R-01), SR-03 source review (R-05), SR-04 independent security (R-07): required, none performed; they block interactive deployment",
+    "Contact numbers re-checked 2026-10-15 (all match the displayed numbers); the ECR page's link targets (410-455-2735, 410-455-3230) differ from its displayed numbers: confirm with the office before any real use",
+    "Release battery rerun on the final candidate: done (c22b360, 21/21, schema 2)",
+    "R-05 source review is now mandatory specialist review SR-03 (blocks interactive deployment)",
+    "Source publication authorized by both (L-D15): push, one integration PR, Devika's GitHub review and approval, green CI, merge. Interactive deployment NOT authorized",
+    "Close issue #7 on GitHub",
+    "Showcase follow-ups (L-D11): S3 only after the contact numbers are re-verified and a fresh decision by both; any change to the deployed page needs a new review by both and a new build hash"
+  ],
+  "head": "see git log -1 (finalization documentation commit)",
+  "final_readiness": "not_ready (only blocker: joint reviewers not bound to staff accounts; 39 pending human items)",
+  "finalization": {
+    "status": "complete_local",
+    "resumed_from": "bdf7659",
+    "commits": [
+      "07f0be4",
+      "9e4f52d",
+      "ed3cb33",
+      "57d82f6",
+      "b87f572",
+      "c875a3f",
+      "final docs commit (git log -1)"
+    ],
+    "findings": {
+      "RP-06": "fixed in code (9e4f52d); CLI behaviour change awaits human acceptance",
+      "SB-07": "mitigated in code (ed3cb33, 12-language lexicon + language notice); agent-drafted, other languages still missed",
+      "SB-08": "mitigated in code (ed3cb33, warning-sign lists); agent-drafted, other wording still missed"
+    },
+    "evidence": [
+      "docs/evidence/release/latest.json",
+      "docs/evidence/release/wsl2-linux-c875a3f.json",
+      "docs/evidence/redteam/finalization-local.json",
+      "docs/evidence/redteam/finalization-legacy-cli.json",
+      "docs/evidence/safety/probes-sb07-sb08-baseline.json",
+      "docs/evidence/safety/probes-sb07-sb08-after.json",
+      "docs/evidence/k8s/verify.json",
+      "docs/evidence/strands-live-finalization-2026-10-15.json"
+    ]
+  },
+  "final_battery_commit": "9c8c7d2",
+  "post_b10_container_and_k8s": {
+    "images_built_from": "9c8c7d2",
+    "battery": "21/21 (docs/evidence/release/release-20261015T151747Z.json)",
+    "containers": "security clean, integration 7/7, resilience 7/7",
+    "kind": "verify 7/7, rollout 5/5, recovery 4/4; cluster deleted"
+  },
+  "devika_final_review": {
+    "status": "review_complete_local_decisions_recorded",
+    "directed_by": "Devika Rani Sanaboyina",
+    "drafted_by": "AI coding agent at Devika's direction",
+    "report": "docs/audits/devika-final-review-2026-10-15.md",
+    "commits": [
+      "c36cd2c",
+      "ef3c83d",
+      "666e253",
+      "e685260",
+      "9bd6689",
+      "B10 documentation commit (git log)"
+    ],
+    "heldout": {
+      "dataset": "docs/audits/devika-final-heldout-v1.json",
+      "sha256": "767975b51943b4e6e06fa81dfebe8ae43f2081641c12c52cf576a87787170fe5",
+      "first_run": "149/208 (implicit English 2/14, benign/ambiguous escalated 0/82)",
+      "after_b10_not_held_out": "179/208 (implicit English 9/14, benign/ambiguous escalated 0/82)"
+    },
+    "findings_fixed": [
+      "F2 lexicon gaps",
+      "F3 ASCII-language notice",
+      "F4 mixed-script words",
+      "F5 fail-safe route()",
+      "F6 decision bound to risk content",
+      "F7 RP-06 cache staleness"
+    ],
+    "findings_partly_fixed": [
+      "F1 implicit-risk recall"
+    ]
+  },
+  "repository_cleanup": {
+    "date": "2026-10-15",
+    "directed_by": "Abhinav Varma Vathadi and Devika Rani Sanaboyina (joint; commits alternate author and Co-authored-by)",
+    "baseline_commit": "5831764",
+    "baseline": "ruff clean x2; pytest 5415 passed, 1 skipped (Windows); routes passed; safety eval no misses or false positives",
+    "batches": [
+      {
+        "commit": "58346a3",
+        "summary": "removed unused app/dev scripts, unused clarify/policy tool classes, C1 crawl/keyword helpers, pytest-cov"
+      },
+      {
+        "commit": "0024835",
+        "summary": "merged docs/audit into docs/audits; README rewritten; progress records"
+      },
+      {
+        "commit": "see git log",
+        "summary": "final validation and records"
+      }
+    ],
+    "status": "complete_local",
+    "next_action": "none for the cleanup; publication waits on the recorded human decisions",
+    "deployment_revalidation": "compose rebuilt and integration 7/7; resilience, Trivy and kind not rerun (manifests unchanged)",
+    "readiness_unchanged": "blocked_pending_human_decision",
+    "final_validation": "at 0024835: ruff x2 clean; pytest 5413 passed, 1 skipped; routes; safety 172/172, 0/44 FP; smoke; OpenAPI and inventory match; C1 audit 15/15; probes unchanged; red team 0/70, CLI 0/17; Bandit clean; frontend lint, typecheck, 26/26, build; container integration 7/7 (HTTP red team 0/35) on rebuilt images"
+  },
+  "ui_polish": {
+    "date": "2026-10-15",
+    "directed_by": "Abhinav Varma Vathadi and Devika Rani Sanaboyina (joint; an AI coding agent drafted the changes at their direction; commits alternate author and Co-authored-by)",
+    "baseline_commit": "6031d35",
+    "scope": "presentation only: UMBC-inspired design tokens with light and dark themes, polished student and staff screens, automated Playwright screenshots, rendered architecture diagrams, README tour; no safety, routing, retrieval, policy or API behaviour changed",
+    "assets": [
+      "docs/assets/screenshots/ (14 PNG, captured from the running app with synthetic data)",
+      "docs/assets/architecture/ (2 PNG rendered from docs/architecture/diagrams/*.html)"
+    ],
+    "regenerate": "npm --prefix frontend run screenshots",
+    "validation": "Windows 11, Python 3.13.2, Node 24.14.0: ruff x2 clean; pytest 5417 passed, 1 skipped (4 new README asset tests); routes passed; safety eval no misses, no false positives; frontend lint and typecheck clean; vitest 69/69 (26 existing + 43 WCAG contrast checks); build OK; E2E 8/8 against the real API (3 new: keyboard and focus, theme toggle, no horizontal scroll at 360 px); screenshot and diagram run 11/11",
+    "not_rerun": "containers, kind, red team, release battery (no backend, deployment or safety code changed; the nginx CSP is unchanged and the UI uses no inline styles or external assets)",
+    "status": "complete_local",
+    "readiness_unchanged": "blocked_pending_human_decision",
+    "next_action": "humans review the new screenshots and README; publication still waits on the recorded human decisions"
+  },
+  "medical_appointment_fix": {
+    "date": "2026-10-15",
+    "directed_by": "Abhinav Varma Vathadi (an AI coding agent investigated and drafted the change)",
+    "baseline_commit": "ef6a497",
+    "cause": "the COUNSELING router rule matches every appointment phrasing, and the rule planner's counseling branch answered medical appointments with the counseling template",
+    "change": "app/agent/planner.py: counseling-lane appointment text with a medical marker plans retrieve; router patterns and the safety stage unchanged",
+    "status": "complete_local",
+    "acceptance": "accepted by Devika on 2026-10-15, prototype scope (docs/audits/devika-final-acceptance-2026-10-15.md, D7); battery, containers, kind and red team not rerun since",
+    "validation": "Windows 11, Python 3.13.2, Node 24.14.0: ruff clean; pytest 5419 passed, 1 skipped (2 new), passing on 3 consecutive runs; routes passed; safety eval 122/122, 0/44 false positives, no misses; E2E 8/8; one earlier full run after E2E reported 1 failure, which did not recur and was not captured",
+    "not_rerun": "containers, kind, red team, release battery"
+  },
+  "devika_final_acceptance": {
+    "date": "2026-10-15",
+    "reviewer": "Devika Rani Sanaboyina (at the keyboard, directing; an AI coding agent asked about each item and drafted the record)",
+    "reviewed_head": "e380883092f1d3ef600ee60b1b7e8ad52eb1e3d8",
+    "record": "docs/audits/devika-final-acceptance-2026-10-15.md",
+    "decision_log": "L-D7",
+    "scope": "reviewer acceptance for the synthetic-data prototype only",
+    "accepted": [
+      "D1 SB-07 lexicon with B10 additions",
+      "D2 SB-08 warning-sign lists with B10 additions",
+      "D3 language_support notice wording including the Spanish sentence",
+      "D4 fail-toward-crisis guard in route()",
+      "D5 RP-06 gate and restart-free refresh",
+      "D6 B10 content binding of risk decisions (Devika only; Abhinav pending)",
+      "D7 medical-appointment fix e380883",
+      "D8 R-01 accepted for the prototype only, with banner and notice",
+      "D9 R-04 accepted for the prototype only, with the RP-06 gate",
+      "D10 L-D1 confirmed",
+      "D11 B10 attribution kept as recorded, no trailer"
+    ],
+    "not_performed": [
+      "native-speaker review",
+      "clinical or counseling review",
+      "held-out set written by Devika or anyone without seeing the patterns",
+      "independent security assessment",
+      "real-user evaluation (by design)"
+    ],
+    "heldout_figure_of_record": "first run 149/208 (implicit English 2/14); 179/208 after B10 is not held out",
+    "staff_ui_decisions_entered": false,
+    "readiness_unchanged": "blocked_pending_human_decision"
+  },
+  "abhinav_final_acceptance": {
+    "date": "2026-10-15",
+    "decision_maker": "Abhinav Varma Vathadi (at the keyboard, directing; an AI coding agent presented each group, asked for his explicit answer and drafted the record; Devika not present)",
+    "records_reviewed_at": "84c55bf",
+    "code_reviewed_at": "e380883092f1d3ef600ee60b1b7e8ad52eb1e3d8",
+    "record": "docs/audits/abhinav-final-acceptance-2026-10-15.md",
+    "decision_log": "L-D8",
+    "scope": "prototype scope only (synthetic data, local demonstration, no real students)",
+    "accepted": [
+      "A1 B10 content binding of risk decisions (e685260); now accepted by both humans",
+      "B1 R-01 accepted for the prototype only, with banner and notice; joint position recorded",
+      "B2 R-04 accepted for the prototype only, with the RP-06 gate and governed retrieval; joint position recorded",
+      "C1 register risks-3 (Abhinav only; awaiting Devika)",
+      "C2 control catalog controls-3 (Abhinav only; awaiting Devika)",
+      "C3 readiness rules as implemented, including pending_human_review (Abhinav only; awaiting Devika except the content binding)",
+      "D1-D3 contracts C2/C3/C4-local-v1 with their open items (Abhinav only; awaiting Devika)"
+    ],
+    "showcase_scope": "local demonstration only (loopback demo on the shared PC, screenshots or recordings of synthetic data); interactive public deployment remains blocked",
+    "staff_ui_decisions_entered": false,
+    "staff_ui_check": "running Compose instance inspected read-only: only synthetic ctr* accounts; risk_reviews, release_decisions, source_reviews 0 rows",
+    "not_performed": [
+      "staff-UI entries (skipped by his choice)",
+      "native-speaker review",
+      "clinical or counseling review",
+      "contact-number re-verification",
+      "release battery rerun on the head (not rerun, at his instruction)"
+    ],
+    "readiness_unchanged": "blocked_pending_human_decision"
+  },
+  "devika_governance_acceptance": {
+    "date": "2026-10-15",
+    "decision_maker": "Devika Rani Sanaboyina (at the keyboard, directing; an AI coding agent presented each item separately, asked for her decision and conditions, and drafted the record)",
+    "records_reviewed_at": "c19c745",
+    "code_reviewed_at": "e380883092f1d3ef600ee60b1b7e8ad52eb1e3d8",
+    "record": "docs/audits/devika-final-acceptance-2026-10-15.md (addendum L-D9)",
+    "decision_log": "L-D9",
+    "decisions": {
+      "register_risks_3": "qualified acceptance, prototype scope; conditions: corrected register version (R-08/R-10 plan text, R-08/R-11 evidence) with fresh decisions before any release; specialist reviews and R-05 source review stay required; owners and scores are a working baseline, not a validated assessment",
+      "controls_3": "qualified acceptance, prototype scope; conditions: C-MULTILINGUAL-CRISIS, C-IMPLICIT-RISK, C-LANGUAGE-NOTICE unreviewed until native-speaker and clinical review; C-HUMAN-REVIEW does not satisfy the joint-decision requirement; C-DEP-SCAN and C-REDTEAM count only when rerun on the exact head",
+      "readiness_rules": "deferred, not accepted: one reviewer's accept_residual on R-01 and R-04 yields 'ready' on 9c8c7d2 evidence (recomputed locally with assess()); not trusted until code enforces joint decisions and evidence matching the release commit",
+      "contracts": "qualified acceptance, prototype scope: C2 and C3 open items for the prototype only; C3 in-memory rate limits only with one replica; C4 item 1 with register/catalog conditions, item 2 not accepted, item 3 deferred",
+      "public_noninteractive_showcase": "authorized by Devika only, with conditions: needs Abhinav's matching decision (L-D8 is local only); both review each image (synthetic data, banner, non-official disclaimer); no live endpoint, no public interactive chatbot"
+    },
+    "unchanged": [
+      "L-D7 D1-D11 including the D6 content binding",
+      "L-D8",
+      "register and catalog files",
+      "readiness code",
+      "evidence and gates"
+    ],
+    "staff_ui_decisions_entered": false,
+    "readiness_unchanged": "blocked_pending_human_decision"
+  },
+  "joint_showcase_decision": {
+    "date": "2026-10-15",
+    "decision_log": "L-D10",
+    "directed_by": "Abhinav Varma Vathadi (at the keyboard); Devika Rani Sanaboyina present and answered her own image questions, as Abhinav stated; an AI coding agent pre-screened the images, asked the questions, drafted the accepted captions and built the page",
+    "records_at": "85004b6",
+    "code_at": "e380883092f1d3ef600ee60b1b7e8ad52eb1e3d8",
+    "record": "docs/showcase/image-review-checklist.md",
+    "authorization": "Abhinav matched L-D9 G5: public static showcase that viewers cannot interact with, Devika's conditions (a)-(c); posting needs a separate go-ahead from both",
+    "images": {
+      "approved_by_both": [
+        "S1",
+        "S2",
+        "S4 (caption)",
+        "S5",
+        "S6",
+        "S9",
+        "S10",
+        "S11 (caption)",
+        "S13",
+        "S14",
+        "D1 (disclaimer, caption)",
+        "D2 (disclaimer)"
+      ],
+      "excluded": [
+        "S7",
+        "S8",
+        "S12"
+      ],
+      "deferred": [
+        "S3 (contact numbers to be re-verified)"
+      ]
+    },
+    "prepared": [
+      "showcase/index.html",
+      "showcase/showcase.css",
+      "showcase/manifest.json",
+      "scripts/build_showcase.py",
+      "tests/test_showcase.py"
+    ],
+    "checks": "ruff clean; full pytest 5423 passed, 1 skipped (Windows); check_routes passed; safety_eval no misses, 0/44 false positives; build assembled 14 files; page viewed on 127.0.0.1: 12/12 images, no console errors, no overflow at phone width; release battery not rerun (no application code changed)",
+    "not_yet_reviewed": [],
+    "posted": false,
+    "superseded_by": "showcase_publication (L-D11): page text reviewed and approved, host chosen, posted"
+  },
+  "showcase_publication": {
+    "date": "2026-10-15",
+    "decision_log": "L-D11",
+    "directed_by": "Abhinav Varma Vathadi (at the keyboard); Devika Rani Sanaboyina present; each answered their own approval and authorization questions, asked separately; an AI coding agent presented the content, ran the deployment and smoke checks and drafted the record",
+    "records_at": "8a551c5",
+    "code_at": "e380883092f1d3ef600ee60b1b7e8ad52eb1e3d8",
+    "record": "docs/showcase/deployment-2026-10-15.md",
+    "content_approval": {
+      "abhinav": "approve as shown",
+      "devika": "approve as shown"
+    },
+    "publication_authorization": {
+      "abhinav": "authorized",
+      "devika": "authorized"
+    },
+    "url": "https://rih-care-insight-showcase.pages.dev/",
+    "deployment_url": "https://f2f20997.rih-care-insight-showcase.pages.dev/",
+    "deployment_id": "f2f20997-4267-49b8-8aa5-185be0461a8c",
+    "host": "Cloudflare Pages Free (Abhinav's account), Direct Upload, project rih-care-insight-showcase, production branch main, no Git provider, no Functions, no custom domain",
+    "tool": "wrangler 4.143.1, login scopes account:read user:read pages:write, logged out afterwards",
+    "build_hash": "bc01772e9c268da7317b967025a5e3e6c7efb8ff4504ea435c5b48f6ca1150c5",
+    "files": 14,
+    "smoke_checks": "14/14 files HTTP 200 and byte-identical over HTTPS (second pass; first pass seconds after deploy had 4x 522 and 2 mismatches from edge propagation); http->https 301; valid certificate; public without login; 12/12 images desktop and 375px mobile, no overflow; 0 scripts, 0 forms, 0 third-party requests, no console messages; robots noindex; unknown paths return the static index",
+    "application_published": false,
+    "readiness_unchanged": "blocked_pending_human_decision",
+    "revisions": [
+      {
+        "date": "2026-10-15",
+        "decision_log": "L-D12",
+        "change": "footer sentence 'UMBC-inspired colors; not affiliated with or endorsed by UMBC. Screenshots captured from the running prototype on 2026-10-15.' removed; nothing else changed",
+        "build_hash": "6c1ceb5a900a082716601f2d0886c93afce1d0e6fefa2d3f84bc2b87c3f554f6",
+        "approval": {
+          "abhinav": "approve and redeploy",
+          "devika": "approve and redeploy"
+        },
+        "deployment_id": "bf572d8c-3ede-4127-bfee-7a43b334054d",
+        "smoke_checks": "14/14 files HTTP 200 and byte-identical over HTTPS; sentence absent; 12/12 images desktop and 375px, no overflow; 0 scripts/forms/third-party requests; http->https 301",
+        "note": "previous deployment URL f2f20997.rih-care-insight-showcase.pages.dev still serves bc01772e; not deleted"
+      }
+    ]
+  },
+  "showcase_published": true,
+  "readiness_correction": {
+    "date": "2026-10-15",
+    "decision_log": "L-D13",
+    "directed_by": "Abhinav Varma Vathadi and Devika Rani Sanaboyina (both at the keyboard; each authorized and accepted separately; an AI coding agent proposed, implemented and drafted the records)",
+    "defect": "one reviewer's accept_residual on R-01/R-04 with evidence from 9c8c7d2 produced ready (reproduced on 6e94784)",
+    "authorized_by": [
+      "Abhinav Varma Vathadi",
+      "Devika Rani Sanaboyina"
+    ],
+    "accepted_by": [
+      "Abhinav Varma Vathadi",
+      "Devika Rani Sanaboyina"
+    ],
+    "files": [
+      "app/governance/readiness.py",
+      "app/governance/reviewers.py",
+      "app/governance/candidate.py",
+      "app/governance/register.py",
+      "app/api/governance_routes.py",
+      "app/api/migrations/0005_joint_governance.sql",
+      "governance/reviewers.json",
+      "governance/release_candidate.json",
+      "scripts/release_readiness.py",
+      "scripts/negative_verification.py",
+      "frontend (governance panel and types)"
+    ],
+    "tests": "tests/governance/test_readiness.py (new), test_register.py, tests/api/test_governance_api.py, GovernancePanel.test.tsx, e2e staff-workflow",
+    "validation": "Windows 11, Python 3.13.2, Node 24.14.0: ruff x2 clean; pytest 5491 passed, 1 skipped; routes passed; safety eval no misses; OpenAPI snapshot matches; eslint and tsc clean; vitest 70/70; build OK; E2E 8/8",
+    "readiness_now": "not_ready (schema-1 evidence from 9c8c7d2; no reviewer binding)",
+    "commit": "see git log (feat(governance): enforce joint decisions ...)"
+  },
+  "governance_cleanup": {
+    "date": "2026-10-15",
+    "decision_log": "L-D14",
+    "approved_by": [
+      "Abhinav Varma Vathadi",
+      "Devika Rani Sanaboyina"
+    ],
+    "register": "risks-4 (history: governance/history/risk_register-risks-3.json)",
+    "catalog": "controls-4 (history: governance/history/controls-controls-3.json)",
+    "privacy_fix": "58a2417 (uvicorn access log disabled; evidence docs/evidence/privacy/log-probe.json at 58a2417, passed)",
+    "contact_numbers": "re-checked 2026-10-15; matches; ECR link-target discrepancy unresolved",
+    "commit": "see git log (docs(governance): register risks-4 ...)"
+  },
+  "final_validation": {
+    "candidate": "c22b360",
+    "candidate_digest": "78849fae1d87a06c7dd325e168aadc3e98e5ab57efae9df39e36e11e32fc7340",
+    "battery": "21/21 (docs/evidence/release/release-20261015T220005Z.json); two earlier failed runs kept",
+    "readiness": "not_ready: joint reviewers not bound; pending 30 joint decisions, 5 review items, 4 specialist reviews",
+    "containers": "security clean, integration 7/7, resilience 7/7 (backend 8ed5a00b83ca, frontend e4579c45594a)",
+    "kind": "verify 7/7, rollout 5/5, recovery 4/4; cluster deleted",
+    "negative_verification": "3/3 blocked",
+    "wsl2": "pytest 5495 passed",
+    "legacy_redteam": "0/17",
+    "heldout_b10": "179/208 (not held out)",
+    "flaky_test": "found and fixed in f42db4c (per-call timestamp in a test helper)",
+    "showcase": "live, 14/14 files match the approved build"
+  },
+  "source_publication": {
+    "decision_log": "L-D15",
+    "authorized_by": [
+      "Abhinav Varma Vathadi",
+      "Devika Rani Sanaboyina"
+    ],
+    "interactive_deployment": "not authorized",
+    "status": "pushed; PR #15 open, awaiting Devika's GitHub review and CI",
+    "pr": "https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/15",
+    "backup": "RIH-backups/rih-final-completion-2026-10-15-fc7b4c4.bundle (verified)"
+  }
+}

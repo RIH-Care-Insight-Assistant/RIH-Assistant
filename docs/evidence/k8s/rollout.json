@@ -1,0 +1,65 @@
+{
+  "report": "rih-k8s-rollout",
+  "git_commit": "c22b360-dirty",
+  "generated_at": "2026-10-15T22:05:55Z",
+  "cluster": {
+    "kind": "kind v0.33.0 go1.26.7 windows/amd64",
+    "server": "v1.37.0"
+  },
+  "results": [
+    {
+      "check": "baseline",
+      "status": "pass",
+      "duration_s": 0.5,
+      "revision": "1"
+    },
+    {
+      "check": "good_rollout",
+      "status": "pass",
+      "duration_s": 6.3,
+      "revision": "1 -> 2",
+      "image": "rih-backend:v2",
+      "requests": 23,
+      "failed": 0,
+      "availability": 1.0,
+      "failure_kinds": []
+    },
+    {
+      "check": "failed_rollout_keeps_serving",
+      "status": "pass",
+      "duration_s": 40.3,
+      "rollout_status_exit": 1,
+      "previous_image_still_serving": "rih-backend:v2",
+      "requests": 197,
+      "failed": 0,
+      "availability": 1.0,
+      "failure_kinds": []
+    },
+    {
+      "check": "rollback",
+      "status": "pass",
+      "duration_s": 2.7,
+      "image_after_undo": "rih-backend:v2",
+      "revision": "4",
+      "history_entries": 4,
+      "requests": 10,
+      "failed": 0,
+      "availability": 1.0,
+      "failure_kinds": []
+    },
+    {
+      "check": "restore_original_image",
+      "status": "pass",
+      "duration_s": 5.3,
+      "image": "rih-backend:local",
+      "revision": "5",
+      "settled_after_s": 0.2,
+      "requests": 23,
+      "failed": 0,
+      "availability": 1.0,
+      "failure_kinds": []
+    }
+  ],
+  "passed": 5,
+  "total": 5
+}

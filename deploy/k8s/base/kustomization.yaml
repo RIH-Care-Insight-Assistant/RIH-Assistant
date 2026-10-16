@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: rih
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: rih-care-insight-assistant
+    includeSelectors: false
+resources:
+  - namespace.yaml
+  - backend.yaml
+  - frontend.yaml
+  - networkpolicies.yaml

@@ -6,9 +6,12 @@ Contributor and reviewer: **Devika**. Every change goes through a PR reviewed by
 the other contributor. Adding, removing or weakening a gate needs both humans'
 explicit agreement.
 
-This is the C1 version. The first table lists only gates that exist and run today.
-Later gates are listed as planned and are **not** enforced until their phase
-delivers them. Current pass/fail status is in [`PROJECT_STATE.md`](PROJECT_STATE.md).
+The first table lists the GitHub merge gates that exist and run today; the
+jointly approved simplified B7 policy remains the **remote repository policy**. For
+Phases 2–9 the **local release-readiness procedure** below is the primary engineering
+acceptance mechanism. A check that is not required by GitHub branch protection is still
+mandatory locally. Current status is in [`LOCAL_FIRST_PROGRESS.md`](LOCAL_FIRST_PROGRESS.md)
+and [`PROJECT_STATE.md`](PROJECT_STATE.md).
 
 ## Merge gates for `main` (run on every PR and push)
 
@@ -72,6 +75,51 @@ Devika approves PR #10.
   written into a gate as if they were results.
 - A PR that renames a CI job updates this file and the required-check list together.
 
+## Local release-readiness (Phases 2–9, local-first workflow)
+
+Each local milestone (C2–C5) and the final publication candidate must pass the
+cumulative battery on the enhancement branch, run on the shared machine, with the real
+counts recorded in `LOCAL_FIRST_PROGRESS.md`. Gates are added as their phases deliver
+them; once added, a gate is never removed or weakened to get a pass.
+
+| Gate | Command (from the repository root) | Blocks readiness when |
+|---|---|---|
+| Lint | `ruff check .` | Any finding |
+| Python tests | `python -m pytest -q` | Any failure |
+| Legacy routes | `python scripts/check_routes.py` | Any mismatch |
+| Safety evaluation | `python scripts/safety_eval.py --fail-on-miss` | Any missed safety-critical case or benign false positive |
+| Smoke | `python -m tests.run_smoke` | Failure |
+| API contract (Phase 2) | `python scripts/export_openapi.py --check` | Running API differs from `contracts/openapi-v1.json` |
+| Frontend (Phase 2) | `npm --prefix frontend run lint`, `typecheck`, `test`, `build` | Any lint/type error, failing component test or failed build |
+| End-to-end (Phase 2, 4) | `npm --prefix frontend run e2e` | Any failing student or staff workflow |
+| Source inventory (Phase 3) | `python scripts/build_source_inventory.py --check` | KB records missing from or changed against the inventory |
+| Retrieval benchmark (Phase 3) | `tests/rag/test_benchmark.py` (in `pytest`) | Selected ranker worse than the C1 baseline, or recorded evidence not reproducible |
+| Authorization (Phase 4) | `tests/security/`, `tests/api/test_auth_admin.py` (in `pytest`) | Any allowed operation that the policy denies, or any denied operation that succeeds |
+| Dependencies (Phase 4) | `python -m pip_audit -r requirements.txt`; `npm --prefix frontend audit` | Any known vulnerability |
+| Static analysis (Phase 4) | `python -m bandit -q -r app scripts -ll` | Any medium or high finding |
+
+| Red team (Phase 5, 7) | `python scripts/redteam.py` | Any open **critical** scenario (high findings need a recorded human decision via governance) |
+| SB-07/SB-08 probes (finalization) | `tests/test_safety_probes_sb07_sb08.py` (in `pytest`); `python scripts/safety_probes.py` | Any covered-language or implicit-risk probe not routed, any benign probe escalated, or a missing language notice |
+| Human review of agent-drafted mitigations (finalization; a new gate: **accepted by Abhinav (L-D8); Devika deferred the readiness rules (L-D9), so it is not jointly accepted**. It stays in force because it can only block. The content binding of decisions, `e685260`, has both humans' acceptance, L-D7 and L-D8) | readiness rule on `pending_human_review` in `governance/risk_register.json` | Exit 2 (blocked) while any listed item has no recorded reviewer decision for the current register version |
+| Governance integrity (Phase 6) | register/catalog checks (in `pytest` and the battery) | Missing controls, tests, evidence or untracked open findings |
+| **Aggregated battery (Phase 7)** | `python scripts/release_readiness.py --e2e` | Exit 1 (not ready) on any failed required gate or open critical finding; exit 2 while human residual-risk decisions are pending |
+| Negative verification (Phase 7) | `python scripts/negative_verification.py --write` | Any deliberate regression that the battery does not block |
+
+| Containers (Phase 8) | `python scripts/release_readiness.py --e2e --containers` (adds `container_security`, `container_integration`, `container_resilience`) | Any fixable HIGH/CRITICAL image vulnerability, HIGH/CRITICAL misconfiguration or secret; any failed integration or resilience check |
+
+| Kubernetes (Phase 9) | `python scripts/k8s.py verify`, `rollout`, `recovery` (kind cluster) | Any failed workload, security-context, workflow, NetworkPolicy, red-team, rollout/rollback or recovery check |
+
+Evidence of the latest run:
+[`evidence/release/latest.json`](evidence/release/latest.json); details in
+[`architecture/observability.md`](architecture/observability.md).
+
+Rules for the local procedure:
+- A critical safety or authorization failure means **not release-ready**, whatever else passes.
+- Negative verification of a gate (a deliberate regression) runs only in a disposable
+  worktree or branch, never on the enhancement branch itself; the safe state is restored
+  and the battery rerun afterwards.
+- Numbers come from executed runs, with numerators and denominators.
+
 ## Planned gates (not enforced yet)
 
 Owners follow the launchers; details are agreed in each checkpoint's contracts.
@@ -82,5 +130,5 @@ Owners follow the launchers; details are agreed in each checkpoint's contracts.
 | 3 | Tool-contract tests (allowed, denied, malformed); citation validity; recorded retrieval benchmark | Abhinav (tools), Devika (citations, benchmark) |
 | 4 | Deterministic authorization/RBAC tests; secret and dependency scanning; static analysis | Both |
 | 5 | Adversarial suite with measured attack success rates | Both |
-| 7 | Critical safety/security release gate in CI; negative-regression proof on an isolated branch | Abhinav (gate logic), Devika (negative proof) |
+| 7 | Critical safety/security release gate in CI (jobs added; first run happens at publication) | Abhinav (gate logic), Devika (negative proof) |
 | 8 | Container checks; resilience and failure-injection tests | Both |

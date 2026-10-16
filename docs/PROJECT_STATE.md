@@ -1,17 +1,67 @@
 # Project state
 
-Shared checkpoint state. Maintained by Abhinav (C1 ownership); every change goes
-through a PR reviewed by Devika. Contributor detail lives in
-[`progress/abhinav.md`](progress/abhinav.md) and [`progress/devika.md`](progress/devika.md).
-This file is a snapshot: confirm PRs, reviews and CI on GitHub before acting on it.
+Shared checkpoint state. Contributor detail lives in
+[`progress/abhinav.md`](progress/abhinav.md) and [`progress/devika.md`](progress/devika.md);
+the live local implementation record for Phases 2–9 is
+[`LOCAL_FIRST_PROGRESS.md`](LOCAL_FIRST_PROGRESS.md).
 
-Last updated: 2026-10-12, after both humans approved the revised B7 branch-protection policy
-on PR #10, on branch `feature/abhinav-c1-acceptance`.
+Last updated: 2026-10-15, on local branch `feature/rih-local-enhancement-phases-2-9`
+(local-first workflow; not yet published).
 
 ## Current checkpoint
 
-**C1 (Phases 0–1), close-out. All six acceptance requirements are met under the revised B7
-policy; acceptance is recorded by Devika's formal approval of PR #10.**
+**C2–C5 (Phases 2–9) are implemented and validated locally; publication awaits the humans.**
+C1 is complete and accepted. Under the local-first workflow (`AGENTS.md`; shared instructions
+§6.1) all remaining phases were built on one integrated branch with no pushes or PRs.
+
+- **Local head:** the finalization documentation commit (26 commits on top of `6ab77a8`; check
+  with `git log -1`). Phases 2–9 ended at `fb72ab6`. The finalization session then mitigated the
+  three open high findings in code: RP-06 in `9e4f52d`, SB-07 and SB-08 in `ed3cb33`. Each
+  mitigation is escalate-only or fail-closed, and each is agent-drafted.
+- **Final battery on `b87f572`:** 21/21 gates pass; red team 0/70. Linux 12/12 on `c875a3f`;
+  kind verify 7/7.
+- **Readiness:** release readiness is **blocked pending human decisions**. Four agent-drafted
+  mitigations await review, and R-01 stays partially mitigated (other languages and wording).
+  Report: [`FINAL_REPORT.md`](FINAL_REPORT.md); plan: [`PUBLICATION_PLAN.md`](PUBLICATION_PLAN.md);
+  review tasks: [`FINALIZATION_REVIEW_PLAN.md`](FINALIZATION_REVIEW_PLAN.md).
+- **Human decisions (2026-10-15):** Devika (L-D7) and Abhinav (L-D8) recorded prototype-scope
+  decisions. The B10 content binding has both humans' acceptance. R-01 and R-04 are accepted
+  by both for the prototype only, but neither has entered them in the staff UI. Devika has not
+  yet decided on the register, catalog, readiness rules or contracts, which Abhinav accepted.
+  Showcase: a local demonstration only.
+- **Devika's joint-governance decisions (2026-10-15, L-D9):**
+  - Qualified acceptance (prototype scope) of the register, the catalog and contracts
+    C2/C3/C4-local-v1.
+  - **Readiness rules deferred, not accepted.** One reviewer's entries plus stale `9c8c7d2`
+    evidence can produce `ready`, so `ready` is not trusted until that is fixed.
+  - A public showcase that viewers cannot interact with is authorized by her only. It needs
+    Abhinav's decision.
+- **Showcase decision (2026-10-15, L-D10):** Abhinav matched Devika's showcase authorization.
+  Both approved 12 of 16 images (S3 deferred; S7, S8 and S12 excluded), and a static page is
+  prepared in `showcase/`. Not posted: both still review the page text and choose a host.
+  Readiness is unchanged.
+- **Showcase published (2026-10-15, L-D11):** both separately approved the page content and
+  authorized publication. The static showcase is live at
+  <https://rih-care-insight-showcase.pages.dev/> (Cloudflare Pages Free, Direct Upload, build
+  `bc01772e`; [record](showcase/deployment-2026-10-15.md)). The application branch is not
+  pushed, no PR is open, and readiness is unchanged.
+- **Next:** the humans do the reviews and make the decisions in the publication plan §2, then
+  authorize (or not) the push and the single integration PR.
+
+- **C1 accepted:** Devika approved PR #10 on 2026-10-12 at 17:04:56 UTC; Abhinav merged it
+  at 17:05:25 UTC as `6ab77a8`. CI run 38281894574 on `6ab77a8` succeeded (verified
+  read-only with `gh` on 2026-10-14).
+- **Enhancement branch:** `feature/rih-local-enhancement-phases-2-9`, created from `6ab77a8`.
+  Baseline rerun on that commit (WSL2 Ubuntu 26.04.1, Python 3.14.4, 2026-10-14): Ruff clean
+  (both configs), `pytest -q` **4628 passed**, routes passed, safety evaluation 172/172
+  exact lanes with no misses or false positives, smoke OK.
+- **Still open from C1:** issue #7 (C1 coordination record) is open; closing it is a
+  human GitHub action.
+
+## C1 close-out record (historical, as recorded on 2026-10-12)
+
+**C1 (Phases 0–1), close-out. All six acceptance requirements were met under the revised B7
+policy; acceptance was recorded by Devika's formal approval of PR #10 (since given).**
 
 - **Merged:** all eight C1 PRs (#4, #5, #8, #9, #11, #12, #13, #14), each approved by the other human.
 - **Final `main`:** `8be85c6`, with CI 8/8. It differs from `bbc07de` only in three of Devika's documentation files.
@@ -26,9 +76,6 @@ policy; acceptance is recorded by Devika's formal approval of PR #10.**
   PR #10 (Abhinav: [comment](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/10#issuecomment-6128683842); Devika: [comment](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/10#issuecomment-6128687578)). The live
   settings match it. **This reduces enforcement:** CI checks run but are not required to merge.
   See [GitHub settings](#github-settings-for-main).
-
-C1 is **not yet formally accepted**; that happens when Devika approves PR #10. C2 has not
-started; no C2 branches exist.
 
 ## Last validated `main`
 
@@ -59,7 +106,7 @@ is in the progress files and the audits.
 | [#9](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/9) | Devika | `a63ff43` → `835a6f0` | Abhinav | B1 retrieval restrictions; B2 decline semantics; B3 verified alternatives; B4 cross-tests; readiness audit; C1-v0.2 agreement record |
 | [#11](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/11) | Devika | `e41e665` → `f464f41` | Abhinav (2026-10-12 03:29 UTC) | Her `835a6f0` validation; the frozen B9 fixture, initial results and classifications; deferral review recommendations; PR #10 and PR #12 reviews with review probes; C2-v0.1 candidate (a proposal, not approved) |
 | [#13](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/13) | Devika | `89e8df0` → `9e8c16a` | Abhinav (03:44 UTC) | B9-N04: billing information requests after a service refusal are no longer treated as declines (`app/tools/decline_detector.py`; `tests/c1/test_decline_billing_requests.py`) |
-| [#12](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/12) | Abhinav | `d79f841` → `bbc07de` | Devika (04:22 UTC) | B9 router repair: detection families; the three jointly approved routing policies; fixes for both of Devika's reviews; coordinated severe threats. Dataset v1.7.0; `tests/test_safety_detection_families.py`. Evidence: [`audit/c1-b9-safety-repair.md`](audit/c1-b9-safety-repair.md) |
+| [#12](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/12) | Abhinav | `d79f841` → `bbc07de` | Devika (04:22 UTC) | B9 router repair: detection families; the three jointly approved routing policies; fixes for both of Devika's reviews; coordinated severe threats. Dataset v1.7.0; `tests/test_safety_detection_families.py`. Evidence: [`audits/c1-b9-safety-repair.md`](audits/c1-b9-safety-repair.md) |
 | [#14](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/14) | Devika | `846496e` → `8be85c6` | Abhinav (2026-10-12 16:11 UTC) | Her final macOS validation of `bbc07de` (B8); explicit acceptance, with conditions, of the seven deferrals (decision log C1-D32); documentation only |
 
 Final PR heads with all 8 checks passing: #8, #9, #11, #12, #13 and #14. CI on `main` after
@@ -112,7 +159,7 @@ Reading the table:
 - Devika's review rejected deferring O10 (B9-N01). It was repaired, not deferred.
 - B9-N04 is no longer treated as a decline since PR #13. It still gets an appointment
   clarification question, a separate planner item.
-- Per-run raw data: [`audit/c1-b9-rerun-results.json`](audit/c1-b9-rerun-results.json).
+- Per-run raw data: [`audits/c1-b9-rerun-results.json`](audits/c1-b9-rerun-results.json).
 
 ### Routing policies approved by both humans (PR #12)
 
@@ -134,7 +181,7 @@ the amended policy with exact-template assertions:
 
 Devika's PR #12 approval covers these changes.
 
-**Documented limitations** (full list in [`audit/c1-b9-safety-repair.md`](audit/c1-b9-safety-repair.md)):
+**Documented limitations** (full list in [`audits/c1-b9-safety-repair.md`](audits/c1-b9-safety-repair.md)):
 - **Threats:**
   - More than eight words between a threat frame and the severe verb are not routed.
   - Severe verbs outside the list ("find me and end me") are not routed.
@@ -192,18 +239,20 @@ Eight items were proposed for deferral; **all are resolved**.
 | Deferrals (table above) | Approved with conditions (2026-10-11) | Accepted with conditions (2026-10-12, C1-D32, PR #14) |
 | Revised B7 branch-protection policy (reduced enforcement) | Approved 2026-10-12 16:50 UTC ([comment](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/10#issuecomment-6128683842)) | Approved 2026-10-12 16:50 UTC ([comment](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/10#issuecomment-6128687578)) |
 | `RELEASE_GATES.md` ownership | Decided | Approved PR #8, which records it |
-| C2 stack: FastAPI, React + TypeScript, Vite, SQLite | Approved 2026-10-11 | Pending |
-| Node.js version and lockfile | Open | Open |
-| Revised collaboration model (continuous component ownership; three waves) and C2-v0.1 contracts | Proposal follows C1 acceptance | Her [C2-v0.1 candidate](audits/devika-c2-v0.1-candidate.md) is a proposal, not an approval |
+| C2 stack: FastAPI, React + TypeScript, Vite, SQLite | Approved 2026-10-11 | Pending (adopted for local development) |
+| Node.js version and lockfile | Adopted locally (Node 24, npm lockfile); awaiting acceptance | Awaiting acceptance |
+| Three-wave continuous-ownership proposal (2026-10-11) | Superseded by the local-first workflow | Not adopted |
+| Local-first workflow for Phases 2–9 (2026-10-14) | Directed in the operator's master prompt, which states both humans now work together on one PC | Not separately recorded by Devika; confirm before publication |
+| C2-local-v1 contracts ([contracts/C2-local-v1.md](contracts/C2-local-v1.md)), derived from her [C2-v0.1 candidate](audits/devika-c2-v0.1-candidate.md) | Adopted for local development; awaiting acceptance | Awaiting acceptance |
 
 **Jointly confirmed contracts:** C1-v0.2 (`INTERFACE_CONTRACTS.md`, `CONTRIBUTION_MATRIX.md`),
 architecture §4 items 1–4, and the three C1 routing policies above.
 
 ## Open PRs and issues
 
-- [Issue #7](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/7): canonical C1 contract approval and coordination record. Close it once C1 is accepted.
-- [PR #10](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/10) (`feature/abhinav-c1-acceptance`, this change, **ready for review**): the C1 acceptance record. Devika's formal approval records C1 acceptance.
-- No other open PRs.
+- No open PRs (checked read-only 2026-10-14). Under the local-first workflow no PRs are
+  opened until publication is authorized.
+- [Issue #7](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/7): canonical C1 contract approval and coordination record, still open. Closing it is a human action.
 
 ## Known defects and risks
 
@@ -283,11 +332,8 @@ Phase exit criteria (`MASTER_PLAN.md`):
 
 ## Exact safe next step
 
-1. **Devika:** formally approve PR #10 if the record is correct. That approval records C1
-   acceptance.
-2. **Then:** merge PR #10 (by either human, after her approval) and close issue #7.
-3. **After C1 acceptance:** propose the revised collaboration model and the C2-v0.1 contracts
-   (docs only) for joint approval. No C2 implementation before both approve them.
+Both humans read [`PUBLICATION_PLAN.md`](PUBLICATION_PLAN.md) §2 and make the listed decisions;
+publication (push, PR, merge) happens only with their explicit authorization.
 
 ## Resume testing
 

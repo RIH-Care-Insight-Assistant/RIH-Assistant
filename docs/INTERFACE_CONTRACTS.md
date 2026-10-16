@@ -96,3 +96,22 @@ her approval manually on existing Issue #7; no new approval issue was created.
 Architecture §4 items 1–4 are approved using dataset schema v1.2.0. Proposed new
 API/trace fields remain reserved for C2 and are not approved for implementation.
 No KB schema migration is authorized here.
+
+## Phases 2–9: versioned local contracts (local-first workflow)
+
+The C1-v0.2 contracts above are preserved unchanged and remain the compatibility
+baseline. Contracts for the remaining phases are versioned documents under
+[`contracts/`](contracts/). Under the local-first workflow (2026-10-14) they are adopted
+for local implementation without routine approval pauses, and each one states which
+decisions still await genuine human acceptance. Adoption for local development is not
+a recorded approval by either human.
+
+| Version | Scope | Status |
+|---|---|---|
+| [C2-local-v1](contracts/C2-local-v1.md) | Phase 2–3: REST API, errors, limits, sessions, feedback, SQLite schema, anonymous ownership and CSRF, agent/tool registry and budgets, governed retrieval, provenance, freshness, citations, frontend rules | Adopted locally; accepted by Abhinav (L-D8) and, with qualifications, by Devika (L-D9), prototype scope, 2026-10-15. Derived from Devika's [C2-v0.1 candidate](audits/devika-c2-v0.1-candidate.md) |
+| [C3-local-v1](contracts/C3-local-v1.md) | Phase 4–5: staff authentication, roles, Policy-as-Code authorization matrix, admin API, audit, rate limits, secure ingestion, scanning | Adopted locally; accepted by Abhinav (L-D8) and, with qualifications, by Devika (L-D9), prototype scope, 2026-10-15; in-memory rate limits only with one replica |
+| [C4-local-v1](contracts/C4-local-v1.md) | Phase 6–7: risk register and control catalog, human review and release-decision records, governance API, readiness rules | Adopted locally; accepted by Abhinav (L-D8). Devika (L-D9): item 1 accepted with conditions; **readiness rules (item 2) not accepted, reviewer residual acceptance (item 3) deferred**, so those are not jointly accepted |
+
+Later versions (authentication, RBAC and Policy-as-Code; adversarial evidence;
+governance and release records; deployment) are added to this table as their phases
+are implemented.

@@ -1,0 +1,118 @@
+{
+  "benchmark": "rih-retrieval-benchmark",
+  "dataset_version": "1.0.0",
+  "eligible_pool_size": 7,
+  "environment": {
+    "python": "3.13.2",
+    "platform": "Windows-11-10.0.26200-SP0"
+  },
+  "results": [
+    {
+      "ranker": "legacy",
+      "in_scope": 26,
+      "hit_at_1": 22,
+      "recall_at_3": 24,
+      "mrr": 0.8782,
+      "out_of_scope": 6,
+      "false_hits": 2,
+      "false_hit_ids": [
+        "RB-27",
+        "RB-29"
+      ],
+      "top1_misses": [
+        {
+          "id": "RB-01",
+          "top3": [
+            "RIH Billing",
+            "RIH Appointments",
+            "RIH Hours & Location"
+          ]
+        },
+        {
+          "id": "RB-02",
+          "top3": [
+            "Insurance & Coverage (Student Health)",
+            "RIH Hours & Location"
+          ]
+        },
+        {
+          "id": "RB-08",
+          "top3": [
+            "Counseling \u2014 How to Schedule",
+            "Immunizations & Requirements",
+            "Counseling Workshops & Groups"
+          ]
+        },
+        {
+          "id": "RB-15",
+          "top3": []
+        }
+      ],
+      "latency_ms_p50": 0.0274,
+      "latency_ms_p95": 0.0363,
+      "latency_samples": 640
+    },
+    {
+      "ranker": "bm25",
+      "in_scope": 26,
+      "hit_at_1": 23,
+      "recall_at_3": 25,
+      "mrr": 0.9231,
+      "out_of_scope": 6,
+      "false_hits": 0,
+      "false_hit_ids": [],
+      "top1_misses": [
+        {
+          "id": "RB-02",
+          "top3": [
+            "Insurance & Coverage (Student Health)",
+            "RIH Hours & Location"
+          ]
+        },
+        {
+          "id": "RB-08",
+          "top3": []
+        },
+        {
+          "id": "RB-17",
+          "top3": [
+            "Insurance & Coverage (Student Health)",
+            "Immunizations & Requirements"
+          ]
+        }
+      ],
+      "latency_ms_p50": 0.0566,
+      "latency_ms_p95": 0.0632,
+      "latency_samples": 640
+    },
+    {
+      "ranker": "hybrid",
+      "in_scope": 26,
+      "hit_at_1": 24,
+      "recall_at_3": 26,
+      "mrr": 0.9615,
+      "out_of_scope": 6,
+      "false_hits": 0,
+      "false_hit_ids": [],
+      "top1_misses": [
+        {
+          "id": "RB-02",
+          "top3": [
+            "Insurance & Coverage (Student Health)",
+            "RIH Hours & Location"
+          ]
+        },
+        {
+          "id": "RB-17",
+          "top3": [
+            "Insurance & Coverage (Student Health)",
+            "Immunizations & Requirements"
+          ]
+        }
+      ],
+      "latency_ms_p50": 0.2277,
+      "latency_ms_p95": 0.2916,
+      "latency_samples": 640
+    }
+  ]
+}

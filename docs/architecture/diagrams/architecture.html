@@ -1,0 +1,113 @@
+<!doctype html>
+<!--
+  Editable source for docs/assets/architecture/system-architecture.png.
+  Regenerate: npm --prefix frontend run screenshots   (frontend/screenshots/diagrams.spec.ts)
+  Content follows the implemented system: docs/architecture/system-overview.md,
+  agents-and-rag.md, observability.md, compose.yaml and deploy/k8s.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>RIH Care Insight Assistant: system architecture</title>
+<link rel="stylesheet" href="diagram.css">
+</head>
+<body>
+<main id="diagram" class="sheet">
+  <header class="title">
+    <span class="mark" aria-hidden="true"></span>
+    <div>
+      <h1>RIH Care Insight Assistant: system architecture</h1>
+      <p>Independent student prototype · synthetic data · loopback only · $0 local stack</p>
+    </div>
+  </header>
+
+  <div class="layout">
+    <div class="main-col">
+      <section class="tier">
+        <h2>Clients</h2>
+        <div class="row">
+          <div class="box"><b>Student browser</b><span>Chat, conversation history, resource directory. Anonymous owner cookie; conversations expire after 24 h.</span></div>
+          <div class="box"><b>Staff browser</b><span>Sources, governance, observability, feedback, users, audit log, ingestion. Reviewer or admin session.</span></div>
+        </div>
+      </section>
+
+      <div class="down"><span>HTTP on 127.0.0.1</span></div>
+
+      <section class="tier tier--dark">
+        <h2>Frontend container · nginx (non-root, read-only)</h2>
+        <div class="row">
+          <div class="box box--onblack"><b>React 19 + TypeScript SPA</b><span>Built with Vite; strict Content Security Policy; light and dark themes.</span></div>
+          <div class="box box--onblack"><b>Reverse proxy</b><span>Only <code>/api</code> is forwarded; the API has no published port.</span></div>
+        </div>
+      </section>
+
+      <div class="down"><span>/api/v1 · internal network, no internet route</span></div>
+
+      <section class="tier">
+        <h2>Backend container · FastAPI (non-root, read-only)</h2>
+        <div class="guards">Request guards: request ID · body limit · security headers · CSRF + Origin check · rate limits</div>
+
+        <h3>Student chat turn</h3>
+        <div class="pipe pipe--6">
+          <div class="step step--safety"><i>1</i><b>Deterministic safety router</b><span>Crisis, Title IX, conduct; 12-language lexicon; runs on the original text before anything else.</span></div>
+          <div class="arrow"></div>
+          <div class="step"><i>2</i><b>Decline and guidance</b><span>Respectful alternatives; counseling and retention templates.</span></div>
+          <div class="arrow"></div>
+          <div class="step"><i>3</i><b>Planner</b><span>Rule planner by default. Optional Strands agent on a loopback Ollama model proposes tool calls only.</span></div>
+          <div class="arrow"></div>
+          <div class="step step--gov"><i>4</i><b>Governed tool executor</b><span>Registry, strict arguments, Policy-as-Code (default deny), budgets, timeouts, output checks.</span></div>
+          <div class="arrow"></div>
+          <div class="step step--gov"><i>5</i><b>Governed RAG</b><span>Inventoried, approved, unexpired sources with matching SHA-256; hybrid BM25 + trigram ranking.</span></div>
+          <div class="arrow"></div>
+          <div class="step"><i>6</i><b>Cited answer</b><span>Citations checked against this turn's evidence; text composed from tool outputs only.</span></div>
+          <span class="vline vline--safety c1 r2"></span>
+          <div class="box box--alert r3 cols-1-5"><b>Fixed safety guidance</b><span>Crisis, Title IX and conduct messages stop here: no planner, no tools, no model. Still returned if storage or retrieval fails.</span></div>
+        </div>
+
+        <h3>Staff operations</h3>
+        <div class="row row--5">
+          <div class="box"><b>Staff auth</b><span>scrypt hashes, lockout, 8 h sessions</span></div>
+          <div class="box box--gov"><b>RBAC policy</b><span><code>policy/authorization.json</code>, deny overrides allow</span></div>
+          <div class="box"><b>Source review</b><span>Decisions bound to content hashes; ingestion stays pending</span></div>
+          <div class="box"><b>Risk register and readiness</b><span>NIST AI RMF aligned; release decisions need a person</span></div>
+          <div class="box"><b>Audit log</b><span>Policy and security events with salted principal hashes</span></div>
+        </div>
+      </section>
+    </div>
+
+    <aside class="side-col">
+      <section class="tier tier--side">
+        <h2>Data</h2>
+        <div class="box"><b>SQLite</b><span>Sessions and messages (owner-bound), staff accounts, audit events, source reviews, risk and release decisions, incidents.</span></div>
+        <div class="box"><b>Versioned in git</b><span>Synthetic knowledge base and source inventory, authorization policy, risk register and controls, red-team scenarios, evidence.</span></div>
+      </section>
+      <section class="tier tier--side">
+        <h2>Observability</h2>
+        <div class="box"><b>OpenTelemetry</b><span>Spans per request, chat turn and tool call; metrics for latency, tools, lanes and security events.</span></div>
+        <div class="box"><b>Privacy allowlists</b><span>No message text, arguments, usernames or client addresses in traces, metrics or JSON logs.</span></div>
+        <div class="box"><b>Incident simulation</b><span>Synthetic database, retrieval and authorization faults with recorded detection.</span></div>
+      </section>
+      <section class="tier tier--side">
+        <h2>Assurance</h2>
+        <div class="box"><b>Release battery</b><span>Lint, tests, safety evaluation, red team (70 scenarios), scans and container checks produce a readiness verdict.</span></div>
+      </section>
+    </aside>
+  </div>
+
+  <section class="tier tier--deploy">
+    <h2>Deployment targets</h2>
+    <div class="row row--3">
+      <div class="box"><b>Docker Compose</b><span>Two hardened containers: all capabilities dropped, no-new-privileges, resource limits, UI on 127.0.0.1:8080.</span></div>
+      <div class="box"><b>Kubernetes (kind + Kustomize)</b><span>Restricted Pod Security, default-deny NetworkPolicies, probes, disruption budget, generated secrets.</span></div>
+      <div class="box"><b>Model features (optional)</b><span>Off by default. Only loopback Ollama hosts accepted; the model never writes answer text or sees safety messages.</span></div>
+    </div>
+  </section>
+
+  <footer class="legend">
+    <span><i class="swatch swatch--safety"></i>Safety-critical, deterministic</span>
+    <span><i class="swatch swatch--gov"></i>Policy enforcement and governance</span>
+    <span><i class="swatch swatch--gold"></i>Request flow</span>
+  </footer>
+</main>
+</body>
+</html>

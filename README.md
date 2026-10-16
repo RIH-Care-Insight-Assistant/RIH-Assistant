@@ -1,283 +1,325 @@
 # RIH Care Insight Assistant
-_A Safety-First, Campus-Focused Conversational System for Retriever Integrated Health (RIH)_
+
+_A safety-first assistant that helps university students find campus health and support resources._
+
+> **Independent student prototype.** This is not an official UMBC or Retriever Integrated
+> Health (RIH) service. It shares information; it does not diagnose, counsel, treat or respond
+> to emergencies. In an emergency call 911, or call or text 988. All conversations, accounts
+> and test data in this repository are synthetic.
+
+<p align="center">
+  <img src="docs/assets/screenshots/chat-answer-citations.png" alt="Student chat: an answer about RIH hours with a numbered, review-labelled source citation, freshness notices and feedback buttons" width="900">
+</p>
 
 ## Overview
-The **RIH Care Insight Assistant** is a structured, lightweight, safety-aligned conversational system designed specifically for UMBC's **Retriever Integrated Health (RIH)**.
 
-**Core objective:**
-- Guide students to the appropriate RIH service, and when the student declines, provide safe campus alternatives that match their needs.
+Students often do not know which campus office handles their question, and a chatbot that
+guesses can do real harm when the message is about a crisis, sexual misconduct or a threat. We
+built this assistant to show how a helpful resource finder can be designed so that safety
+never depends on a language model.
 
-This system emphasizes:
-- Non-bypassable safety routing
-- Strict guardrails
-- Explainable, rule-based logic
-- Verified retrieval of RIH information
-- Strands-powered optional enhancements
-- Fully tested decline-handling workflows
-- Deterministic, debuggable behavior suitable for production or research
+Our application checks every message with deterministic safety rules first. Crisis, Title IX
+and conduct messages get fixed, reviewed guidance immediately. Everything else is answered only
+from approved knowledge-base sources, with citations. When a student turns down a service, the
+assistant offers other verified campus options instead of pushing. Staff reviewers have a
+separate area to govern sources, risks and release decisions.
 
-This repository contains:
-- Full multi-phase architecture
-- Safety router
-- Planners (rule and LLM-based)
-- Retrievers
-- Tools
-- Decline-handling logic
-- Test suite (PyTest)
-- CLI interface for demonstration
+**Status (2026-10-15):** Phases 0–9 of our roadmap are implemented and validated on the branch
+`feature/rih-local-enhancement-phases-2-9`. We record four authorizations separately:
+- **Prototype acceptance:** given by both of us, for synthetic data only.
+- **Public source code:** this repository.
+- **Static showcase:** below.
+- **Interactive deployment:** not authorized. The chatbot runs only on your own machine.
 
----
+For interactive release, our readiness rules require both of us to decide on every risk, release
+evidence for the exact code being released, and completed native-speaker, clinical, campus-source
+and independent security reviews. None of those reviews has happened, so readiness is
+**not ready** (see [Known limitations](#known-limitations)). Nothing here is production-ready.
 
-## Architecture Summary
+**Static showcase:** <https://rih-care-insight-showcase.pages.dev/> is a page with reviewed
+screenshots and diagrams that viewers cannot interact with. It has no chatbot or API, and the
+application itself is not deployed.
 
-### System Flow
+## A tour of the interface
+
+Every image below was captured automatically from the running application (FastAPI backend
+and production frontend build, synthetic data, throwaway demo accounts) by our Playwright
+script, `npm --prefix frontend run screenshots`. Nothing is mocked up.
+
+### Student experience
+
+| | |
+|---|---|
+| <img src="docs/assets/screenshots/chat-welcome.png" alt="Welcome screen with example questions and the safety-first note"> | <img src="docs/assets/screenshots/chat-safety-guidance.png" alt="A synthetic crisis message answered with the red urgent safety guidance panel"> |
+| **Welcome.** Example questions, the non-official disclaimer and emergency numbers are always visible. | **Safety first.** A crisis message gets fixed guidance in a distinct alert, with no sources and no model involved. |
+| <img src="docs/assets/screenshots/conversation-history.png" alt="Conversation history with three saved conversations and a clarification flow"> | <img src="docs/assets/screenshots/resources.png" alt="Resource directory cards showing category, freshness, review status and version"> |
+| **History and clarification.** Conversations are kept for 24 hours; ambiguous requests get server-defined options. | **Resource directory.** Every page the assistant may cite, with its review status, freshness and content version. |
+
+<p align="center">
+  <img src="docs/assets/screenshots/chat-dark.png" alt="Chat answer in the dark theme" width="62%">
+  &nbsp;
+  <img src="docs/assets/screenshots/mobile-chat.png" alt="Chat answer with citations on a phone-sized screen" width="17%">
+  <img src="docs/assets/screenshots/mobile-resources.png" alt="Resource directory on a phone-sized screen" width="17%">
+</p>
+<p align="center"><em>Dark theme (follows the system setting, or the header toggle) and phone-sized layouts.</em></p>
+
+### Staff, governance and observability
+
+| | |
+|---|---|
+| <img src="docs/assets/screenshots/staff-source-review.png" alt="Reviewer source queue with status, freshness and approve, reject and retire actions"> | <img src="docs/assets/screenshots/governance-dashboard.png" alt="Governance dashboard showing release readiness blocked pending human decisions, red-team results and battery checks"> |
+| **Source review.** Reviewers approve, reject or retire the exact content version shown. | **Governance.** Release readiness, red-team results and the decisions still waiting for a person. |
+| <img src="docs/assets/screenshots/observability-dashboard.png" alt="Observability dashboard with request, chat-turn, tool-call and security-event counts and route latency"> | <img src="docs/assets/screenshots/audit-log.png" alt="Admin audit log listing allowed and denied policy decisions"> |
+| **Observability.** Aggregate traffic, safety lanes, tool calls, security events and latency, with no message text. | **Audit log.** Every policy decision, including the denied request a reviewer made for admin-only data. |
+
+The risk register ([image](docs/assets/screenshots/governance-risk-register.png)) and the
+server-gated staff sign-in ([image](docs/assets/screenshots/staff-signin.png)) are captured too.
+The governance screenshots were taken before the joint-decision rules (L-D13). The current
+screen shows each joint reviewer's own decision, the specialist reviews and the release scope.
+We kept the reviewed images rather than replacing them.
+
+### Design system
+
+We designed a black-and-gold visual identity inspired by the UMBC palette (gold `#FDB515`,
+black and white, with dark gray, light gray, AOK teal, red and Retriever brown as accents). All
+colors are CSS design tokens in [`frontend/src/styles.css`](frontend/src/styles.css), with a
+light and a dark theme. Gold buttons always carry black text, red is reserved for warnings and
+safety alerts, and teal marks approved or passing states. A unit test
+([`theme.test.ts`](frontend/src/theme.test.ts)) checks every text and control pairing against
+WCAG AA contrast in both themes. Every control shows a visible focus ring, and the layout works
+from phone width up. The project uses no university logos and is not endorsed by UMBC.
+
+## Main features
+
+- **Deterministic safety routing.** Crisis, Title IX and conduct detection runs before any
+  planner, retrieval or model, resists common obfuscation, and cannot be lowered by model
+  output. Safety replies still go out if storage, retrieval or policy checks fail.
+- **Grounded answers with citations.** Retrieval uses only inventoried, approved, unexpired
+  sources whose content hash matches; citations are checked against the evidence used in that
+  turn.
+- **Decline handling and clarification.** Respectful alternatives when a student says no to a
+  service, and a short clarifying question when a request is ambiguous.
+- **Governed tools and an optional local model.** Every tool call is validated, authorized,
+  budgeted and time-limited. A small local model (via Ollama) can propose tool calls, but it
+  never writes answer text and never sees safety messages. Model features are off by default.
+- **Staff area.** Password login with lockout, role-based access defined as policy files
+  (default deny), source review, risk register, release decisions and an observability view.
+- **Operational hardening.** Non-root, read-only containers, a local Kubernetes deployment with
+  default-deny network policies, OpenTelemetry traces and metrics with privacy allowlists, and a
+  release battery that produces a readiness verdict.
+
+## Architecture
+
+![System architecture: clients, the nginx frontend container, the FastAPI backend with the safety-first chat pipeline and staff operations, data, observability, assurance and deployment targets](docs/assets/architecture/system-architecture.png)
+
+**How a request flows.** The browser talks only to the nginx container, which serves the React
+app and forwards `/api` to the backend on an internal network with no internet route. In the
+backend, request guards (CSRF and Origin checks, rate and size limits) run first. A chat
+message then goes to the **deterministic safety router** before anything else: crisis, Title IX
+and conduct messages get fixed guidance and the turn ends there. Other messages go through
+decline handling, then a planner (rules by default, or an optional local model that can only
+propose tool calls). Every tool call passes the **governed executor** (strict arguments,
+Policy-as-Code authorization with default deny, budgets, timeouts), and retrieval uses only
+approved, unexpired, hash-matched sources. The answer is composed from tool outputs, and its
+citations are checked against the evidence used in that turn. Staff requests take a separate
+path: password login, role-based policy, then review, governance and audit features. Traces,
+metrics and logs record status and policy rules, never message text.
+
+![One chat turn: request guards, safety router, decline or guidance, planner, governed executor, governed retrieval and answer, with the terminal safety branch and fail-closed denials](docs/assets/architecture/request-flow.png)
+
+The diagrams are rendered from editable HTML sources in
+[`docs/architecture/diagrams/`](docs/architecture/diagrams/) by the same Playwright script.
+Text versions (Mermaid) of the deployment, request path, retrieval and authorization views are
+in [`docs/architecture/system-overview.md`](docs/architecture/system-overview.md).
+
+## Technology stack
+
+| Layer | Tools |
+|---|---|
+| Backend | Python 3.11–3.14, FastAPI, Pydantic, Uvicorn, SQLite |
+| Frontend | React 19, TypeScript, Vite, Vitest, Playwright |
+| Agents (optional) | Strands Agents with a loopback-only Ollama model |
+| Security and governance | Policy-as-Code JSON (RBAC), scrypt password hashing, Bandit, pip-audit, npm audit, Trivy, gitleaks |
+| Observability | OpenTelemetry API and SDK, structured JSON logs |
+| Deployment | Docker Compose, kind, Kustomize, nginx |
+| Quality | pytest, Ruff, ESLint, GitHub Actions workflow |
+
+## Repository structure
+
 ```text
-User Input
-    ↓
-Safety Router (Non-Bypassable)
-    ↓
-IF Crisis → Crisis Template and Exit
-    ↓
-IF Safe →
-    Phase 6 Strands Enhancement Layer (optional)
-      - Misspelling Corrector
-      - Clarification Detector (Clarify v2)
-      - Response Enhancer
-    ↓
-Phase 7 Decline Detector
-      - If user refuses RIH services → Suggest Alternatives
-    ↓
-Planner (Rule or LLM)
-      - retrieve
-      - clarify
-      - templates
-    ↓
-Final Response
+app/            Python application
+  router/       deterministic safety routing (crisis, Title IX, conduct, languages)
+  agent/        dispatcher (CLI), orchestrator (API), planners, governed toolkit
+  rag/          governed retrieval: inventory, eligibility, ranking, citations, ingestion
+  api/          FastAPI app, routes, schemas, database, migrations
+  security/     policy engine, passwords, rate limiting
+  governance/   risk register checks and release readiness
+  observability/ telemetry and incident simulation
+  ui/           original command-line interface
+frontend/       React + TypeScript UI, component tests (src/), end-to-end tests (e2e/),
+                screenshot and diagram automation (screenshots/)
+tests/          pytest suites (safety, API, RAG, security, governance, C1 regression)
+scripts/        evaluation, red team, release battery, container and Kubernetes checks
+deploy/         Dockerfiles, nginx config, Kubernetes manifests, kind cluster config
+safety/         routing matrix and safety copy guidelines
+kb/             synthetic knowledge base and source governance files
+policy/         authorization policy (roles and permissions)
+governance/     risk register and controls
+security/       versioned red-team scenarios
+contracts/      OpenAPI snapshot of the API
+docs/           architecture, safety, security, deployment, evidence and project records
+  assets/       screenshots and rendered architecture diagrams used in this README
+compose.yaml    local Docker Compose stack
 ```
 
-### Features by Phase
-| Phase | Description | Status |
-|-------|-------------|--------|
-| Phase 1 | Safety Router (Crisis, Title IX, Conduct, Retention) | Completed |
-| Phase 2 | Retriever + RIH FAQ Knowledge Base | Completed |
-| Phase 3 | Safety Lane Templates | Completed |
-| Phase 4 | Rule-Based Planner | Completed |
-| Phase 5 | Ambiguity Detection + Auto Clarify | Completed |
-| Phase 6 | Strands Layer: Clarify v2, Spelling Correction, Response Enhancement | Completed |
-| Phase 7 | Regex-based Decline Detector + Safe Campus Alternatives | Completed |
+## Local setup
 
----
+Requirements: Python 3.11 or newer (we validated 3.13 and 3.14) and Node.js 22 or newer
+(we used Node 24). No accounts, API keys or paid services are needed.
 
-## Repository Structure
-```text
-RIH-Assistant/
-│
-├── app/
-│   ├── agent/
-│   │   ├── dispatcher.py
-│   │   ├── misspelling_corrector.py
-│   │   ├── planner.py
-│   │   ├── planner_llm.py
-│   │   ├── response_enhancer.py
-│   │   └── strands_safety.py
-│   │
-│   ├── answer/
-│   │   ├── alternatives.py
-│   │   └── compose.py
-│   │
-│   ├── dev/
-│   │   ├── compare_strands.py
-│   │   └── strands_smoke.py
-│   │
-│   ├── retriever/
-│   │   └── retriever.py
-│   │
-│   ├── router/
-│   │   ├── rules.py
-│   │   └── safety_router.py
-│   │
-│   ├── tools/
-│   │   ├── base.py
-│   │   ├── clarify_detector.py
-│   │   ├── clarify_tool.py
-│   │   ├── decline_detector.py
-│   │   ├── policy_tools.py
-│   │   └── retrieve_tool.py
-│   │
-│   └── ui/
-│       ├── audit.py
-│       ├── cli.py
-│       └── __init__.py
-│
-├── kb/
-│   └── chunks_sample.jsonl
-│
-├── safety/
-│   ├── Safety_Playbook.md
-│   ├── copy_guidelines.md
-│   └── routing_matrix.csv
-│
-├── scripts/
-│   ├── check_routes.py
-│   ├── crawl_site.py
-│   ├── extract_keywords.py
-│   └── propose_routing.py
-│
-├── tests/
-│
-├── .gitignore
-├── LICENSE
-├── README.md
-└── requirements.txt
-```
-
----
-
-## Installation
-
-### 1. Clone the Repository
 ```bash
-git clone https://github.com/YOUR_USERNAME/RIH-Assistant.git
+git clone https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant.git
 cd RIH-Assistant
+python3 -m venv .venv
+. .venv/bin/activate                      # Windows PowerShell: .venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt -r requirements-dev.txt
+npm --prefix frontend ci
 ```
 
-### 2. Create a Virtual Environment
+## Using the application
+
+Start the API (model features off, loopback HTTP cookies allowed):
+
 ```bash
-python3 -m venv venv
-source venv/bin/activate
+export STRANDS_ENABLED=false RIH_PLANNER=RULE RIH_COOKIE_SECURE=false
+uvicorn app.api.main:app --host 127.0.0.1 --port 8000
 ```
 
-### 3. Install Requirements
+In a second terminal, start the frontend and open <http://127.0.0.1:5173>:
+
 ```bash
-pip install -r requirements.txt
+npm --prefix frontend run dev
 ```
 
----
+Create a staff account for the staff area (the password is prompted for, never echoed):
 
-## Running the Assistant (CLI)
-
-### Step 1: Run without Strands
 ```bash
-export STRANDS_ENABLED=false
+python scripts/manage_users.py create --username your.name --role admin
+```
+
+The original command-line interface still works without the API:
+
+```bash
 python -m app.ui.cli
 ```
 
-### Step 2: Run with Strands Enabled
+To try the optional planner, run [Ollama](https://ollama.com) locally with a small model such
+as `qwen2.5:1.5b`, then set `STRANDS_ENABLED=true RIH_PLANNER=LLM RIH_OLLAMA_MODEL=qwen2.5:1.5b`.
+Only loopback model hosts are accepted. A guided tour of the student, staff and governance
+flows is in [`docs/demo-walkthrough.md`](docs/demo-walkthrough.md).
+
+## Docker deployment
+
 ```bash
-export STRANDS_ENABLED=true
-export AWS_ACCESS_KEY_ID=YOUR_KEY
-export AWS_SECRET_ACCESS_KEY=YOUR_SECRET
-export AWS_DEFAULT_REGION=us-east-1
-python -m app.ui.cli
+docker compose up -d --build
+docker compose exec backend python scripts/manage_users.py create --username your.name --role admin
 ```
 
----
+Open <http://127.0.0.1:8080>. The backend has no published port and no internet route; only
+the frontend proxy is exposed, on loopback. Stop with `docker compose down`, or reset all demo
+data with `docker compose down -v`. The demo uses loopback HTTP with `RIH_COOKIE_SECURE=false`;
+any other setup needs HTTPS and `RIH_COOKIE_SECURE=true`.
 
-## Example Queries to Try
+## Kubernetes deployment
 
-### Safety Router
-- I want to hurt myself
-- I was assaulted
-- I feel unsafe on campus
+We deploy to a local [kind](https://kind.sigs.k8s.io/) cluster with Kustomize. This needs
+Docker, `kubectl` and kind.
 
-### Counseling / Medical Questions
-- How do I book a counseling appointment?
-- Where is RIH located?
-- Do you offer any workshops?
-- What happens in my first counseling session?
-
-### Decline Handling (Phase 7)
-- I don't want counseling
-- No thanks, any other options?
-- I prefer something else on campus
-- I'm overwhelmed but not interested in therapy
-
----
-
-## Running All Tests
 ```bash
-pytest -q tests
-```
-**Expected output:**
-```text
-56 passed, 1 warning
+docker compose build
+python scripts/k8s.py up        # cluster "rih"; UI on http://127.0.0.1:8090
+python scripts/k8s.py verify    # workflows, security contexts, network policies, red team
+python scripts/k8s.py down
 ```
 
----
+The manifests use a restricted Pod Security namespace, probes, resource limits, generated
+secrets, a disruption budget and default-deny network policies. Rollout, rollback and recovery
+procedures are in [`docs/deployment/kubernetes.md`](docs/deployment/kubernetes.md).
 
-## Strands Integration (Optional)
-Strands is disabled by default. To enable it:
+## Testing and security evaluation
+
+Automated tests never need a model provider or network access.
+
 ```bash
-export STRANDS_ENABLED=true
-export AWS_ACCESS_KEY_ID=...
-export AWS_SECRET_ACCESS_KEY=...
+export STRANDS_ENABLED=false RIH_PLANNER=RULE
+ruff check .
+python -m pytest -q
+python scripts/check_routes.py
+python scripts/safety_eval.py --fail-on-miss
+npm --prefix frontend run lint && npm --prefix frontend run typecheck && npm --prefix frontend test
+npm --prefix frontend run e2e                 # Playwright against the real API
+python scripts/redteam.py                     # adversarial suite
+python scripts/release_readiness.py --e2e     # full battery and readiness verdict
+npm --prefix frontend run screenshots         # regenerate README screenshots and diagrams
 ```
 
-Then the assistant will apply:
-- Clarify v2
-- Spelling correction
-- Response enhancement
+`npm run screenshots` starts its own throwaway backend and a production frontend build on
+loopback ports, so it needs the Python environment from [Local setup](#local-setup) (set
+`RIH_PYTHON` to the venv's Python if `python` is not on your path).
 
----
+The complete list of release gates is in [`docs/RELEASE_GATES.md`](docs/RELEASE_GATES.md).
+Recorded results from our final validation (2026-10-15, release candidate `c22b360`, Windows 11
+and WSL2 Ubuntu; raw evidence in [`docs/evidence/`](docs/evidence/)):
 
-## Safe Alternatives (Phase 7)
-When students decline RIH services, they are safely redirected to:
-- The Gathering Space for Spiritual Well-Being (i3b)
-- Retriever Essentials
-- UMBC RAC (fitness and wellness)
-- Library
-- Academic Success Center
-- Campus Life and Student Organizations
-- Career Center
+| Check | Result |
+|---|---|
+| Release battery (with containers) | 21 of 21 gates passed on the candidate (5494 tests passed, 1 skipped on Windows; 5495 passed on WSL2). Two earlier runs failed and are kept: they found a dependency advisory and a static-analysis issue, both fixed |
+| Safety routing regression set | 172 of 172 routed as expected, no false positives on benign cases |
+| Independent held-out set (Devika, 208 cases, frozen before review) | 149 of 208 on the first, unfixed run; 0 of 82 benign or ambiguous messages escalated. The gaps found were then fixed, so later runs are no longer held out |
+| Red team (70 versioned scenarios) | 5 of 70 attacks succeeded initially; 0 of 70 after mitigation, 0 of 35 over HTTP in Compose and kind |
+| Containers | integration 7/7, resilience 7/7, image and config scans clean |
+| Kubernetes | verify 7/7, rollout and rollback 5/5 with no failed requests, recovery 4/4 |
+| Release gate negative check | 3 of 3 deliberate critical regressions blocked |
+| Server log privacy probe | no message text, ids, tokens or credentials in server output |
 
-This fulfills the core project promise:
-**Always guide to RIH first. If declined, recommend safe, approved UMBC alternatives.**
+The safety regression set was written alongside the rules, so its score is optimistic; the
+held-out first run is the more realistic estimate. Write-ups:
+[security evaluation](docs/security/security-evaluation.md),
+[red-team report](docs/security/redteam-report.md),
+[threat model](docs/THREAT_MODEL.md),
+[crisis routing](docs/safety/crisis-routing.md).
 
----
+## Known limitations
 
-## Expected Outcome
-The repository delivers:
-- A working prototype
-- Full documentation
-- Complete safety architecture
-- Robust decline handling
-- 100 percent passing test suite
-- Demonstrable CLI interface
+- Safety routing is pattern-based. It still misses crisis wording in languages outside its
+  12-language list and implicit risk phrased in ways it has not seen. The non-English and
+  implicit-risk terms have not been reviewed by native speakers or clinicians.
+- Knowledge-base content is a small synthetic set carried over from our first version and not
+  yet re-reviewed under the governed process, so answers show baseline and staleness notices.
+- One API replica, SQLite storage, local HTTP only, and password login without MFA.
+- The GitHub Actions jobs for the newer gates have not run on GitHub yet.
+- No independent security assessment has been done. The red-team scenarios were written in our
+  own sessions.
+- Interactive release stays blocked until both of us decide on every risk in the staff interface,
+  and the native-speaker, clinical, campus-source and independent security reviews are completed
+  (see [`docs/FINAL_REPORT.md`](docs/FINAL_REPORT.md)).
+- On the Office of Equity and Civil Rights page, the phone links dial different numbers from the
+  ones displayed. Our templates use the displayed numbers; the office has not yet confirmed which
+  number is correct ([crisis routing §6](docs/safety/crisis-routing.md)).
 
----
-## Tests ( some unique tests )
+The full list is in [`docs/limitations.md`](docs/limitations.md).
 
-**1. Basic RIH Questions:**
+## Contributors
 
-<img width="892" height="299" alt="image" src="https://github.com/user-attachments/assets/359c5b09-b397-4478-95d5-2b6947d654ef" />
+- **Abhinav Varma Vathadi**
+- **Devika Rani Sanaboyina**
 
-<img width="677" height="341" alt="image" src="https://github.com/user-attachments/assets/2c201833-d223-4764-a5a6-4723f0a50026" />
+We built the first version together and completed checkpoint C1 through reviewed pull requests.
+Abhinav led the safety router, dispatcher, CI and the Phase 2–9 enhancement. Devika led the
+knowledge-base audit, retrieval restrictions, decline handling and campus alternatives, the
+threat model and contract drafts, the held-out safety evaluations and the final safety and
+security review. We used AI coding assistants under our direction during development; the
+project records in [`docs/`](docs/) state which work was agent-drafted and what each of us
+reviewed.
 
-**2. Ambiguity Questions**
-
-<img width="1158" height="219" alt="image" src="https://github.com/user-attachments/assets/24ef1019-cc7a-49c0-8599-5dc7fcf14c3d" />
-
-
-**3. Decline Detection (Phase 7)**
-
-<img width="1054" height="205" alt="image" src="https://github.com/user-attachments/assets/963b1465-3933-4f15-a039-66a3be451eae" />
-
-<img width="1258" height="214" alt="image" src="https://github.com/user-attachments/assets/e676818a-5933-4b0a-8ade-857b78c47e15" />
-
-<img width="1245" height="221" alt="image" src="https://github.com/user-attachments/assets/60423274-3cb7-472a-a999-d3b5993d2a04" />
-
-**4. Crisis Routing (non-bypassable)**
-
-<img width="1341" height="149" alt="image" src="https://github.com/user-attachments/assets/8a060fcc-8147-4b01-913f-61fb8bc74481" />
-
-<img width="1383" height="79" alt="image" src="https://github.com/user-attachments/assets/8e460d3d-e54e-4b07-b938-d59f7e9f7fcc" />
-
-<img width="1209" height="58" alt="image" src="https://github.com/user-attachments/assets/cf8b04d9-506a-4de9-b0c2-1defd4e5d8fa" />
-
-
-
----
-## Maintainers
-- Abhinav Varma Vathadi
-- Devika Rani Sanaboyina
-- UMBC, MPS Data Science
+UMBC, MPS Data Science. Licensed under the terms in [`LICENSE`](LICENSE).

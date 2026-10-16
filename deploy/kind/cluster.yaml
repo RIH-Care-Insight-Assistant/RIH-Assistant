@@ -1,0 +1,13 @@
+# Local kind cluster for Phase 9. Loopback only: the frontend NodePort is published on
+# 127.0.0.1:8090 of this machine. kindnet (the default CNI in kind >= 0.24) enforces
+# NetworkPolicies; scripts/k8s.py verifies that empirically before relying on it.
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: rih
+nodes:
+  - role: control-plane
+    extraPortMappings:
+      - containerPort: 30080
+        hostPort: 8090
+        listenAddress: "127.0.0.1"
+        protocol: TCP

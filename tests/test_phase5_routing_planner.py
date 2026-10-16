@@ -23,3 +23,16 @@ def test_planner_appointment_is_clarify_then_retrieve():
     out = d.respond("I need to reschedule my counseling session").get("text","")
     assert "clarify" in out.lower() or "counseling appointment" in out.lower()
     assert "Sources" in out or "Here’s what I found" in out
+
+def test_planner_medical_appointment_in_counseling_lane_retrieves():
+    from app.agent.planner import Planner
+
+    for text in ("I want to schedule a medical appointment", "reschedule my vaccine appointment"):
+        assert key(text) == "counseling"  # router lane unchanged
+        assert Planner().plan(route_level="counseling", user_text=text) == [
+            {"tool": "retrieve", "input": {"query": text}}
+        ]
+    # non-appointment counseling text still gets the counseling template
+    assert Planner().plan(route_level="counseling", user_text="I want to see a therapist") == [
+        {"tool": "counseling", "input": {}}
+    ]

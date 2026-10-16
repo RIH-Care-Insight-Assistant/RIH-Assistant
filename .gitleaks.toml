@@ -1,0 +1,13 @@
+# Gitleaks configuration: default rules plus one narrow allowlist.
+# The repository contains deliberately synthetic, test-only passwords (always containing
+# "synthetic" and "pass", for example in tests/api/conftest.py and the red-team scenarios).
+# They are never real credentials. Anything else that looks like a secret still fails the scan.
+title = "rih gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Synthetic test-only passwords"
+regexTarget = "match"
+regexes = ['''(?i)synthetic[-_a-z0-9]*pass[-_a-z0-9]*''']

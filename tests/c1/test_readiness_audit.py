@@ -2,6 +2,7 @@
 
 import json
 
+from app.evaluation.kb_fixture import write_governance
 from app.retriever import retriever
 from scripts.audit_c1_readiness import audit
 
@@ -10,12 +11,15 @@ def test_audit_preserves_existing_corpus_and_cached_rankings(tmp_path, monkeypat
     source = tmp_path / "existing.jsonl"
     original = json.dumps({"title": "Existing sentinel", "text": "billing sentinel"})
     source.write_text(original, encoding="utf-8")
+    # RP-06: list the record in an inventory so the legacy path can rank it.
+    governance = write_governance(tmp_path, [json.loads(original)])
     # Pytest restores all four globals even if this test fails.
     monkeypatch.setattr(retriever, "KB_DIR", tmp_path)
     monkeypatch.setattr(retriever, "_cached_kb", None)
     monkeypatch.setattr(retriever, "_idf", None)
     monkeypatch.setattr(retriever, "_total_docs", 0)
     before = retriever.retrieve("billing sentinel")
+    assert [r["title"] for r in before] == ["Existing sentinel"]
     cached_kb = retriever._cached_kb
     cached_idf = retriever._idf
     total = retriever._total_docs
@@ -28,7 +32,7 @@ def test_audit_preserves_existing_corpus_and_cached_rankings(tmp_path, monkeypat
     assert retriever._total_docs == total
     assert retriever.retrieve("billing sentinel") == before
     assert source.read_text(encoding="utf-8") == original
-    assert list(tmp_path.iterdir()) == [source]
+    assert sorted(tmp_path.iterdir()) == sorted([source, governance])
     assert "Existing sentinel" not in json.dumps(report)
     assert str(tmp_path) not in json.dumps(report)
 

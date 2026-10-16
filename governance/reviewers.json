@@ -1,0 +1,9 @@
+{
+  "roster_version": "reviewers-1",
+  "status": "Joint-reviewer roster for interactive public deployment (L-D13, 2026-10-15). It names who must decide, not what they decided: human decisions live only in the database.",
+  "joint_reviewers": [
+    {"slot": "abhinav", "name": "Abhinav Varma Vathadi"},
+    {"slot": "devika", "name": "Devika Rani Sanaboyina"}
+  ],
+  "account_binding": "Set at deploy time by an operator: RIH_GOVERNANCE_REVIEWERS=abhinav:<staff username>,devika:<staff username>. Every slot needs its own enabled staff account with the reviewer or admin role. Unset, partial, duplicated or unknown bindings count no review at all (default deny)."
+}

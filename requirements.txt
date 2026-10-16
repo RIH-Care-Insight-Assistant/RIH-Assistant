@@ -1,16 +1,31 @@
-# Web & HTTP
-requests==2.31.0
+# Runtime and test dependencies, pinned (C1 deferral O4: unused numpy/pandas removed,
+# strands-agents pinned). Development-only tools live in requirements-dev.txt.
+
+# HTML parsing for governed ingestion (app/rag/ingest.py)
 beautifulsoup4==4.12.2
+# Not imported directly; pinned to a patched release because strands-agents-tools needs it
+requests==2.34.2
 
-# Data processing
-numpy
-pandas
+# Backend API (Phase 2)
+fastapi==0.143.1
+uvicorn==0.54.0
+pydantic==2.14.1
+httpx==0.28.1
 
-# Testing  
-pytest==7.4.0
-pytest-cov==4.1.0
-python-dotenv==1.0.1
+# Observability (Phase 7)
+opentelemetry-api==1.45.1
+opentelemetry-sdk==1.45.1
 
-# Agents
-strands-agents
-strands-agents-tools
+# Testing
+pytest==9.1.1
+python-dotenv==1.2.4
+PyYAML==6.0.3
+
+# Agents (optional at runtime; model features stay off by default)
+strands-agents==1.59.0
+# Not imported directly; pinned to the patched 1.x release (CVE-2026-59951) that strands-agents
+# 1.59.0 allows (mcp<2.2)
+mcp==1.30.0
+strands-agents-tools==0.8.9
+# Local model provider client for the optional Strands planner (loopback Ollama only)
+ollama==0.6.3

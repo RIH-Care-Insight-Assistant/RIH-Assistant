@@ -1,0 +1,145 @@
+{
+  "report": "rih-k8s-verify",
+  "git_commit": "c22b360-dirty",
+  "generated_at": "2026-10-15T22:04:59Z",
+  "cluster": {
+    "kind": "kind v0.33.0 go1.26.7 windows/amd64",
+    "server": "v1.37.0"
+  },
+  "results": [
+    {
+      "check": "workloads_ready",
+      "status": "pass",
+      "duration_s": 0.1,
+      "deployments": {
+        "rih-backend": "1/1",
+        "rih-frontend": "2/2"
+      }
+    },
+    {
+      "check": "security_contexts",
+      "status": "pass",
+      "duration_s": 0.2,
+      "pod_security_enforce": "restricted",
+      "pods": {
+        "rih-backend-f5bddb77c-mfcr9": {
+          "run_as_non_root": true,
+          "read_only_rootfs": true,
+          "no_privilege_escalation": true,
+          "caps_dropped": [
+            "ALL"
+          ],
+          "limits": {
+            "cpu": "1",
+            "memory": "768Mi"
+          },
+          "probes": [
+            "livenessProbe",
+            "readinessProbe",
+            "startupProbe"
+          ]
+        },
+        "rih-frontend-76cb4b666b-jmlvf": {
+          "run_as_non_root": true,
+          "read_only_rootfs": true,
+          "no_privilege_escalation": true,
+          "caps_dropped": [
+            "ALL"
+          ],
+          "limits": {
+            "cpu": "500m",
+            "memory": "128Mi"
+          },
+          "probes": [
+            "livenessProbe",
+            "readinessProbe"
+          ]
+        },
+        "rih-frontend-76cb4b666b-zfthn": {
+          "run_as_non_root": true,
+          "read_only_rootfs": true,
+          "no_privilege_escalation": true,
+          "caps_dropped": [
+            "ALL"
+          ],
+          "limits": {
+            "cpu": "500m",
+            "memory": "128Mi"
+          },
+          "probes": [
+            "livenessProbe",
+            "readinessProbe"
+          ]
+        }
+      }
+    },
+    {
+      "check": "secret_and_config",
+      "status": "pass",
+      "duration_s": 0.2,
+      "secret_keys": [
+        "RIH_BOOTSTRAP_ADMIN_PASSWORD",
+        "RIH_BOOTSTRAP_ADMIN_USERNAME"
+      ],
+      "config_keys": [
+        "RIH_ALLOWED_ORIGINS",
+        "RIH_COOKIE_SECURE",
+        "RIH_DB_PATH",
+        "RIH_ENV",
+        "RIH_INCIDENT_SIMULATION",
+        "RIH_LOG_FORMAT",
+        "RIH_PLANNER",
+        "RIH_TRUST_PROXY",
+        "STRANDS_ENABLED"
+      ]
+    },
+    {
+      "check": "student_workflow",
+      "status": "pass",
+      "duration_s": 0.2,
+      "ready": {
+        "status": "ready",
+        "checks": {
+          "database": "ok",
+          "knowledge_base": "ok",
+          "policy": "ok"
+        }
+      },
+      "citations": [
+        "Immunizations & Requirements"
+      ],
+      "crisis_lane": "urgent_safety"
+    },
+    {
+      "check": "staff_and_policy_controls",
+      "status": "pass",
+      "duration_s": 0.4,
+      "unauthenticated_admin": 401,
+      "bootstrap_admin_login": 200,
+      "policy_sha256": "88af181f5af5",
+      "agent_decisions_seen": 3,
+      "readiness": "not_ready"
+    },
+    {
+      "check": "network_policy_enforcement",
+      "status": "pass",
+      "duration_s": 15.5,
+      "frontend_to_backend": "allowed",
+      "intruder_pod_to_backend": "BLOCKED TimeoutError",
+      "backend_egress_to_internet": "BLOCKED TimeoutError",
+      "control_namespace_egress_to_internet": "CONNECTED",
+      "control_namespace_to_backend": "BLOCKED TimeoutError"
+    },
+    {
+      "check": "redteam_over_http",
+      "status": "pass",
+      "duration_s": 60.8,
+      "attempted": 35,
+      "attack_successes": 0,
+      "open": [],
+      "evidence": "docs/evidence/redteam/k8s-http.json"
+    }
+  ],
+  "passed": 7,
+  "total": 7
+}

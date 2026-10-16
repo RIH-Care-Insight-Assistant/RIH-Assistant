@@ -2,6 +2,24 @@
 
 Maintained only by Abhinav (or his coding agent) on his own feature branches. Repository and GitHub state are authoritative over this file.
 
+## Showcase published (2026-10-15, L-D11) — latest
+
+- Records at `8a551c5`. I approved the exact page content as shown and authorized publication.
+  Devika did the same, asked separately. The static showcase is live at
+  <https://rih-care-insight-showcase.pages.dev/> (Cloudflare Pages Free, Direct Upload, build
+  `bc01772e`). Record: [`../showcase/deployment-2026-10-15.md`](../showcase/deployment-2026-10-15.md).
+- The application branch is not pushed, there is no PR, and readiness is unchanged.
+- Revision 1 (L-D12): we removed the footer sentence about UMBC-inspired colors and the capture
+  date. Devika and I each approved build `6c1ceb5a`, and it is redeployed to the same URL.
+
+## Showcase decision (2026-10-15, L-D10)
+
+- Local-first branch `feature/rih-local-enhancement-phases-2-9`, records at `85004b6`. I matched
+  Devika's L-D9 showcase authorization. Devika and I each reviewed the 16 images: 12 approved,
+  S3 deferred, S7, S8 and S12 excluded. The static page is in `showcase/`; nothing is posted.
+  Record: [`../showcase/image-review-checklist.md`](../showcase/image-review-checklist.md).
+- Next: we review the page text, choose a $0 host and decide on posting.
+
 ## Current
 
 - **Checkpoint:** C1 (Phases 0–1), close-out. **C1 is not accepted yet**; see `docs/PROJECT_STATE.md` → C1 acceptance.
@@ -38,7 +56,7 @@ Maintained only by Abhinav (or his coding agent) on his own feature branches. Re
 
 | Item | Files |
 |---|---|
-| Baseline audit with executed evidence | `docs/audit/c1-phase0-baseline-audit.md` |
+| Baseline audit with executed evidence | `docs/audits/c1-phase0-baseline-audit.md` |
 | Python application architecture + proposed dispatcher contract | `docs/architecture/python-application.md` |
 | Crisis / Title IX / conduct pattern hardening; obfuscation-resistant skeleton views | `app/router/rules.py` |
 | `SAFETY_CRITICAL_LANES` | `app/router/safety_router.py` |
@@ -51,7 +69,7 @@ Maintained only by Abhinav (or his coding agent) on his own feature branches. Re
 | LF line-ending policy | `.gitattributes` |
 | Safety policy, evidence and limitations | `docs/safety/crisis-routing.md` |
 | **PR #4 review fixes:** `DECLINE_PROTECTED_LANES` (retention protected from decline); retention inflections; `transfer` excludes records/insurance; self-directed hate → counseling; counseling template names 988/911; Strands wrapper uses the router's safety check; thread-lifetime limitation documented; dataset v1.1.0 (89 cases) | `app/router/*`, `safety/routing_matrix.csv`, `app/agent/dispatcher.py`, `app/agent/strands_safety.py`, `app/answer/compose.py`, tests, docs (`docs/safety/crisis-routing.md` §7) |
-| **PR #12, B9 repair:** detection families (third-party self-harm, overdose without the word, unwanted sexual contact/messages, coerced sex, bias hostility, threats or attacks); approved policies (non-sexual harassment → conduct, O10 narrowing, severe threats → crisis); exemptions bound to the benign event; coordinated threats; dataset v1.7.0 (172 cases); reconciled pre-C1 harassment checks | `app/router/rules.py`, `safety/routing_matrix.csv`, `tests/test_safety_detection_families.py`, `tests/data/safety_routing_cases.json`, `tests/run_smoke.py`, `tests/test_phase6_demo_scenarios.py`, `scripts/check_routes.py`, `docs/audit/c1-b9-safety-repair.md`, `docs/safety/crisis-routing.md` |
+| **PR #12, B9 repair:** detection families (third-party self-harm, overdose without the word, unwanted sexual contact/messages, coerced sex, bias hostility, threats or attacks); approved policies (non-sexual harassment → conduct, O10 narrowing, severe threats → crisis); exemptions bound to the benign event; coordinated threats; dataset v1.7.0 (172 cases); reconciled pre-C1 harassment checks | `app/router/rules.py`, `safety/routing_matrix.csv`, `tests/test_safety_detection_families.py`, `tests/data/safety_routing_cases.json`, `tests/run_smoke.py`, `tests/test_phase6_demo_scenarios.py`, `scripts/check_routes.py`, `docs/audits/c1-b9-safety-repair.md`, `docs/safety/crisis-routing.md` |
 
 ## Tests actually run (2026-10-11 to 2026-10-12)
 
@@ -138,3 +156,48 @@ ruff check . && python -m pytest -q && python scripts/safety_eval.py --fail-on-m
 1. Devika formally approves PR #10. Her approval records C1 acceptance.
 2. Merge PR #10 after her approval, and close issue #7.
 3. Only then: propose the revised collaboration model and C2-v0.1 contracts for joint approval. No C2 implementation before that.
+
+## 2026-10-14 — Local-first enhancement started (Phases 2–9)
+
+- Verified read-only: PR #10 approved by Devika (2026-10-12 17:04:56 UTC) and merged as
+  `6ab77a8`; CI run 38281894574 on `6ab77a8` succeeded; no open PRs; issue #7 still open.
+- Fast-forwarded local `main` to `6ab77a8` and created
+  `feature/rih-local-enhancement-phases-2-9` from it.
+- Baseline on `6ab77a8`, WSL2 Ubuntu 26.04.1, Python 3.14.4, ruff 0.16.10: Ruff clean
+  (both configs), `pytest -q` 4628 passed, `check_routes.py` passed, safety evaluation
+  172/172 exact lanes with no misses or false positives, smoke OK.
+- Reconciled the instructions with the local-first workflow (AGENTS.md, CLAUDE.md,
+  MASTER_PLAN.md, SHARED_DEVELOPMENT_INSTRUCTIONS.md, both launchers,
+  CONTRIBUTION_MATRIX.md, INTERFACE_CONTRACTS.md, RELEASE_GATES.md, PROJECT_STATE.md,
+  DECISION_LOG.md L-D1/L-D2).
+- From here on, per-phase progress is recorded in `docs/LOCAL_FIRST_PROGRESS.md`.
+
+## 2026-10-15 — Phases 2–9 complete locally (session operated from Abhinav's account)
+
+- 17 local commits `6582f97`…`fb72ab6` on `feature/rih-local-enhancement-phases-2-9`, all authored
+  as Abhinav's noreply identity, no trailers; nothing pushed.
+- Final battery on `fb72ab6`: 21/21 gates (Windows); Linux (WSL2) battery recorded in
+  `docs/LOCAL_FIRST_PROGRESS.md`. Readiness `blocked_pending_human_decision` (SB-07, SB-08).
+- Kubernetes: kind v0.33.0 cluster created, verified, rolled out/back, recovered and deleted.
+- Next: the decisions in `docs/PUBLICATION_PLAN.md` §2, then publication only if both authorize.
+
+## 2026-10-15 — Finalization session (operated from Abhinav's account)
+
+- Resumed from `bdf7659`, with a clean tree. Reproduced, fixed and regression-tested RP-06
+  (`9e4f52d`), SB-07 and SB-08 (`ed3cb33`; probes pre-registered in `07f0be4`), and added the
+  human-review readiness rule (`57d82f6`). All new terms are agent-drafted and await review.
+- Final battery on `b87f572`: 21/21 (Windows). Linux 12/12 on `c875a3f`. kind verify 7/7.
+  Readiness `blocked_pending_human_decision` (4 review items).
+- No Devika work is recorded for this session. Her review tasks are in
+  `docs/FINALIZATION_REVIEW_PLAN.md`.
+
+## 2026-10-15 — Final acceptance and joint-governance decisions (L-D8)
+
+- At the keyboard and directing; Devika not present. An AI coding agent presented the
+  outstanding decisions and drafted the record:
+  [`../audits/abhinav-final-acceptance-2026-10-15.md`](../audits/abhinav-final-acceptance-2026-10-15.md).
+- Accepted, prototype scope only: the B10 content binding (`e685260`; now accepted by both); R-01
+  and R-04 (joint position recorded); for my part, register `risks-3`, catalog `controls-3`, the
+  readiness rules and contracts C2/C3/C4-local-v1, all awaiting Devika.
+- No staff-UI decision entered (my choice). Showcase limited to a local demonstration with
+  synthetic data; interactive public deployment stays blocked. Battery not rerun.

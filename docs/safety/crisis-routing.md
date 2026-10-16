@@ -58,7 +58,7 @@ C1 pattern additions:
 - **Retention:** inflections ("dropping out", "withdrawing", "leaving school"). `transfer` counts **only when it is not about** records, files, insurance, prescriptions, refills, care, money or payments.
 - **CSV:** `safety/routing_matrix.csv` no longer lists bare `hate` or `transfer`. CSV triggers cannot carry these exclusions, and the defaults already cover both words.
 
-B9 additions (phrasing families; details and evidence in [`../audit/c1-b9-safety-repair.md`](../audit/c1-b9-safety-repair.md)):
+B9 additions (phrasing families; details and evidence in [`../audits/c1-b9-safety-repair.md`](../audits/c1-b9-safety-repair.md)):
 - **Crisis:**
   - Someone else's suicide or self-harm ("my friend wants to kill herself"). `hurt`/`harm` + him/her/themselves needs intent wording ("going to", "might", "threatened to"), so accidents don't match.
   - "harm myself".
@@ -141,10 +141,21 @@ The `main` column used the same dataset and script against an unmodified snapsho
 
 ## 5. Known limitations (open)
 
-- Purely implicit risk with no trigger phrase, e.g. "I gave away all my stuff and wrote goodbye letters".
+- Purely implicit risk with no trigger phrase. **Partly mitigated at finalization (SB-08, §9):**
+  narrow warning-sign lists now route "I gave away all my stuff and wrote goodbye letters" and
+  similar wording; implicit risk phrased any other way is still missed.
 - Spelling errors in crisis terms beyond the typo map, unless the optional corrector is enabled. Example: "kil myslf" without the corrector.
-- Repeated-letter obfuscation ("kiiiill"), symbol substitution inside words ("k*ll"), and `1`→`l` substitution ("ki11").
-- Non-English messages.
+- ~~Repeated-letter obfuscation ("kiiiill"), symbol substitution inside words ("k*ll"), and `1`→`l` substitution ("ki11").~~
+  **Mitigated in Phase 5** (red-team findings SB-04, SB-05, SB-06): `route()` now also checks
+  escalate-only de-obfuscation variants (runs of 3+ repeated letters collapsed, `1` read as
+  `l`, and `*`, `#` or `|` inside a word read as a vowel). A variant can only raise a message to
+  a safety-critical lane. Regression: `tests/test_safety_obfuscation_variants.py`; the safety
+  dataset still gives 172/172 exact lanes and 0/44 benign false positives, and the B9 benign
+  cases stay 0/6. Other symbols, mixed obfuscations and repeated letters combined with other
+  tricks are still not covered.
+- Non-English messages. **Partly mitigated at finalization (SB-07, §9):** explicit crisis wording
+  in 12 languages is routed; other languages, and indirect wording in the 12, are still missed.
+  Ordinary replies to non-English messages carry a notice with 988/911.
 - The router has no conversation memory. Each message is classified alone.
 - Someone else's "hurt/harm themselves" without intent wording ("my friend hurt herself again") is not routed. This is the cost of excluding accidental injuries.
 - Severe-threat routing needs a reported threat, an attempt or a person as subject. Unusual wording ("he's gonna end me tonight") is not routed, and threats against pets get conduct. Family or roommate subjects without a reporting verb ("my mom is going to kill me") count as idioms.
@@ -152,7 +163,7 @@ The `main` column used the same dataset and script against an unmodified snapsho
 - Harassment by an ex or partner without stalking, violence or sexual wording routes to conduct, not Title IX.
 - **Timed-out model threads keep running.** Python cannot kill a thread, so each timed-out Strands call keeps one worker thread alive until the provider returns. Nothing caps how many pile up during an outage. Responses are unaffected (the caller has already returned), but resource use is. Bounded concurrency / circuit breaking is Phase 8 work (audit O9). Model paths are off by default and in CI.
 
-## 6. Contact details in templates (verified 2026-10-11)
+## 6. Contact details in templates (verified 2026-10-11; re-checked 2026-10-15)
 
 | Contact | Value | Source |
 |---|---|---|
@@ -163,6 +174,31 @@ The `main` column used the same dataset and script against an unmodified snapsho
 | Office of Equity and Civil Rights (Title IX) | 410-455-1717 | https://ecr.umbc.edu/ |
 
 The crisis template previously labelled 410-455-2542 as "RIH Urgent Care". The official page calls it UMBC's After-Hours Support Line via RIH, so the label is corrected; the number is unchanged. Re-verify all contacts before each release.
+
+### Re-verification 2026-10-15 (final completion stage, Phase B)
+
+Checked by the AI coding agent at Abhinav's and Devika's direction, against the live official
+pages (fetched 2026-10-15; the raw HTML was read for `tel:` links). This is a web check, not a
+call to any office. No template number was changed.
+
+| Contact | Template value | Official page (2026-10-15) | Result |
+|---|---|---|---|
+| UMBC Police | 410-455-5555 | police.umbc.edu ("Call (410) 455-5555 or 911 for emergencies"); health.umbc.edu ("On-Campus UMBC Police") | Matches |
+| Emergency | 911 | police.umbc.edu; health.umbc.edu ("Off-Campus Dial 911") | Matches |
+| 988 Suicide & Crisis Lifeline | call or text 988 | 988lifeline.org (call, text, or chat); health.umbc.edu ("Call 988", "Text 988") | Matches |
+| After-Hours Support Line via RIH | 410-455-2542 | health.umbc.edu ("Contact UMBC's After-Hours Support Line via RIH: 410-455-2542", 24/7 crisis support) | Matches |
+| Office of Equity and Civil Rights (Title IX) | 410-455-1717 | ecr.umbc.edu ("Phone: 410-455-1717") | Matches the displayed number |
+
+**Discrepancy on an official page (not resolved here):** on ecr.umbc.edu the link shown as
+"410-455-1717" dials `tel:410-455-2735`, and the link shown as "After-Hours Support Line ...
+410-455-2542" dials `tel:410-455-3230`. health.umbc.edu lists 410-455-3230 separately as an
+"after-hours support line" under sexual assault or relationship violence support. The
+templates use the displayed numbers, which agree across pages. Which number the ECR office
+intends is a question for that office; a human should confirm it before any use beyond the
+synthetic prototype.
+
+The pages also list resources the templates do not use (for example Crisis Text Line, 211
+Maryland, Trans Lifeline). Adding any of them is a content decision for the humans.
 
 ## 7. PR #4 review response (Devika, 2026-10-11)
 
@@ -200,4 +236,77 @@ Devika's 24-case held-out set (frozen before her first run, not shown to the rou
 
 After her re-review of `8d73390`, the exemptions are bound to the benign event (`ebdf2d9`), and coordinated threats are routed (`4664534`). With the **original B9 labels** and no relabelling: 18/18 expected template, 0/6 false positives. Her 42 router review probes: 42/42. Her 9 re-review cases: 9/9.
 
-Full evidence, per-case table, tests and limitations: [`../audit/c1-b9-safety-repair.md`](../audit/c1-b9-safety-repair.md).
+Full evidence, per-case table, tests and limitations: [`../audits/c1-b9-safety-repair.md`](../audits/c1-b9-safety-repair.md).
+
+## 9. Finalization mitigations, awaiting review (2026-10-15)
+
+Red-team findings SB-07 (non-English crisis wording) and SB-08 (implicit risk) were the two
+open high findings after Phase 5. The finalization session added three escalate-only or
+notice-only controls. **None of them has been reviewed by Devika, a native speaker or a
+clinician.** Under §1 ("routing patterns change only through PRs reviewed by Devika") they must
+be reviewed in the integration PR before they count as accepted; the release-readiness check
+keeps the release blocked until a reviewer records a decision (`pending_human_review` on R-01).
+
+| Control | Code | What it does | What it does not do |
+|---|---|---|---|
+| Multilingual crisis lexicon | `app/router/multilingual.py` | Explicit wanting-to-die, suicide and self-harm wording in Spanish, French, Portuguese, German, Italian, Chinese, Japanese, Korean, Vietnamese, Hindi (Devanagari and romanized), Arabic and Russian raises a message to `urgent_safety`. Accent-, apostrophe- and invisible-character-insensitive. Idioms using "die" for hunger, boredom or laughter are excluded. | Cover any other language, indirect wording, slang or misspellings in the 12 languages. |
+| Implicit-risk warning signs | `app/router/implicit_risk.py` | Strong phrases alone ("sleep and never wake up", "won't be a burden much longer", "nobody will miss me when I'm gone", "decided tonight is my last night", stockpiling pills, ...), or two different kinds of weak sign in one message (giving possessions away, goodbye letters, a will, affairs in order, a plan, no way out, buying a rope or gun, "ready to go"). | Recognise implicit risk in general. A benign message with two weak signs gets the crisis template (caution bias, as in §3). |
+| Unsupported-language notice | `app/router/language.py` | Ordinary (non-safety) replies to messages that do not look like English carry a `language_support` notice: the assistant reads English only; 988/911 (English, plus an unreviewed Spanish sentence). | Route anything. Messages in an uncovered language still go through the ordinary path, including the optional local model planner. |
+
+Both routing controls run in `route()` after the router and the Phase 5 variants, and can only
+raise a result to `urgent_safety` (the highest-priority lane), so they cannot lower or replace
+a lane. Every runtime path (API, CLI, Strands safety check) goes through `route()`.
+
+Evidence (all synthetic; the agent wrote the terms and the probes, so this is a regression and
+coverage measure, not an estimate of real-world recall):
+
+| Measure | Before (`bdf7659`) | After (`ed3cb33`) |
+|---|---|---|
+| Pre-registered probes (committed in `07f0be4` before the change): explicit crisis, 12 languages | 0/34 | **34/34** (router, CLI and API) |
+| Probes: crisis wording in 4 languages not in the lexicon (Tagalog, Turkish, Polish, Swahili) | 0/4 | **0/4** routed; notice 4/4 |
+| Probes: implicit risk | 0/15 | **15/15** |
+| Probes: benign idioms and requests in other languages / benign implicit look-alikes | 16/16, 14/14 | 16/16, 14/14 |
+| Safety dataset v1.7.0 | 172/172, 0/44 FP | 172/172, 0/44 FP |
+| Other repository messages newly escalated (2,856 strings: all test literals, B9 held-out, PR #12 probes, benchmark, red-team fixture, KB) | — | only the SB-07 and SB-08 scenario messages |
+| Language notice on 307 English corpus messages | — | fires on 1 ("feeling su1c1dal"), which routes to crisis, so the notice is not shown |
+| Red team, governed API / C1 CLI path | 2/70, 3/17 | **0/70, 0/17** |
+
+The first after-run met every probe expectation; nothing was tuned on the probes afterwards.
+The language-notice heuristic was adjusted once, on the English corpora above, to stop firing
+on noun-only queries ("dining hall menu"); it is not a safety decision. Files:
+[`../evidence/safety/`](../evidence/safety/), [`../evidence/redteam/finalization-local.json`](../evidence/redteam/finalization-local.json).
+Tests: `tests/test_multilingual_crisis.py`, `tests/test_implicit_risk.py`,
+`tests/test_language_notice.py`, `tests/test_safety_probes_sb07_sb08.py`.
+
+Review needed before these count as accepted:
+1. **Devika** (routing-pattern rule, §1): the patterns and their exclusions.
+2. **Native speakers** of each language: every lexicon entry and the idiom exclusions; the
+   Spanish sentence in the notice.
+3. **Clinical or counseling input**: whether the warning-sign lists and the two-signal rule are
+   appropriate, and whether the crisis template is the right response for them.
+4. **Both humans**: accept the residual risk (other languages, other wording) or request more work.
+
+## 10. Devika's held-out check and pattern review, B10 (2026-10-15)
+
+Devika directed an independent check of §9 before reviewing the patterns: 208 synthetic cases
+were frozen (`c36cd2c`, SHA-256 pinned) before the pattern files were opened, then run unfixed
+(`ef3c83d`). The cases were drafted by an AI agent at her direction, so they are held out from
+the patterns but not independent of AI authorship.
+
+| Measure (router; CLI and API agree) | First run, held out | After B10 fixes (not held out) |
+|---|---|---|
+| Explicit crisis, 12 covered languages | 32/36 | 36/36 |
+| Spelling, script, dialect and Unicode variants | 18/32 | 31/32 |
+| Implicit warning signs, English / other languages | **2/14** / 0/6 | 9/14 / 0/6 |
+| Negated grammar that still states risk | 7/12 | 12/12 |
+| Uncovered languages routed / routed or notice | 0/17 / 14/17 | 0/17 / 17/17 |
+| Benign and ambiguous cases escalated | 0/82 | 0/82 |
+
+The B10 commits (`666e253`, `e685260`, `9bd6689`) add lexicon forms, warning-sign phrases and
+notice words. They also make `route()` fail toward the crisis template if an escalate-only
+check raises. Every addition is agent-drafted at Devika's direction and awaits native-speaker
+and clinical review like the rest of §9. Recorded as a `pending_human_review` item on R-01.
+Full findings, residual risks and the decisions left to humans are in
+[`../audits/devika-final-review-2026-10-15.md`](../audits/devika-final-review-2026-10-15.md).
+This section records review work. It is not Devika's sign-off on the patterns, which she gives
+in the staff UI or the integration PR.

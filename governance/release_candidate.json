@@ -1,0 +1,35 @@
+{
+  "manifest_version": "candidate-1",
+  "status": "Defines the release candidate for interactive deployment (L-D13, 2026-10-15): the committed content of the included top-level paths, identified by a digest of their git blobs. Every tracked top-level path must be listed in exactly one of the two lists; an unlisted path makes the candidate undefined (default deny).",
+  "include": [
+    ".dockerignore",
+    ".gitattributes",
+    ".gitleaks.toml",
+    "app",
+    "compose.yaml",
+    "contracts",
+    "deploy",
+    "frontend",
+    "governance",
+    "kb",
+    "policy",
+    "pyproject.toml",
+    "requirements-dev.txt",
+    "requirements.txt",
+    "ruff-c1.toml",
+    "safety",
+    "scripts",
+    "security",
+    "tests"
+  ],
+  "exclude": [
+    {"path": ".github", "reason": "CI configuration; runs on GitHub, not part of the service or the local battery"},
+    {"path": ".gitignore", "reason": "affects untracked files only; the candidate digest covers tracked content"},
+    {"path": "AGENTS.md", "reason": "agent instructions, documentation"},
+    {"path": "CLAUDE.md", "reason": "agent instructions, documentation"},
+    {"path": "LICENSE", "reason": "legal text, not executed or tested"},
+    {"path": "README.md", "reason": "documentation"},
+    {"path": "docs", "reason": "documentation and evidence; evidence commits must not invalidate the evidence they record"},
+    {"path": "showcase", "reason": "static showcase, authorized and deployed separately (L-D11)"}
+  ]
+}

@@ -106,8 +106,6 @@ def test_routing_matrix_schema():
     assert "urgent_safety" in {(r.get("category") or r.get("level")) for r in rows}
 
 
-_OPTIONAL_DEV_MODULES = ("app.dev.",)  # manual demo scripts, not part of the runtime
-
 # app/ subfolders are namespace packages (no __init__.py), so pkgutil cannot walk them;
 # enumerate the source files instead.
 APP_MODULES = sorted(
@@ -115,14 +113,13 @@ APP_MODULES = sorted(
     for p in (ROOT / "app").rglob("*.py")
     if p.name != "__init__.py" and "__pycache__" not in p.parts
 )
-RUNTIME_MODULES = [m for m in APP_MODULES if not m.startswith(_OPTIONAL_DEV_MODULES)]
 
 
 def test_module_discovery_found_the_runtime():
     # Guards against this check silently testing nothing.
-    assert {"app.router.rules", "app.agent.dispatcher", "app.ui.cli"} <= set(RUNTIME_MODULES)
+    assert {"app.router.rules", "app.agent.dispatcher", "app.ui.cli"} <= set(APP_MODULES)
 
 
-@pytest.mark.parametrize("name", RUNTIME_MODULES)
+@pytest.mark.parametrize("name", APP_MODULES)
 def test_every_app_module_imports(name):
     importlib.import_module(name)

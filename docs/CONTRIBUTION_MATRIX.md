@@ -61,3 +61,39 @@ The remaining Devika repairs use `feature/devika-c1-phase1-repairs`.
 Equal participation means substantive code, tests, debugging, review, integration,
 and deployment work in every phase. It does not authorize either contributor to
 implement the other's unmerged assignments or manufacture contribution counts.
+
+## Phases 2–9 under the local-first workflow (2026-10-14)
+
+C1 attribution above is historical and unchanged. For Phases 2–9 both humans work on
+one shared Windows PC with one primary coding agent on
+`feature/rih-local-enhancement-phases-2-9`. The launcher allocation (summarized in
+[`MASTER_PLAN.md`](MASTER_PLAN.md)) stays the **responsibility reference**: the named
+person leads the area's decisions and is its accountable reviewer. It does not require
+separate computers, branches or PRs, and it is not evidence that the person did the work.
+
+Contribution evidence is recorded only from what actually happens:
+
+| Evidence | Where it is recorded |
+|---|---|
+| Who directed or implemented a change | Commit author (the person's verified GitHub identity), plus a human `Co-authored-by` trailer only when both accept joint authorship |
+| Design decisions and reviews given at the shared machine | [`DECISION_LOG.md`](DECISION_LOG.md) entries and `docs/reviews/` records, quoting or summarizing what the person actually said |
+| Local test runs by a person | [`LOCAL_FIRST_PROGRESS.md`](LOCAL_FIRST_PROGRESS.md), naming who ran it |
+| Coding-agent work | Recorded as work directed by the operator at the keyboard; the agent is never an author |
+
+### Phase 2–9 contribution record
+
+| Phase | Responsibility reference (lead) | Recorded contributions |
+|---|---|---|
+| 2 | Abhinav: API, resources/admin UI, OpenAPI. Devika: chat/citation UI, sessions/feedback, E2E | See `LOCAL_FIRST_PROGRESS.md`; updated as work lands |
+| 3 | Abhinav: orchestration, tool registry, permissions. Devika: governed ingestion, provenance, citations, benchmarks | As above |
+| 4 | Abhinav: authn, authz, policy engine, RBAC. Devika: session isolation, audit, validation, admin UI | As above |
+| 5 | Abhinav: injection/poisoning/crisis-bypass fixtures and runner. Devika: tool misuse, cross-session, escalation, reporting | As above |
+| 6 | Abhinav: risk register, control mapping. Devika: evidence links, human review, readiness APIs | As above |
+| 7 | Abhinav: tracing, security events, gate logic. Devika: metrics, incidents, negative proof | As above |
+| 8 | Abhinav: backend container, timeouts, circuit breaking. Devika: frontend container, Compose, data-failure tests | As above |
+| 9 | Abhinav: backend workloads, probes, rollout/rollback. Devika: frontend workloads, NetworkPolicies, validation scripts | As above |
+
+Commits made in a session operated from Abhinav's account are authored as Abhinav. A
+commit is authored as Devika only when her verified identity
+(`Devika Rani Sanaboyina <165278681+Devikz@users.noreply.github.com>`, as used in her C1
+commits) is deliberately configured for work she did or directed.

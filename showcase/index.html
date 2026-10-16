@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'self'; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex">
+  <meta name="description" content="Static portfolio showcase of an independent student prototype: a safety-first assistant for finding campus health and support resources. Screenshots and diagrams only; synthetic data.">
+  <title>RIH Care Insight Assistant</title>
+  <link rel="stylesheet" href="showcase.css">
+</head>
+<body>
+  <header class="masthead">
+    <div class="wrap masthead__inner">
+      <span class="mark" aria-hidden="true"></span>
+      <div>
+        <p class="masthead__title">RIH Care Insight Assistant</p>
+        <p class="masthead__sub">Portfolio showcase · screenshots and diagrams only</p>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <aside class="notice" aria-label="Disclaimer">
+        <p><strong>Independent student prototype, not an official UMBC or Retriever Integrated Health service. Synthetic data only.</strong>
+        It shares information and does not diagnose, counsel, treat or respond to emergencies.
+        <strong>In an emergency call 911, or call or text 988.</strong></p>
+        <p class="notice__static">This page is a static set of screenshots and diagrams. There is no chatbot here, nothing on this page sends or collects information, and every conversation shown is synthetic.</p>
+      </aside>
+
+      <section class="hero" aria-labelledby="hero-title">
+        <p class="eyebrow">Student project · 2026</p>
+        <h1 id="hero-title">A resource finder where safety never depends on a language model</h1>
+        <p class="lede">Students often do not know which campus office handles their question, and a chatbot that guesses can do real harm when the message is about a crisis, sexual misconduct or a threat. This prototype checks every message with deterministic safety rules first. Everything else is answered only from approved knowledge-base sources, with citations.</p>
+        <ul class="facts">
+          <li><span>Scope</span>Phases 0–9 built and validated locally</li>
+          <li><span>Cost</span>$0 local stack, no paid services</li>
+          <li><span>Release status</span>Blocked pending human decisions, by design</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="student-title">
+        <p class="eyebrow">Student experience</p>
+        <h2 id="student-title">Grounded answers, honest about their sources</h2>
+        <p class="section-lede">Answers cite the sources they used. Each citation shows its review status and freshness, and the interface says plainly when a source is old or has not had a governed review.</p>
+
+        <figure class="shot shot--wide">
+          <img src="assets/chat-answer-citations.png" width="2160" height="1440" loading="lazy"
+               alt="Student chat: an answer about RIH hours with a numbered source citation, a baseline-review label, freshness notices and feedback buttons">
+          <figcaption>A cited answer. The source is labelled as a baseline record awaiting governed review and as updated over a year ago.</figcaption>
+        </figure>
+
+        <div class="grid">
+          <figure class="shot">
+            <img src="assets/chat-welcome.png" width="2160" height="1440" loading="lazy"
+                 alt="Welcome screen with three example questions and a note that crisis, misconduct and threat messages are checked first">
+            <figcaption>Welcome screen. Crisis, sexual misconduct and threat messages are checked before anything else.</figcaption>
+          </figure>
+          <figure class="shot">
+            <img src="assets/conversation-history.png" width="2160" height="1440" loading="lazy"
+                 alt="Conversation history with three saved conversations and a clarifying question asking whether the student means a counseling or a medical appointment">
+            <figcaption>Conversation history and a clarifying question for an ambiguous request.
+              <span class="caveat">Captured at commit 24a35bc, before fix e380883 changed the answer to the 'Medical appointment' option. Answers come from unreviewed baseline records.</span></figcaption>
+          </figure>
+          <figure class="shot">
+            <img src="assets/resources.png" width="2160" height="1440" loading="lazy"
+                 alt="Resource directory cards showing category, freshness, review status and content version for each source">
+            <figcaption>The resource directory: every page the assistant may cite, with its provenance and review status.</figcaption>
+          </figure>
+          <figure class="shot">
+            <img src="assets/chat-dark.png" width="2160" height="1440" loading="lazy"
+                 alt="A cited answer about immunization records in the dark theme">
+            <figcaption>Dark theme. Text and control colors are checked against WCAG AA contrast in both themes.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section aria-labelledby="safety-title">
+        <p class="eyebrow">Safety design</p>
+        <h2 id="safety-title">Safety first, then governed retrieval</h2>
+        <p class="section-lede">A deterministic router reads the original message before any planner, tool, retrieval or model. Crisis, Title IX and conduct messages get fixed guidance and stop there, and that guidance is still returned if storage or retrieval fails. No model output can lower a safety decision, and the optional local model never writes answer text.</p>
+        <figure class="shot shot--diagram">
+          <img src="assets/request-flow.png" width="2400" height="929" loading="lazy"
+               alt="Diagram of one chat turn: request guards, safety router, decline or guidance, planner, governed executor, governed retrieval and answer, with the terminal safety branch and fail-closed denials">
+          <figcaption>One chat turn, every stage on the server. Independent student prototype, not an official UMBC or Retriever Integrated Health service. Synthetic data only.</figcaption>
+        </figure>
+      </section>
+
+      <section aria-labelledby="staff-title">
+        <p class="eyebrow">Governed operations</p>
+        <h2 id="staff-title">A staff area checked by the server</h2>
+        <p class="section-lede">Reviewers and administrators sign in to review sources, record risk and release decisions, and watch aggregate telemetry. Access is role-based and defined as policy files that deny by default. The accounts shown are throwaway demo accounts.</p>
+        <div class="grid">
+          <figure class="shot">
+            <img src="assets/staff-signin.png" width="2160" height="960" loading="lazy"
+                 alt="Staff sign-in page with empty username and password fields">
+            <figcaption>Staff sign-in. Access is checked by the server, not the browser.</figcaption>
+          </figure>
+          <figure class="shot">
+            <img src="assets/staff-source-review.png" width="2160" height="1440" loading="lazy"
+                 alt="Reviewer source queue listing each source with status, freshness, citability and approve, reject and retire actions">
+            <figcaption>Source review. A decision applies to the exact content version shown.</figcaption>
+          </figure>
+          <figure class="shot">
+            <img src="assets/governance-dashboard.png" width="2160" height="1440" loading="lazy"
+                 alt="Governance dashboard showing release readiness blocked pending human decisions, the list of decisions waiting for a person, and battery check results">
+            <figcaption>Release governance: readiness stays blocked until people decide.
+              <span class="caveat">Evidence from candidate 9c8c7d2 (2026-10-15), not the latest commit. The red-team scenarios are AI-drafted. The readiness rules are not jointly accepted, so a 'ready' status is not trusted.</span></figcaption>
+          </figure>
+          <figure class="shot">
+            <img src="assets/observability-dashboard.png" width="2160" height="1440" loading="lazy"
+                 alt="Observability dashboard with request, chat-turn, tool-call and security-event counts and per-route latency">
+            <figcaption>Observability: aggregates only. No message text, identities or raw paths are recorded.</figcaption>
+          </figure>
+          <figure class="shot">
+            <img src="assets/audit-log.png" width="2160" height="1440" loading="lazy"
+                 alt="Admin audit log listing allowed and denied policy decisions with the rule that decided each">
+            <figcaption>Audit log of policy decisions, including a denied request from a reviewer for admin-only data.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section aria-labelledby="arch-title">
+        <p class="eyebrow">Architecture</p>
+        <h2 id="arch-title">Two hardened containers on a loopback-only stack</h2>
+        <p class="section-lede">A React and TypeScript frontend behind nginx, and a FastAPI backend with governed tools and retrieval, SQLite storage and OpenTelemetry. It runs with Docker Compose or on a local Kubernetes cluster (kind) with default-deny network policies.</p>
+        <figure class="shot shot--diagram">
+          <img src="assets/system-architecture.png" width="2400" height="2142" loading="lazy"
+               alt="System architecture: student and staff browsers, the nginx frontend container, the FastAPI backend with the safety-first chat pipeline and staff operations, data, observability, assurance and deployment targets">
+          <figcaption>System architecture. Independent student prototype, not an official UMBC or Retriever Integrated Health service. Synthetic data only.
+            <span class="caveat">The 12-language crisis lexicon is AI-drafted and has not been reviewed by native speakers.</span></figcaption>
+        </figure>
+      </section>
+
+      <section class="limits" aria-labelledby="limits-title">
+        <p class="eyebrow">Known limitations</p>
+        <h2 id="limits-title">What this prototype is not</h2>
+        <ul>
+          <li>It is not meant for real students, real health information or public deployment, and it claims no clinical validation or certification.</li>
+          <li>Keyword and pattern safety routing misses unusual phrasing, crisis messages in uncovered languages and implicit risk outside its lists. The multilingual and implicit-risk terms are AI-drafted and have had no native-speaker or clinical review.</li>
+          <li>The citable sources are baseline records carried over from an earlier version, dated 2025, and not yet reviewed under governed retrieval.</li>
+          <li>It runs as a single API process over local HTTP, without multi-factor authentication.</li>
+          <li>Release readiness is blocked pending human decisions. Nothing here is production-ready.</li>
+        </ul>
+      </section>
+    </div>
+  </main>
+
+  <footer class="foot">
+    <div class="wrap foot__inner">
+      <p>Built by Abhinav Varma Vathadi and Devika Rani Sanaboyina. Synthetic demo data only.</p>
+    </div>
+  </footer>
+</body>
+</html>

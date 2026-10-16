@@ -1,0 +1,159 @@
+{
+  "report": "rih-container-resilience",
+  "git_commit": "c22b360-dirty",
+  "generated_at": "2026-10-15T22:02:21Z",
+  "images": {
+    "rih-backend:local": "sha256:8ed5a00b83ca",
+    "rih-frontend:local": "sha256:e4579c45594a"
+  },
+  "results": [
+    {
+      "check": "backend_interruption",
+      "status": "pass",
+      "duration_s": 6.0,
+      "spa_during_outage": 200,
+      "api_during_outage": 503,
+      "recovered_after_s": 1.4,
+      "session_survived": true
+    },
+    {
+      "check": "frontend_interruption",
+      "status": "pass",
+      "duration_s": 4.1,
+      "backend_health_during_outage": "200",
+      "frontend_recovered_after_s": 0.2
+    },
+    {
+      "check": "process_crash_restart_policy",
+      "status": "pass",
+      "duration_s": 4.2,
+      "restart_count_before": 0,
+      "restart_count_after": 1,
+      "recovered_after_s": 0.2
+    },
+    {
+      "check": "incident_simulations",
+      "status": "pass",
+      "duration_s": 5.9,
+      "scenarios": {
+        "database_outage": {
+          "outcome": "recovered",
+          "detected_by": [
+            "http 503 dependency_unavailable rate"
+          ],
+          "synthetic_request_statuses": [
+            503,
+            503,
+            503
+          ],
+          "observations": {
+            "safety_delivered_during_outage": true,
+            "ready_during_outage": 503
+          },
+          "http_status": null
+        },
+        "retrieval_outage": {
+          "outcome": "recovered",
+          "detected_by": [
+            "degraded notices on chat responses"
+          ],
+          "synthetic_request_statuses": [
+            200,
+            200,
+            200
+          ],
+          "observations": {
+            "degraded_notices": 3,
+            "citations_during_outage": 0
+          },
+          "http_status": null
+        },
+        "authz_denial_spike": {
+          "outcome": "recovered",
+          "detected_by": [
+            "security_events auth_denied"
+          ],
+          "synthetic_request_statuses": [
+            401,
+            401,
+            401,
+            401,
+            401
+          ],
+          "observations": {},
+          "http_status": null
+        }
+      }
+    },
+    {
+      "check": "database_unwritable",
+      "status": "pass",
+      "duration_s": 2.3,
+      "ready": {
+        "database": "unavailable",
+        "knowledge_base": "ok",
+        "policy": "ok"
+      },
+      "crisis_status": 200,
+      "ordinary_write_status": 503
+    },
+    {
+      "check": "model_unavailable_and_timeout",
+      "status": "pass",
+      "duration_s": 12.2,
+      "unreachable": {
+        "latencies_ms": [
+          1010,
+          1010,
+          7,
+          6,
+          6
+        ],
+        "responses": [
+          "answer",
+          "answer",
+          "answer",
+          "answer",
+          "answer"
+        ],
+        "crisis_lane": "urgent_safety"
+      },
+      "timeout": {
+        "latencies_ms": [
+          1010,
+          1010,
+          7,
+          6,
+          6
+        ],
+        "responses": [
+          "answer",
+          "answer",
+          "answer",
+          "answer",
+          "answer"
+        ],
+        "crisis_lane": "urgent_safety"
+      }
+    },
+    {
+      "check": "corrupt_and_stale_kb",
+      "status": "pass",
+      "duration_s": 4.7,
+      "corrupt_kb": {
+        "billing_cited": false,
+        "fake_number_shown": false,
+        "other_sources_still_cited": true
+      },
+      "expired_kb": {
+        "citations": 0,
+        "notices": [
+          "no_eligible_source"
+        ],
+        "response_type": "fallback"
+      }
+    }
+  ],
+  "passed": 7,
+  "total": 7
+}

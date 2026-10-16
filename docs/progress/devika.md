@@ -1,6 +1,77 @@
 # Devika progress
 
-Last updated: 2026-10-12 (America/New_York). Operator: Devika Rani Sanaboyina.
+Last updated: 2026-10-15 (America/New_York). Operator: Devika Rani Sanaboyina.
+
+## Showcase published (2026-10-15, L-D11) — latest status
+
+- Records at `8a551c5`, on the shared PC; Abhinav at the keyboard, I was present and answered
+  my own questions. I approved the exact page content as shown and authorized publication;
+  Abhinav did the same, asked separately. The static showcase is live at
+  <https://rih-care-insight-showcase.pages.dev/> (Cloudflare Pages Free, build `bc01772e`).
+  My L-D9 conditions hold: images reviewed by both, no live endpoint, no public chatbot.
+  Record: [`../showcase/deployment-2026-10-15.md`](../showcase/deployment-2026-10-15.md).
+- The application branch is not pushed, there is no PR, and readiness is unchanged.
+- Revision 1 (L-D12): the footer sentence about UMBC-inspired colors and the capture date was
+  removed. Abhinav and I each approved build `6c1ceb5a`, and it is redeployed to the same URL.
+
+## Joint-governance decisions (2026-10-15, L-D9)
+
+- Records at `c19c745`, on the shared PC, local only. I decided each item in the session; an AI
+  coding agent drafted the record. Record:
+  [`../audits/devika-final-acceptance-2026-10-15.md`](../audits/devika-final-acceptance-2026-10-15.md#addendum-joint-governance-decisions-l-d9-2026-10-15) (addendum, decision L-D9).
+- Register `risks-3`: qualified acceptance, prototype scope. Before any release, a corrected
+  register version is needed (R-08/R-10 plan text, R-08/R-11 evidence), with fresh decisions.
+  Specialist reviews and the R-05 source review stay required. Owners and scores are a working
+  baseline.
+- Catalog `controls-3`: qualified acceptance, prototype scope. The multilingual, implicit-risk
+  and notice controls are unreviewed until native-speaker and clinical review. `C-HUMAN-REVIEW`
+  does not meet the joint requirement. Dependency scan and red team count only on the exact head.
+- Readiness rules: **deferred, not accepted.** One reviewer plus `9c8c7d2` evidence can produce
+  `ready`. Not trusted until code enforces joint decisions and evidence that matches the release
+  commit.
+- Contracts C2/C3/C4-local-v1: qualified acceptance, prototype scope. Rate limits only with one
+  replica. C4 item 2 not accepted, item 3 deferred.
+- Public showcase that viewers cannot interact with: authorized by me only, with conditions.
+  Abhinav must decide too. We both review each image. No live endpoint, no public chatbot.
+- Readiness is still `blocked_pending_human_decision`. Nothing entered in the staff UI. Nothing
+  pushed.
+
+## Final review decisions (2026-10-15)
+
+- At head `e380883`, on the shared PC, local only. I made each decision below in the session;
+  an AI coding agent drafted the record. Record:
+  [`../audits/devika-final-acceptance-2026-10-15.md`](../audits/devika-final-acceptance-2026-10-15.md)
+  (decision L-D7).
+- Accepted as routing reviewer, for the synthetic-data prototype only: SB-07 lexicon and SB-08
+  lists with the B10 additions; the `language_support` notice wording, including the Spanish
+  sentence; the fail-toward-crisis guard; RP-06 gate and refresh; the B10 content binding of
+  risk decisions; the medical-appointment fix `e380883`.
+- Residual risks R-01 and R-04: accepted for the prototype only, with the banner, notice and
+  RP-06 gate as controls. Not for real students before native-speaker and clinical review.
+- Confirmed L-D1. B10 attribution kept as recorded, no trailer.
+- Not done, and not implied: native-speaker or clinical review; a held-out set written by me;
+  staff-UI entries (R-01/R-04 jointly with Abhinav); Abhinav's acceptance of the readiness-rule
+  change; contracts and register acceptance; battery rerun on the final head; publication.
+  Readiness is still `blocked_pending_human_decision`. Nothing pushed.
+
+## Final safety and security review B10 (2026-10-15)
+
+- On the shared Windows PC, branch `feature/rih-local-enhancement-phases-2-9`, local only.
+  I directed the review; an AI coding agent drafted the cases, fixes and records. Commits
+  are under my identity. Report: [`../audits/devika-final-review-2026-10-15.md`](../audits/devika-final-review-2026-10-15.md).
+- Held-out set (208 synthetic cases) frozen and hash-pinned in `c36cd2c` before the SB-07/SB-08
+  patterns were opened; first run `ef3c83d`: **149/208**; implicit English **2/14**, variants
+  18/32, negated risk 7/12, uncovered languages 0/17 (notice 14/17); 0/82 benign or ambiguous
+  escalations.
+- Fixes: `666e253` (lexicon, warning signs, notice words, fail-safe `route()`), `e685260`
+  (risk decisions bound to the risk's content; `risks-3`, `controls-3`), `9bd6689` (RP-06 gate
+  refreshes on inventory change). Same set afterwards 179/208. That is not a held-out figure.
+- Checks run: full pytest 5414 passed, 1 skipped; safety eval 172/172, 0/44 FP; agent probes
+  unchanged; red team 0/70 and 0/17; repository scan routing unchanged on 2,713 strings.
+- Not done, and not implied: my sign-off on the patterns, native-speaker and clinical review,
+  R-01/R-04 decisions, contract and register acceptance, publication. Nothing pushed.
+- Next: decide R-01 in the staff UI with the held-out numbers in view; arrange native-speaker
+  and clinical review; ideally write a second held-out set myself without looking at the patterns.
 
 ## B9-N04 decline repair — latest status
 
