@@ -2,9 +2,9 @@
   "schema_version": 1,
   "branch": "feature/rih-local-enhancement-phases-2-9",
   "base_commit": "6ab77a862379a16d6d63d81e9d4ea709a55f2496",
-  "updated": "2026-10-15",
-  "current_phase": "final_completion_phase_E_pr_open",
-  "published": "branch pushed, not merged",
+  "updated": "2026-10-16",
+  "current_phase": "final_completion_complete",
+  "published": true,
   "phases": {
     "2": {
       "status": "complete_local",
@@ -65,19 +65,15 @@
     }
   },
   "awaiting_humans": [
-    "Staff-UI entries of every risk's decision under each joint reviewer's own bound account (L-D13: all 15 risks, both slots); neither has entered a staff-UI decision",
-    "Readiness rules L-D13: accepted by both (supersedes the L-D9 deferral). Operators must bind RIH_GOVERNANCE_REVIEWERS to two distinct staff accounts (admin role for release approval)",
-    "Register risks-4 and catalog controls-4 approved by both (L-D14); every risk decision must still be entered by both in the staff UI under bound accounts",
-    "Specialist reviews SR-01 native-speaker, SR-02 clinical (R-01), SR-03 source review (R-05), SR-04 independent security (R-07): required, none performed; they block interactive deployment",
-    "Contact numbers re-checked 2026-10-15 (all match the displayed numbers); the ECR page's link targets (410-455-2735, 410-455-3230) differ from its displayed numbers: confirm with the office before any real use",
-    "Release battery rerun on the final candidate: done (c22b360, 21/21, schema 2)",
-    "R-05 source review is now mandatory specialist review SR-03 (blocks interactive deployment)",
-    "Source publication authorized by both (L-D15): push, one integration PR, Devika's GitHub review and approval, green CI, merge. Interactive deployment NOT authorized",
-    "Close issue #7 on GitHub",
-    "Showcase follow-ups (L-D11): S3 only after the contact numbers are re-verified and a fresh decision by both; any change to the deployed page needs a new review by both and a new build hash"
+    "Bind RIH_GOVERNANCE_REVIEWERS to two distinct staff accounts (admin role for release approval)",
+    "Both reviewers' decisions on every risk in the staff UI (L-D13 rules); none entered",
+    "Specialist reviews SR-01 native-speaker, SR-02 clinical (R-01), SR-03 source review (R-05), SR-04 independent security (R-07): required, none performed",
+    "Confirm with the ECR office which number its links should dial (410-455-1717 shown, 410-455-2735 linked)",
+    "Showcase image S3: a fresh decision by both (contact numbers re-checked 2026-10-15)",
+    "Interactive public deployment: not authorized; needs a separate decision after the items above and a new battery on the release candidate"
   ],
-  "head": "see git log -1 (finalization documentation commit)",
-  "final_readiness": "not_ready (only blocker: joint reviewers not bound to staff accounts; 39 pending human items)",
+  "head": "main 7f21ba1 (merge of PR #15)",
+  "final_readiness": "not_ready (no reviewer binding; evidence is for c22b360, before the 2bdafb1 description fix)",
   "finalization": {
     "status": "complete_local",
     "resumed_from": "bdf7659",
@@ -431,8 +427,18 @@
       "Devika Rani Sanaboyina"
     ],
     "interactive_deployment": "not authorized",
-    "status": "pushed; PR #15 open, awaiting Devika's GitHub review and CI",
+    "status": "merged",
     "pr": "https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/15",
-    "backup": "RIH-backups/rih-final-completion-2026-10-15-fc7b4c4.bundle (verified)"
+    "backup": "RIH-backups/rih-final-completion-2026-10-15-fc7b4c4.bundle (verified)",
+    "merge_commit": "7f21ba1f7a35548d44c7686701e0fa9138fcac40",
+    "reviewed_head": "2bdafb1",
+    "review": "approved by Devika (Devikz) on 2bdafb1",
+    "ci": "13/13 passed on 2bdafb1 (run 38822070511)",
+    "first_ci_failure": "py3.11/py3.12 OpenAPI snapshot (interpreter status phrase), fixed in 2bdafb1",
+    "repository": "https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant"
+  },
+  "issue_7": {
+    "state": "closed (completed) 2026-10-16, agreed by both",
+    "comment": "https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/7#issuecomment-6205670301"
   }
 }

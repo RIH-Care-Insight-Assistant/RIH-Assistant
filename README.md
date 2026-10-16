@@ -279,6 +279,7 @@ and WSL2 Ubuntu; raw evidence in [`docs/evidence/`](docs/evidence/)):
 | Red team (70 versioned scenarios) | 5 of 70 attacks succeeded initially; 0 of 70 after mitigation, 0 of 35 over HTTP in Compose and kind |
 | Containers | integration 7/7, resilience 7/7, image and config scans clean |
 | Kubernetes | verify 7/7, rollout and rollback 5/5 with no failed requests, recovery 4/4 |
+| GitHub Actions (merged code) | 13 of 13 jobs passed, including tests on Python 3.11 to 3.14 and Ubuntu, macOS and Windows |
 | Release gate negative check | 3 of 3 deliberate critical regressions blocked |
 | Server log privacy probe | no message text, ids, tokens or credentials in server output |
 
@@ -297,7 +298,6 @@ held-out first run is the more realistic estimate. Write-ups:
 - Knowledge-base content is a small synthetic set carried over from our first version and not
   yet re-reviewed under the governed process, so answers show baseline and staleness notices.
 - One API replica, SQLite storage, local HTTP only, and password login without MFA.
-- The GitHub Actions jobs for the newer gates have not run on GitHub yet.
 - No independent security assessment has been done. The red-team scenarios were written in our
   own sessions.
 - Interactive release stays blocked until both of us decide on every risk in the staff interface,

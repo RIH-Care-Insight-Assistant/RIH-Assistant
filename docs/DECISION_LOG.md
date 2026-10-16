@@ -329,4 +329,19 @@ awaiting human acceptance; nothing here records an approval that was not given.
     `not_ready` under the L-D13 rules, and SR-01 to SR-04 are still required.
   - The static showcase (L-D11, L-D12) is unchanged. Prototype acceptance is recorded separately
     (L-D7, L-D8, L-D13, L-D14).
-
+- **L-D16 (2026-10-16, merge and issue #7; Abhinav and Devika both present; each decision
+  confirmed by both):**
+  - **CI on the first push:** 11 of 13 jobs passed. The Python 3.11 and 3.12 jobs failed
+    `test_openapi_snapshot_is_current`, because FastAPI copied the interpreter's HTTP status phrase
+    into the schema, and Python 3.13 renamed 422. Fixed in `2bdafb1` with explicit response
+    descriptions; the reviewed snapshot is unchanged, and two tests fail without the fix.
+  - **Review:** Devika approved [PR #15](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/15) on GitHub from her own account (`Devikz`), on head
+    `2bdafb1`. All 13 CI jobs passed on that head (run `38822070511`). There were no unresolved
+    threads.
+  - **Merge:** both confirmed. The PR was merged with a normal merge commit, `7f21ba1`
+    (parents `6ab77a8` and `2bdafb1`; its tree is identical to the reviewed head), without admin
+    bypass, and branch protection was not changed.
+  - **Issue #7:** both agreed to close it as completed, with a [comment](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/7#issuecomment-6205670301) linking the
+    C1 acceptance record (#10, `6ab77a8`) and #15.
+  - **Unchanged:** interactive public deployment is not authorized. SR-01 to SR-04 are still
+    required, and readiness stays `not_ready`.
