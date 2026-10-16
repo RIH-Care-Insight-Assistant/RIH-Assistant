@@ -15,7 +15,7 @@ task. Workflow: [`../AGENTS.md`](../AGENTS.md). Gates: [`RELEASE_GATES.md`](RELE
 
 | Field | Value |
 |---|---|
-| Current phase | **Final completion stage (2026-10-15): Phases A (L-D13), B (L-D14), C (validation on `c22b360`) and D (audit, L-D15 authorization) done; branch pushed and PR #15 open; next: Devika's GitHub review, CI, merge, then F (final records)** |
+| Current phase | **Final completion stage complete (2026-10-16).** PR #15 merged into `main` as `7f21ba1`; issue #7 closed. Interactive public deployment is not authorized. Open items belong to the humans (below) |
 | Current task | Done: SB-07/SB-08/RP-06 mitigations, final audit, final batteries, [final report](FINAL_REPORT.md), [publication plan](PUBLICATION_PLAN.md), [review plan](FINALIZATION_REVIEW_PLAN.md); Devika's final review B10 ([report](audits/devika-final-review-2026-10-15.md)) and her decisions at `e380883` ([record](audits/devika-final-acceptance-2026-10-15.md)); Abhinav's decisions, records at `84c55bf` ([record](audits/abhinav-final-acceptance-2026-10-15.md)); joint showcase decision and image review L-D10 ([record](showcase/image-review-checklist.md)); showcase content approved and published by both, L-D11 ([record](showcase/deployment-2026-10-15.md)), live at <https://rih-care-insight-showcase.pages.dev/>; the application is not published |
 | Last local commit | see `git log -1` (this file is updated with each milestone) |
 
@@ -434,6 +434,41 @@ committed (`55ffba2`). Windows 11, Python 3.13.2, Node 24.14.0, Docker 29.8.1, k
 **Exact next action:** Phase D, the publication audit. Update the README, final report and
 publication plan, prepare the publication summary, and ask both humans for source-publication
 authorization, separately.
+
+## Final completion stage, Phase F: merge and final records (2026-10-16)
+
+- **CI, first push:** 11 of 13 jobs passed. The Python 3.11 and 3.12 jobs failed the OpenAPI
+  snapshot test: FastAPI copied the interpreter's status phrase into the schema, and Python 3.13
+  renamed 422 to "Unprocessable Content". Fixed in `2bdafb1` with explicit descriptions; the
+  snapshot is unchanged, and two tests replace the phrase table and fail without the fix. Local
+  checks on the fix: ruff ×2; pytest 5496 passed, 1 skipped; routes; safety 172/172; Bandit;
+  contract tests on WSL Python 3.14.
+- **CI on `2bdafb1`:** all 13 jobs passed (run `38822070511`). They include the new contract,
+  red-team, E2E, frontend and security jobs on GitHub, and tests on Python 3.11, 3.12, 3.13
+  (Ubuntu, macOS, Windows) and 3.14.
+- **Review:** Devika approved [PR #15](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/15) from her own account on `2bdafb1`.
+- **Merge:** `7f21ba1` (merge commit, parents `6ab77a8` and `2bdafb1`, tree identical to the
+  reviewed head). The merge commit is authored by Abhinav's noreply identity and committed by
+  GitHub. No admin bypass was used and branch protection was not changed.
+- **Attribution on `main` since C1:** 45 commits by Abhinav and 16 by Devika, under their noreply
+  identities. There are 12 `Co-authored-by` trailers, naming only the two of them, and no AI
+  attribution.
+- **Issue #7:** closed as completed by both ([comment](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/7#issuecomment-6205670301)).
+- **Showcase:** <https://rih-care-insight-showcase.pages.dev/> still serves the approved build
+  (14 of 14 files match; HTTP 200 over valid TLS).
+- **Evidence note:** the committed release evidence is for candidate `c22b360`. `2bdafb1` changed
+  `app/api/routes.py` (descriptions only), so readiness correctly rejects that evidence for the
+  merged code. The GitHub CI run above covers `2bdafb1`. Interactive release would need a new
+  battery run in any case.
+
+**Open items (all human):**
+1. Bind two distinct staff accounts to the joint-reviewer slots.
+2. Enter both reviewers' decisions on every risk.
+3. Complete SR-01 native-speaker, SR-02 clinical, SR-03 campus source and SR-04 independent
+   security reviews.
+4. Confirm the ECR phone-link discrepancy with the office.
+5. Decide on showcase image S3.
+6. Make a separate decision before any interactive deployment.
 
 ## Final completion stage, Phases D and E: audit, authorization and PR (2026-10-15)
 

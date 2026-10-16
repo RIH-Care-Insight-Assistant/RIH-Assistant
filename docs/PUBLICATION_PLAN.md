@@ -2,7 +2,9 @@
 
 ## Current plan (final completion stage)
 
-Status on 2026-10-15: prepared, **not executed**. Sections 1 to 5 below are the earlier plan
+Status: **executed for source code** (2026-10-16). [PR #15](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/15) was merged as `7f21ba1` after Devika's approval and 13/13 green CI (L-D16), and issue #7 was closed. Interactive deployment was not part of it and stays unauthorized.
+
+Original status on 2026-10-15: prepared, not executed. Sections 1 to 5 below are the earlier plan
 and its updates, kept as the record. Where they conflict with this section, this section
 applies.
 

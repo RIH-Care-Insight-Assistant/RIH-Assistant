@@ -5,8 +5,9 @@ Shared checkpoint state. Contributor detail lives in
 the live local implementation record for Phases 2–9 is
 [`LOCAL_FIRST_PROGRESS.md`](LOCAL_FIRST_PROGRESS.md).
 
-Last updated: 2026-10-15, on local branch `feature/rih-local-enhancement-phases-2-9`
-(local-first workflow; not yet published).
+Last updated: 2026-10-16. Phases 2–9 are merged into `main` as `7f21ba1` ([PR #15](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/pull/15),
+reviewed and approved by Devika). Issue #7 is closed. Interactive public deployment is not
+authorized.
 
 ## Current checkpoint
 
@@ -55,8 +56,8 @@ C1 is complete and accepted. Under the local-first workflow (`AGENTS.md`; shared
   Baseline rerun on that commit (WSL2 Ubuntu 26.04.1, Python 3.14.4, 2026-10-14): Ruff clean
   (both configs), `pytest -q` **4628 passed**, routes passed, safety evaluation 172/172
   exact lanes with no misses or false positives, smoke OK.
-- **Still open from C1:** issue #7 (C1 coordination record) is open; closing it is a
-  human GitHub action.
+- **Issue #7** (C1 coordination record): closed as completed on 2026-10-16 by agreement of both
+  ([comment](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/7#issuecomment-6205670301)).
 
 ## C1 close-out record (historical, as recorded on 2026-10-12)
 
@@ -252,7 +253,7 @@ architecture §4 items 1–4, and the three C1 routing policies above.
 
 - No open PRs (checked read-only 2026-10-14). Under the local-first workflow no PRs are
   opened until publication is authorized.
-- [Issue #7](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/7): canonical C1 contract approval and coordination record, still open. Closing it is a human action.
+- [Issue #7](https://github.com/RIH-Care-Insight-Assistant/RIH-Assistant/issues/7): canonical C1 contract approval and coordination record, closed as completed on 2026-10-16 by agreement of both.
 
 ## Known defects and risks
 

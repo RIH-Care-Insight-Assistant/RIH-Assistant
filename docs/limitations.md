@@ -57,7 +57,8 @@ Honest scope of what this prototype does **not** do or guarantee. Linked risks a
 - The Compose demo uses loopback HTTP with `RIH_COOKIE_SECURE=false`; real use needs HTTPS.
 - SQLite is a single-node store; no backups or migrations rollback beyond reapplying a volume.
 - Observability is local (in-memory ring buffer, optional JSONL); there is no external collector.
-- GitHub Actions jobs for the new gates exist but have not run yet (no pushes during local work).
+- GitHub Actions runs tests, scans, the red team and E2E on each PR (13 jobs, all passing on the merged
+  code). It has no container, kind or release-readiness job; those run locally with the battery.
 - Contracts, the risk register (`risks-4`), the control catalog (`controls-4`) and the readiness
   rules (L-D13) are accepted by both humans for the prototype ([decision log](DECISION_LOG.md)).
   Owners and scores remain a working baseline, not a validated assessment.
